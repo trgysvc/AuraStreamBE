@@ -37,10 +37,13 @@ export const S3Service = {
     /**
      * Generate a signed URL for downloading/streaming a private file
      */
-    async getDownloadUrl(key: string, bucket: string = process.env.AWS_S3_BUCKET_PROCESSED!) {
+    async getDownloadUrl(key: string, bucket: string = process.env.AWS_S3_BUCKET_PROCESSED!, options?: {
+        responseContentDisposition?: string;
+    }) {
         const command = new GetObjectCommand({
             Bucket: bucket,
             Key: key,
+            ResponseContentDisposition: options?.responseContentDisposition,
         });
         return getSignedUrl(s3Client, command, { expiresIn: 3600 });
     },

@@ -97,30 +97,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     return (
         <PlayerContext.Provider value={{ currentTrack, isPlaying, playTrack, togglePlay, stop }}>
             {children}
-            {/* GLOBAL PLAYER BAR COMPONENT WILL BE RENDERED HERE OR IN LAYOUT */}
-            {currentTrack && (
-                <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800 p-4 shadow-lg z-50">
-                    <div className="container mx-auto flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">🎵</div>
-                            <div>
-                                <h4 className="font-bold text-sm">{currentTrack.title}</h4>
-                                <p className="text-xs text-gray-500">{currentTrack.artist}</p>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                            <button onClick={togglePlay} className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center">
-                                {isPlaying ? '⏸' : '▶'}
-                            </button>
-                        </div>
-
-                        <div className="hidden md:block text-xs text-gray-500">
-                            Player Active
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* Player is now handled by GlobalPlayer component in layout */}
         </PlayerContext.Provider>
     );
 }

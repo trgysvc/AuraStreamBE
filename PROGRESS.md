@@ -36,7 +36,7 @@
 ## Phase 3: Applications (Weeks 5-8)
 - [ ] **Creator Store (B2C)**
     - [x] Discovery & Search Page
-    - [ ] License Wizard & Checkout (Stripe)
+    - [x] License Wizard & Checkout (Stripe)
     - [ ] User Library & Downloads
     - [x] Track List & Player Integration
 - [ ] **Venue Player (B2B)**

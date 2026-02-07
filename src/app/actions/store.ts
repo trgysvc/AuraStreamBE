@@ -14,21 +14,24 @@ export interface StoreTrack {
     src: string; // Signed URL
 }
 
-export async function getStoreTracks_Action(): Promise<StoreTrack[]> {
+export async function getStoreTracks_Action(options?: {
+    genres?: string[];
+    moods?: string[];
+    query?: string;
+}): Promise<StoreTrack[]> {
     const supabase = createAdminClient();
 
     // 1. Fetch Active Tracks with their Files
-    // We join tracks with track_files
-    const { data: tracks, error } = await supabase
+    let query = supabase
         .from('tracks')
         .select(`
       id,
       title,
       artist,
+      status,
       bpm,
       duration_sec,
       genre,
-      cover_image_url,
       cover_image_url,
       track_files (
         s3_key,
@@ -38,11 +41,19 @@ export async function getStoreTracks_Action(): Promise<StoreTrack[]> {
         .in('status', ['active', 'processing'])
         .order('created_at', { ascending: false });
 
-    console.log('Store Fetch Debug:', {
-        count: tracks?.length,
-        firstTrack: tracks?.[0],
-        error
-    });
+    // Apply Filters
+    if (options?.genres && options.genres.length > 0) {
+        query = query.in('genre', options.genres);
+    }
+
+    if (options?.query) {
+        query = query.ilike('title', `%${options.query}%`);
+    }
+
+    // Note: Moods filtering would go here if we had a moods column or junction table
+
+
+    const { data: tracks, error } = await query;
 
     if (error) {
         console.error('Store Fetch Error:', error);
