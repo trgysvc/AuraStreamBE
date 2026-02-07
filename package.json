@@ -19,6 +19,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^0.563.0",
     "meilisearch": "^0.55.0",
+    "music-tempo": "^1.0.3",
     "next": "14.2.35",
     "pg": "^8.18.0",
     "react": "^18",
