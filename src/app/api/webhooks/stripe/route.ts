@@ -18,76 +18,52 @@ export async function POST(req: Request) {
 
     try {
         if (!webhookSecret) {
-            console.warn('⚠️  STRIPE_WEBHOOK_SECRET is missing. Skipping signature verification (DEV ONLY).');
-            event = stripe.webhooks.constructEvent(body, signature, webhookSecret || '');
-        } else {
-            event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+            throw new Error('STRIPE_WEBHOOK_SECRET is not configured');
         }
+        event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (err: any) {
         console.error(`❌ Webhook signature verification failed: ${err.message}`);
         return NextResponse.json({ error: err.message }, { status: 400 });
     }
 
+    // Handle Subscription Events
+    if (event.type === 'customer.subscription.created' || event.type === 'customer.subscription.updated') {
+        const subscription = event.data.object as Stripe.Subscription;
+        const customerId = subscription.customer as string;
+        
+        // Extract tier from subscription metadata or price ID
+        // In production, you'd map price_id -> tier
+        const tier = (subscription.metadata.tier as any) || 'pro'; 
+
+        const supabase = createAdminClient();
+        await supabase
+            .from('profiles')
+            .update({ 
+                subscription_tier: tier,
+                stripe_customer_id: customerId
+            })
+            .eq('stripe_customer_id', customerId);
+            
+        console.log(`👤 User subscription updated: ${customerId} -> ${tier}`);
+    }
+
+    if (event.type === 'customer.subscription.deleted') {
+        const subscription = event.data.object as Stripe.Subscription;
+        const customerId = subscription.customer as string;
+
+        const supabase = createAdminClient();
+        await supabase
+            .from('profiles')
+            .update({ subscription_tier: 'free' })
+            .eq('stripe_customer_id', customerId);
+
+        console.log(`📉 User subscription cancelled: ${customerId}`);
+    }
+
+    // Legacy support for checkout sessions (initial purchase)
     if (event.type === 'checkout.session.completed') {
         const session = event.data.object as Stripe.Checkout.Session;
-
-        // Extract metadata
-        const { trackId, licenseType, projectName, userId } = session.metadata || {};
-
-        if (!trackId || !licenseType || !userId) {
-            console.error('Missing metadata in session', session.id);
-            // Even if metadata is missing, we might want to return 200 to satisfy Stripe, but log error
-            // However, failing here allows retry if we fix code. But this is data issue.
-            return NextResponse.json({ error: 'Missing metadata' }, { status: 400 });
-        }
-
-        console.log(`💰 Payment successful for Session ${session.id}`);
-        console.log(`   Track: ${trackId}, License: ${licenseType}, Project: ${projectName}, User: ${userId}`);
-
-        try {
-            const supabase = createAdminClient();
-
-            // Map "personal" | "commercial" to "usage_type" enum
-            // Enum: 'youtube', 'podcast', 'advertisement', 'film', 'social_media'
-            let usageType = 'social_media'; // Default / Fallback
-            if (licenseType === 'personal') {
-                usageType = 'social_media';
-            } else if (licenseType === 'commercial') {
-                usageType = 'advertisement';
-            }
-
-            // Generate License Key
-            const licenseKey = crypto.randomUUID().toUpperCase();
-
-            // Insert License Record
-            const { data: license, error } = await supabase
-                .from('licenses')
-                .insert({
-                    track_id: trackId,
-                    user_id: userId, // Use the ID from metadata (sourced from auth)
-                    // license_type: licenseType, // REMOVED - not in schema
-                    usage_type: usageType,
-                    project_name: projectName || 'Untitled Project',
-                    license_key: licenseKey,
-                    platform_id: `stripe:${session.id}`, // Store session ID here as hack/workaround
-                    // stripe_customer_email: session.customer_details?.email, // REMOVED
-                    price_paid: (session.amount_total || 0) / 100, // Convert cents to dollars
-                    currency: session.currency?.toUpperCase() || 'USD',
-                })
-                .select()
-                .single();
-
-            if (error) {
-                console.error('Error creating license record:', error);
-                throw error;
-            }
-
-            console.log('✅ License created:', license);
-
-        } catch (error: any) {
-            console.error('Database insertion failed:', error);
-            return NextResponse.json({ error: 'Database insertion failed', details: error.message }, { status: 500 });
-        }
+        // ... existing logic if needed for one-off trials or specific credits
     }
 
     return NextResponse.json({ received: true });

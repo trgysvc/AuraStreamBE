@@ -11,7 +11,8 @@ export interface StoreTrack {
     duration: number;
     genre: string;
     coverImage?: string;
-    src: string; // Signed URL
+    src: string; // Default Signed URL
+    availableTunings: Record<string, string>;
 }
 
 export async function getStoreTracks_Action(options?: {
@@ -35,7 +36,8 @@ export async function getStoreTracks_Action(options?: {
       cover_image_url,
       track_files (
         s3_key,
-        file_type
+        file_type,
+        tuning
       )
     `)
         .in('status', ['active', 'processing'])
@@ -50,9 +52,6 @@ export async function getStoreTracks_Action(options?: {
         query = query.ilike('title', `%${options.query}%`);
     }
 
-    // Note: Moods filtering would go here if we had a moods column or junction table
-
-
     const { data: tracks, error } = await query;
 
     if (error) {
@@ -60,31 +59,47 @@ export async function getStoreTracks_Action(options?: {
         return [];
     }
 
-    // 2. Generate Signed URLs for each track
+    // 2. Generate Signed URLs for each track and its tunings
     const tracksWithUrls = await Promise.all(tracks.map(async (track: any) => {
-        // Find the audio file (prefer stream_aac, fallback to raw)
-        const audioFile = track.track_files.find((f: any) => f.file_type === 'stream_aac')
-            || track.track_files.find((f: any) => f.file_type === 'raw');
+        const availableTunings: Record<string, string> = {};
+        let defaultSrc = '';
 
-        let signedUrl = '';
-        if (audioFile) {
+        // Generate signed URLs for all streamable files
+        const streamFiles = track.track_files.filter((f: any) => f.file_type === 'stream_aac');
+        
+        for (const file of streamFiles) {
             try {
-                // Generate a 1-hour signed URL for playback
-                signedUrl = await S3Service.getDownloadUrl(audioFile.s3_key);
+                const url = await S3Service.getDownloadUrl(file.s3_key);
+                if (file.tuning) {
+                    availableTunings[file.tuning] = url;
+                    // Default to 440hz
+                    if (file.tuning === '440hz') defaultSrc = url;
+                }
             } catch (e) {
-                console.error(`Failed to sign URL for track ${track.id}`, e);
+                console.error(`Failed to sign URL for file ${file.s3_key}`, e);
+            }
+        }
+
+        // Fallback for defaultSrc if 440hz stream not found
+        if (!defaultSrc) {
+            const rawFile = track.track_files.find((f: any) => f.file_type === 'raw');
+            if (rawFile) {
+                try {
+                    defaultSrc = await S3Service.getDownloadUrl(rawFile.s3_key);
+                } catch (e) {}
             }
         }
 
         return {
             id: track.id,
             title: track.title,
-            artist: track.artist || 'AuraStream Artist',
+            artist: track.artist || 'AuraStream AI',
             bpm: track.bpm,
             duration: track.duration_sec,
             genre: track.genre,
             coverImage: track.cover_image_url,
-            src: signedUrl
+            src: defaultSrc,
+            availableTunings
         };
     }));
 

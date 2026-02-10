@@ -1,6 +1,9 @@
 
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import fs from 'fs';
+import { pipeline } from 'stream/promises';
+import { Readable } from 'stream';
 
 const AWS_REGION = process.env.AWS_REGION || 'eu-central-1';
 
@@ -46,6 +49,37 @@ export const S3Service = {
             ResponseContentDisposition: options?.responseContentDisposition,
         });
         return getSignedUrl(s3Client, command, { expiresIn: 3600 });
+    },
+
+    /**
+     * Download a file from S3 to a local temporary path
+     */
+    async downloadToTemp(key: string, bucket: string, tempPath: string) {
+        const command = new GetObjectCommand({
+            Bucket: bucket,
+            Key: key,
+        });
+
+        const response = await s3Client.send(command);
+        if (!response.Body) throw new Error('S3 Response Body is empty');
+
+        const writeStream = fs.createWriteStream(tempPath);
+        await pipeline(response.Body as Readable, writeStream);
+    },
+
+    /**
+     * Upload a local file to S3
+     */
+    async uploadFromPath(tempPath: string, key: string, bucket: string, contentType: string) {
+        const fileStream = fs.createReadStream(tempPath);
+        const command = new PutObjectCommand({
+            Bucket: bucket,
+            Key: key,
+            Body: fileStream,
+            ContentType: contentType,
+        });
+
+        return s3Client.send(command);
     },
 
     /**

@@ -4,19 +4,47 @@ import { spawn } from 'child_process';
 
 export const FFmpegService = {
     /**
-     * Transcodes a raw file to AAC (Stream optimized)
+     * Transcodes a raw file to AAC (Stream optimized) with optional pitch shift
      */
-    async transcodeToAAC(inputPath: string, outputPath: string): Promise<void> {
+    async transcode(inputPath: string, outputPath: string, options: { 
+        bitrate?: string, 
+        pitchRatio?: number,
+        normalize?: boolean
+    } = {}): Promise<void> {
+        const { bitrate = '256k', pitchRatio = 1.0, normalize = true } = options;
+
         return new Promise((resolve, reject) => {
-            // ffmpeg -i input.wav -c:a aac -b:a 256k -movflags +faststart output.m4a
-            const ffmpeg = spawn('ffmpeg', [
-                '-i', inputPath,
+            const args = ['-i', inputPath];
+
+            const filters: string[] = [];
+
+            // 1. Loudness Normalization (-14 LUFS)
+            if (normalize) {
+                filters.push('loudnorm=I=-14:LRA=11:TP=-1.5');
+            }
+
+            // 2. High-Fidelity Pitch Shifting (Keeping tempo)
+            if (pitchRatio !== 1.0) {
+                // Formula: asetrate=sample_rate*ratio, atempo=1/ratio
+                // This is a robust way to change pitch without rubberband
+                // Note: we need to know the input sample rate, usually 44100 or 48000
+                // For simplicity, we'll force resample to 44100
+                filters.push(`aresample=44100,asetrate=44100*${pitchRatio},atempo=${1/pitchRatio}`);
+            }
+
+            if (filters.length > 0) {
+                args.push('-af', filters.join(','));
+            }
+
+            args.push(
                 '-c:a', 'aac',
-                '-b:a', '256k',
+                '-b:a', bitrate,
                 '-movflags', '+faststart',
-                '-y', // Overwrite
+                '-y',
                 outputPath
-            ]);
+            );
+
+            const ffmpeg = spawn('ffmpeg', args);
 
             ffmpeg.on('close', (code) => {
                 if (code === 0) resolve();
@@ -28,25 +56,17 @@ export const FFmpegService = {
     },
 
     /**
-     * Normalizes audio to -14 LUFS (EBU R128)
+     * Legacy helper - now uses transcode internally
+     */
+    async transcodeToAAC(inputPath: string, outputPath: string): Promise<void> {
+        return this.transcode(inputPath, outputPath, { normalize: false });
+    },
+
+    /**
+     * Legacy helper - now uses transcode internally
      */
     async normalizeLoudness(inputPath: string, outputPath: string): Promise<void> {
-        return new Promise((resolve, reject) => {
-            // ffmpeg -i input.wav -af loudnorm=I=-14:LRA=11:TP=-1.5 output.wav
-            const ffmpeg = spawn('ffmpeg', [
-                '-i', inputPath,
-                '-af', 'loudnorm=I=-14:LRA=11:TP=-1.5',
-                '-y',
-                outputPath
-            ]);
-
-            ffmpeg.on('close', (code) => {
-                if (code === 0) resolve();
-                else reject(new Error(`FFmpeg exited with code ${code}`));
-            });
-
-            ffmpeg.on('error', (err) => reject(err));
-        });
+        return this.transcode(inputPath, outputPath, { bitrate: '320k' }); // Higher bitrate for normalization
     },
 
     /**

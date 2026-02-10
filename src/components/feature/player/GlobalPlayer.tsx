@@ -13,7 +13,11 @@ const formatTime = (time: number) => {
 };
 
 export function GlobalPlayer() {
-    const { currentTrack, isPlaying, togglePlay, duration, currentTime, seek, analyser } = usePlayer();
+    const { 
+        currentTrack, isPlaying, togglePlay, duration, currentTime, 
+        seek, analyser, tuning, setTuning, isAutoTuning, setAutoTuning, tier 
+    } = usePlayer();
+    
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const animationRef = useRef<number>();
 
@@ -22,7 +26,6 @@ export function GlobalPlayer() {
     const [dragTime, setDragTime] = useState(0);
 
     // Progress percentage (0-100)
-    // If dragging, show dragTime. Else show currentTime.
     const displayTime = isDragging ? dragTime : currentTime;
     const progressPercent = duration > 0 ? (displayTime / duration) * 100 : 0;
 
@@ -38,38 +41,26 @@ export function GlobalPlayer() {
         const dataArray = new Uint8Array(bufferLength);
 
         const animate = () => {
-            if (!isPlaying) {
-                // Optional: Clear or show static state when paused
-                // animationRef.current = requestAnimationFrame(animate); 
-                // return;
-            }
-
             analyser.getByteFrequencyData(dataArray);
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = '#F97316'; // Primary Orange
 
-            // We only show a subset of bars to fit the small canvas nicely
             const bars = 40;
             const step = Math.floor(bufferLength / bars);
             const barWidth = (canvas.width / bars) - 1;
 
             for (let i = 0; i < bars; i++) {
-                // Get average of the bin range
                 let sum = 0;
                 for (let j = 0; j < step; j++) {
                     sum += dataArray[(i * step) + j];
                 }
                 const value = sum / step;
-
-                // Scale value to canvas height
                 const percent = value / 255;
-                const height = Math.max(2, percent * canvas.height); // Min height 2px
-
+                const height = Math.max(2, percent * canvas.height);
                 const x = i * (barWidth + 1);
-                const y = (canvas.height - height) / 2; // Center vertically
+                const y = (canvas.height - height) / 2;
 
-                // Draw rounded bars
                 ctx.beginPath();
                 ctx.roundRect(x, y, barWidth, height, 2);
                 ctx.fill();
@@ -93,7 +84,6 @@ export function GlobalPlayer() {
         const width = rect.width;
         const percent = Math.max(0, Math.min(1, x / width));
         const newTime = percent * duration;
-
         seek(newTime);
     };
 
@@ -123,7 +113,7 @@ export function GlobalPlayer() {
     return (
         <div
             className="fixed bottom-0 left-0 right-0 h-24 bg-gray-900/95 backdrop-blur-md border-t border-gray-800 text-white z-[100] transition-transform duration-300"
-            onMouseUp={handleMouseUp} // Catch releases outside the bar
+            onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
         >
             {/* Progress Bar (Scrubbable) */}
@@ -133,17 +123,13 @@ export function GlobalPlayer() {
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
             >
-                {/* Background Layer to catch clicks consistently */}
                 <div className="absolute inset-0 w-full h-full" />
-
                 <div
                     className="h-full bg-gradient-to-r from-orange-500 to-amber-500 transition-all duration-75 ease-linear relative pointer-events-none"
                     style={{ width: `${progressPercent}%` }}
                 >
                     <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
-
-                {/* Time Tooltip on Hover (Optional, simplified for now just showing currTime/duration below) */}
             </div>
 
             <div className="container mx-auto h-full px-6 flex items-center justify-between gap-8">
@@ -151,7 +137,6 @@ export function GlobalPlayer() {
                 <div className="flex items-center gap-4 w-1/4">
                     <div className="w-14 h-14 bg-gray-800 rounded-lg overflow-hidden relative group">
                         {currentTrack.src ? (
-                            // eslint-disable-next-line @next/next/no-img-element
                             <img src={currentTrack.src.includes('cover') ? currentTrack.src : "/placeholder-cover.jpg"} alt="Cover" className="w-full h-full object-cover" />
                         ) : (
                             <div className="w-full h-full flex items-center justify-center text-2xl">🎵</div>
@@ -163,7 +148,6 @@ export function GlobalPlayer() {
                             {currentTrack.artist}
                         </p>
                     </div>
-                    {/* Time Display for Mobile/Desktop */}
                     <div className="hidden md:block text-xs text-gray-400 ml-4 font-mono">
                         {formatTime(displayTime)} / {formatTime(duration)}
                     </div>
@@ -174,7 +158,6 @@ export function GlobalPlayer() {
                     <div className="flex items-center gap-6">
                         <button className="text-gray-400 hover:text-white transition-colors" title="Shuffle">🔀</button>
                         <button className="text-gray-300 hover:text-white transition-colors text-xl">⏮</button>
-
                         <button
                             onClick={togglePlay}
                             className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-white/10"
@@ -185,18 +168,44 @@ export function GlobalPlayer() {
                                 <svg className="w-6 h-6 fill-current ml-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
                             )}
                         </button>
-
                         <button className="text-gray-300 hover:text-white transition-colors text-xl">⏭</button>
                         <button className="text-gray-400 hover:text-white transition-colors" title="Loop">🔁</button>
                     </div>
                 </div>
 
-                {/* Visualizer & Utility */}
-                <div className="w-1/4 flex justify-end items-center gap-4">
+                {/* Visualizer & Tuning Selector */}
+                <div className="w-1/4 flex justify-end items-center gap-6">
+                    {/* Auto Tuning (Energy Curve) */}
+                    <button
+                        onClick={() => setAutoTuning(!isAutoTuning)}
+                        className={`text-[10px] font-bold px-3 py-1 rounded-full border transition-all ${
+                            isAutoTuning 
+                            ? 'bg-indigo-600 border-indigo-400 text-white shadow-[0_0_10px_rgba(79,70,229,0.5)]' 
+                            : 'border-gray-700 text-gray-400 hover:text-gray-200'
+                        }`}
+                        title="Auto-Tuning (Energy Curve)"
+                    >
+                        AUTO
+                    </button>
+
+                    <div className="flex items-center bg-gray-800 rounded-full p-1 border border-gray-700">
+                        {(['440hz', '432hz', '528hz'] as const).map((t) => (
+                            <button
+                                key={t}
+                                onClick={() => setTuning(t)}
+                                className={`text-[10px] font-bold px-2 py-1 rounded-full transition-all ${
+                                    tuning === t 
+                                    ? 'bg-orange-500 text-white shadow-lg' 
+                                    : 'text-gray-400 hover:text-gray-200'
+                                } ${tier === 'free' && t !== '440hz' ? 'opacity-30 cursor-not-allowed' : ''}`}
+                            >
+                                {t.toUpperCase()}
+                            </button>
+                        ))}
+                    </div>
                     <div className="hidden lg:block w-32 h-10 opacity-70">
                         <canvas ref={canvasRef} width={128} height={40} className="w-full h-full" />
                     </div>
-
                     <div className="flex items-center gap-2 group">
                         <span className="text-gray-400 text-xs">🔊</span>
                         <div className="w-24 h-1 bg-gray-700 rounded-full cursor-pointer relative overflow-hidden">
