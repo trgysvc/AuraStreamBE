@@ -12,23 +12,28 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
         primary: {
-          DEFAULT: '#F97316',
-          dark: '#c2410c',
+          DEFAULT: '#111111', // Deep Black for primary actions
+          foreground: '#FFFFFF',
         },
         secondary: {
-          DEFAULT: '#10b981',
+          DEFAULT: '#F9F9F9', // Off-white
+          foreground: '#111111',
         },
-        frequency: {
-          440: '#8b5cf6',
-          432: '#10b981',
-          528: '#0ea5e9',
+        accent: {
+          DEFAULT: '#F9F9F9',
+          foreground: '#111111',
         },
-        status: {
-          success: '#10b981',
-          error: '#ef4444',
-          warning: '#f59e0b',
-          info: '#3b82f6',
-        }
+        border: '#E5E5E5',
+        input: '#E5E5E5',
+        ring: '#111111',
+        // Epidemic Sound style functional colors
+        success: '#10b981',
+        error: '#ef4444',
+        warning: '#f59e0b',
+        info: '#3b82f6',
+      },
+      fontFamily: {
+        sans: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
       },
     },
   },

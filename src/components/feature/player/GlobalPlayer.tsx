@@ -2,9 +2,8 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { usePlayer } from '@/context/PlayerContext';
-import { Button } from '@/components/shared/Button';
+import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat, Shuffle, Waves, Settings2 } from 'lucide-react';
 
-// Helper to format seconds to MM:SS
 const formatTime = (time: number) => {
     if (!time || isNaN(time)) return '0:00';
     const minutes = Math.floor(time / 60);
@@ -20,197 +19,124 @@ export function GlobalPlayer() {
     
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const animationRef = useRef<number>();
-
-    // Internal state for dragging progress
     const [isDragging, setIsDragging] = useState(false);
     const [dragTime, setDragTime] = useState(0);
 
-    // Progress percentage (0-100)
     const displayTime = isDragging ? dragTime : currentTime;
     const progressPercent = duration > 0 ? (displayTime / duration) * 100 : 0;
 
-    // Visualizer Animation
     useEffect(() => {
         if (!analyser || !canvasRef.current) return;
-
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        const bufferLength = analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-
         const animate = () => {
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
             analyser.getByteFrequencyData(dataArray);
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#F97316'; // Primary Orange
-
-            const bars = 40;
-            const step = Math.floor(bufferLength / bars);
+            
+            // Draw visualizer with Aura Violet
+            const bars = 30;
             const barWidth = (canvas.width / bars) - 1;
-
             for (let i = 0; i < bars; i++) {
-                let sum = 0;
-                for (let j = 0; j < step; j++) {
-                    sum += dataArray[(i * step) + j];
-                }
-                const value = sum / step;
-                const percent = value / 255;
-                const height = Math.max(2, percent * canvas.height);
-                const x = i * (barWidth + 1);
-                const y = (canvas.height - height) / 2;
-
+                const value = dataArray[i * Math.floor(bufferLength / bars)];
+                const height = (value / 255) * canvas.height;
+                ctx.fillStyle = i % 2 === 0 ? '#7C3AED' : '#0ea5e9';
                 ctx.beginPath();
-                ctx.roundRect(x, y, barWidth, height, 2);
+                ctx.roundRect(i * (barWidth + 1), (canvas.height - height) / 2, barWidth, height, 10);
                 ctx.fill();
             }
-
             animationRef.current = requestAnimationFrame(animate);
         };
-
         animate();
-
-        return () => {
-            if (animationRef.current) cancelAnimationFrame(animationRef.current);
-        };
+        return () => { if (animationRef.current) cancelAnimationFrame(animationRef.current); };
     }, [analyser, isPlaying]);
 
-    // Handle Progress Bar Interactions
     const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (duration <= 0) return;
         const rect = e.currentTarget.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const width = rect.width;
-        const percent = Math.max(0, Math.min(1, x / width));
-        const newTime = percent * duration;
-        seek(newTime);
-    };
-
-    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!isDragging || duration <= 0) return;
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const width = rect.width;
-        const percent = Math.max(0, Math.min(1, x / width));
-        setDragTime(percent * duration);
-    };
-
-    const handleMouseDown = () => {
-        setIsDragging(true);
-        setDragTime(currentTime);
-    };
-
-    const handleMouseUp = () => {
-        if (isDragging) {
-            seek(dragTime);
-            setIsDragging(false);
-        }
+        seek(((e.clientX - rect.left) / rect.width) * duration);
     };
 
     if (!currentTrack) return null;
 
     return (
-        <div
-            className="fixed bottom-0 left-0 right-0 h-24 bg-gray-900/95 backdrop-blur-md border-t border-gray-800 text-white z-[100] transition-transform duration-300"
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-        >
-            {/* Progress Bar (Scrubbable) */}
-            <div
-                className="group absolute top-0 left-0 right-0 h-1.5 cursor-pointer hover:h-4 transition-all bg-gray-800 z-10"
-                onClick={handleProgressClick}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-            >
-                <div className="absolute inset-0 w-full h-full" />
-                <div
-                    className="h-full bg-gradient-to-r from-orange-500 to-amber-500 transition-all duration-75 ease-linear relative pointer-events-none"
+        <div className="fixed bottom-0 left-0 right-0 h-24 glass-panel z-[100] border-t border-white/5 flex flex-col">
+            {/* Minimal Scrub Bar */}
+            <div className="h-1 w-full bg-white/5 cursor-pointer relative group" onClick={handleProgressClick}>
+                <div 
+                    className="h-full bg-gradient-to-r from-violet-500 to-cyan-500 relative transition-all"
                     style={{ width: `${progressPercent}%` }}
                 >
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
             </div>
 
-            <div className="container mx-auto h-full px-6 flex items-center justify-between gap-8">
-                {/* Track Info */}
-                <div className="flex items-center gap-4 w-1/4">
-                    <div className="w-14 h-14 bg-gray-800 rounded-lg overflow-hidden relative group">
+            <div className="flex-1 container mx-auto px-6 flex items-center justify-between gap-12">
+                {/* Left: Metadata */}
+                <div className="flex items-center gap-4 w-72 min-w-0">
+                    <div className="w-14 h-14 rounded-lg overflow-hidden bg-zinc-800 shadow-2xl border border-white/10">
                         {currentTrack.src ? (
-                            <img src={currentTrack.src.includes('cover') ? currentTrack.src : "/placeholder-cover.jpg"} alt="Cover" className="w-full h-full object-cover" />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center text-2xl">🎵</div>
-                        )}
+                            <img src={currentTrack.src.includes('cover') ? currentTrack.src : "/placeholder-cover.jpg"} className="w-full h-full object-cover" alt="" />
+                        ) : <div className="w-full h-full flex items-center justify-center">🎵</div>}
                     </div>
                     <div className="min-w-0">
-                        <h4 className="font-bold text-sm truncate">{currentTrack.title}</h4>
-                        <p className="text-xs text-gray-400 truncate hover:text-white cursor-pointer transition-colors">
-                            {currentTrack.artist}
-                        </p>
-                    </div>
-                    <div className="hidden md:block text-xs text-gray-400 ml-4 font-mono">
-                        {formatTime(displayTime)} / {formatTime(duration)}
+                        <h4 className="text-sm font-black text-white truncate uppercase tracking-tight">{currentTrack.title}</h4>
+                        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{currentTrack.artist}</p>
                     </div>
                 </div>
 
-                {/* Controls */}
-                <div className="flex flex-col items-center gap-1 flex-1">
-                    <div className="flex items-center gap-6">
-                        <button className="text-gray-400 hover:text-white transition-colors" title="Shuffle">🔀</button>
-                        <button className="text-gray-300 hover:text-white transition-colors text-xl">⏮</button>
-                        <button
+                {/* Center: Controls */}
+                <div className="flex-1 flex flex-col items-center gap-2">
+                    <div className="flex items-center gap-8 text-zinc-400">
+                        <Shuffle size={18} className="hover:text-white cursor-pointer transition-colors" />
+                        <SkipBack size={24} className="hover:text-white cursor-pointer transition-colors fill-current" />
+                        <button 
                             onClick={togglePlay}
-                            className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-white/10"
+                            className="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)]"
                         >
-                            {isPlaying ? (
-                                <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" /></svg>
-                            ) : (
-                                <svg className="w-6 h-6 fill-current ml-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
-                            )}
+                            {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
                         </button>
-                        <button className="text-gray-300 hover:text-white transition-colors text-xl">⏭</button>
-                        <button className="text-gray-400 hover:text-white transition-colors" title="Loop">🔁</button>
+                        <SkipForward size={24} className="hover:text-white cursor-pointer transition-colors fill-current" />
+                        <Repeat size={18} className="hover:text-white cursor-pointer transition-colors" />
+                    </div>
+                    <div className="flex items-center gap-3 text-[10px] font-mono text-zinc-600">
+                        <span>{formatTime(currentTime)}</span>
+                        <div className="w-64 h-0.5 bg-white/5 rounded-full" />
+                        <span>{formatTime(duration)}</span>
                     </div>
                 </div>
 
-                {/* Visualizer & Tuning Selector */}
-                <div className="w-1/4 flex justify-end items-center gap-6">
-                    {/* Auto Tuning (Energy Curve) */}
-                    <button
-                        onClick={() => setAutoTuning(!isAutoTuning)}
-                        className={`text-[10px] font-bold px-3 py-1 rounded-full border transition-all ${
-                            isAutoTuning 
-                            ? 'bg-indigo-600 border-indigo-400 text-white shadow-[0_0_10px_rgba(79,70,229,0.5)]' 
-                            : 'border-gray-700 text-gray-400 hover:text-gray-200'
-                        }`}
-                        title="Auto-Tuning (Energy Curve)"
-                    >
-                        AUTO
-                    </button>
-
-                    <div className="flex items-center bg-gray-800 rounded-full p-1 border border-gray-700">
+                {/* Right: Frequency & Tech */}
+                <div className="w-72 flex justify-end items-center gap-6">
+                    {/* Frequency Switcher */}
+                    <div className="flex items-center bg-black/40 rounded-full p-1 border border-white/5">
+                        <button 
+                            onClick={() => setAutoTuning(!isAutoTuning)}
+                            className={`text-[9px] font-black px-2 py-1.5 rounded-full transition-all ${isAutoTuning ? 'bg-indigo-600 text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
+                        >
+                            AUTO
+                        </button>
                         {(['440hz', '432hz', '528hz'] as const).map((t) => (
                             <button
                                 key={t}
                                 onClick={() => setTuning(t)}
-                                className={`text-[10px] font-bold px-2 py-1 rounded-full transition-all ${
-                                    tuning === t 
-                                    ? 'bg-orange-500 text-white shadow-lg' 
-                                    : 'text-gray-400 hover:text-gray-200'
-                                } ${tier === 'free' && t !== '440hz' ? 'opacity-30 cursor-not-allowed' : ''}`}
+                                className={`text-[9px] font-black px-2 py-1.5 rounded-full transition-all ${tuning === t ? 'bg-violet-600 text-white' : 'text-zinc-600 hover:text-zinc-400'} ${tier === 'free' && t !== '440hz' ? 'opacity-20 cursor-not-allowed' : ''}`}
                             >
                                 {t.toUpperCase()}
                             </button>
                         ))}
                     </div>
-                    <div className="hidden lg:block w-32 h-10 opacity-70">
-                        <canvas ref={canvasRef} width={128} height={40} className="w-full h-full" />
+
+                    <div className="hidden xl:block w-24 h-8 opacity-40">
+                        <canvas ref={canvasRef} width={96} height={32} className="w-full h-full" />
                     </div>
-                    <div className="flex items-center gap-2 group">
-                        <span className="text-gray-400 text-xs">🔊</span>
-                        <div className="w-24 h-1 bg-gray-700 rounded-full cursor-pointer relative overflow-hidden">
-                            <div className="absolute left-0 top-0 bottom-0 bg-white w-2/3 group-hover:bg-primary transition-colors" />
-                        </div>
+
+                    <div className="flex items-center gap-3 text-zinc-500">
+                        <Volume2 size={20} className="hover:text-white cursor-pointer transition-colors" />
+                        <Settings2 size={20} className="hover:text-white cursor-pointer transition-colors" />
                     </div>
                 </div>
             </div>
