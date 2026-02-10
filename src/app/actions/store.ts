@@ -95,7 +95,7 @@ export async function getStoreTracks_Action(options?: {
             title: track.title,
             artist: track.artist || 'AuraStream AI',
             bpm: track.bpm,
-            duration: track.duration_sec,
+            duration: track.duration_sec || 0,
             genre: track.genre,
             coverImage: track.cover_image_url,
             src: defaultSrc,

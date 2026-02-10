@@ -54,6 +54,7 @@ create table public.profiles (
   role user_role not null default 'creator',
   subscription_tier subscription_tier not null default 'free',
   stripe_customer_id text,
+  youtube_channel_id text,
   full_name text,
   avatar_url text,
   created_at timestamptz default now(),

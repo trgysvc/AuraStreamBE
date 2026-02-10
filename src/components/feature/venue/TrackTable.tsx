@@ -13,14 +13,18 @@ export function TrackTable({ tracks }: TrackTableProps) {
     const { playTrack, currentTrack, isPlaying } = usePlayer();
     const [licensingTrack, setLicensingTrack] = useState<StoreTrack | null>(null);
 
+    const formatDuration = (seconds: number | undefined) => {
+        if (!seconds || isNaN(seconds)) return '--:--';
+        const m = Math.floor(seconds / 60);
+        const s = Math.floor(seconds % 60);
+        return `${m}:${s.toString().padStart(2, '0')}`;
+    };
+
     return (
         <div className="w-full overflow-hidden">
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-bold text-white">All Tracks</h2>
-                {/* ... existing header controls ... */}
             </div>
-
-            {/* ... existing grid header ... */}
 
             <div className="space-y-2">
                 {tracks.map((track) => {
@@ -29,20 +33,22 @@ export function TrackTable({ tracks }: TrackTableProps) {
                     return (
                         <div
                             key={track.id}
-                            // ... existing styles ...
-                            onClick={() => playTrack(track)}
+                            onClick={() => playTrack({
+                                id: track.id,
+                                title: track.title,
+                                artist: track.artist,
+                                src: track.src,
+                                availableTunings: track.availableTunings
+                            })}
                             className={`
                                 group grid grid-cols-12 gap-4 items-center p-3 rounded-lg cursor-pointer transition-colors
                                 ${isCurrent ? 'bg-gray-800/80 border border-gray-700' : 'hover:bg-gray-800/50 border border-transparent'}
                             `}
                         >
-                            {/* ... existing columns ... */}
-
                             {/* Track Info */}
                             <div className="col-span-4 flex items-center gap-3">
                                 <div className="w-10 h-10 rounded overflow-hidden bg-gray-700 relative flex-shrink-0">
                                     {track.coverImage ? (
-                                        // eslint-disable-next-line @next/next/no-img-element
                                         <img src={track.coverImage} alt={track.title} className="w-full h-full object-cover" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-xs">🎵</div>
@@ -53,7 +59,7 @@ export function TrackTable({ tracks }: TrackTableProps) {
                                 </div>
                                 <div className="min-w-0">
                                     <h4 className={`text-sm font-medium truncate ${isCurrent ? 'text-orange-500' : 'text-white'}`}>{track.title}</h4>
-                                    <p className="text-xs text-gray-500 truncate">Annownious</p>
+                                    <p className="text-xs text-gray-500 truncate">{track.artist || 'AuraStream'}</p>
                                 </div>
                             </div>
 
@@ -68,23 +74,21 @@ export function TrackTable({ tracks }: TrackTableProps) {
                             </div>
 
                             {/* Duration */}
-                            <div className="col-span-1 text-sm text-gray-400">
-                                {track.duration ? `${Math.floor(track.duration / 60)}:${(track.duration % 60).toString().padStart(2, '0')}` : '03:26'}
+                            <div className="col-span-1 text-sm text-gray-400 font-mono">
+                                {formatDuration(track.duration)}
                             </div>
 
-                            {/* Actions / Waveform */}
+                            {/* Actions */}
                             <div className="col-span-2 flex justify-end items-center gap-3">
-                                {/* Buy Button */}
                                 <button
                                     onClick={(e) => {
-                                        e.stopPropagation(); // Prevent playing when clicking buy
+                                        e.stopPropagation();
                                         setLicensingTrack(track);
                                     }}
                                     className="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold rounded-full transition-colors opacity-0 group-hover:opacity-100"
                                 >
                                     License
                                 </button>
-
                                 <button className="text-gray-400 hover:text-white">•••</button>
                             </div>
                         </div>
@@ -92,7 +96,6 @@ export function TrackTable({ tracks }: TrackTableProps) {
                 })}
             </div>
 
-            {/* License Wizard Modal */}
             {licensingTrack && (
                 <LicenseWizard
                     track={licensingTrack}
