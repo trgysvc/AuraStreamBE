@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { usePlayer } from '@/context/PlayerContext';
-import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat, Shuffle, Waves, Settings2 } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat, Shuffle, Settings2 } from 'lucide-react';
 
 const formatTime = (time: number) => {
     if (!time || isNaN(time)) return '0:00';
@@ -19,11 +19,8 @@ export function GlobalPlayer() {
     
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const animationRef = useRef<number>();
-    const [isDragging, setIsDragging] = useState(false);
-    const [dragTime, setDragTime] = useState(0);
 
-    const displayTime = isDragging ? dragTime : currentTime;
-    const progressPercent = duration > 0 ? (displayTime / duration) * 100 : 0;
+    const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
     useEffect(() => {
         if (!analyser || !canvasRef.current) return;

@@ -1,120 +1,121 @@
 import Link from 'next/link';
-import { Search, Play, ArrowRight, Check } from 'lucide-react';
+import { Search, ArrowRight, Menu, X } from 'lucide-react';
 
 export default function LandingPage() {
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-pink-500 selection:text-white font-sans">
+        <div className="min-h-screen bg-[#111111] text-white font-sans selection:bg-white selection:text-black">
             {/* Header */}
-            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-gradient-to-b from-black/80 to-transparent transition-all duration-300">
-                <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 bg-white rounded-full flex items-center justify-center">
-                        <span className="text-black font-bold text-lg">A</span>
-                    </div>
-                    <span className="text-xl font-bold tracking-tight">AuraStream</span>
+            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-5 bg-black/90 backdrop-blur-sm transition-all duration-300 border-b border-white/10">
+                <div className="flex items-center gap-8">
+                    {/* Logo Area */}
+                    <Link href="/" className="flex items-center gap-2 cursor-pointer">
+                        <div className="h-8 w-8 bg-white rounded-full flex items-center justify-center">
+                            <span className="text-black font-bold text-lg text-center">A</span>
+                        </div>
+                        <span className="text-xl font-bold tracking-tight">AuraStream</span>
+                    </Link>
+
+                    {/* Desktop Navigation */}
+                    <nav className="hidden lg:flex items-center gap-8 text-[15px] font-medium text-gray-300">
+                        <Link href="/music" className="hover:text-white transition-colors">Music</Link>
+                        <Link href="/sound-effects" className="hover:text-white transition-colors">Sound Effects</Link>
+                        <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
+                        <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
+                        <Link href="/enterprise" className="hover:text-white transition-colors">Enterprise</Link>
+                    </nav>
                 </div>
 
-                <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
-                    <Link href="#" className="hover:text-gray-300 transition-colors">Music</Link>
-                    <Link href="#" className="hover:text-gray-300 transition-colors">Sound Effects</Link>
-                    <Link href="#" className="hover:text-gray-300 transition-colors">Pricing</Link>
-                    <Link href="#" className="hover:text-gray-300 transition-colors">Blog</Link>
-                </nav>
-
-                <div className="flex items-center gap-4">
-                    <Link href="/login" className="text-sm font-medium hover:text-gray-300 transition-colors">
+                <div className="flex items-center gap-6">
+                    <Link href="/login" className="hidden sm:block text-sm font-bold hover:text-gray-300 transition-colors">
                         Log in
                     </Link>
-                    <Link href="/signup" className="hidden sm:inline-flex h-10 items-center justify-center rounded-full bg-white px-6 text-sm font-bold text-black hover:bg-gray-100 transition-transform hover:scale-105">
-                        Start Free Trial
+                    <Link href="/signup" className="h-10 px-6 flex items-center justify-center rounded-full bg-white text-black text-sm font-bold hover:bg-gray-200 transition-colors">
+                        Start free trial
                     </Link>
+                    <button className="lg:hidden text-white">
+                        <Menu size={24} />
+                    </button>
                 </div>
             </header>
 
             {/* Hero Section */}
-            <section className="relative h-screen flex flex-col items-center justify-center px-4 overflow-hidden">
-                {/* Background Video/Image Placeholder */}
+            <section className="relative h-[85vh] flex flex-col items-center justify-center px-4 overflow-hidden pt-20">
+                {/* Background Image */}
                 <div className="absolute inset-0 z-0">
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black" />
-                    {/* Using a high-quality abstract dark background to simulate the premium feel */}
+                    <div className="absolute inset-0 bg-black/50 z-10" />
                     <div
                         className="absolute inset-0 bg-cover bg-center"
-                        style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1614149162883-504ebd4d28cc?q=80&w=2600&auto=format&fit=crop)' }}
+                        style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?q=80&w=2600&auto=format&fit=crop)' }}
                     />
                 </div>
 
-                <div className="relative z-10 max-w-4xl w-full text-center space-y-8 mt-20">
-                    <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-tight">
+                <div className="relative z-20 max-w-4xl w-full text-center space-y-8">
+                    <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]">
                         Soundtrack your content
                     </h1>
-                    <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto">
-                        Royalty-free music and sound effects for creators.
-                        Safe for YouTube, Twitch, Instagram, and more.
+                    <p className="text-xl md:text-2xl text-gray-200 font-light max-w-2xl mx-auto">
+                        Royalty-free music and sound effects for every story.
                     </p>
 
-                    {/* Search Bar */}
-                    <div className="max-w-xl mx-auto relative group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <Search className="text-gray-400 group-focus-within:text-black transition-colors" size={20} />
+                    {/* Search Bar - Epidemic Style */}
+                    <div className="max-w-2xl mx-auto relative group mt-8 text-left">
+                        <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                            <Search className="text-gray-400" size={20} />
                         </div>
                         <input
                             type="text"
-                            className="block w-full pl-12 pr-4 py-4 rounded-full text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-pink-500 shadow-xl"
+                            className="block w-full pl-14 pr-32 py-5 rounded-full bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0 text-lg shadow-2xl"
                             placeholder="Try 'Cinematic', 'Vlog', or 'Happy'..."
                         />
-                        <button className="absolute right-2 top-2 bottom-2 bg-black text-white px-6 rounded-full font-medium hover:bg-gray-800 transition-colors">
+                        <button className="absolute right-2 top-2 bottom-2 bg-black text-white px-8 rounded-full font-bold hover:bg-zinc-800 transition-colors">
                             Search
                         </button>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                        <Link href="/signup" className="w-full sm:w-auto px-8 py-4 bg-white text-black rounded-full font-bold text-lg hover:bg-gray-100 transition-transform hover:scale-105">
-                            Start Free Trial
-                        </Link>
-                        <Link href="/dashboard" className="w-full sm:w-auto px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full font-bold text-lg hover:bg-white/20 transition-colors">
-                            Browse Music
-                        </Link>
+                    <div className="pt-6">
+                        <p className="text-sm text-gray-300 mb-4 font-medium uppercase tracking-wider">Trusted by</p>
+                        <div className="flex justify-center gap-8 opacity-70 grayscale">
+                            <div className="h-8 w-24 bg-white/20 rounded"></div>
+                            <div className="h-8 w-24 bg-white/20 rounded"></div>
+                            <div className="h-8 w-24 bg-white/20 rounded"></div>
+                        </div>
                     </div>
-                </div>
-
-                {/* Scroll Indicator */}
-                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
-                    <ArrowRight className="rotate-90 text-white/50" size={24} />
                 </div>
             </section>
 
-            {/* "Music for every creator" Section */}
-            <section className="py-24 px-6 bg-black">
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex flex-col md:flex-row items-end justify-between mb-12 gap-6">
-                        <h2 className="text-3xl md:text-5xl font-bold tracking-tight max-w-2xl">
-                            Music for every story.
-                            <span className="block text-gray-500 mt-2">Find the perfect track.</span>
-                        </h2>
-                        <Link href="/dashboard" className="flex items-center gap-2 font-medium hover:gap-4 transition-all">
-                            Explore Catalog <ArrowRight size={20} />
+            {/* "Music for every story" Section - Redesigned for Premium Look */}
+            <section className="py-32 px-6 md:px-12 bg-[#111111]">
+                <div className="max-w-[1400px] mx-auto">
+                    <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6">
+                        <div className="space-y-4">
+                            <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white uppercase italic">
+                                Music for <br/>every story.
+                            </h2>
+                            <p className="text-xl text-zinc-500 font-medium">Find the perfect track for any platform.</p>
+                        </div>
+                        <Link href="/dashboard" className="flex items-center gap-3 font-black text-xs uppercase tracking-[0.2em] hover:opacity-70 transition-all text-white border-b-2 border-white pb-1">
+                            Browse catalog <ArrowRight size={16} />
                         </Link>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         {[
-                            { title: 'YouTube', img: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=800&q=80' },
-                            { title: 'Twitch', img: 'https://images.unsplash.com/photo-1542204165-65bf26472b9b?w=800&q=80' },
-                            { title: 'Podcast', img: 'https://images.unsplash.com/photo-1478737270239-2f02b77ac6d5?w=800&q=80' },
-                            { title: 'Commercial', img: 'https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?w=800&q=80' }
+                            { title: 'YouTube', subtitle: 'vlogs & features', img: 'https://images.unsplash.com/photo-1492724441997-5dc865305da7?q=80&w=1600' },
+                            { title: 'Twitch', subtitle: 'live & gaming', img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1600' },
+                            { title: 'Social', subtitle: 'reels & stories', img: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=1600' },
+                            { title: 'Brand', subtitle: 'commercials & ads', img: 'https://images.unsplash.com/photo-1559136555-9303dff16302?q=80&w=1600' }
                         ].map((item, i) => (
-                            <div key={i} className="group relative aspect-[4/5] overflow-hidden rounded-2xl cursor-pointer">
+                            <div key={i} className="group relative aspect-[3/4] overflow-hidden rounded-sm cursor-pointer">
                                 <div
-                                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                                    className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
                                     style={{ backgroundImage: `url(${item.img})` }}
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-                                <div className="absolute bottom-6 left-6">
-                                    <h3 className="text-2xl font-bold">{item.title}</h3>
-                                </div>
-                                <div className="absolute bottom-6 right-6 translate-y-10 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-                                    <div className="bg-white text-black p-3 rounded-full">
-                                        <Play size={20} fill="currentColor" />
-                                    </div>
+                                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors duration-500" />
+                                <div className="absolute inset-0 border border-white/5 group-hover:border-white/20 transition-colors" />
+                                
+                                <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 via-black/40 to-transparent translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-2">{item.subtitle}</p>
+                                    <h3 className="text-3xl font-black text-white italic uppercase leading-none">{item.title}</h3>
                                 </div>
                             </div>
                         ))}
@@ -122,57 +123,282 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* Features / Value Prop */}
-            <section className="py-24 px-6 bg-zinc-900">
-                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
-                    <div className="space-y-4">
-                        <div className="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center mb-6">
-                            <Check className="text-white" size={24} />
+            {/* 1. Find Similar Section (Yellow) */}
+            <section className="py-32 px-6 bg-[#F7D348] text-black overflow-hidden">
+                <div className="max-w-[1400px] mx-auto text-center">
+                    <p className="text-xs font-bold uppercase tracking-[0.3em] mb-4">Find Similar</p>
+                    <h2 className="text-4xl md:text-7xl font-bold tracking-tight leading-none mb-6">
+                        Use music to find music.
+                    </h2>
+                    <p className="text-lg md:text-xl max-w-2xl mx-auto mb-16 opacity-80">
+                        Search for tracks with a similar tone and sound, using your favorite riff, hook, drop, or bridge.
+                    </p>
+
+                    {/* Mock UI Element */}
+                    <div className="max-w-4xl mx-auto bg-[#18181b] rounded-xl shadow-2xl overflow-hidden text-left transform rotate-1 hover:rotate-0 transition-transform duration-500">
+                        <div className="p-6 border-b border-white/5 flex items-center justify-between">
+                            <span className="font-bold text-white text-sm">Find similar tracks</span>
+                            <X size={18} className="text-zinc-500" />
                         </div>
-                        <h3 className="text-xl font-bold">Worry-free licensing</h3>
-                        <p className="text-gray-400 leading-relaxed">
-                            One subscription covers everything. No copyright claims, no hidden fees. Monetize your content on all major platforms from day one.
-                        </p>
-                    </div>
-                    <div className="space-y-4">
-                        <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mb-6">
-                            <Check className="text-white" size={24} />
+                        <div className="p-4 md:p-8 space-y-6">
+                            {/* Player Mock */}
+                            <div className="flex items-center gap-4 bg-zinc-800/50 p-4 rounded-lg">
+                                <div className="w-12 h-12 bg-white/10 rounded flex items-center justify-center text-2xl">💿</div>
+                                <div className="flex-1">
+                                    <p className="text-white font-bold text-sm">All Gassed Up</p>
+                                    <p className="text-zinc-500 text-xs">Larry Poppinz</p>
+                                </div>
+                                <div className="flex-1 h-8 bg-zinc-700/30 rounded flex items-center px-2">
+                                    <div className="w-full h-1 bg-zinc-600 rounded-full overflow-hidden">
+                                        <div className="w-1/3 h-full bg-[#F7D348]" />
+                                    </div>
+                                </div>
+                            </div>
+                            {/* List Mock */}
+                            <div className="space-y-4 opacity-50">
+                                {[1, 2, 3].map(i => (
+                                    <div key={i} className="flex items-center gap-4">
+                                        <div className="w-10 h-10 bg-zinc-800 rounded" />
+                                        <div className="flex-1 space-y-2">
+                                            <div className="h-2 w-24 bg-zinc-700 rounded" />
+                                            <div className="h-2 w-16 bg-zinc-800 rounded" />
+                                        </div>
+                                        <div className="h-4 w-32 bg-zinc-800 rounded" />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                        <h3 className="text-xl font-bold">40,000+ Tracks</h3>
-                        <p className="text-gray-400 leading-relaxed">
-                            World-class music composed by professional artists. New tracks added daily to keep your content fresh and trending.
-                        </p>
-                    </div>
-                    <div className="space-y-4">
-                        <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center mb-6">
-                            <Check className="text-white" size={24} />
-                        </div>
-                        <h3 className="text-xl font-bold">Try it for free</h3>
-                        <p className="text-gray-400 leading-relaxed">
-                            Start your 30-day free trial today. Cancel anytime. Keep the content you published during your trial forever.
-                        </p>
                     </div>
                 </div>
             </section>
 
-            {/* Footer CTA */}
-            <section className="py-32 px-6 bg-black text-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-500/20 to-blue-500/20 blur-3xl opacity-30" />
-                <div className="relative z-10 max-w-3xl mx-auto space-y-8">
-                    <h2 className="text-4xl md:text-6xl font-bold tracking-tight">Ready to start?</h2>
-                    <p className="text-xl text-gray-400">Join over 100,000 creators using AuraStream.</p>
-                    <Link href="/signup" className="inline-block px-10 py-5 bg-white text-black rounded-full font-bold text-xl hover:bg-gray-100 transition-transform hover:scale-105">
-                        Get 30 days free
+            {/* 2. AuraStream Venue / Business Section (Light Grey/Blue) */}
+            <section className="py-32 px-6 bg-[#E8EDF2] text-black overflow-hidden border-b border-black/5">
+                <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-center gap-16">
+                    <div className="flex-1 text-center md:text-left space-y-10">
+                        <p className="text-xs font-black uppercase tracking-[0.4em] text-zinc-500">AuraStream Venue</p>
+                        <h2 className="text-4xl md:text-[5rem] font-black tracking-tight leading-[0.9]">
+                            Define the <br/>spirit of your <br/>venue with Aura.
+                        </h2>
+                        <p className="text-xl md:text-2xl font-medium opacity-70 leading-relaxed max-w-xl">
+                            Seamless, high-fidelity, and fully licensed music for your business. AuraStream Venue doesn&apos;t just play music; it scientifically optimizes your atmosphere with frequency tuning.
+                        </p>
+                        <div className="flex flex-wrap justify-center md:justify-start gap-6 pt-4">
+                            <Link href="/venue" className="px-10 py-5 bg-black text-white rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-2xl uppercase tracking-wider">
+                                Start for your business
+                            </Link>
+                            <button className="flex items-center gap-3 font-bold border-b-2 border-black/20 pb-1 hover:border-black transition-all uppercase text-sm tracking-widest">
+                                Explore enterprise solutions <ArrowRight size={20} />
+                            </button>
+                        </div>
+                    </div>
+                    <div className="flex-1 relative group w-full">
+                        {/* Soft Glow Background */}
+                        <div className="w-full aspect-video bg-blue-400/20 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 blur-[120px] opacity-60" />
+                        
+                        {/* Desktop Interface Mockup (Epidemic Playlist Style) */}
+                        <div className="relative w-full aspect-video bg-[#111] rounded-xl border border-white/10 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] overflow-hidden">
+                            <div className="p-6 h-full flex flex-col gap-4">
+                                <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 bg-zinc-800 rounded flex items-center justify-center">🍒</div>
+                                        <div className="space-y-1">
+                                            <div className="h-2 w-24 bg-white/20 rounded" />
+                                            <div className="h-1.5 w-48 bg-white/10 rounded" />
+                                        </div>
+                                    </div>
+                                    <div className="h-4 w-4 bg-violet-500 rounded-full" />
+                                </div>
+
+                                {/* Track List Mockup */}
+                                <div className="space-y-3 overflow-hidden">
+                                    {[1, 2, 3, 4, 5].map((i) => (
+                                        <div key={i} className="flex items-center gap-4 py-2 border-b border-white/5 opacity-80 hover:opacity-100 transition-opacity">
+                                            <div className="w-10 h-10 bg-zinc-800 rounded overflow-hidden" />
+                                            <div className="flex-1 space-y-2">
+                                                <div className="h-1.5 w-32 bg-white/20 rounded" />
+                                                <div className="h-1 w-20 bg-white/10 rounded" />
+                                            </div>
+                                            <div className="flex-1 hidden md:block">
+                                                <div className="h-4 w-full bg-white/5 rounded-full overflow-hidden flex items-center px-1">
+                                                    <div className="h-[2px] w-1/3 bg-violet-400 rounded-full" />
+                                                </div>
+                                            </div>
+                                            <div className="w-12 h-1.5 bg-white/10 rounded" />
+                                            <div className="flex gap-2">
+                                                <div className="w-4 h-4 bg-white/5 rounded" />
+                                                <div className="w-4 h-4 bg-white/5 rounded" />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Bottom Grid Mockup */}
+                                <div className="grid grid-cols-4 gap-3 mt-2">
+                                    {[1, 2, 4].map(i => (
+                                        <div key={i} className="aspect-square bg-zinc-900 rounded-lg border border-white/5 flex flex-col p-2 gap-2">
+                                            <div className="w-full h-2/3 bg-zinc-800 rounded" />
+                                            <div className="h-1 w-3/4 bg-white/10 rounded" />
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            {/* Gradient Overlay for Premium Look */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* 3. Categories Grid (Dark) */}
+            <section className="py-32 px-6 bg-[#111] text-white">
+                <div className="max-w-[1400px] mx-auto space-y-16">
+                    <h2 className="text-4xl md:text-7xl font-bold tracking-tight text-center md:text-left">
+                        A sound for everything.
+                    </h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {[
+                            { name: 'Ads, Promos & Trailers', img: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800' },
+                            { name: 'Vlogs', img: 'https://images.unsplash.com/photo-1533750516457-a7f992034fec?w=800' },
+                            { name: 'Cinematic', img: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=800' },
+                            { name: 'Travel', img: 'https://images.unsplash.com/photo-1500835595351-263d8137b6a9?w=800' },
+                            { name: 'Gaming', img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800' },
+                            { name: 'Tech', img: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800' },
+                            { name: 'Nature', img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800' },
+                            { name: 'Abstract', img: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=800' }
+                        ].map((cat, i) => (
+                            <div key={i} className="group relative aspect-square rounded-lg overflow-hidden cursor-pointer bg-zinc-900">
+                                <div 
+                                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                                    style={{ backgroundImage: `url(${cat.img})` }}
+                                />
+                                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors" />
+                                <div className="absolute bottom-6 left-6 right-6">
+                                    <span className="text-xl font-bold tracking-tight">{cat.name}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* 4. Aura Tailor / Custom Music (Studio Background) */}
+            <section className="relative py-48 px-6 overflow-hidden">
+                <div 
+                    className="absolute inset-0 bg-cover bg-center" 
+                    style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2600)' }} 
+                />
+                <div className="absolute inset-0 bg-black/40" />
+                
+                <div className="relative z-10 max-w-[1400px] mx-auto">
+                    <div className="max-w-xl bg-[#E996B8] p-12 md:p-16 rounded-sm shadow-2xl space-y-6 text-black">
+                        <p className="text-xs font-bold uppercase tracking-[0.2em]">Personalized Sound</p>
+                        <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-[1.1]">
+                            Aura Tailor: Music on Request.
+                        </h2>
+                        <p className="text-lg opacity-80 leading-relaxed">
+                            Need something truly unique? Our artists and AI ecosystem can craft custom tracks tailored to your specific project needs. Your vision, our sound.
+                        </p>
+                        <button className="flex items-center gap-2 font-bold border-b-2 border-black pb-1 group mt-4">
+                            Request custom music <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            {/* 5. Value Highlight (Pink) */}
+            <section className="py-32 px-6 bg-[#E996B8] text-black">
+                <div className="max-w-[1400px] mx-auto text-center space-y-12">
+                    <h2 className="text-5xl md:text-[8rem] font-bold tracking-tight leading-[0.9] mb-12">
+                        Discover what <br/>sound can do.
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-left max-w-5xl mx-auto pt-12 border-t border-black/10">
+                        <div className="space-y-4">
+                            <h3 className="text-2xl font-bold italic">Frequency Tuning</h3>
+                            <p className="opacity-70">Experience your favorite tracks in 432Hz or 528Hz for deeper connection and focus.</p>
+                        </div>
+                        <div className="space-y-4">
+                            <h3 className="text-2xl font-bold italic">Sonic Fingerprint</h3>
+                            <p className="opacity-70">Every track is uniquely watermarked to ensure 100% safety for your social channels.</p>
+                        </div>
+                        <div className="space-y-4">
+                            <h3 className="text-2xl font-bold italic">Universal License</h3>
+                            <p className="opacity-70">One simple license that covers all your creative needs, across any platform worldwide.</p>
+                        </div>
+                    </div>
+                    <Link href="/signup" className="inline-block mt-12 px-12 py-5 bg-black text-white rounded-full font-bold text-xl hover:scale-105 transition-transform shadow-xl">
+                        Create free account
                     </Link>
                 </div>
             </section>
 
-            <footer className="py-12 px-6 bg-black border-t border-zinc-900 text-sm text-gray-500 flex flex-col md:flex-row items-center justify-between gap-4">
-                <p>&copy; 2026 AuraStream. Inspired by Epidemic Sound.</p>
-                <div className="flex gap-6">
-                    <Link href="#" className="hover:text-white transition-colors">Terms</Link>
-                    <Link href="#" className="hover:text-white transition-colors">Privacy</Link>
-                    <Link href="#" className="hover:text-white transition-colors">Cookie Policy</Link>
+            {/* 6. Footer (AuraStream Branding) */}
+            <footer className="py-24 px-6 md:px-12 bg-[#F5F5F0] text-black border-t border-zinc-200">
+                <div className="max-w-[1400px] mx-auto">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-24">
+                        {/* Logo & Lang */}
+                        <div className="lg:col-span-4 space-y-8">
+                            <div className="flex items-center gap-2 text-black">
+                                <div className="h-6 w-6 bg-black rounded-full flex items-center justify-center">
+                                    <span className="text-white font-bold text-xs text-center">A</span>
+                                </div>
+                                <span className="text-2xl font-black tracking-tighter">AuraStream</span>
+                            </div>
+                            <div className="inline-flex items-center gap-2 px-4 py-2 border border-zinc-300 rounded text-sm font-medium cursor-pointer hover:bg-zinc-100 transition-colors">
+                                English (US) ▾
+                            </div>
+                        </div>
+
+                        {/* Links */}
+                        <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-12">
+                            <div className="space-y-6">
+                                <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Product</h4>
+                                <ul className="space-y-4 text-sm font-medium">
+                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Royalty-free music</Link></li>
+                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Sound effects</Link></li>
+                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">AI voiceovers</Link></li>
+                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Pricing</Link></li>
+                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Aura Tailor</Link></li>
+                                </ul>
+                            </div>
+                            <div className="space-y-6">
+                                <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Learn More</h4>
+                                <ul className="space-y-4 text-sm font-medium">
+                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">How it works</Link></li>
+                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Use cases</Link></li>
+                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">For businesses</Link></li>
+                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Enterprise</Link></li>
+                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Blog</Link></li>
+                                </ul>
+                            </div>
+                            <div className="space-y-6">
+                                <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">About</h4>
+                                <ul className="space-y-4 text-sm font-medium">
+                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Help center</Link></li>
+                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">About us</Link></li>
+                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Press</Link></li>
+                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Careers</Link></li>
+                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Contact</Link></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="pt-8 border-t border-zinc-200 flex flex-col md:flex-row items-center justify-between gap-6 text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
+                        <div className="flex gap-4">
+                            <p>Copyright © AuraStream</p>
+                            <Link href="#" className="hover:text-black transition-colors">Legal</Link>
+                            <Link href="#" className="hover:text-black transition-colors">Privacy</Link>
+                            <Link href="#" className="hover:text-black transition-colors">Cookie</Link>
+                        </div>
+                        <div className="flex gap-8 text-black opacity-40">
+                            <span>Instagram</span>
+                            <span>YouTube</span>
+                            <span>Twitter</span>
+                            <span>Facebook</span>
+                        </div>
+                    </div>
                 </div>
             </footer>
         </div>
