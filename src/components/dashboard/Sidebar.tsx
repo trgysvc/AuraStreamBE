@@ -1,15 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Home, Music, Mic2, User, Settings, LogOut } from 'lucide-react';
+import { createClient } from '@/lib/db/client';
 
 const SidebarItem = ({ icon: Icon, label, href, active }: { icon: any, label: string, href: string, active?: boolean }) => (
     <Link
         href={href}
         className={`flex items-center gap-4 px-6 py-3 transition-colors ${active
-                ? 'text-white bg-white/10 border-l-4 border-white'
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
+            ? 'text-white bg-white/10 border-l-4 border-white'
+            : 'text-gray-400 hover:text-white hover:bg-white/5'
             }`}
     >
         <Icon size={20} />
@@ -19,21 +20,23 @@ const SidebarItem = ({ icon: Icon, label, href, active }: { icon: any, label: st
 
 export default function Sidebar() {
     const pathname = usePathname();
+    const router = useRouter();
+    const supabase = createClient();
+
+    const handleLogout = async () => {
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+            console.error('Logout error:', error.message);
+        } else {
+            router.push('/');
+            router.refresh();
+        }
+    };
 
     return (
-        <aside className="w-64 bg-black border-r border-white/10 h-screen fixed left-0 top-0 flex flex-col z-40">
-            {/* Logo */}
-            <div className="p-6 mb-6">
-                <Link href="/" className="flex items-center gap-2">
-                    <div className="h-8 w-8 bg-white rounded-full flex items-center justify-center">
-                        <span className="text-black font-bold text-lg">E</span>
-                    </div>
-                    <span className="text-xl font-bold tracking-tight text-white">Epidemic</span>
-                </Link>
-            </div>
-
+        <aside className="w-64 bg-black border-r border-white/10 h-[calc(100vh-64px)] fixed left-0 top-16 flex flex-col z-40">
             {/* Navigation */}
-            <nav className="flex-1 space-y-1">
+            <nav className="flex-1 space-y-1 pt-4">
                 <SidebarItem
                     icon={Home}
                     label="Home"
@@ -64,13 +67,16 @@ export default function Sidebar() {
                 <SidebarItem
                     icon={Settings}
                     label="Account"
-                    href="/dashboard/account"
+                    href="/account"
                 />
             </nav>
 
             {/* User Profile / Logout */}
             <div className="p-4 border-t border-white/10">
-                <button className="flex items-center gap-3 w-full p-2 text-gray-400 hover:text-white transition-colors">
+                <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 w-full p-2 text-gray-400 hover:text-white transition-colors"
+                >
                     <LogOut size={18} />
                     <span className="text-sm font-medium">Log out</span>
                 </button>

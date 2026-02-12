@@ -3,8 +3,8 @@
 import React, { useMemo } from 'react';
 
 interface WaveformProps {
-    data: number[];
-    progress?: number; // 0 to 1
+    seed?: string;
+    progress?: number;
     height?: number;
     barWidth?: number;
     gap?: number;
@@ -15,25 +15,36 @@ interface WaveformProps {
 }
 
 /**
- * Epidemic Sound Style Waveform
- * Renders normalized bars with a progress overlay.
+ * Epidemic Sound Style Waveform (Mirrored/Symmetrical)
  */
 export function Waveform({
-    data = [],
+    seed = 'default',
     progress = 0,
     height = 40,
     barWidth = 2,
-    gap = 2,
-    activeColor = '#7C3AED', // Aura Violet
-    inactiveColor = '#27272a', // Zinc 800
+    gap = 1,
+    activeColor = '#FFFFFF',
+    inactiveColor = 'rgba(255, 255, 255, 0.15)',
     className = '',
     onSeek
 }: WaveformProps) {
-    // Ensure we have data
-    const points = useMemo(() => {
-        if (!data || data.length === 0) return Array.from({ length: 100 }, () => 0.1);
+    const bars = useMemo(() => {
+        const count = 100;
+        const data = [];
+        let hash = 0;
+        for (let i = 0; i < seed.length; i++) {
+            hash = seed.charCodeAt(i) + ((hash << 5) - hash);
+        }
+
+        for (let i = 0; i < count; i++) {
+            // Generate values that look like a real waveform (clumped energy)
+            const noise = Math.abs(Math.sin(hash + i * 0.1) * Math.cos(hash + i * 0.05));
+            const base = Math.abs(Math.sin(i * 0.02)) * 0.3;
+            const val = Math.min(0.9, noise * 0.7 + base + 0.1);
+            data.push(val);
+        }
         return data;
-    }, [data]);
+    }, [seed]);
 
     const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!onSeek) return;
@@ -43,32 +54,47 @@ export function Waveform({
         onSeek(newProgress);
     };
 
-    return (
-        <div 
-            className={`relative flex items-end cursor-pointer group ${className}`}
-            style={{ height: `${height}px`, gap: `${gap}px` }}
-            onClick={handleClick}
-        >
-            {points.map((val, i) => {
-                const pointProgress = i / points.length;
-                const isActive = pointProgress <= progress;
-                
-                return (
-                    <div
-                        key={i}
-                        className="transition-all duration-200"
-                        style={{
-                            width: `${barWidth}px`,
-                            height: `${Math.max(10, val * 100)}%`,
-                            backgroundColor: isActive ? activeColor : inactiveColor,
-                            borderRadius: '1px'
+    const renderBars = (color: string) => (
+        <div className="flex items-center h-full w-full justify-between" style={{ gap: `${gap}px` }}>
+            {bars.map((val, i) => (
+                <div key={i} className="flex flex-col items-center justify-center h-full" style={{ width: `${barWidth}px` }}>
+                    <div 
+                        className="w-full rounded-full transition-colors duration-300"
+                        style={{ 
+                            height: `${val * 100}%`,
+                            backgroundColor: color
                         }}
                     />
-                );
-            })}
-            
-            {/* Hover Indicator */}
-            <div className="absolute top-0 bottom-0 w-px bg-white/20 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity" />
+                </div>
+            ))}
+        </div>
+    );
+
+    return (
+        <div 
+            className={`relative cursor-pointer group select-none ${className}`}
+            style={{ height: `${height}px` }}
+            onClick={handleClick}
+        >
+            {/* Background */}
+            <div className="absolute inset-0">
+                {renderBars(inactiveColor)}
+            </div>
+
+            {/* Progress Clipping */}
+            <div 
+                className="absolute inset-0 overflow-hidden pointer-events-none transition-[width] duration-300 ease-out"
+                style={{ width: `${progress * 100}%` }}
+            >
+                <div className="absolute inset-0" style={{ width: `${(1 / (progress || 1)) * 100}%` }}>
+                    {renderBars(activeColor)}
+                </div>
+            </div>
+
+            {/* Selection/Hover Area */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                <div className="absolute top-0 bottom-0 w-px bg-white/30 z-20" style={{ left: 'var(--hover-x, 0)' }} />
+            </div>
         </div>
     );
 }

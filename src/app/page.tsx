@@ -1,7 +1,17 @@
 import Link from 'next/link';
 import { Search, ArrowRight, Menu, X } from 'lucide-react';
+import { Footer } from '@/components/layout/Footer';
+import { createClient } from '@/lib/db/server';
+import { redirect } from 'next/navigation';
 
-export default function LandingPage() {
+export default async function LandingPage() {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+        redirect('/dashboard');
+    }
+
     return (
         <div className="min-h-screen bg-[#111111] text-white font-sans selection:bg-white selection:text-black">
             {/* Header */}
@@ -26,12 +36,25 @@ export default function LandingPage() {
                 </div>
 
                 <div className="flex items-center gap-6">
-                    <Link href="/login" className="hidden sm:block text-sm font-bold hover:text-gray-300 transition-colors">
-                        Log in
-                    </Link>
-                    <Link href="/signup" className="h-10 px-6 flex items-center justify-center rounded-full bg-white text-black text-sm font-bold hover:bg-gray-200 transition-colors">
-                        Start free trial
-                    </Link>
+                    {!user ? (
+                        <>
+                            <Link href="/login" className="hidden sm:block text-sm font-bold hover:text-gray-300 transition-colors">
+                                Log in
+                            </Link>
+                            <Link href="/signup" className="h-10 px-6 flex items-center justify-center rounded-full bg-white text-black text-sm font-bold hover:bg-gray-200 transition-colors">
+                                Start free trial
+                            </Link>
+                        </>
+                    ) : (
+                        <>
+                            <Link href="/dashboard" className="hidden sm:block text-sm font-bold hover:text-gray-300 transition-colors">
+                                Dashboard
+                            </Link>
+                            <Link href="/account" className="h-10 px-6 flex items-center justify-center rounded-full bg-white text-black text-sm font-bold hover:bg-gray-200 transition-colors">
+                                Account
+                            </Link>
+                        </>
+                    )}
                     <button className="lg:hidden text-white">
                         <Menu size={24} />
                     </button>
@@ -89,7 +112,7 @@ export default function LandingPage() {
                     <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6">
                         <div className="space-y-4">
                             <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white uppercase italic">
-                                Music for <br/>every story.
+                                Music for <br />every story.
                             </h2>
                             <p className="text-xl text-zinc-500 font-medium">Find the perfect track for any platform.</p>
                         </div>
@@ -112,7 +135,7 @@ export default function LandingPage() {
                                 />
                                 <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors duration-500" />
                                 <div className="absolute inset-0 border border-white/5 group-hover:border-white/20 transition-colors" />
-                                
+
                                 <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 via-black/40 to-transparent translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
                                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-2">{item.subtitle}</p>
                                     <h3 className="text-3xl font-black text-white italic uppercase leading-none">{item.title}</h3>
@@ -178,7 +201,7 @@ export default function LandingPage() {
                     <div className="flex-1 text-center md:text-left space-y-10">
                         <p className="text-xs font-black uppercase tracking-[0.4em] text-zinc-500">AuraStream Venue</p>
                         <h2 className="text-4xl md:text-[5rem] font-black tracking-tight leading-[0.9]">
-                            Define the <br/>spirit of your <br/>venue with Aura.
+                            Define the <br />spirit of your <br />venue with Aura.
                         </h2>
                         <p className="text-xl md:text-2xl font-medium opacity-70 leading-relaxed max-w-xl">
                             Seamless, high-fidelity, and fully licensed music for your business. AuraStream Venue doesn&apos;t just play music; it scientifically optimizes your atmosphere with frequency tuning.
@@ -195,7 +218,7 @@ export default function LandingPage() {
                     <div className="flex-1 relative group w-full">
                         {/* Soft Glow Background */}
                         <div className="w-full aspect-video bg-blue-400/20 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 blur-[120px] opacity-60" />
-                        
+
                         {/* Desktop Interface Mockup (Epidemic Playlist Style) */}
                         <div className="relative w-full aspect-video bg-[#111] rounded-xl border border-white/10 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] overflow-hidden">
                             <div className="p-6 h-full flex flex-col gap-4">
@@ -243,7 +266,7 @@ export default function LandingPage() {
                                     ))}
                                 </div>
                             </div>
-                            
+
                             {/* Gradient Overlay for Premium Look */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
                         </div>
@@ -269,7 +292,7 @@ export default function LandingPage() {
                             { name: 'Abstract', img: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=800' }
                         ].map((cat, i) => (
                             <div key={i} className="group relative aspect-square rounded-lg overflow-hidden cursor-pointer bg-zinc-900">
-                                <div 
+                                <div
                                     className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
                                     style={{ backgroundImage: `url(${cat.img})` }}
                                 />
@@ -285,12 +308,12 @@ export default function LandingPage() {
 
             {/* 4. Aura Tailor / Custom Music (Studio Background) */}
             <section className="relative py-48 px-6 overflow-hidden">
-                <div 
-                    className="absolute inset-0 bg-cover bg-center" 
-                    style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2600)' }} 
+                <div
+                    className="absolute inset-0 bg-cover bg-center"
+                    style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2600)' }}
                 />
                 <div className="absolute inset-0 bg-black/40" />
-                
+
                 <div className="relative z-10 max-w-[1400px] mx-auto">
                     <div className="max-w-xl bg-[#E996B8] p-12 md:p-16 rounded-sm shadow-2xl space-y-6 text-black">
                         <p className="text-xs font-bold uppercase tracking-[0.2em]">Personalized Sound</p>
@@ -311,7 +334,7 @@ export default function LandingPage() {
             <section className="py-32 px-6 bg-[#E996B8] text-black">
                 <div className="max-w-[1400px] mx-auto text-center space-y-12">
                     <h2 className="text-5xl md:text-[8rem] font-bold tracking-tight leading-[0.9] mb-12">
-                        Discover what <br/>sound can do.
+                        Discover what <br />sound can do.
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-left max-w-5xl mx-auto pt-12 border-t border-black/10">
                         <div className="space-y-4">
@@ -333,74 +356,7 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            {/* 6. Footer (AuraStream Branding) */}
-            <footer className="py-24 px-6 md:px-12 bg-[#F5F5F0] text-black border-t border-zinc-200">
-                <div className="max-w-[1400px] mx-auto">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-24">
-                        {/* Logo & Lang */}
-                        <div className="lg:col-span-4 space-y-8">
-                            <div className="flex items-center gap-2 text-black">
-                                <div className="h-6 w-6 bg-black rounded-full flex items-center justify-center">
-                                    <span className="text-white font-bold text-xs text-center">A</span>
-                                </div>
-                                <span className="text-2xl font-black tracking-tighter">AuraStream</span>
-                            </div>
-                            <div className="inline-flex items-center gap-2 px-4 py-2 border border-zinc-300 rounded text-sm font-medium cursor-pointer hover:bg-zinc-100 transition-colors">
-                                English (US) ▾
-                            </div>
-                        </div>
-
-                        {/* Links */}
-                        <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-12">
-                            <div className="space-y-6">
-                                <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Product</h4>
-                                <ul className="space-y-4 text-sm font-medium">
-                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Royalty-free music</Link></li>
-                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Sound effects</Link></li>
-                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">AI voiceovers</Link></li>
-                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Pricing</Link></li>
-                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Aura Tailor</Link></li>
-                                </ul>
-                            </div>
-                            <div className="space-y-6">
-                                <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Learn More</h4>
-                                <ul className="space-y-4 text-sm font-medium">
-                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">How it works</Link></li>
-                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Use cases</Link></li>
-                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">For businesses</Link></li>
-                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Enterprise</Link></li>
-                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Blog</Link></li>
-                                </ul>
-                            </div>
-                            <div className="space-y-6">
-                                <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">About</h4>
-                                <ul className="space-y-4 text-sm font-medium">
-                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Help center</Link></li>
-                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">About us</Link></li>
-                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Press</Link></li>
-                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Careers</Link></li>
-                                    <li><Link href="#" className="hover:opacity-50 transition-opacity">Contact</Link></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div className="pt-8 border-t border-zinc-200 flex flex-col md:flex-row items-center justify-between gap-6 text-[11px] font-bold text-zinc-400 uppercase tracking-wider">
-                        <div className="flex gap-4">
-                            <p>Copyright © AuraStream</p>
-                            <Link href="#" className="hover:text-black transition-colors">Legal</Link>
-                            <Link href="#" className="hover:text-black transition-colors">Privacy</Link>
-                            <Link href="#" className="hover:text-black transition-colors">Cookie</Link>
-                        </div>
-                        <div className="flex gap-8 text-black opacity-40">
-                            <span>Instagram</span>
-                            <span>YouTube</span>
-                            <span>Twitter</span>
-                            <span>Facebook</span>
-                        </div>
-                    </div>
-                </div>
-            </footer>
+            <Footer />
         </div>
     );
 }

@@ -6,6 +6,12 @@
 create extension if not exists "uuid-ossp";
 create extension if not exists "vector";
 
+-- Basic Schema Permissions
+grant usage on schema public to anon, authenticated;
+alter default privileges in schema public grant all on tables to postgres, service_role;
+alter default privileges in schema public grant all on sequences to postgres, service_role;
+alter default privileges in schema public grant all on functions to postgres, service_role;
+
 --------------------------------------------------------------------------------
 -- CLEANUP (For Idempotency)
 --------------------------------------------------------------------------------
@@ -18,6 +24,8 @@ drop type if exists tuning_f cascade;
 drop type if exists license_usage_type cascade;
 drop type if exists verification_status cascade;
 drop type if exists request_status cascade;
+drop type if exists plan_type cascade;
+drop type if exists plan_status cascade;
 
 -- Drop tables if they exist to allow clean re-runs
 drop table if exists public.track_reviews cascade;
@@ -29,6 +37,8 @@ drop table if exists public.licenses cascade;
 drop table if exists public.track_files cascade;
 drop table if exists public.tracks cascade;
 drop table if exists public.venues cascade;
+drop table if exists public.billing_history cascade;
+drop table if exists public.tenants cascade;
 drop table if exists public.profiles cascade;
 
 --------------------------------------------------------------------------------
@@ -43,6 +53,8 @@ create type tuning_f as enum ('440hz', '432hz', '528hz');
 create type license_usage_type as enum ('youtube', 'podcast', 'advertisement', 'film', 'social_media');
 create type verification_status as enum ('pending', 'verified', 'rejected');
 create type request_status as enum ('pending', 'processing', 'review', 'completed', 'rejected');
+create type plan_type as enum ('free', 'pro', 'business', 'enterprise');
+create type plan_status as enum ('active', 'past_due', 'canceled', 'trialing');
 
 --------------------------------------------------------------------------------
 -- 1. PROFILES & USERS
@@ -57,6 +69,7 @@ create table public.profiles (
   youtube_channel_id text,
   full_name text,
   avatar_url text,
+  tenant_id uuid, -- Will be set after tenants table creation
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
@@ -64,9 +77,9 @@ create table public.profiles (
 -- RLS: Profiles
 alter table public.profiles enable row level security;
 
-create policy "Public profiles are viewable by everyone."
-  on profiles for select
-  using ( true );
+create policy "Users can view own profile"
+  on public.profiles for select
+  using ( auth.uid() = id );
 
 create policy "Users can insert their own profile."
   on profiles for insert
@@ -77,12 +90,65 @@ create policy "Users can update own profile."
   using ( auth.uid() = id );
 
 --------------------------------------------------------------------------------
+-- 1.1 TENANTS (COMPANIES)
+--------------------------------------------------------------------------------
+
+create table public.tenants (
+  id uuid default uuid_generate_v4() primary key,
+  owner_id uuid references public.profiles(id) on delete cascade not null unique,
+  
+  -- Corporate Identity
+  legal_name text, -- Ticari Ünvan
+  display_name text, -- Marka Adı
+  industry text, -- Sektör
+  website text,
+  
+  -- Billing & Tax
+  tax_office text,
+  vkn text, -- Vergi No / TCKN
+  billing_address text,
+  invoice_email text,
+  phone text,
+  authorized_person_name text,
+  authorized_person_phone text,
+  
+  -- Branding & Player Settings
+  logo_url text,
+  brand_color text default '#EC4899',
+  volume_limit integer default 100,
+  
+  -- Subscription State
+  current_plan plan_type default 'free',
+  plan_status plan_status default 'trialing',
+  trial_ends_at timestamptz,
+  subscription_id text, -- Stripe Subscription ID
+  
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+-- RLS: Tenants
+alter table public.tenants enable row level security;
+
+create policy "Users can view their own tenant"
+  on public.tenants for select
+  using (auth.uid() = owner_id);
+
+create policy "Users can update their own tenant"
+  on public.tenants for update
+  using (auth.uid() = owner_id);
+
+-- Link profiles back to tenants now that it exists
+alter table public.profiles add constraint fk_profiles_tenant foreign key (tenant_id) references public.tenants(id);
+
+--------------------------------------------------------------------------------
 -- 2. VENUES (B2B)
 --------------------------------------------------------------------------------
 
 create table public.venues (
   id uuid default uuid_generate_v4() primary key,
   owner_id uuid references public.profiles(id) not null,
+  tenant_id uuid references public.tenants(id),
   business_name text not null,
   address_line1 text,
   address_line2 text,
@@ -314,6 +380,37 @@ create policy "Admins can manage reviews"
   );
 
 --------------------------------------------------------------------------------
+-- 10. BILLING HISTORY
+--------------------------------------------------------------------------------
+
+create table public.billing_history (
+  id uuid default uuid_generate_v4() primary key,
+  tenant_id uuid references public.tenants(id) on delete cascade,
+  
+  plan_id text,
+  amount decimal(10,2),
+  currency text default 'USD',
+  status text, -- succeeded, failed
+  
+  period_start timestamptz,
+  period_end timestamptz,
+  invoice_pdf_url text,
+  
+  created_at timestamptz default now()
+);
+
+-- RLS: Billing History
+alter table public.billing_history enable row level security;
+
+create policy "Users can view their own billing history"
+  on public.billing_history for select
+  using (exists (
+    select 1 from public.tenants 
+    where public.tenants.id = public.billing_history.tenant_id 
+    and public.tenants.owner_id = auth.uid()
+  ));
+
+--------------------------------------------------------------------------------
 -- INDEXES
 --------------------------------------------------------------------------------
 
@@ -337,6 +434,52 @@ begin
 end;
 $$ language plpgsql;
 
+-- Create a function to handle new user registration
+create or replace function public.handle_new_user()
+returns trigger
+language plpgsql
+security definer set search_path = public
+as $$
+declare
+  new_tenant_id uuid;
+begin
+  -- 1. Create a Default Tenant for the User
+  insert into public.tenants (owner_id, display_name, current_plan, plan_status)
+  values (
+    new.id,
+    coalesce(new.raw_user_meta_data->>'full_name', 'My Workspace'),
+    'free',
+    'active'
+  )
+  returning id into new_tenant_id;
+
+  -- 2. Create the Profile linked to the new tenant
+  insert into public.profiles (id, email, full_name, avatar_url, tenant_id)
+  values (
+    new.id,
+    new.email,
+    new.raw_user_meta_data->>'full_name',
+    new.raw_user_meta_data->>'avatar_url',
+    new_tenant_id
+  );
+  
+  return new;
+end;
+$$;
+
 create trigger update_profiles_modtime before update on profiles for each row execute procedure update_updated_at();
+create trigger update_tenants_modtime before update on tenants for each row execute procedure update_updated_at();
 create trigger update_venues_modtime before update on venues for each row execute procedure update_updated_at();
 create trigger update_tracks_modtime before update on tracks for each row execute procedure update_updated_at();
+
+-- Trigger the function every time a user is created
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
+
+-- Performance Grants
+grant select, insert, update, delete on all tables in schema public to authenticated;
+grant select on all tables in schema public to anon;
+grant usage on all sequences in schema public to authenticated;
+
+-- All RLS policies are defined contextually above.

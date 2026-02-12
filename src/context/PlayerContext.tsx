@@ -53,13 +53,14 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         const fetchTier = async () => {
             try {
                 const supabase = createClient();
-                const { data: { user } } = await supabase.auth.getUser();
-                if (user) {
-                    const { data: profile } = await supabase.from('profiles').select('subscription_tier').eq('id', user.id).single();
+                const { data: { session } } = await supabase.auth.getSession();
+
+                if (session?.user) {
+                    const { data: profile } = await supabase.from('profiles').select('subscription_tier').eq('id', session.user.id).single();
                     if (profile) setTier(profile.subscription_tier as Tier);
                 }
             } catch (e) {
-                console.error("Failed to fetch user tier:", e);
+                // Silent fail for unauthenticated users
             }
         };
         fetchTier();
@@ -128,7 +129,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             alert('Tuning features are only available for Pro tiers and above.');
             return;
         }
-        setIsAutoTuning(false); 
+        setIsAutoTuning(false);
         applyTuning(newTuning);
     };
 
@@ -138,7 +139,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
         if (currentTrack && audioRef.current) {
             let nextSrc = currentTrack.availableTunings?.[newTuning] || currentTrack.src;
-            
+
             if (tier === 'business' || tier === 'enterprise') {
                 const cachedUrl = await OfflineManager.getCachedTrack(`${currentTrack.id}-${newTuning}`);
                 if (cachedUrl) nextSrc = cachedUrl;
@@ -150,7 +151,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                 audioRef.current.src = nextSrc;
                 audioRef.current.load();
                 audioRef.current.currentTime = savedTime;
-                if (wasPlaying) audioRef.current.play().catch(() => {});
+                if (wasPlaying) audioRef.current.play().catch(() => { });
             }
         }
     };
@@ -177,9 +178,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                 audioRef.current.play().then(() => {
                     setIsPlaying(true);
                     setCurrentTrack(track);
-                    
+
                     if (tier === 'business' || tier === 'enterprise') {
-                        OfflineManager.cacheTrack(`${track.id}-${targetTuning}`, playUrl!).catch(() => {});
+                        OfflineManager.cacheTrack(`${track.id}-${targetTuning}`, playUrl!).catch(() => { });
                     }
                 }).catch(() => {
                     setCurrentTrack(track);
@@ -196,7 +197,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                 audioRef.current.pause();
                 setIsPlaying(false);
             } else {
-                audioRef.current.play().catch(() => {});
+                audioRef.current.play().catch(() => { });
                 setIsPlaying(true);
             }
         }
@@ -211,6 +212,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             audioRef.current.pause();
             audioRef.current.currentTime = 0;
             setIsPlaying(false);
+            setCurrentTrack(null);
         }
     };
 

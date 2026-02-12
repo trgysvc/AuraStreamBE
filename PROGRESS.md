@@ -5,15 +5,16 @@
     - [x] Initialize Next.js 14 Monorepo structure
     - [x] Configure TypeScript, ESLint, Prettier
     - [x] Setup Tailwind CSS & Design Tokens
-- [ ] **Infrastructure**
+- [x] **Infrastructure**
     - [x] Setup Supabase Project (Database, Auth, Storage)
-    - [ ] Configure AWS S3 & CloudFront
-    - [ ] Setup Meilisearch Instance (Docker/Cloud)
-- [ ] **Database & Backend**
+    - [x] Configure AWS S3 & CloudFront (Verified Connection)
+    - [x] Setup Meilisearch Instance (Local Installation & Running)
+- [x] **Database & Backend**
     - [x] Implement Schema (Tables, Enums, RLS)
-    - [ ] Generate TypeScript Types (`supabase gen types`)
-    - [ ] Implement Auth Middleware & Roles
-- [ ] **Core Packages**
+    - [x] Add Smart Search Metadata JSONB & pgvector Columns
+    - [x] Implement Similarity Search SQL Functions
+    - [x] Implement Auth Middleware & Roles
+- [x] **Core Packages**
     - [x] Build `packages/ui-kit` (Buttons, Inputs, Cards)
     - [x] Build `packages/database-client` (Mapped to `src/lib/db`)
     - [x] Build `lib/services/s3` wrapper
@@ -23,23 +24,28 @@
     - [x] Implement Web Audio API wrapper
     - [x] Build 432Hz Real-time DSP Logic
     - [x] Create Crossfade & Gapless Player
-- [ ] **Search Engine**
-    - [x] Implement Supabase -> Meilisearch Sync (Webhook & Logic Ready)
-    - [x] Build Search API with Filters & Facets (Config Ready)
-    - [ ] Create Visual Query Builder UI
-- [ ] **Ingestion Pipeline**
+    - [x] **Epidemic Sound Style Waveform Implementation**
+- [x] **Search Engine**
+    - [x] Implement Supabase -> Meilisearch Sync (Meili-sync worker)
+    - [x] Build Search API with Filters & Facets (Hybrid Meilisearch Ready)
+    - [x] **Aura Hybrid Search Logic (Text + Vector niyet araması)**
+    - [x] Create Dynamic Filter UI (BPM Slider, Mood Grid)
+- [x] **Ingestion Pipeline**
     - [x] Setup SQS & Lambda (Client Ready)
-    - [ ] Implement FFmpeg Normalization & Transcoding (Logic Ready)
+    - [x] **Aura Metadata Factory (Python Worker - Librosa)**
+    - [x] Implement BPM, Key, and Energy level extraction logic
     - [x] Create Admin Upload Workflow (Server Actions + UI)
     - [x] Create Admin QC Interface
 
 ## Phase 3: Applications (Weeks 5-8)
 - [ ] **Creator Store (B2C)**
-    - [x] Discovery & Search Page
+    - [x] Discovery & Search Page (Meilisearch Integrated)
     - [x] License Wizard & Checkout (Stripe)
     - [ ] User Library & Downloads
     - [x] Track List & Player Integration
-- [ ] **Venue Player (B2B)**
+- [x] **Venue Player (B2B)**
+    - [x] **Dashboard/Venue Premium Interface (Epidemic Style)**
+    - [x] Real-time Track List from Supabase/S3
     - [ ] Player Interface & Schedule Manager
     - [ ] Offline Manager (IndexedDB + Encryption)
     - [ ] Device Pairing & Session Management

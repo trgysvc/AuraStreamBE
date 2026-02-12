@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
 
 export default function LoginPage() {
+    console.log('LoginPage mounted');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
@@ -34,8 +35,29 @@ export default function LoginPage() {
     };
 
     const handleSocialLogin = async (provider: 'google' | 'apple') => {
-        // Placeholder for social login logic
-        console.log(`Continue with ${provider}`);
+        console.log(`Social login trigger: ${provider}`);
+        setLoading(true);
+        setError(null);
+        
+        try {
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider,
+                options: {
+                    redirectTo: `${window.location.origin}/auth/v1/callback`,
+                },
+            });
+
+            if (error) throw error;
+            
+            if (data?.url) {
+                console.log('Redirecting to provider...');
+                window.location.href = data.url;
+            }
+        } catch (error: any) {
+            console.error('Login error details:', error);
+            setError(error.message || 'Authentication failed');
+            setLoading(false);
+        }
     };
 
     return (
@@ -43,8 +65,7 @@ export default function LoginPage() {
             {/* Left Section: Atmospheric Imagery */}
             <div className="hidden lg:flex w-1/2 bg-black relative overflow-hidden items-center justify-center">
                 <div className="absolute inset-0 bg-gradient-to-br from-gray-900 to-black z-0" />
-                <div className="absolute inset-0 bg-[url('/login-bg.png')] bg-cover bg-center opacity-50 mix-blend-overlay" />
-                {/* Fallback abstract visual if image fails */}
+                {/* Background effect using CSS only since image is missing */}
                 <div className="absolute inset-0 overflow-hidden opacity-30">
                     <div className="absolute -top-[20%] -left-[10%] w-[70vw] h-[70vw] rounded-full bg-gradient-to-r from-purple-900/20 to-blue-900/20 blur-3xl animate-pulse" />
                     <div className="absolute top-[40%] -right-[10%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-r from-blue-900/20 to-gray-900/20 blur-3xl" />
@@ -155,6 +176,7 @@ export default function LoginPage() {
 
                     <div className="space-y-3">
                         <button
+                            type="button"
                             onClick={() => handleSocialLogin('google')}
                             className="w-full flex items-center justify-center px-4 py-2 border border-gray-200 rounded-full shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-colors"
                         >
@@ -170,6 +192,7 @@ export default function LoginPage() {
                         </button>
 
                         <button
+                            type="button"
                             onClick={() => handleSocialLogin('apple')}
                             className="w-full flex items-center justify-center px-4 py-2 border border-gray-200 rounded-full shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-colors"
                         >

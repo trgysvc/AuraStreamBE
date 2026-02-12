@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { usePlayer } from '@/context/PlayerContext';
-import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat, Shuffle, Settings2 } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat, Shuffle, Settings2, X } from 'lucide-react';
 
 const formatTime = (time: number) => {
     if (!time || isNaN(time)) return '0:00';
@@ -12,11 +12,11 @@ const formatTime = (time: number) => {
 };
 
 export function GlobalPlayer() {
-    const { 
-        currentTrack, isPlaying, togglePlay, duration, currentTime, 
-        seek, analyser, tuning, setTuning, isAutoTuning, setAutoTuning, tier 
+    const {
+        currentTrack, isPlaying, togglePlay, duration, currentTime,
+        seek, analyser, tuning, setTuning, isAutoTuning, setAutoTuning, tier, stop
     } = usePlayer();
-    
+
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const animationRef = useRef<number>();
 
@@ -34,7 +34,7 @@ export function GlobalPlayer() {
             analyser.getByteFrequencyData(dataArray);
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
+
             // Draw visualizer with Aura Violet
             const bars = 30;
             const barWidth = (canvas.width / bars) - 1;
@@ -63,7 +63,7 @@ export function GlobalPlayer() {
         <div className="fixed bottom-0 left-0 right-0 h-24 glass-panel z-[100] border-t border-white/5 flex flex-col">
             {/* Minimal Scrub Bar */}
             <div className="h-1 w-full bg-white/5 cursor-pointer relative group" onClick={handleProgressClick}>
-                <div 
+                <div
                     className="h-full bg-gradient-to-r from-violet-500 to-cyan-500 relative transition-all"
                     style={{ width: `${progressPercent}%` }}
                 >
@@ -90,7 +90,7 @@ export function GlobalPlayer() {
                     <div className="flex items-center gap-8 text-zinc-400">
                         <Shuffle size={18} className="hover:text-white cursor-pointer transition-colors" />
                         <SkipBack size={24} className="hover:text-white cursor-pointer transition-colors fill-current" />
-                        <button 
+                        <button
                             onClick={togglePlay}
                             className="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)]"
                         >
@@ -110,7 +110,7 @@ export function GlobalPlayer() {
                 <div className="w-72 flex justify-end items-center gap-6">
                     {/* Frequency Switcher */}
                     <div className="flex items-center bg-black/40 rounded-full p-1 border border-white/5">
-                        <button 
+                        <button
                             onClick={() => setAutoTuning(!isAutoTuning)}
                             className={`text-[9px] font-black px-2 py-1.5 rounded-full transition-all ${isAutoTuning ? 'bg-indigo-600 text-white' : 'text-zinc-600 hover:text-zinc-400'}`}
                         >
@@ -134,6 +134,13 @@ export function GlobalPlayer() {
                     <div className="flex items-center gap-3 text-zinc-500">
                         <Volume2 size={20} className="hover:text-white cursor-pointer transition-colors" />
                         <Settings2 size={20} className="hover:text-white cursor-pointer transition-colors" />
+                        <button
+                            onClick={stop}
+                            className="bg-white/5 p-2 rounded-full hover:bg-white/10 text-zinc-400 hover:text-white transition-all ml-2"
+                            title="Close Player"
+                        >
+                            <X size={18} />
+                        </button>
                     </div>
                 </div>
             </div>

@@ -30,21 +30,40 @@ export async function POST(req: Request) {
     if (event.type === 'customer.subscription.created' || event.type === 'customer.subscription.updated') {
         const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
-        
-        // Extract tier from subscription metadata or price ID
-        // In production, you'd map price_id -> tier
-        const tier = (subscription.metadata.tier as any) || 'pro'; 
+
+        const tier = (subscription.metadata.tier as any) || 'pro';
+        const status = subscription.status as string;
 
         const supabase = createAdminClient();
+
+        // 1. Update Profile
         await supabase
             .from('profiles')
-            .update({ 
+            .update({
                 subscription_tier: tier,
                 stripe_customer_id: customerId
             })
             .eq('stripe_customer_id', customerId);
-            
-        console.log(`👤 User subscription updated: ${customerId} -> ${tier}`);
+
+        // 2. Update Tenant (Link via owner's profile)
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('tenant_id')
+            .eq('stripe_customer_id', customerId)
+            .single();
+
+        if (profile?.tenant_id) {
+            await supabase
+                .from('tenants')
+                .update({
+                    current_plan: tier,
+                    plan_status: status,
+                    subscription_id: subscription.id
+                })
+                .eq('id', profile.tenant_id);
+        }
+
+        console.log(`👤 User & Tenant subscription updated: ${customerId} -> ${tier} (${status})`);
     }
 
     if (event.type === 'customer.subscription.deleted') {
@@ -52,12 +71,31 @@ export async function POST(req: Request) {
         const customerId = subscription.customer as string;
 
         const supabase = createAdminClient();
+
+        // Update Profile
         await supabase
             .from('profiles')
             .update({ subscription_tier: 'free' })
             .eq('stripe_customer_id', customerId);
 
-        console.log(`📉 User subscription cancelled: ${customerId}`);
+        // Update Tenant
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('tenant_id')
+            .eq('stripe_customer_id', customerId)
+            .single();
+
+        if (profile?.tenant_id) {
+            await supabase
+                .from('tenants')
+                .update({
+                    current_plan: 'free',
+                    plan_status: 'canceled'
+                })
+                .eq('id', profile.tenant_id);
+        }
+
+        console.log(`📉 User & Tenant subscription cancelled: ${customerId}`);
     }
 
     // Legacy support for checkout sessions (initial purchase)
