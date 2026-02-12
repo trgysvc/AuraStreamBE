@@ -11,6 +11,18 @@ const formatTime = (time: number) => {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 };
 
+const SimpleTooltip = ({ children, text }: { children: React.ReactNode; text: string }) => {
+    return (
+        <div className="group/tooltip relative flex items-center justify-center">
+            {children}
+            <div className="absolute bottom-full mb-2 hidden group-hover/tooltip:block whitespace-nowrap rounded bg-zinc-800 px-2 py-1 text-xs text-white shadow-lg">
+                {text}
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-800" />
+            </div>
+        </div>
+    );
+};
+
 export function GlobalPlayer() {
     const {
         currentTrack, isPlaying, togglePlay, duration, currentTime,
@@ -67,13 +79,12 @@ export function GlobalPlayer() {
     const isVisible = !!currentTrack && (isPlaying || currentTime > 0);
 
     return (
-        <div 
+        <div
             id="global-player-panel"
-            className={`fixed bottom-0 left-0 right-0 h-24 glass-panel z-[100] border-t border-white/5 flex flex-col transition-all duration-700 ease-in-out ${
-                isVisible
-                ? 'translate-y-0 opacity-100 visible pointer-events-auto' 
-                : 'translate-y-full opacity-0 invisible pointer-events-none'
-            }`}
+            className={`fixed bottom-0 left-0 right-0 h-24 bg-[#121212] z-[100] border-t border-white/5 flex flex-col transition-all duration-700 ease-in-out ${isVisible
+                    ? 'translate-y-0 opacity-100 visible pointer-events-auto'
+                    : 'translate-y-full opacity-0 invisible pointer-events-none'
+                }`}
         >
             {/* Minimal Scrub Bar - Top */}
             <div className="h-0.5 w-full bg-white/5 cursor-pointer relative group" onClick={handleProgressClick}>
@@ -101,21 +112,35 @@ export function GlobalPlayer() {
                 {/* Center: Controls */}
                 <div className="flex-1 flex flex-col items-center gap-2">
                     <div className="flex items-center gap-8 text-zinc-400">
-                        <Shuffle size={18} className="hover:text-white cursor-pointer transition-colors" />
-                        <SkipBack size={24} className="hover:text-white cursor-pointer transition-colors fill-current" />
-                        <button
-                            onClick={togglePlay}
-                            className="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)]"
-                        >
-                            {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
-                        </button>
-                        <SkipForward size={24} className="hover:text-white cursor-pointer transition-colors fill-current" />
-                        <Repeat size={18} className="hover:text-white cursor-pointer transition-colors" />
+                        <SimpleTooltip text="Shuffle">
+                            <Shuffle size={18} className="hover:text-white cursor-pointer transition-colors" />
+                        </SimpleTooltip>
+
+                        <SimpleTooltip text="Previous">
+                            <SkipBack size={24} className="hover:text-white cursor-pointer transition-colors fill-current" />
+                        </SimpleTooltip>
+
+                        <SimpleTooltip text={isPlaying ? "Pause" : "Play"}>
+                            <button
+                                onClick={togglePlay}
+                                className="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+                            >
+                                {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
+                            </button>
+                        </SimpleTooltip>
+
+                        <SimpleTooltip text="Next">
+                            <SkipForward size={24} className="hover:text-white cursor-pointer transition-colors fill-current" />
+                        </SimpleTooltip>
+
+                        <SimpleTooltip text="Repeat">
+                            <Repeat size={18} className="hover:text-white cursor-pointer transition-colors" />
+                        </SimpleTooltip>
                     </div>
                     <div className="flex items-center gap-3 text-[10px] font-mono text-zinc-600">
                         <span>{formatTime(currentTime)}</span>
                         <div className="w-64 h-1 bg-white/5 rounded-full overflow-hidden relative group/progress cursor-pointer" onClick={handleProgressClick}>
-                             <div
+                            <div
                                 className="h-full bg-white/40 group-hover/progress:bg-violet-500 transition-colors"
                                 style={{ width: `${progressPercent}%` }}
                             />
@@ -130,20 +155,23 @@ export function GlobalPlayer() {
                     <div className="flex flex-col items-center gap-1">
                         <span className="text-[8px] font-black text-zinc-600 uppercase tracking-tighter">Aura Tuning</span>
                         <div className="flex items-center bg-black/60 rounded-full p-1 border border-white/5 shadow-inner">
-                            <button
-                                onClick={() => setAutoTuning(!isAutoTuning)}
-                                className={`text-[9px] font-black px-2 py-1.5 rounded-full transition-all ${isAutoTuning ? 'bg-indigo-600 text-white shadow-lg' : 'text-zinc-600 hover:text-zinc-400'}`}
-                            >
-                                AUTO
-                            </button>
-                            {(['440hz', '432hz', '528hz'] as const).map((t) => (
+                            <SimpleTooltip text="Auto-Tune">
                                 <button
-                                    key={t}
-                                    onClick={() => setTuning(t)}
-                                    className={`text-[9px] font-black px-2 py-1.5 rounded-full transition-all ${tuning === t ? 'bg-violet-600 text-white shadow-lg' : 'text-zinc-600 hover:text-zinc-400'} ${tier === 'free' && t !== '440hz' ? 'opacity-20 cursor-not-allowed' : ''}`}
+                                    onClick={() => setAutoTuning(!isAutoTuning)}
+                                    className={`text-[9px] font-black px-2 py-1.5 rounded-full transition-all ${isAutoTuning ? 'bg-indigo-600 text-white shadow-lg' : 'text-zinc-600 hover:text-zinc-400'}`}
                                 >
-                                    {t.toUpperCase()}
+                                    AUTO
                                 </button>
+                            </SimpleTooltip>
+                            {(['440hz', '432hz', '528hz'] as const).map((t) => (
+                                <SimpleTooltip key={t} text={`Tuning: ${t}`}>
+                                    <button
+                                        onClick={() => setTuning(t)}
+                                        className={`text-[9px] font-black px-2 py-1.5 rounded-full transition-all ${tuning === t ? 'bg-violet-600 text-white shadow-lg' : 'text-zinc-600 hover:text-zinc-400'} ${tier === 'free' && t !== '440hz' ? 'opacity-20 cursor-not-allowed' : ''}`}
+                                    >
+                                        {t.toUpperCase()}
+                                    </button>
+                                </SimpleTooltip>
                             ))}
                         </div>
                     </div>
@@ -153,18 +181,34 @@ export function GlobalPlayer() {
                     </div>
 
                     <div className="flex items-center gap-4 text-zinc-500">
-                        <Mic2 size={18} className="hover:text-white cursor-pointer transition-colors" title="Lyrics" />
-                        <ListMusic size={18} className="hover:text-white cursor-pointer transition-colors" title="Queue" />
-                        <MonitorSpeaker size={18} className="hover:text-white cursor-pointer transition-colors" title="Connect to device" />
-                        <Volume2 size={20} className="hover:text-white cursor-pointer transition-colors" />
-                        <Settings2 size={20} className="hover:text-white cursor-pointer transition-colors" />
-                        <button
-                            onClick={stop}
-                            className="bg-white/5 p-2 rounded-full hover:bg-white/10 text-zinc-400 hover:text-white transition-all ml-2"
-                            title="Close Player"
-                        >
-                            <X size={18} />
-                        </button>
+                        <SimpleTooltip text="Lyrics">
+                            <Mic2 size={18} className="hover:text-white cursor-pointer transition-colors" />
+                        </SimpleTooltip>
+
+                        <SimpleTooltip text="Queue">
+                            <ListMusic size={18} className="hover:text-white cursor-pointer transition-colors" />
+                        </SimpleTooltip>
+
+                        <SimpleTooltip text="Connect to a device">
+                            <MonitorSpeaker size={18} className="hover:text-white cursor-pointer transition-colors" />
+                        </SimpleTooltip>
+
+                        <SimpleTooltip text="Mute">
+                            <Volume2 size={20} className="hover:text-white cursor-pointer transition-colors" />
+                        </SimpleTooltip>
+
+                        <SimpleTooltip text="Settings">
+                            <Settings2 size={20} className="hover:text-white cursor-pointer transition-colors" />
+                        </SimpleTooltip>
+
+                        <SimpleTooltip text="Close Player">
+                            <button
+                                onClick={stop}
+                                className="bg-white/5 p-2 rounded-full hover:bg-white/10 text-zinc-400 hover:text-white transition-all ml-2"
+                            >
+                                <X size={18} />
+                            </button>
+                        </SimpleTooltip>
                     </div>
                 </div>
             </div>

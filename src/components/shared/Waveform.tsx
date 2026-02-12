@@ -12,6 +12,7 @@ interface WaveformProps {
     inactiveColor?: string;
     className?: string;
     onSeek?: (progress: number) => void;
+    bpm?: number; // New prop for rhythm
 }
 
 /**
@@ -26,27 +27,53 @@ export function Waveform({
     activeColor = '#FFFFFF',
     inactiveColor = 'rgba(255, 255, 255, 0.15)',
     className = '',
-    onSeek
-}: WaveformProps) {
+    onSeek,
+    bpm = 120,
+    data
+}: WaveformProps & { data?: number[] }) {
     const bars = useMemo(() => {
+        // If real data is provided, use it (resampled to 100 max if needed)
+        if (data && data.length > 0) {
+            // Simple resampling if length is vastly different, or just slice/pad
+            // For now assuming data is ~100 points as per backend script
+            // Ensure values are 0-1
+            return data.map(v => Math.max(0.05, Math.min(1, v)));
+        }
+
         const count = 100;
-        const data = [];
+        const generated = [];
         let hash = 0;
         for (let i = 0; i < seed.length; i++) {
             hash = seed.charCodeAt(i) + ((hash << 5) - hash);
         }
 
+        // Normalize BPM to a useful frequency modifier (e.g. 60-180 range -> 0.5 - 1.5)
+        const rhythmFactor = Math.max(0.5, Math.min(2.0, bpm / 100));
+
         for (let i = 0; i < count; i++) {
             // Generate values that look like a real audio waveform
             // Using multiple sin/cos waves for a more "organic" sound-like look
+            // We use the rhythmFactor to space out the "beats" or peaks
+
+            const position = i / count;
+
+            // Base structure: varying loudness
+            const structure = Math.sin(position * Math.PI) * 0.5 + 0.5; // Envelope (quiet at ends)
+
+            // "Beats" based on BPM
+            const beat = Math.abs(Math.sin(i * rhythmFactor * 0.5 + hash));
+
+            // Random noise texture
             const noise = Math.abs(Math.sin(hash + i * 0.15) * Math.cos(hash + i * 0.07));
-            const base = Math.abs(Math.sin(i * 0.03)) * 0.4;
-            const spikes = i % 10 === 0 ? 0.3 : 0; // Add some rhythmic spikes
-            const val = Math.max(0.15, Math.min(0.95, noise * 0.6 + base + spikes));
-            data.push(val);
+
+            // Combine
+            const val = (beat * 0.6 + noise * 0.4) * structure;
+
+            // Clamp and ensure minimum visibility
+            generated.push(Math.max(0.15, Math.min(0.95, val)));
         }
-        return data;
-    }, [seed]);
+        return generated;
+    }, [seed, bpm, data]);
 
     const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!onSeek) return;
@@ -60,9 +87,9 @@ export function Waveform({
         <div className="flex items-center h-full w-full justify-between" style={{ gap: `${gap}px` }}>
             {bars.map((val, i) => (
                 <div key={i} className="flex flex-col items-center justify-center h-full flex-1" style={{ maxWidth: `${barWidth}px` }}>
-                    <div 
+                    <div
                         className="w-full rounded-full transition-colors duration-300"
-                        style={{ 
+                        style={{
                             height: `${val * 100}%`,
                             backgroundColor: color
                         }}
@@ -73,7 +100,7 @@ export function Waveform({
     );
 
     return (
-        <div 
+        <div
             className={`relative cursor-pointer group select-none ${className}`}
             style={{ height: `${height}px` }}
             onClick={handleClick}
@@ -84,7 +111,7 @@ export function Waveform({
             </div>
 
             {/* Progress Clipping Layer */}
-            <div 
+            <div
                 className="absolute inset-0 overflow-hidden pointer-events-none transition-[width] duration-300 ease-out"
                 style={{ width: `${progress * 100}%` }}
             >

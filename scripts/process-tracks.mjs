@@ -29,17 +29,17 @@ const s3Client = new S3Client({
 
 async function processAllTracks() {
     console.log('--- Aura Processing Worker: Started ---');
-    
+
     const { data: tracks, error } = await supabase
         .from('tracks')
         .select('id, title')
         .eq('status', 'active');
-    
+
     if (error) return console.error(error);
 
     for (const track of tracks) {
         console.log(`\nProcessing [${track.title}]...`);
-        
+
         const { data: files } = await supabase.from('track_files').select('s3_key').eq('track_id', track.id).limit(1);
         if (!files?.length) continue;
 
@@ -65,12 +65,15 @@ async function processAllTracks() {
 
             // 3. Update Supabase
             console.log(` Result: BPM ${analysis.bpm}, Key ${analysis.key}, Energy ${analysis.energy}`);
+            console.log(` Waveform extracted (${analysis.waveform?.length || 0} points)`);
+
             await supabase.from('tracks').update({
                 bpm: analysis.bpm,
                 key: analysis.key,
                 metadata: {
                     technical: { bpm: analysis.bpm, key: analysis.key },
-                    vibe: { energy_level: analysis.energy }
+                    vibe: { energy_level: analysis.energy },
+                    waveform: analysis.waveform // Save waveform in metadata to avoid schema migration
                 }
             }).eq('id', track.id);
 

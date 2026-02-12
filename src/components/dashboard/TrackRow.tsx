@@ -4,7 +4,7 @@ import { Play, Download, Plus, Heart, MoreHorizontal, Wand2 } from 'lucide-react
 import { Waveform } from '@/components/shared/Waveform';
 import { usePlayer } from '@/context/PlayerContext';
 
-interface TrackProps {
+interface Track {
     id: string;
     title: string;
     artist: string;
@@ -13,13 +13,22 @@ interface TrackProps {
     tags: string[];
     image?: string;
     audioSrc?: string;
-    onSimilar?: (id: string) => void;
 }
 
-export default function TrackRow({ id, title, artist, duration, bpm, tags, image, audioSrc, onSimilar }: TrackProps) {
-    const { playTrack, currentTrack, isPlaying: globalIsPlaying } = usePlayer();
+interface TrackProps extends Track {
+    onSimilar?: (id: string) => void;
+    metadata?: {
+        waveform?: number[];
+    };
+}
+
+export default function TrackRow({ id, title, artist, duration, bpm, tags, image, audioSrc, onSimilar, metadata }: TrackProps) {
+    const { playTrack, currentTrack, isPlaying: globalIsPlaying, currentTime, duration: totalDuration } = usePlayer();
     const isCurrentTrack = currentTrack?.id === id;
     const isPlaying = isCurrentTrack && globalIsPlaying;
+
+    // Calculate progress for this track if it's playing
+    const progress = isCurrentTrack && totalDuration > 0 ? currentTime / totalDuration : 0;
 
     const handlePlay = (e: React.MouseEvent) => {
         e.stopPropagation();
@@ -70,7 +79,9 @@ export default function TrackRow({ id, title, artist, duration, bpm, tags, image
             <div className="flex-1 px-4 min-w-[200px]">
                 <Waveform
                     seed={id}
-                    progress={isCurrentTrack ? 0.4 : 0}
+                    progress={progress}
+                    bpm={bpm}
+                    data={metadata?.waveform}
                     height={36}
                     inactiveColor="rgba(255,255,255,0.1)"
                     activeColor={isCurrentTrack ? "#7C3AED" : "#FFFFFF"}
