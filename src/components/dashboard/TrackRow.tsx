@@ -2,7 +2,7 @@
 
 import { Play, Download, Plus, Heart, MoreHorizontal, Wand2 } from 'lucide-react';
 import { Waveform } from '@/components/shared/Waveform';
-import { useState } from 'react';
+import { usePlayer } from '@/context/PlayerContext';
 
 interface TrackProps {
     id: string;
@@ -12,14 +12,26 @@ interface TrackProps {
     bpm: number;
     tags: string[];
     image?: string;
+    audioSrc?: string;
     onSimilar?: (id: string) => void;
 }
 
-export default function TrackRow({ id, title, artist, duration, bpm, tags, image, onSimilar }: TrackProps) {
-    const [isPlaying, setIsPlaying] = useState(false);
+export default function TrackRow({ id, title, artist, duration, bpm, tags, image, audioSrc, onSimilar }: TrackProps) {
+    const { playTrack, currentTrack, isPlaying: globalIsPlaying } = usePlayer();
+    const isCurrentTrack = currentTrack?.id === id;
+    const isPlaying = isCurrentTrack && globalIsPlaying;
+
+    const handlePlay = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        console.log('TrackRow Play Click:', { id, title, artist, audioSrc });
+        playTrack({ id, title, artist, src: audioSrc || image });
+    };
 
     return (
-        <div className="group flex items-center gap-6 py-4 px-4 hover:bg-white/[0.04] transition-all cursor-pointer border-b border-white/[0.02]">
+        <div
+            onClick={handlePlay}
+            className={`group flex items-center gap-6 py-4 px-4 hover:bg-white/[0.04] transition-all cursor-pointer border-b border-white/[0.02] ${isCurrentTrack ? 'bg-white/[0.02]' : ''}`}
+        >
             {/* Play Button & Cover Art */}
             <div className="relative h-14 w-14 flex-shrink-0">
                 {image ? (
@@ -31,19 +43,19 @@ export default function TrackRow({ id, title, artist, duration, bpm, tags, image
                     <div className="absolute inset-0 bg-gradient-to-br from-zinc-800 to-zinc-900 rounded-lg shadow-lg border border-white/5" />
                 )}
 
-                <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
-                    <button 
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setIsPlaying(!isPlaying);
-                        }}
+                <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity rounded-lg ${isCurrentTrack ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}>
+                    <button
+                        onClick={handlePlay}
                         className="h-10 w-10 flex items-center justify-center rounded-full bg-white text-black shadow-2xl transform active:scale-90 transition-transform"
                     >
-                        <Play size={18} fill="currentColor" className={isPlaying ? 'hidden' : 'ml-0.5'} />
-                        <div className={isPlaying ? 'flex gap-0.5 items-center' : 'hidden'}>
-                            <div className="w-1.5 h-4 bg-black animate-pulse" />
-                            <div className="w-1.5 h-4 bg-black animate-pulse delay-75" />
-                        </div>
+                        {isPlaying ? (
+                            <div className="flex gap-0.5 items-center">
+                                <div className="w-1.5 h-4 bg-black animate-pulse" />
+                                <div className="w-1.5 h-4 bg-black animate-pulse delay-75" />
+                            </div>
+                        ) : (
+                            <Play size={18} fill="currentColor" className="ml-0.5" />
+                        )}
                     </button>
                 </div>
             </div>
@@ -56,12 +68,12 @@ export default function TrackRow({ id, title, artist, duration, bpm, tags, image
 
             {/* Waveform Visualization */}
             <div className="flex-1 px-4 min-w-[200px]">
-                <Waveform 
-                    seed={id} 
-                    progress={isPlaying ? 0.4 : 0} 
+                <Waveform
+                    seed={id}
+                    progress={isCurrentTrack ? 0.4 : 0}
                     height={36}
                     inactiveColor="rgba(255,255,255,0.1)"
-                    activeColor="#FFFFFF"
+                    activeColor={isCurrentTrack ? "#7C3AED" : "#FFFFFF"}
                 />
             </div>
 
@@ -84,9 +96,9 @@ export default function TrackRow({ id, title, artist, duration, bpm, tags, image
 
             {/* Actions (Far Right) */}
             <div className="flex items-center gap-4 pr-2 opacity-40 group-hover:opacity-100 transition-opacity">
-                <button 
+                <button
                     onClick={(e) => { e.stopPropagation(); onSimilar?.(id); }}
-                    className="p-2 text-zinc-400 hover:text-pink-500 transition-colors" 
+                    className="p-2 text-zinc-400 hover:text-pink-500 transition-colors"
                     title="Find similar tracks"
                 >
                     <Wand2 size={18} />

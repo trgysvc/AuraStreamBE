@@ -6,14 +6,14 @@ import { Search, ChevronDown, Sliders } from 'lucide-react';
 
 export default function DashboardPage() {
     const tracks = [
-        { title: "Neon Nights", artist: "Synthwave Boy", duration: "3:45", bpm: 120, tags: ["Electronic", "Retro"] },
-        { title: "Mountain Peak", artist: "Nature Sounds", duration: "4:12", bpm: 85, tags: ["Ambient", "Chill"] },
-        { title: "City Hustle", artist: "Urban Beats", duration: "2:50", bpm: 95, tags: ["Hip Hop", "Energetic"] },
-        { title: "Deep Focus", artist: "Brainwaves", duration: "5:30", bpm: 60, tags: ["Study", "Focus"] },
-        { title: "Summer Vibes", artist: "Pop Star", duration: "3:15", bpm: 128, tags: ["Pop", "Happy"] },
-        { title: "Dark Matter", artist: "Space Explorer", duration: "4:05", bpm: 140, tags: ["Cinematic", "Sci-Fi"] },
-        { title: "Acoustic Morning", artist: "Guitar Hero", duration: "3:20", bpm: 100, tags: ["Acoustic", "Folk"] },
-        { title: "Night Drive", artist: "Nightcrawler", duration: "3:55", bpm: 110, tags: ["Synthwave", "Driving"] },
+        { id: "1", title: "Neon Nights", artist: "Synthwave Boy", duration: "3:45", bpm: 120, tags: ["Electronic", "Retro"], audioSrc: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+        { id: "2", title: "Mountain Peak", artist: "Nature Sounds", duration: "4:12", bpm: 85, tags: ["Ambient", "Chill"], audioSrc: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+        { id: "3", title: "City Hustle", artist: "Urban Beats", duration: "2:50", bpm: 95, tags: ["Hip Hop", "Energetic"], audioSrc: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+        { id: "4", title: "Deep Focus", artist: "Brainwaves", duration: "5:30", bpm: 60, tags: ["Study", "Focus"], audioSrc: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
+        { id: "5", title: "Summer Vibes", artist: "Pop Star", duration: "3:15", bpm: 128, tags: ["Pop", "Happy"], audioSrc: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
+        { id: "6", title: "Dark Matter", artist: "Space Explorer", duration: "4:05", bpm: 140, tags: ["Cinematic", "Sci-Fi"], audioSrc: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3" },
+        { id: "7", title: "Acoustic Morning", artist: "Guitar Hero", duration: "3:20", bpm: 100, tags: ["Acoustic", "Folk"], audioSrc: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3" },
+        { id: "8", title: "Night Drive", artist: "Nightcrawler", duration: "3:55", bpm: 110, tags: ["Synthwave", "Driving"], audioSrc: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" },
     ];
 
     return (

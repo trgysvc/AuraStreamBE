@@ -15,12 +15,12 @@ interface WaveformProps {
 }
 
 /**
- * Epidemic Sound Style Waveform (Mirrored/Symmetrical)
+ * Epidemic Sound Style Waveform (Mirrored/Symmetrical around center)
  */
 export function Waveform({
     seed = 'default',
     progress = 0,
-    height = 40,
+    height = 48,
     barWidth = 2,
     gap = 1,
     activeColor = '#FFFFFF',
@@ -37,10 +37,12 @@ export function Waveform({
         }
 
         for (let i = 0; i < count; i++) {
-            // Generate values that look like a real waveform (clumped energy)
-            const noise = Math.abs(Math.sin(hash + i * 0.1) * Math.cos(hash + i * 0.05));
-            const base = Math.abs(Math.sin(i * 0.02)) * 0.3;
-            const val = Math.min(0.9, noise * 0.7 + base + 0.1);
+            // Generate values that look like a real audio waveform
+            // Using multiple sin/cos waves for a more "organic" sound-like look
+            const noise = Math.abs(Math.sin(hash + i * 0.15) * Math.cos(hash + i * 0.07));
+            const base = Math.abs(Math.sin(i * 0.03)) * 0.4;
+            const spikes = i % 10 === 0 ? 0.3 : 0; // Add some rhythmic spikes
+            const val = Math.max(0.15, Math.min(0.95, noise * 0.6 + base + spikes));
             data.push(val);
         }
         return data;
@@ -57,7 +59,7 @@ export function Waveform({
     const renderBars = (color: string) => (
         <div className="flex items-center h-full w-full justify-between" style={{ gap: `${gap}px` }}>
             {bars.map((val, i) => (
-                <div key={i} className="flex flex-col items-center justify-center h-full" style={{ width: `${barWidth}px` }}>
+                <div key={i} className="flex flex-col items-center justify-center h-full flex-1" style={{ maxWidth: `${barWidth}px` }}>
                     <div 
                         className="w-full rounded-full transition-colors duration-300"
                         style={{ 
@@ -76,12 +78,12 @@ export function Waveform({
             style={{ height: `${height}px` }}
             onClick={handleClick}
         >
-            {/* Background */}
+            {/* Background Layer */}
             <div className="absolute inset-0">
                 {renderBars(inactiveColor)}
             </div>
 
-            {/* Progress Clipping */}
+            {/* Progress Clipping Layer */}
             <div 
                 className="absolute inset-0 overflow-hidden pointer-events-none transition-[width] duration-300 ease-out"
                 style={{ width: `${progress * 100}%` }}
@@ -91,10 +93,8 @@ export function Waveform({
                 </div>
             </div>
 
-            {/* Selection/Hover Area */}
-            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                <div className="absolute top-0 bottom-0 w-px bg-white/30 z-20" style={{ left: 'var(--hover-x, 0)' }} />
-            </div>
+            {/* Hover Indicator Line */}
+            <div className="absolute top-0 bottom-0 w-[1px] bg-white/40 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-10 left-[var(--hover-x,0)]" />
         </div>
     );
 }

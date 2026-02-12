@@ -157,8 +157,14 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     };
 
     const playTrack = async (track: Track) => {
+        console.log('PlayerContext playTrack:', track);
         const targetTuning = isAutoTuning ? EnergyCurve.getCurrentTuning() : tuning;
         let playUrl = track.availableTunings?.[targetTuning] || track.src;
+
+        if (!playUrl) {
+            console.warn('No playUrl found for track, using fallback silence');
+            playUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'; // TEMP FALLBACK FOR TESTING
+        }
 
         if (tier === 'business' || tier === 'enterprise') {
             const cachedUrl = await OfflineManager.getCachedTrack(`${track.id}-${targetTuning}`);
