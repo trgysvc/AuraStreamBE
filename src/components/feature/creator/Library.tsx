@@ -7,9 +7,22 @@ import { updateYoutubeChannel_Action } from '@/app/actions/elite-analytics';
 import { Youtube, ShieldCheck, Download, ExternalLink } from 'lucide-react';
 import { createClient } from '@/lib/db/client';
 
+interface TrackInfo {
+    title: string;
+    artist: string;
+}
+
+interface LicenseRecord {
+    id: string;
+    usage_type: string;
+    project_name: string;
+    license_key: string;
+    tracks: TrackInfo;
+}
+
 export function CreatorLibrary() {
     const { tier } = usePlayer();
-    const [licenses, setLicenses] = useState<any[]>([]);
+    const [licenses, setLicenses] = useState<LicenseRecord[]>([]);
     const [youtubeChannelId, setYoutubeChannelId] = useState('');
     const [isUpdatingChannel, setIsUpdatingChannel] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -116,7 +129,7 @@ export function CreatorLibrary() {
                                         {license.usage_type[0].toUpperCase()}
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-white">{(license.tracks as any).title}</h4>
+                                        <h4 className="font-bold text-white">{license.tracks.title}</h4>
                                         <p className="text-xs text-slate-500">Project: <span className="text-slate-300">{license.project_name}</span></p>
                                     </div>
                                 </div>

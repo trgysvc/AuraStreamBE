@@ -14,10 +14,9 @@ export interface UploadState {
 }
 
 /**
- * 1. Get Signed URL for S3 Upload
+ * 1. Get Signed URL for S3 Upload (Works for Audio and Images)
  */
-export async function getSignedUploadUrl_Action(contentType: string, fileName: string) {
-    // 0. Security Check
+export async function getSignedUploadUrl_Action(contentType: string, fileName: string, prefix: string = 'raw') {
     const supabaseServer = createServerClient();
     const { data: { user } } = await supabaseServer.auth.getUser();
 
@@ -25,7 +24,6 @@ export async function getSignedUploadUrl_Action(contentType: string, fileName: s
         throw new Error('Unauthorized');
     }
 
-    // Check if user has creator or admin role
     const { data: profile } = await supabaseServer
         .from('profiles')
         .select('role')
@@ -33,24 +31,21 @@ export async function getSignedUploadUrl_Action(contentType: string, fileName: s
         .single();
 
     if (!profile || (profile.role !== 'admin' && profile.role !== 'creator')) {
-        throw new Error('Access denied: You must be a creator or admin to upload tracks.');
+        throw new Error('Access denied');
     }
 
-    // Config Validation
     if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_S3_BUCKET_RAW) {
-        throw new Error('Server configuration error: AWS keys missing');
+        throw new Error('Server configuration error');
     }
 
-    // Generate unique file path: raw/{uuid}/{filename}
     const fileId = uuidv4();
-    const key = `raw/${fileId}/${fileName}`;
+    const key = `${prefix}/${fileId}/${fileName}`;
 
     try {
         const url = await S3Service.getUploadUrl(key, contentType, process.env.AWS_S3_BUCKET_RAW);
         return { url, key, fileId };
     } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        console.error('S3 Signing Error:', errorMessage);
+        console.error('S3 Signing Error:', error);
         throw new Error('Failed to generate upload URL');
     }
 }
@@ -59,34 +54,21 @@ export async function getSignedUploadUrl_Action(contentType: string, fileName: s
  * 2. Create Track Record in Database & Trigger Processing
  */
 export async function createTrackRecord_Action(formData: FormData, s3Key: string): Promise<UploadState> {
-    // 0. Security Check
     const supabaseServer = createServerClient();
     const { data: { user } } = await supabaseServer.auth.getUser();
 
-    if (!user) {
-        return { message: 'Unauthorized', error: 'Auth Error' };
-    }
+    if (!user) return { message: 'Unauthorized', error: 'Auth Error' };
 
-    // Check if user has creator or admin role
-    const { data: profile } = await supabaseServer
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
-
-    if (!profile || (profile.role !== 'admin' && profile.role !== 'creator')) {
-        return { message: 'Access denied', error: 'Role Error' };
-    }
-
-    // Use Admin Client to bypass RLS during insert
     const supabase = createAdminClient();
 
     const title = formData.get('title') as string;
+    const artist = formData.get('artist') as string;
     const genre = formData.get('genre') as string;
     const bpm = parseInt(formData.get('bpm') as string);
     const duration = parseInt(formData.get('duration') as string);
+    const coverUrl = formData.get('cover_url') as string;
+    const lyrics = formData.get('lyrics') as string;
 
-    // Validation
     if (!title || !s3Key) {
         return { message: 'Missing required fields', error: 'Validation Error' };
     }
@@ -94,9 +76,12 @@ export async function createTrackRecord_Action(formData: FormData, s3Key: string
     // 1. Insert Track Record
     const { data: trackData, error: trackError } = await supabase.from('tracks').insert({
         title,
-        bpm,
-        duration_sec: duration,
-        genre,
+        artist: artist || 'Sonaraura AI',
+        bpm: bpm || 120,
+        duration_sec: duration || 180,
+        genre: genre || 'Ambient',
+        cover_image_url: coverUrl,
+        lyrics: lyrics || null,
         status: 'pending_qc',
         ai_metadata: { 
             source: 'manual_upload',
@@ -110,17 +95,12 @@ export async function createTrackRecord_Action(formData: FormData, s3Key: string
     }
 
     // 2. Link Raw File to Track
-    const { error: fileError } = await supabase.from('track_files').insert({
+    await supabase.from('track_files').insert({
         track_id: trackData.id,
         file_type: 'raw',
         s3_key: s3Key,
         tuning: '440hz'
     });
-
-    if (fileError) {
-        console.error('DB Insert Error (File):', fileError);
-        return { message: 'Failed to link file to track', error: fileError.message };
-    }
 
     // 3. Trigger Worker via SQS
     try {
@@ -133,9 +113,7 @@ export async function createTrackRecord_Action(formData: FormData, s3Key: string
         }));
     } catch (sqsError) {
         console.error('SQS Queue Error:', sqsError);
-        // Track exists, but processing didn't trigger. 
-        // Admin can manually trigger from dashboard later.
     }
 
-    return { message: 'Track uploaded successfully! Processing started.', success: true };
+    return { message: 'Track uploaded successfully!', success: true };
 }

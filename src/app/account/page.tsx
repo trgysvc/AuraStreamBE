@@ -1,7 +1,7 @@
 'use client';
 
 import { createClient } from '@/lib/db/client';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
     User, 
@@ -13,13 +13,30 @@ import {
     Loader2
 } from 'lucide-react';
 
+interface ProfileData {
+    id: string;
+    email: string;
+    full_name?: string;
+    subscription_tier: string;
+    tenants?: TenantData;
+}
+
+interface TenantData {
+    id: string;
+    display_name?: string;
+    legal_name?: string;
+    industry?: string;
+    website?: string;
+    logo_url?: string;
+}
+
 export default function AccountPage() {
     const supabase = createClient();
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [profile, setProfile] = useState<any>(null);
-    const [tenant, setTenant] = useState<any>(null);
+    const [profile, setProfile] = useState<ProfileData | null>(null);
+    const [tenant, setTenant] = useState<TenantData | null>(null);
 
     const [formData, setFormData] = useState({
         full_name: '',
@@ -45,11 +62,12 @@ export default function AccountPage() {
                 .single();
 
             if (profileData) {
-                setProfile(profileData);
-                const t = profileData.tenants;
-                setTenant(t);
+                const p = profileData as unknown as ProfileData;
+                setProfile(p);
+                const t = p.tenants;
+                setTenant(t || null);
                 setFormData({
-                    full_name: profileData.full_name || '',
+                    full_name: p.full_name || '',
                     display_name: t?.display_name || '',
                     legal_name: t?.legal_name || '',
                     industry: t?.industry || '',

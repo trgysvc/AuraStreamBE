@@ -1,11 +1,12 @@
 'use client';
 
 import Link from 'next/link';
+import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Home, Music, Mic2, User, Settings, LogOut } from 'lucide-react';
 import { createClient } from '@/lib/db/client';
 
-const SidebarItem = ({ icon: Icon, label, href, active }: { icon: any, label: string, href: string, active?: boolean }) => (
+const SidebarItem = ({ icon: Icon, label, href, active }: { icon: React.ElementType, label: string, href: string, active?: boolean }) => (
     <Link
         href={href}
         className={`flex items-center gap-4 px-6 py-3 transition-colors ${active

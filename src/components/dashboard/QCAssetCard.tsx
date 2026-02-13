@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Play, Tag, XCircle, Music, Loader2, X, Check } from 'lucide-react';
 import { approveTrack_Action, rejectTrack_Action, updateTrackQC_Action } from '@/app/actions/qc';
+import { TrackAsset } from '@/types/admin';
 
 const ALL_MOODS = ['Happy', 'Melancholic', 'Energetic', 'Dark', 'Hopeful', 'Aggressive', 'Relaxing', 'Chill', 'Cinematic', 'Lounge'];
 
@@ -18,11 +19,13 @@ const SimpleTooltip = ({ children, text }: { children: React.ReactNode; text: st
     );
 };
 
-export function QCAssetCard({ track }: { track: any }) {
+export function QCAssetCard({ track }: { track: TrackAsset }) {
     const [loading, setLoading] = useState(false);
-    const [actionType, setActionType] = useState<'approve' | 'reject' | 'tags' | null>(null);
+    const [actionType, setActionType] = useState<'approve' | 'reject' | 'tags' | 'lyrics' | null>(null);
     const [isTagging, setIsTagging] = useState(false);
+    const [showLyricsEditor, setShowLyricsEditor] = useState(false);
     const [selectedMoods, setSelectedMoods] = useState<string[]>(track.mood_tags || []);
+    const [localLyrics, setLocalLyrics] = useState(track.lyrics || '');
 
     const handleApprove = async () => {
         setLoading(true);
@@ -68,6 +71,21 @@ export function QCAssetCard({ track }: { track: any }) {
         }
     };
 
+    const handleSaveLyrics = async () => {
+        setLoading(true);
+        setActionType('lyrics');
+        try {
+            await updateTrackQC_Action(track.id, { lyrics: localLyrics });
+            setShowLyricsEditor(false);
+        } catch (e) {
+            console.error(e);
+            alert('Lyrics update failed');
+        } finally {
+            setLoading(false);
+            setActionType(null);
+        }
+    };
+
     const toggleMood = (mood: string) => {
         setSelectedMoods(prev => 
             prev.includes(mood) ? prev.filter(m => m !== mood) : [...prev, mood]
@@ -75,7 +93,7 @@ export function QCAssetCard({ track }: { track: any }) {
     };
 
     return (
-        <div className={`bg-[#1E1E22] p-6 rounded-2xl border border-white/5 hover:border-white/10 transition-all group flex flex-col md:flex-row items-center gap-8 ${loading && actionType !== 'tags' ? 'opacity-50 pointer-events-none' : ''} relative`}>
+        <div className={`bg-[#1E1E22] p-6 rounded-2xl border border-white/5 hover:border-white/10 transition-all group flex flex-col md:flex-row items-center gap-8 ${loading && (actionType === 'approve' || actionType === 'reject') ? 'opacity-50 pointer-events-none' : ''} relative`}>
             {/* Track Preview Info */}
             <div className="flex items-center gap-6 flex-1">
                 <div className="h-16 w-16 bg-zinc-800 rounded-xl flex items-center justify-center relative overflow-hidden shadow-2xl">
@@ -108,18 +126,30 @@ export function QCAssetCard({ track }: { track: any }) {
                         {tag}
                     </span>
                 ))}
-                <SimpleTooltip text="Edit Mood Tags">
-                    <button 
-                        onClick={() => setIsTagging(!isTagging)}
-                        className={`p-2 rounded-lg transition-all ${isTagging ? 'bg-indigo-600 text-white shadow-lg' : 'text-indigo-500 hover:text-white hover:bg-white/5'}`}
-                    >
-                        <Tag size={16} />
-                    </button>
-                </SimpleTooltip>
+                
+                <div className="flex gap-1 ml-4">
+                    <SimpleTooltip text="Edit Mood Tags">
+                        <button 
+                            onClick={() => { setIsTagging(!isTagging); setShowLyricsEditor(false); }}
+                            className={`p-2 rounded-lg transition-all ${isTagging ? 'bg-indigo-600 text-white shadow-lg' : 'text-indigo-500 hover:text-white hover:bg-white/5'}`}
+                        >
+                            <Tag size={16} />
+                        </button>
+                    </SimpleTooltip>
+
+                    <SimpleTooltip text="Edit Lyrics">
+                        <button 
+                            onClick={() => { setShowLyricsEditor(!showLyricsEditor); setIsTagging(false); }}
+                            className={`p-2 rounded-lg transition-all ${showLyricsEditor ? 'bg-pink-600 text-white shadow-lg' : 'text-pink-500 hover:text-white hover:bg-white/5'}`}
+                        >
+                            <Music size={16} />
+                        </button>
+                    </SimpleTooltip>
+                </div>
 
                 {/* Inline Tag Editor Popover */}
                 {isTagging && (
-                    <div className="absolute top-full mt-4 left-1/2 -translate-x-1/2 w-80 bg-[#18181b] border border-white/10 rounded-2xl shadow-2xl z-[150] p-6 space-y-6 animate-in zoom-in-95 duration-200">
+                    <div className="absolute top-full mt-4 left-1/2 -translate-x-1/2 w-80 bg-[#18181b] border border-white/10 rounded-2xl shadow-2xl z-[150] p-6 space-y-6 animate-in zoom-in-95 duration-200 text-left">
                         <div className="flex items-center justify-between border-b border-white/5 pb-4">
                             <h5 className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Select Moods</h5>
                             <button onClick={() => setIsTagging(false)} className="text-zinc-600 hover:text-white"><X size={16} /></button>
@@ -141,7 +171,32 @@ export function QCAssetCard({ track }: { track: any }) {
                             className="w-full py-3 bg-white text-black rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-500 hover:text-white transition-all flex items-center justify-center gap-2"
                         >
                             {loading && actionType === 'tags' ? <Loader2 size={12} className="animate-spin" /> : <Check size={14} strokeWidth={3} />}
-                            Update Metadata
+                            Update Moods
+                        </button>
+                    </div>
+                )}
+
+                {/* Inline Lyrics Editor Popover */}
+                {showLyricsEditor && (
+                    <div className="absolute top-full mt-4 left-1/2 -translate-x-1/2 w-96 bg-[#18181b] border border-white/10 rounded-2xl shadow-2xl z-[150] p-6 space-y-6 animate-in zoom-in-95 duration-200 text-left">
+                        <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                            <h5 className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Edit Lyrics</h5>
+                            <button onClick={() => setShowLyricsEditor(false)} className="text-zinc-600 hover:text-white"><X size={16} /></button>
+                        </div>
+                        <textarea 
+                            value={localLyrics}
+                            onChange={e => setLocalLyrics(e.target.value)}
+                            placeholder="Enter track lyrics here..."
+                            rows={8}
+                            className="w-full bg-black border border-white/5 rounded-xl p-4 text-xs font-medium text-zinc-300 focus:outline-none focus:border-pink-500 transition-all resize-none custom-scrollbar"
+                        />
+                        <button 
+                            onClick={handleSaveLyrics}
+                            disabled={loading}
+                            className="w-full py-3 bg-white text-black rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-pink-600 hover:text-white transition-all flex items-center justify-center gap-2"
+                        >
+                            {loading && actionType === 'lyrics' ? <Loader2 size={12} className="animate-spin" /> : <Check size={14} strokeWidth={3} />}
+                            Save Lyrics
                         </button>
                     </div>
                 )}

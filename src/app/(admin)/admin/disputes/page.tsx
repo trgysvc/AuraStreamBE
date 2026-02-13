@@ -38,7 +38,7 @@ export default async function DisputeCenterPage() {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-6">
-                    {disputes.map((dispute) => (
+                    {disputes.map((dispute: DisputeAsset) => (
                         <DisputeActionCard key={dispute.id} dispute={dispute} />
                     ))}
                 </div>

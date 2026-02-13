@@ -121,6 +121,16 @@ body {
   color: #a1a1aa;
 }
 
+@keyframes lyrics-scroll {
+  0% { transform: translateX(50%); }
+  100% { transform: translateX(-100%); }
+}
+
+.animate-lyrics-scroll {
+  display: inline-block;
+  animation: lyrics-scroll linear infinite;
+}
+
 .sidebar-link:hover .sidebar-icon,
 .sidebar-link.active .sidebar-icon {
   color: #ffffff;

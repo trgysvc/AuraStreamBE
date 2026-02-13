@@ -3,8 +3,6 @@
 import { createClient } from '@/lib/db/server';
 import { S3Service } from '@/lib/services/s3';
 import { PDFService } from '@/lib/services/license/pdf';
-import path from 'path';
-import os from 'os';
 
 /**
  * Interface for Download Bundle
@@ -40,7 +38,7 @@ export async function getDownloadBundle_Action(trackId: string, licenseId: strin
         return null;
     }
 
-    const track = (license as any).tracks;
+    const track = (license as unknown as { tracks: { title: string, artist: string } }).tracks;
 
     // 2. Fetch Audio File (HQ Raw or high-bitrate MP3)
     const { data: file } = await supabase
@@ -52,11 +50,7 @@ export async function getDownloadBundle_Action(trackId: string, licenseId: strin
 
     if (!file) return null;
 
-    // 3. Watermarking (Simulated)
-    const tempPath = path.join(os.tmpdir(), `download_${trackId}.wav`);
-    console.log(`Preparing watermarked download at ${tempPath}`);
-
-    // 4. Generate License PDF
+    // 3. Generate License PDF
     await PDFService.generateLicensePDF({
         licenseKey: license.license_key,
         projectName: license.project_name,

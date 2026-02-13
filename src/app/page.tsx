@@ -15,15 +15,15 @@ export default async function LandingPage() {
     return (
         <div className="min-h-screen bg-[#111111] text-white font-sans selection:bg-white selection:text-black">
             {/* Header */}
-            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-5 bg-black/90 backdrop-blur-sm transition-all duration-300 border-b border-white/10">
-                <div className="flex items-center gap-8">
+            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 bg-black/90 backdrop-blur-sm transition-all duration-300 border-b border-white/10 h-20">
+                <div className="flex items-center gap-12 h-full">
                     {/* Logo Area */}
-                    <div className="flex items-center gap-2 mb-6">
-                        <div className="h-8 w-8 bg-white text-black rounded flex items-center justify-center font-bold">S</div>
-                        <span className="text-xl font-black italic tracking-widest text-white">
+                    <Link href="/" className="flex items-center gap-2 group leading-none">
+                        <div className="h-8 w-8 bg-white text-black rounded flex items-center justify-center font-bold transition-transform group-hover:scale-110">S</div>
+                        <span className="text-xl font-black italic tracking-widest text-white leading-none">
                             SONAR<span className="font-light text-zinc-300">AURA</span>
                         </span>
-                    </div>
+                    </Link>
 
                     {/* Desktop Navigation */}
                     <nav className="hidden lg:flex items-center gap-8 text-[15px] font-medium text-gray-300">
@@ -35,7 +35,7 @@ export default async function LandingPage() {
                     </nav>
                 </div>
 
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-6 h-full">
                     {!user ? (
                         <>
                             <Link href="/login" className="hidden sm:block text-sm font-bold hover:text-gray-300 transition-colors">
@@ -323,9 +323,12 @@ export default async function LandingPage() {
                         <p className="text-gray-400 text-sm leading-relaxed">
                             SonarAura provides intelligent background music solutions for venues, creators, and businesses.
                         </p>
-                        <button className="flex items-center gap-2 font-bold border-b-2 border-black pb-1 group mt-4">
+                        <Link 
+                            href="/dashboard/request"
+                            className="inline-flex items-center gap-2 font-bold border-b-2 border-black pb-1 group mt-4 text-black"
+                        >
                             Request custom music <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </section>

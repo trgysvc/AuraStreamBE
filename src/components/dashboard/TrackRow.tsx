@@ -12,6 +12,7 @@ interface Track {
     bpm: number;
     tags: string[];
     image?: string;
+    lyrics?: string;
     audioSrc?: string;
 }
 
@@ -20,9 +21,10 @@ interface TrackProps extends Track {
     metadata?: {
         waveform?: number[];
     };
+    allTracks?: Track[]; // Optional list context
 }
 
-export default function TrackRow({ id, title, artist, duration, bpm, tags, image, audioSrc, onSimilar, metadata }: TrackProps) {
+export default function TrackRow({ id, title, artist, duration, bpm, tags, image, lyrics, audioSrc, onSimilar, metadata, allTracks }: TrackProps) {
     const { playTrack, currentTrack, isPlaying: globalIsPlaying, currentTime, duration: totalDuration } = usePlayer();
     const isCurrentTrack = currentTrack?.id === id;
     const isPlaying = isCurrentTrack && globalIsPlaying;
@@ -32,8 +34,7 @@ export default function TrackRow({ id, title, artist, duration, bpm, tags, image
 
     const handlePlay = (e: React.MouseEvent) => {
         e.stopPropagation();
-        console.log('TrackRow Play Click:', { id, title, artist, audioSrc });
-        playTrack({ id, title, artist, src: audioSrc || image });
+        playTrack({ id, title, artist, duration, bpm, tags, lyrics, src: audioSrc || image }, allTracks);
     };
 
     return (
@@ -71,7 +72,7 @@ export default function TrackRow({ id, title, artist, duration, bpm, tags, image
 
             {/* Track Info */}
             <div className="w-44 flex-shrink-0 min-w-0">
-                <h4 className="text-white font-bold truncate text-[15px] leading-tight group-hover:text-pink-500 transition-colors">{title}</h4>
+                <h4 className="text-white font-bold truncate text-[15px] leading-tight group-hover:text-pink-500 transition-colors uppercase italic">{title}</h4>
                 <p className="text-zinc-500 text-xs truncate mt-1 font-medium">{artist}</p>
             </div>
 
@@ -81,6 +82,7 @@ export default function TrackRow({ id, title, artist, duration, bpm, tags, image
                     seed={id}
                     progress={progress}
                     bpm={bpm}
+                    isPlaying={isPlaying}
                     data={metadata?.waveform}
                     height={36}
                     inactiveColor="rgba(255,255,255,0.1)"

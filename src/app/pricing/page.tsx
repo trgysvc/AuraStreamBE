@@ -19,8 +19,8 @@ export default function PricingPage() {
             description: "For explorers & music lovers",
             features: [
                 "Unlimited catalog browsing",
-                "Standard quality preview",
-                "Basic search functionality",
+                "Standard quality preview (440Hz)",
+                "Basic semantic search",
                 "Community access"
             ],
             buttonText: "Coming Soon",
@@ -30,14 +30,14 @@ export default function PricingPage() {
         {
             name: "Pro",
             price: "$19",
-            description: "For creators & influencers",
+            description: "For elite creators & influencers",
             features: [
-                "Unlimited Hi-Fi downloads",
-                "YouTube Dispute Support",
+                "Unlimited HQ Downloads (WAV)",
+                "Frequency Engineering (432Hz/528Hz)",
+                "YouTube Dispute Auto-Center",
+                "Steganographic Watermarking",
                 "Personal License Certificate",
-                "Smart Whitelisting",
-                "Semantic AI Search",
-                "432Hz/528Hz Tuning"
+                "Dynamic Lyrics Integration"
             ],
             buttonText: "Coming Soon",
             highlight: false,
@@ -48,12 +48,12 @@ export default function PricingPage() {
             price: "$25",
             description: "For venues & commercial spaces",
             features: [
-                "Sonaraura Venue Player",
-                "Biorhythm Energy Curve",
-                "Smart Offline Caching",
+                "Aura Smart Venue Player",
+                "Weather-Aware AI Optimization",
+                "Autonomous Smart Flow Scheduling",
+                "500MB Intelligent Offline Caching",
                 "Public Performance License",
-                "Smart Scheduling",
-                "Licensed Venue Certificate"
+                "Licensed Venue QR Certification"
             ],
             buttonText: "Start for Business",
             highlight: true,
@@ -62,14 +62,14 @@ export default function PricingPage() {
         {
             name: "Enterprise",
             price: "Custom",
-            description: "For agencies & corporations",
+            description: "For agencies & global corporations",
             features: [
-                "Sonic Tailor (Custom AI Music)",
-                "Full API Access",
-                "Dedicated Account Manager",
-                "Multi-seat & Role Mgmt",
-                "Custom Licensing Terms",
-                "24/7 Priority Support"
+                "Aura Tailor (Custom AI Production)",
+                "Master Stems Delivery",
+                "Multi-seat Role Management",
+                "Global Performance Rights (PRO)",
+                "Custom API Integration",
+                "24/7 Priority Support Hub"
             ],
             buttonText: "Contact Sales",
             highlight: false,
@@ -83,20 +83,22 @@ export default function PricingPage() {
             <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-5 bg-black/90 backdrop-blur-sm border-b border-white/10">
                 <div className="flex items-center gap-8">
                     <Link href="/" className="flex items-center gap-2 cursor-pointer text-white">
-                        <div className="h-8 w-8 bg-white rounded-full flex items-center justify-center text-black font-bold text-lg leading-none">A</div>
-                        <span className="text-xl font-bold tracking-tight">Sonaraura</span>
+                        <div className="h-8 w-8 bg-white rounded-full flex items-center justify-center text-black font-bold text-lg leading-none shadow-[0_0_15px_rgba(255,255,255,0.3)]">S</div>
+                        <span className="text-xl font-black italic tracking-widest text-white">SONARAURA</span>
                     </Link>
-                    <nav className="hidden lg:flex items-center gap-8 text-[15px] font-medium text-gray-300">
+                    <nav className="hidden lg:flex items-center gap-8 text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500">
                         <Link href="/music" className="hover:text-white transition-colors">Music</Link>
                         <Link href="/sound-effects" className="hover:text-white transition-colors">Sound Effects</Link>
-                        <Link href="/pricing" className="text-white border-b border-white pb-1">Pricing</Link>
+                        <Link href="/pricing" className="text-white">Pricing</Link>
                         <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
                         <Link href="/enterprise" className="hover:text-white transition-colors">Enterprise</Link>
                     </nav>
                 </div>
                 <div className="flex items-center gap-6">
-                    <Link href="/login" className="hidden sm:block text-sm font-bold hover:text-gray-300 transition-colors text-white">Log in</Link>
-                    <Link href="/signup" className="h-10 px-6 flex items-center justify-center rounded-full bg-white text-black text-sm font-bold hover:bg-gray-200 transition-colors">Start free trial</Link>
+                    <Link href="/login" className="hidden sm:block text-[10px] font-black uppercase tracking-[0.2em] hover:text-gray-300 transition-colors text-white">Log in</Link>
+                    <Link href="/signup" className="h-10 px-6 flex items-center justify-center rounded-full bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] hover:bg-gray-200 transition-all active:scale-95 shadow-xl shadow-white/10">
+                        Start free trial
+                    </Link>
                 </div>
             </header>
 
@@ -105,9 +107,16 @@ export default function PricingPage() {
                 <div className="absolute inset-0 z-0">
                     <div className="absolute inset-0 bg-black/40 z-10" />
                     <div
-                        className="absolute inset-0 bg-cover bg-center"
+                        className="absolute inset-0 bg-cover bg-center opacity-60"
                         style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?q=80&w=2600&auto=format&fit=crop)' }}
                     />
+                </div>
+
+                <div className="relative z-20 w-full max-w-[1600px] mx-auto text-center mb-20 space-y-4 animate-in fade-in slide-in-from-top-4 duration-1000">
+                    <p className="text-[10px] font-black uppercase tracking-[0.5em] text-indigo-400">Scientific Pricing</p>
+                    <h1 className="text-5xl md:text-8xl font-black uppercase italic tracking-tighter text-white leading-[0.9]">
+                        Elite Audio <br/> Plans.
+                    </h1>
                 </div>
 
                 <div className="relative z-20 w-full max-w-[1600px] mx-auto">
@@ -115,45 +124,45 @@ export default function PricingPage() {
                         {plans.map((plan) => (
                             <div 
                                 key={plan.name}
-                                className={`relative p-10 rounded-sm text-left flex flex-col h-full transition-all duration-500 hover:scale-[1.03] ${
+                                className={`relative p-10 rounded-[2.5rem] text-left flex flex-col h-full transition-all duration-700 hover:scale-[1.02] border ${
                                     plan.highlight 
-                                    ? 'bg-white text-black scale-105 z-10 shadow-[0_40px_100px_-15px_rgba(255,255,255,0.2)]' 
-                                    : 'bg-black/60 backdrop-blur-2xl text-white border border-white/10 shadow-2xl'
+                                    ? 'bg-white text-black border-white z-10 shadow-[0_40px_120px_-15px_rgba(255,255,255,0.2)]' 
+                                    : 'bg-zinc-950/60 backdrop-blur-3xl text-white border-white/5 shadow-2xl'
                                 }`}
                             >
                                 {plan.badge && (
-                                    <div className={`absolute -top-4 left-10 px-3 py-1 text-[10px] font-black uppercase tracking-widest ${
-                                        plan.highlight ? 'bg-pink-500 text-white' : 'bg-white text-black'
+                                    <div className={`absolute -top-4 left-10 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] rounded-full shadow-lg ${
+                                        plan.highlight ? 'bg-indigo-600 text-white' : 'bg-white text-black'
                                     }`}>
                                         {plan.badge}
                                     </div>
                                 )}
-                                <h3 className="text-3xl font-black uppercase italic mb-2 tracking-tighter">{plan.name}</h3>
-                                <p className={`text-sm mb-10 font-medium leading-relaxed min-h-[40px] ${plan.highlight ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                                <h3 className="text-4xl font-black uppercase italic mb-2 tracking-tighter leading-none">{plan.name}</h3>
+                                <p className={`text-[11px] mb-10 font-bold uppercase tracking-widest leading-relaxed min-h-[40px] ${plan.highlight ? 'text-zinc-500' : 'text-zinc-400'}`}>
                                     {plan.description}
                                 </p>
-                                <div className="flex items-baseline gap-1 mb-10 border-b pb-10 border-current opacity-10">
-                                    <span className="text-6xl font-black tracking-tighter">{plan.price}</span>
-                                    {plan.name !== 'Enterprise' && <span className="text-sm font-bold opacity-60">/mo</span>}
+                                <div className="flex items-baseline gap-1 mb-10 border-b pb-10 border-white/5">
+                                    <span className="text-7xl font-black tracking-tighter">{plan.price}</span>
+                                    {plan.name !== 'Enterprise' && <span className="text-sm font-black uppercase opacity-60 ml-2">/ mo</span>}
                                 </div>
                                 
                                 <ul className="space-y-5 mb-14 flex-1">
                                     {plan.features.map((feature) => (
-                                        <li key={feature} className="flex items-start gap-4 text-[15px] font-bold leading-snug">
-                                            <Check className={plan.highlight ? 'text-pink-500' : 'text-white'} size={20} strokeWidth={4} />
-                                            <span>{feature}</span>
+                                        <li key={feature} className="flex items-start gap-4 text-[13px] font-bold leading-snug">
+                                            <Check className={plan.highlight ? 'text-indigo-600' : 'text-white'} size={18} strokeWidth={4} />
+                                            <span className="uppercase tracking-tight">{feature}</span>
                                         </li>
                                     ))}
                                 </ul>
 
                                 <Link 
-                                    href={plan.disabled ? "#" : (plan.name === 'Enterprise' ? '/contact' : '/signup')} 
-                                    className={`w-full py-5 text-center rounded-sm font-black text-xs uppercase tracking-[0.2em] transition-all ${
+                                    href={plan.disabled ? "#" : (plan.name === 'Enterprise' ? '/dashboard/request' : '/signup')} 
+                                    className={`w-full py-5 text-center rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] transition-all ${
                                         plan.disabled 
-                                        ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed opacity-50' 
+                                        ? 'bg-zinc-900 text-zinc-600 cursor-not-allowed' 
                                         : (plan.highlight 
-                                            ? 'bg-black text-white hover:bg-zinc-800 shadow-xl' 
-                                            : 'bg-white text-black hover:bg-zinc-200')
+                                            ? 'bg-black text-white hover:bg-indigo-600 shadow-xl' 
+                                            : 'bg-white text-black hover:bg-indigo-500 hover:text-white')
                                     }`}
                                 >
                                     {plan.buttonText}
@@ -162,63 +171,64 @@ export default function PricingPage() {
                         ))}
                     </div>
 
-                    <div className="mt-16 text-center">
+                    <div className="mt-20 text-center">
                         <button 
                             onClick={scrollToCompare}
-                            className="inline-flex flex-col items-center gap-2 font-black text-[10px] uppercase tracking-[0.4em] text-zinc-400 hover:text-white transition-colors"
+                            className="inline-flex flex-col items-center gap-3 font-black text-[9px] uppercase tracking-[0.5em] text-zinc-500 hover:text-white transition-all group"
                         >
-                            View more
-                            <ChevronDown size={20} className="animate-bounce" />
+                            Deep Technical Analysis
+                            <ChevronDown size={24} className="animate-bounce text-indigo-400 group-hover:text-white transition-colors" />
                         </button>
                     </div>
                 </div>
             </section>
 
             {/* 3. Comparison Section */}
-            <section ref={compareRef} className="py-32 px-6 bg-[#F5F5F0] text-black">
+            <section ref={compareRef} className="py-40 px-6 bg-[#F5F5F0] text-black rounded-t-[4rem]">
                 <div className="max-w-[1200px] mx-auto">
-                    <div className="mb-20 text-center md:text-left">
-                        <h2 className="text-5xl md:text-7xl font-black tracking-tight uppercase italic leading-[0.9]">
-                            Compare <br/>the plans.
+                    <div className="mb-24 text-center md:text-left space-y-4">
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">Technical Breakdown</p>
+                        <h2 className="text-6xl md:text-8xl font-black tracking-tight uppercase italic leading-[0.8]">
+                            Symmetry <br/>of Value.
                         </h2>
                     </div>
                     
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="border-b-4 border-black">
-                                    <th className="py-8 px-4 text-[11px] font-black uppercase tracking-widest text-zinc-400">Detailed Features</th>
-                                    <th className="py-8 px-4 text-xl font-black uppercase italic">Free</th>
-                                    <th className="py-8 px-4 text-xl font-black uppercase italic">Pro</th>
-                                    <th className="py-8 px-4 text-xl font-black uppercase italic text-pink-600">Business</th>
-                                    <th className="py-8 px-4 text-xl font-black uppercase italic">Enterprise</th>
+                                <tr className="border-b-[6px] border-black">
+                                    <th className="py-10 px-6 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">Architectural Layer</th>
+                                    <th className="py-10 px-6 text-2xl font-black uppercase italic">Free</th>
+                                    <th className="py-10 px-6 text-2xl font-black uppercase italic">Pro</th>
+                                    <th className="py-10 px-6 text-2xl font-black uppercase italic text-indigo-600 underline decoration-4 underline-offset-8">Business</th>
+                                    <th className="py-10 px-6 text-2xl font-black uppercase italic">Enterprise</th>
                                 </tr>
                             </thead>
                             <tbody className="font-bold text-sm text-zinc-900">
                                 {[
-                                    { f: "Unlimited catalog access", v: [true, true, true, true] },
-                                    { f: "Frequency Engineering (432Hz / 528Hz)", v: [false, true, true, true] },
-                                    { f: "Commercial Use Rights", v: [false, false, true, true] },
-                                    { f: "YouTube Dispute Support", v: [false, true, true, true] },
-                                    { f: "Biorhythm Energy Curve", v: [false, false, true, true] },
-                                    { f: "Smart Offline Caching (Venue Player)", v: [false, false, true, true] },
-                                    { f: "Licensed Venue Certification", v: [false, false, true, true] },
-                                    { f: "Sonic Tailor (Custom AI Request)", v: ["Add-on", "Add-on", "Add-on", true] },
-                                    { f: "Multi-seat Management", v: [false, false, true, true] },
-                                    { f: "Dedicated Account Manager", v: [false, false, false, true] },
-                                    { f: "Full API Access", v: [false, false, false, true] },
-                                ].map((row, idx) => (row.v && (
-                                    <tr key={idx} className="border-b border-black/10 hover:bg-black/5 transition-colors">
-                                        <td className="py-6 px-4 text-zinc-600 uppercase tracking-tighter text-[11px]">{row.f}</td>
+                                    { f: "Universal Catalog Access", v: [true, true, true, true] },
+                                    { f: "Frequency Engineering (432Hz/528Hz)", v: [false, true, true, true] },
+                                    { f: "Weather-Aware Atmosphere AI", v: [false, false, true, true] },
+                                    { f: "Autonomous Smart Flow Director", v: [false, false, true, true] },
+                                    { f: "Steganographic Watermarking", v: [false, true, true, true] },
+                                    { f: "YouTube Dispute Auto-Center", v: [false, true, true, true] },
+                                    { f: "500MB Intelligent Offline Cache", v: [false, false, true, true] },
+                                    { f: "Aura Tailor (Custom Production)", v: ["Request", "Request", "Request", true] },
+                                    { f: "Licensed Venue Certification (QR)", v: [false, false, true, true] },
+                                    { f: "Corporate Multi-seat Access", v: [false, false, true, true] },
+                                    { f: "Master Stems & WAV Delivery", v: [false, true, true, true] },
+                                ].map((row, idx) => (
+                                    <tr key={idx} className="border-b border-black/5 hover:bg-black/[0.02] transition-colors group">
+                                        <td className="py-8 px-6 text-[10px] font-black uppercase tracking-widest text-zinc-500 group-hover:text-black transition-colors">{row.f}</td>
                                         {row.v.map((val, i) => (
-                                            <td key={i} className="py-6 px-4">
+                                            <td key={i} className="py-8 px-6">
                                                 {typeof val === 'boolean' ? (
-                                                    val ? <Check size={20} className="text-black" /> : <X size={20} className="text-zinc-300" />
-                                                ) : <span className="text-[9px] uppercase font-black tracking-widest opacity-60">{val}</span>}
+                                                    val ? <Check size={24} strokeWidth={4} className="text-black" /> : <X size={24} strokeWidth={3} className="text-zinc-200" />
+                                                ) : <span className="text-[10px] uppercase font-black tracking-widest bg-black text-white px-3 py-1 rounded-full">{val}</span>}
                                             </td>
                                         ))}
                                     </tr>
-                                )))}
+                                ))}
                             </tbody>
                         </table>
                     </div>

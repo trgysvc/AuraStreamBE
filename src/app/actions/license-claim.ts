@@ -31,7 +31,7 @@ export async function claimLicense_Action(trackId: string, projectName: string, 
             track_id: trackId,
             user_id: user.id,
             project_name: projectName || 'Subscribed Project',
-            usage_type: usageType as any,
+            usage_type: usageType as unknown as any,
             license_key: licenseKey,
             price_paid: 0, // Subscription covered
             platform_id: `subscription:${user.id}:${Date.now()}`

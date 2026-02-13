@@ -4,7 +4,7 @@ import Stripe from 'stripe';
 import { createAdminClient } from '@/lib/db/admin-client';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2026-01-28.clover', // Update to match CLI/Types
+    apiVersion: '2025-01-27.acacia', 
 });
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;

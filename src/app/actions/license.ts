@@ -27,9 +27,9 @@ export async function generateLicensePDF_Action(licenseId: string) {
     const pdfBytes = await PDFService.generateLicensePDF({
         licenseKey: license.license_key,
         projectName: license.project_name,
-        userName: (license.profiles as any).full_name || (license.profiles as any).email,
-        trackTitle: (license.tracks as any).title,
-        artistName: (license.tracks as any).artist,
+        userName: (license.profiles as unknown as any).full_name || (license.profiles as unknown as any).email,
+        trackTitle: (license.tracks as unknown as any).title,
+        artistName: (license.tracks as unknown as any).artist,
         usageType: license.usage_type,
         createdAt: license.created_at || ''
     });

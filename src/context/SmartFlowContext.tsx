@@ -36,7 +36,9 @@ export function SmartFlowProvider({ children, venueId }: { children: React.React
     useEffect(() => {
         if (!venueId) return;
         refreshFlow();
-        const interval = setInterval(refreshFlow, 5 * 60 * 1000);
+        const interval = setInterval(() => {
+            refreshFlow();
+        }, 5 * 60 * 1000);
         return () => clearInterval(interval);
     }, [venueId, refreshFlow]);
 

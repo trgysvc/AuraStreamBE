@@ -6,7 +6,7 @@ import { createAdminClient } from '@/lib/db/admin-client';
 /**
  * Logs a search query for analytics and latency tracking
  */
-export async function logSearchQuery_Action(query: string, filters: any, resultCount: number, latencyMs: number) {
+export async function logSearchQuery_Action(query: string, filters: Record<string, unknown>, resultCount: number, latencyMs: number) {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
 

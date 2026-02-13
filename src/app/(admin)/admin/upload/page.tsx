@@ -12,7 +12,9 @@ interface UploadingFile {
     artist: string;
     bpm: string;
     genre: string;
-    coverUrl?: string;
+    lyrics: string;
+    coverBlob?: Blob;
+    coverUrl?: string; // Preview URL
     status: 'idle' | 'analyzing' | 'uploading' | 'processing' | 'success' | 'error' | 'duplicate';
     progress: number;
     error?: string;
@@ -28,6 +30,9 @@ export default function BulkUploadPage() {
         if (e.target.files) {
             const selectedFiles = Array.from(e.target.files);
             
+            // Dynamic import to avoid SSR issues
+            const jsmediatags = (await import('jsmediatags')).default;
+
             for (const f of selectedFiles) {
                 const id = Math.random().toString(36).substr(2, 9);
                 const baseTitle = f.name.replace(/\.[^/.]+$/, "");
@@ -36,9 +41,10 @@ export default function BulkUploadPage() {
                     id,
                     file: f,
                     title: baseTitle,
-                    artist: 'Aura AI',
-                    bpm: '120',
-                    genre: 'Ambient',
+                    artist: 'Analyzing...',
+                    bpm: '...',
+                    genre: '...',
+                    lyrics: '',
                     status: 'analyzing',
                     progress: 0
                 }]);
@@ -55,9 +61,41 @@ export default function BulkUploadPage() {
                     continue;
                 }
 
-                // 2. Client-side Placeholder Metadata (Deep analysis happens on server via Ingest Engine)
-                // We mark it as idle ready for upload
-                updateFileData(id, { status: 'idle' });
+                // 2. Metadata Extraction
+                jsmediatags.read(f, {
+                    onSuccess: (tag: any) => {
+                        const { tags } = tag;
+                        let coverBlob = undefined;
+                        let coverUrl = undefined;
+
+                        if (tags.picture) {
+                            const { data, format } = tags.picture;
+                            const byteArray = new Uint8Array(data);
+                            coverBlob = new Blob([byteArray], { type: format });
+                            coverUrl = URL.createObjectURL(coverBlob);
+                        }
+
+                        updateFileData(id, {
+                            title: tags.title || baseTitle,
+                            artist: tags.artist || 'Sonaraura AI',
+                            genre: tags.genre || 'Ambient',
+                            bpm: tags.TBPM?.data || tags.bpm || '120',
+                            lyrics: tags.lyrics?.lyrics || tags.USLT?.lyrics || '',
+                            coverBlob,
+                            coverUrl,
+                            status: 'idle'
+                        });
+                    },
+                    onError: () => {
+                        updateFileData(id, {
+                            title: baseTitle,
+                            artist: 'Sonaraura AI',
+                            genre: 'Ambient',
+                            bpm: '120',
+                            status: 'idle'
+                        });
+                    }
+                });
             }
         }
     };
@@ -75,29 +113,50 @@ export default function BulkUploadPage() {
         const pendingFiles = files.filter(f => f.status === 'idle');
 
         for (const fileObj of pendingFiles) {
-            updateFileData(fileObj.id, { status: 'uploading', progress: 10 });
+            updateFileData(fileObj.id, { status: 'uploading', progress: 5 });
 
             try {
-                const { url, key } = await getSignedUploadUrl_Action(fileObj.file.type, fileObj.file.name);
-                updateFileData(fileObj.id, { progress: 30 });
+                // 1. Handle Cover Upload if exists
+                let finalCoverUrl = undefined;
+                if (fileObj.coverBlob) {
+                    const { url: imgUrl, key: imgKey } = await getSignedUploadUrl_Action(fileObj.coverBlob.type, `cover_${fileObj.id}.jpg`, 'covers');
+                    await fetch(imgUrl, {
+                        method: 'PUT',
+                        body: fileObj.coverBlob,
+                        headers: { 'Content-Type': fileObj.coverBlob.type }
+                    });
+                    // Construct public URL or S3 path (depends on CDN config)
+                    // For now, let's use a simple pattern or the signed URL (temporary)
+                    // Ideally, this should be the CloudFront URL.
+                    finalCoverUrl = imgUrl.split('?')[0]; 
+                }
 
-                const uploadRes = await fetch(url, {
+                updateFileData(fileObj.id, { progress: 20 });
+
+                // 2. Upload Audio to S3
+                const { url: audioUrl, key: audioKey } = await getSignedUploadUrl_Action(fileObj.file.type, fileObj.file.name);
+                updateFileData(fileObj.id, { progress: 40 });
+
+                const uploadRes = await fetch(audioUrl, {
                     method: 'PUT',
                     body: fileObj.file,
                     headers: { 'Content-Type': fileObj.file.type },
                 });
 
                 if (!uploadRes.ok) throw new Error('S3 Push Failed');
-                updateFileData(fileObj.id, { status: 'processing', progress: 70 });
+                updateFileData(fileObj.id, { status: 'processing', progress: 80 });
 
+                // 3. Create DB Record
                 const formData = new FormData();
                 formData.set('title', fileObj.title);
                 formData.set('artist', fileObj.artist);
                 formData.set('bpm', fileObj.bpm);
                 formData.set('genre', fileObj.genre);
+                formData.set('lyrics', fileObj.lyrics);
                 formData.set('duration', '180'); 
+                if (finalCoverUrl) formData.set('cover_url', finalCoverUrl);
 
-                const result = await createTrackRecord_Action(formData, key);
+                const result = await createTrackRecord_Action(formData, audioKey);
 
                 if (result.success) {
                     updateFileData(fileObj.id, { status: 'success', progress: 100 });
@@ -116,7 +175,7 @@ export default function BulkUploadPage() {
         <div className="max-w-6xl mx-auto space-y-10 pb-20 animate-in fade-in duration-700">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
                 <div>
-                    <h1 className="text-5xl font-black italic uppercase tracking-tighter text-white">Ingest Engine</h1>
+                    <h1 className="text-5xl font-black italic uppercase tracking-tighter text-white text-glow">Ingest Engine</h1>
                     <p className="text-zinc-500 font-medium mt-2 text-lg uppercase tracking-tight">Autonomous Cataloging & Metadata Extraction</p>
                 </div>
                 <div className="flex gap-4">
@@ -144,7 +203,11 @@ export default function BulkUploadPage() {
                         <div key={fileObj.id} className={`bg-[#1E1E22] p-8 rounded-[2rem] border border-white/5 flex flex-col md:flex-row items-center gap-10 group relative transition-all ${fileObj.status === 'duplicate' ? 'opacity-40 grayscale' : ''}`}>
                             <div className="flex items-center gap-8 flex-1 min-w-0">
                                 <div className="h-20 w-20 bg-zinc-800 rounded-2xl flex items-center justify-center flex-shrink-0 relative overflow-hidden shadow-2xl border border-white/5">
-                                    <Music className="text-zinc-700" size={32} />
+                                    {fileObj.coverUrl ? (
+                                        <img src={fileObj.coverUrl} className="w-full h-full object-cover" alt="" />
+                                    ) : (
+                                        <Music className="text-zinc-700" size={32} />
+                                    )}
                                     {fileObj.status === 'analyzing' && (
                                         <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
                                             <Loader2 className="animate-spin text-white" size={24} />

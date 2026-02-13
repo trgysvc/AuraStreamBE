@@ -204,7 +204,7 @@ export default async function AdminDashboard() {
                     <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-zinc-600 ml-2">System Pulse</h3>
                     <div className="bg-[#1E1E22] rounded-[3rem] border border-white/5 p-8 space-y-8 shadow-2xl h-[600px] overflow-hidden flex flex-col">
                         <div className="space-y-6 flex-1">
-                            {recentLogs.length > 0 ? recentLogs.map((log: any) => (
+                            {recentLogs && recentLogs.length > 0 ? recentLogs.map((log: any) => (
                                 <LogItem 
                                     key={log.id}
                                     type={log.latency_ms > 500 ? 'warning' : 'success'} 

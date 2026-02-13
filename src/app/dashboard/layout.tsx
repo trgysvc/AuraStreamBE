@@ -1,5 +1,6 @@
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import { Footer } from '@/components/layout/Footer';
+import React from 'react';
 
 export default function DashboardLayout({
     children,

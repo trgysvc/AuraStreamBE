@@ -50,7 +50,7 @@ export function LicenseWizard({ track, onClose }: LicenseWizardProps) {
                 if (session.url) window.location.href = session.url;
                 else throw new Error('No checkout URL');
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('License action error:', err);
             setError('Action failed. Please try again.');
         } finally {

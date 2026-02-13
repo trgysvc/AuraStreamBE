@@ -1,51 +1,53 @@
-# 🚀 SONARAURA: The Future of Sound (Ad Copy & Features)
+# 🚀 SONARAURA: The Future of Sound (Ad Copy & Technical USPs)
 
-Bu dosya, Sonaraura'nın pazarlama stratejisi ve reklam kampanyaları için öne çıkan benzersiz özelliklerini (USP) içermektedir.
+Bu dosya, Sonaraura'nın pazarlama stratejisi ve global reklam kampanyaları için öne çıkan benzersiz özelliklerini (USP) ve teknik üstünlüklerini içerir.
 
 ---
 
-## 💎 Neden Sonaraura? (Rakiplerde Olmayanlar)
+## 💎 Neden Sonaraura? (Sektörde İlk ve Tek)
 
-### 1. Frekans Mühendisliği (The Healing Sound)
-*   **Özellik:** Sadece müzik çalmıyoruz, sesin biyolojisine müdahale ediyoruz. 432Hz (Şifa/Huzur) ve 528Hz (Odak/Uyanış) frekanslarına anlık geçiş.
-*   **Vurgu:** Rakipler sadece dosya oynatır; Sonaraura mekanı veya videoyu hücresel düzeyde etkiler.
+### 1. Frekans Mühendisliği (Molecular Sound)
+*   **Özellik:** Sadece müzik çalmıyoruz, sesin fiziksel frekansını anlık olarak değiştiriyoruz. 432Hz (Huzur/Şifa) ve 528Hz (Odak/Uyanış) modlarına saniyeler içinde, parçanın BPM'ini bozmadan geçiş yapın.
+*   **Rakiplerden Farkı:** Spotify veya Apple Music sadece standart 440Hz sunar. Sonaraura, dinleyiciyi biyolojik düzeyde etkileyen bir deneyim sunar.
 
-### 2. Hava Durumu ve Biyoritim Zekası (Weather-Aware AI)
-*   **Özellik:** Aura AI, mekanın dışındaki havayı (Yağmurlu, Güneşli) ve saati bilir.
-*   **Vurgu:** Dışarıda yağmur başladığında Sonaraura otomatik olarak frekansı 432Hz'e çeker ve atmosferi yumuşatır. Bu otonom zeka hiçbir rakipte yoktur.
+### 2. Aura Karaoke Engine (Word-Level Precision) 🎤
+*   **Özellik:** Sözler sadece satır satır değil, kelime kelime müzikle senkronize akar. Şarkıcı hangi kelimeyi telaffuz ediyorsa o kelime parlar ve canlanır.
+*   **Rakiplerden Farkı:** Klasik LRC sistemlerinin ötesinde, Apple Music kalitesinde bir görsel eşlik deneyimi sunar.
 
-### 3. Smart Flow: Otonom Müzik Direktörü
-*   **Özellik:** Mekan sahipleri için "Kur ve Unut" sistemi. Sabah kahvesi için sakin, akşam kokteyli için enerjik geçişleri Aura kendisi yönetir.
-*   **Vurgu:** Bir DJ kiralamışsınız gibi çalışır ama %90 daha düşük maliyetle.
+### 3. Weather-Aware AI (Atmosferik Zeka) 🌦️
+*   **Özellik:** Aura AI, mekanın GPS lokasyonundaki anlık hava durumunu bilir.
+*   **Rakiplerden Farkı:** Dışarıda yağmur başladığında veya güneş battığında, Sonaraura çalma listesini ve frekansını otomatik olarak optimize eder. "Mekanınızın zekası dış dünyayla senkronize."
 
-### 4. YouTube Dispute Center (Sıfır Risk Garantisi)
-*   **Özellik:** Telif itirazı mı aldınız? Tek tıkla resmi, lisans anahtarlı ve teknik kanıtlı itiraz metniniz hazır.
-*   **Vurgu:** Sadece müzik değil, hukuki zırh satıyoruz.
+### 4. Smart Flow: Otonom Müzik Direktörü 🤖
+*   **Özellik:** 24 saatlik görsel takvim yönetimi. Sabah sakin, öğlen enerjik, akşam sofistike geçişleri Aura otonom olarak yapar.
+*   **Rakiplerden Farkı:** Statik listeler yerine, mekanın biyoritmini takip eden yaşayan bir müzik akışı.
 
-### 5. Epidemic-Grade Waveform (Görsel Deneyim)
-*   **Özellik:** Gerçek ses verisinden türetilen, lüks segment dalga boyu görselleştirmesi.
-*   **Vurgu:** Spotify'dan daha profesyonel, Epidemic Sound kadar estetik bir kullanıcı deneyimi.
+### 5. Sinyal Seviyesinde Koruma (LSB Watermarking) 🛡️
+*   **Özellik:** Ses dosyasının içine, duyulmayan dijital bir UUID mühürlüyoruz (Steganography).
+*   **Rakiplerden Farkı:** Dosya ismi veya formatı değişse bile (WAV -> MP3), parçanın mülkiyeti teknik olarak ispatlanabilir. YouTube hak ihlalleri için sarsılmaz kanıt.
 
-### 6. Steganographic Watermarking
-*   **Özellik:** Sesin içine duyulmayan dijital imzalar gömüyoruz.
-*   **Vurgu:** İçeriğinizin çalınmasını veya izinsiz kullanımını engellemek için askeri düzeyde koruma.
+### 6. Interactive Discovery Waveforms 📊
+*   **Özellik:** Liste içindeki her parça kendi canlı "Zaman Dalgası"na sahiptir. Çalan parçanın dalga boyu listede gerçek zamanlı olarak dans eder.
+*   **Rakiplerden Farkı:** Sadece dinlemez, sesin dokusunu listede gezerken görür ve istediğiniz saniyeye dalga üzerinden atlayabilirsiniz.
 
 ---
 
 ## 🎯 Reklam Başlık Önerileri
 
-*   **B2B (Mekanlar):** "Mekanınızın bir ruhu var. Onu Aura ile uyandırın."
-*   **B2C (Üreticiler):** "Müziği sadece duymayın, 528Hz ile hissedin. YouTube'da %100 telif koruması."
-*   **Genel:** "Sonaraura: Sesin Mimarı, İşletmenizin Kalbi."
+*   **B2B:** "Mekanınız sadece müzik çalmasın, Aura ile nefes alsın."
+*   **Elite Creators:** "Telif riskini unutun. Sinyal seviyesinde korunan tek kütüphaneye girin."
+*   **General:** "Sonaraura: Sesin Mimarisi, Zekanın Frekansı."
 
 ---
 
-## 📈 Teknik Üstünlükler (Bültenler için)
+## 📈 Karşılaştırmalı Avantajlar Matrisi
 
-| Özellik | Rakipler (Spotify/Artlist) | SONARAURA |
+| Özellik | Geleneksel Streaming | Sonaraura |
 | :--- | :--- | :--- |
-| Frekans Tuning | ❌ Yok | ✅ 432Hz/528Hz Real-time |
-| Hava Durumu Awareness | ❌ Yok | ✅ Entegre (OpenMeteo) |
-| Offline Cache | ⚠️ Kısıtlı | ✅ 500MB Akıllı Kota Yönetimi |
-| Lisans Doğrulama | ❌ Manuel | ✅ QR Kodlu Dinamik PDF |
-| Özel Üretim (On Request) | ❌ Yok | ✅ Aura Tailor Pipeline |
+| Real-time Hz Tuning | ❌ Yok | ✅ 432Hz / 528Hz (BPM Korumalı) |
+| Word-Level Sync (Karaoke) | ⚠️ Sınırlı | ✅ Canlı Kelime Parlatma (Glow) |
+| Hava Durumu Awareness | ❌ Yok | ✅ Canlı Lokasyon Senkronlu |
+| Otonom Flow Scheduling | ⚠️ Sınırlı | ✅ 24h Görsel Editör & Otomatik Geçiş |
+| Digital Watermarking | ❌ Yok (Sadece ID3) | ✅ Sinyal Seviyesinde (LSB v1) |
+| Metadata Extraction | ❌ Manuel | ✅ Otonom Bulk Ingest (BPM, Key, Cover) |
+| Special Production | ❌ Yok | ✅ Aura Tailor (Music on Request) Hub |

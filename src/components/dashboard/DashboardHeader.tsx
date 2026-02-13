@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Search,
     Music,
@@ -29,7 +29,7 @@ export default function DashboardHeader() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [role, setRole] = useState<string | null>(null);
 
-    useState(() => {
+    useEffect(() => {
         const fetchRole = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
@@ -42,7 +42,7 @@ export default function DashboardHeader() {
             }
         };
         fetchRole();
-    });
+    }, [supabase]);
 
     const handleLogout = async () => {
         await supabase.auth.signOut();
@@ -51,7 +51,7 @@ export default function DashboardHeader() {
     };
 
     const navItems = [
-        { label: 'Dashboard', href: '/dashboard/venue' },
+        { label: 'Venue', href: '/dashboard/venue' },
         { label: 'Music', href: '/dashboard/music' },
         { label: 'Sound effects', href: '/dashboard/sfx' },
     ];
@@ -84,11 +84,14 @@ export default function DashboardHeader() {
                         <span className="bg-[#1D9BF0] text-white text-[9px] font-black px-1.5 py-0.5 rounded italic uppercase leading-none">Soon</span>
                     </div>
 
-                    {/* Music on Request (Labs equivalent) */}
-                    <div className="hidden xl:flex items-center gap-2 px-3 py-1 border border-white/20 rounded-full bg-white/5 opacity-40 cursor-not-allowed group">
-                        <Sparkles size={12} className="text-zinc-500" />
-                        <span className="text-[12px] font-bold text-zinc-300">Music on Request</span>
-                    </div>
+                    {/* Music on Request (Active) */}
+                    <Link 
+                        href="/dashboard/request"
+                        className="hidden xl:flex items-center gap-2 px-3 py-1 border border-indigo-500/30 rounded-full bg-indigo-500/10 hover:bg-indigo-500/20 transition-all group shadow-lg shadow-indigo-500/10"
+                    >
+                        <Sparkles size={12} className="text-indigo-400 group-hover:rotate-12 transition-transform" />
+                        <span className="text-[12px] font-bold text-white tracking-tight uppercase italic">Music on Request</span>
+                    </Link>
                 </nav>
             </div>
 

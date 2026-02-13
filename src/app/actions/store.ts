@@ -11,6 +11,7 @@ export interface StoreTrack {
     duration: number;
     genre: string;
     coverImage?: string;
+    lyrics?: string;
     src: string; // Default Signed URL
     availableTunings: Record<string, string>;
 }
@@ -23,7 +24,7 @@ export async function getStoreTracks_Action(options?: {
     const supabase = createAdminClient();
 
     // 1. Fetch Active Tracks with their Files
-    let query = supabase
+    const queryBuilder = supabase
         .from('tracks')
         .select(`
       id,
@@ -33,6 +34,7 @@ export async function getStoreTracks_Action(options?: {
       bpm,
       duration_sec,
       genre,
+      lyrics,
       cover_image_url,
       track_files (
         s3_key,
@@ -45,14 +47,14 @@ export async function getStoreTracks_Action(options?: {
 
     // Apply Filters
     if (options?.genres && options.genres.length > 0) {
-        query = query.in('genre', options.genres);
+        queryBuilder.in('genre', options.genres);
     }
 
     if (options?.query) {
-        query = query.ilike('title', `%${options.query}%`);
+        queryBuilder.ilike('title', `%${options.query}%`);
     }
 
-    const { data: tracks, error } = await query;
+    const { data: tracks, error } = await queryBuilder;
 
     if (error) {
         console.error('Store Fetch Error:', error);
@@ -67,7 +69,7 @@ export async function getStoreTracks_Action(options?: {
         let defaultSrc = '';
 
         // Generate signed URLs for all streamable files
-        const files = (track.track_files as any[]) || [];
+        const files = (track.track_files as unknown as { file_type: string, s3_key: string, tuning: string }[]) || [];
         const streamFiles = files.filter((f) => f.file_type === 'stream_aac');
         
         for (const file of streamFiles) {
@@ -101,6 +103,7 @@ export async function getStoreTracks_Action(options?: {
             duration: track.duration_sec || 0,
             genre: track.genre || 'Ambient',
             coverImage: track.cover_image_url || undefined,
+            lyrics: track.lyrics || undefined,
             src: defaultSrc,
             availableTunings
         };

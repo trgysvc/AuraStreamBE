@@ -1,15 +1,17 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Search, ChevronDown, Sliders, Music, Sparkles as LucideSparkles } from 'lucide-react';
+import Link from 'next/link';
+import { Search, ChevronDown, Sliders, Music, Sparkles as LucideSparkles, Play } from 'lucide-react';
 import TrackRow from '@/components/dashboard/TrackRow';
 import { getVenueTracks_Action } from '@/app/actions/venue';
 import { ScheduleManager } from '@/components/feature/venue/ScheduleManager';
-import { SmartFlowProvider } from '@/context/SmartFlowContext';
+import { SmartFlowProvider, useSmartFlow } from '@/context/SmartFlowContext';
+import { usePlayer } from '@/context/PlayerContext';
 
-const PlaylistCard = ({ title, tracks, color, image }: { title: string, tracks: string, color: string, image?: string }) => (
-    <div className="group cursor-pointer">
-        <div className="relative aspect-square rounded-sm overflow-hidden mb-3">
+const PlaylistCard = ({ title, tracks, color, image, onClick }: { title: string, tracks: string, color: string, image?: string, onClick?: () => void }) => (
+    <div className="group cursor-pointer" onClick={onClick}>
+        <div className="relative aspect-square rounded-sm overflow-hidden mb-2">
             {image ? (
                 <div
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
@@ -18,36 +20,57 @@ const PlaylistCard = ({ title, tracks, color, image }: { title: string, tracks: 
             ) : (
                 <div className={`absolute inset-0 bg-gradient-to-br ${color} transition-transform duration-500 group-hover:scale-110`} />
             )}
-            <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center scale-0 group-hover:scale-100 transition-transform duration-300 border border-white/20">
+                    <Play className="text-white fill-current" size={20} />
+                </div>
+            </div>
         </div>
-        <h4 className="text-[14px] font-bold text-white truncate">{title}</h4>
-        <p className="text-[12px] text-zinc-500 font-medium">{tracks}</p>
+        <h4 className="text-[12px] font-bold text-white truncate group-hover:text-indigo-400 transition-colors tracking-tight">{title}</h4>
+        <p className="text-[10px] text-zinc-500 font-medium">{tracks}</p>
     </div>
 );
 
-export default function VenueDashboardPage() {
+function VenueDashboardContent() {
+    const { activeRule } = useSmartFlow();
+    const { playTrack } = usePlayer();
     const [activeSubTab, setActiveSubTab] = useState<'search' | 'assistant' | 'flow'>('search');
     const [searchType, setSearchType] = useState('Music');
     const [isSearchDropdownOpen, setIsSearchDropdownOpen] = useState(false);
-    const [showFilters, setShowFilters] = useState(false);
+    const [showFilters, setShowFilters] = useState(false); 
     const [query, setQuery] = useState('');
     const [tracks, setTracks] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedPlaylist, setSelectedPlaylist] = useState<string | null>(null);
 
-    // Filter States
+    // Taxonomy Filters State
+    const [selectedVenues, setSelectedVenues] = useState<string[]>([]);
+    const [selectedVibes, setSelectedVibes] = useState<string[]>([]);
+    const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
     const [bpmRange, setBpmRange] = useState<[number, number]>([60, 180]);
-    const [selectedMoods, setSelectedMoods] = useState<string[]>([]);
 
-    const performSearch = useCallback(async (searchQuery: string, currentBpm: [number, number], currentMoods: string[]) => {
+    const performSearch = useCallback(async (
+        searchQuery: string, 
+        venues: string[], 
+        vibes: string[], 
+        genres: string[], 
+        bpm: [number, number]
+    ) => {
         setLoading(true);
         try {
+            let combinedMoods = [...vibes, ...genres, ...venues];
+            
+            if (activeRule) {
+                if (activeRule.moods) combinedMoods = [...new Set([...combinedMoods, ...activeRule.moods])];
+                if (activeRule.genres) combinedMoods = [...new Set([...combinedMoods, ...activeRule.genres])];
+            }
+
             const data = await getVenueTracks_Action({
                 query: searchQuery,
-                bpmRange: currentBpm,
-                moods: currentMoods
+                bpmRange: activeRule ? undefined : bpm, 
+                moods: combinedMoods.length > 0 ? combinedMoods : undefined
             });
 
-            // Map VenueTrack to the format expected by TrackRow
             setTracks(data.map(t => ({
                 id: t.id,
                 title: t.title,
@@ -56,8 +79,9 @@ export default function VenueDashboardPage() {
                 bpm: t.bpm || 120,
                 tags: t.tags?.length ? t.tags : [t.genre || "Music", "General"],
                 image: t.coverImage,
-                audioSrc: t.src, // Pass the signed URL
-                metadata: (t as any).metadata // Pass extra metadata if exists for waveform
+                lyrics: t.lyrics, // Correctly pass lyrics to the frontend state
+                audioSrc: t.src, 
+                metadata: (t as any).metadata
             })));
 
         } catch (err) {
@@ -65,49 +89,66 @@ export default function VenueDashboardPage() {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [activeRule]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            performSearch(query, bpmRange, selectedMoods);
+            performSearch(query, selectedVenues, selectedVibes, selectedGenres, bpmRange);
         }, 400);
         return () => clearTimeout(timer);
-    }, [query, bpmRange, selectedMoods, performSearch]);
+    }, [query, selectedVenues, selectedVibes, selectedGenres, bpmRange, performSearch]);
 
-    const handleSimilar = (id: string) => {
-        const targetTrack = tracks.find(t => t.id === id);
-        if (!targetTrack) return;
-        setQuery(targetTrack.tags[0] || targetTrack.title);
-        setShowFilters(false);
+    const handleTrackPlay = (track: any) => {
+        playTrack(track, tracks); // Pass current view list for auto-play
     };
 
-    const moods = ['Happy', 'Melancholic', 'Energetic', 'Dark', 'Cinematic', 'Chill', 'Aggressive', 'Hopeful'];
+    const toggleTag = (list: string[], setList: (l: string[]) => void, tag: string) => {
+        setList(list.includes(tag) ? list.filter(t => t !== tag) : [...list, tag]);
+    };
 
     const playlists = [
-        { title: "Picked for you", tracks: "Sizin için seçtiklerimiz", color: "bg-[#FF5533]" },
-        { title: "Now Trending", tracks: "35 tracks", color: "bg-[#FF77AA]" },
-        { title: "Epidemic Essentials", tracks: "24 playlists", color: "bg-[#AAAAAA]" },
-        { title: "Creator's Picks", tracks: "117 playlists", color: "bg-[#4499FF]" },
-        { title: "Championships", tracks: "35 tracks", color: "bg-[#FFCC44]" },
-        { title: "Sports & Action", tracks: "8 playlists", color: "bg-[#9966FF]" },
-        { title: "Valentine's Day", tracks: "35 tracks", color: "bg-[#FF99CC]" },
-        { title: "Anti-Valentine's", tracks: "35 tracks", color: "bg-[#4466FF]" },
-        { title: "Brazilian Carnival", tracks: "35 tracks", color: "bg-[#33CCAA]" },
-        { title: "Newly Signed", tracks: "35 tracks", color: "bg-[#FFBB55]" },
-        { title: "Runway Show", tracks: "35 tracks", color: "bg-[#DDEEBB]" },
-        { title: "Lifestyle Vlog", tracks: "35 tracks", color: "bg-[#BBAACC]" },
+        { title: "Recommended tracks", tracks: "Aura AI", color: "bg-[#FF5533]", image: "https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=800" },
+        { title: "Trending in Venues", tracks: "Popular", color: "bg-[#FF77AA]", image: "https://images.unsplash.com/photo-1514525253344-f856335d7d67?q=80&w=800" },
+        { title: "Can's Essentials", tracks: "24 playlists", color: "bg-[#AAAAAA]", image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=800" },
+        { title: "Creator's Picks", tracks: "117 playlists", color: "bg-[#4499FF]", image: "https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?q=80&w=800" },
+        { title: "Championships", tracks: "35 tracks", color: "bg-[#FFCC44]", image: "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=800" },
+        { title: "Sports & Action", tracks: "8 playlists", color: "bg-[#9966FF]", image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=800" },
+        { title: "Valentine's Day", tracks: "35 tracks", color: "bg-[#FF99CC]", image: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800" },
+        { title: "Anti-Valentine's", tracks: "35 tracks", color: "bg-[#4466FF]", image: "https://images.unsplash.com/photo-1501901664533-51633cfbcab4?q=80&w=800" }
     ];
 
+    const vibes = [
+        { title: 'Chill', image: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=800', color: 'bg-blue-500' },
+        { title: 'Dreamy', image: 'https://images.unsplash.com/photo-1492724441997-5dc865305da7?q=80&w=800', color: 'bg-purple-500' },
+        { title: 'Epic', image: 'https://images.unsplash.com/photo-1533750516457-a7f992034fec?q=80&w=800', color: 'bg-red-500' },
+        { title: 'Focus', image: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&w=800', color: 'bg-teal-500' },
+        { title: 'Happy', image: 'https://images.unsplash.com/photo-1500835595351-263d8137b6a9?q=80&w=800', color: 'bg-yellow-500' },
+        { title: 'Romantic', image: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800', color: 'bg-pink-500' },
+        { title: 'Relaxing', image: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?q=80&w=800', color: 'bg-indigo-500' },
+        { title: 'Suspense', image: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=800', color: 'bg-zinc-800' }
+    ];
+
+    const VENUE_SECTORS = [
+        { name: 'Hospitality', tags: ['Hotel Lobby', 'Lounge & Bar', 'Rooftop / Terrace'] },
+        { name: 'F&B', tags: ['Coffee Shop', 'Fine Dining', 'Bistro & Brasserie'] },
+        { name: 'Retail', tags: ['Luxury Boutique', 'Streetwear Store'] },
+        { name: 'Wellness', tags: ['Spa & Massage', 'Yoga & Pilates'] },
+        { name: 'Work', tags: ['Coworking Space', 'Corporate Office'] }
+    ];
+
+    const VIBE_TAGS = ['Chill', 'Dark', 'Dreamy', 'Epic', 'Euphoric', 'Focus', 'Happy', 'Hopeful'];
+    const GENRE_TAGS = ['Ambient', 'Cinematic', 'Electronic', 'Jazz', 'Lounge', 'Pop'];
+
     return (
-        <SmartFlowProvider venueId="default-venue">
-            <div className="flex flex-col gap-12 pb-20 max-w-[1600px] mx-auto">
-                {/* 1. Header & Navigation */}
-                <div className="space-y-10">
+        <div className="flex flex-col gap-12 pb-20 max-w-[1600px] mx-auto">
+            {/* 1. Header & Navigation */}
+            <div className="space-y-10">
+                <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         {['search', 'assistant', 'flow'].map((tab) => (
                             <button
                                 key={tab}
-                                onClick={() => setActiveSubTab(tab as any)}
+                                onClick={() => { setActiveSubTab(tab as any); setSelectedPlaylist(null); }}
                                 className={`px-8 py-2.5 rounded-full text-[13px] font-black uppercase tracking-widest transition-all shadow-lg border ${
                                     activeSubTab === tab 
                                     ? 'bg-white text-black border-white scale-105' 
@@ -119,207 +160,244 @@ export default function VenueDashboardPage() {
                         ))}
                     </div>
 
-                    {activeSubTab !== 'flow' && (
-                        <div className="flex items-stretch bg-[#1E1E22] rounded-md overflow-visible relative z-[100] h-14 border border-white/5 shadow-2xl animate-in fade-in duration-500">
-                            <div className="relative h-full flex items-center border-r border-white/5">
-                                <button
-                                    type="button"
-                                    onClick={() => setIsSearchDropdownOpen(!isSearchDropdownOpen)}
-                                    className="px-8 h-full flex items-center gap-3 hover:bg-white/5 transition-colors group min-w-[180px]"
-                                >
-                                    <span className="text-[14px] font-bold text-white">{searchType}</span>
-                                    <ChevronDown size={18} className={`text-zinc-500 group-hover:text-white transition-all ${isSearchDropdownOpen ? 'rotate-180' : ''}`} />
-                                </button>
-                                {isSearchDropdownOpen && (
-                                    <>
-                                        <div className="fixed inset-0 z-[110]" onClick={() => setIsSearchDropdownOpen(false)} />
-                                        <div className="absolute top-full left-0 mt-2 w-56 bg-[#1E1E22] border border-white/10 rounded-xl shadow-2xl z-[120] py-2 overflow-hidden">
-                                            {['Music', 'Sound Effects'].map((option) => (
-                                                <button
-                                                    key={option}
-                                                    onClick={() => { setSearchType(option); setIsSearchDropdownOpen(false); }}
-                                                    className="w-full text-left px-5 py-3 text-[13px] font-bold text-zinc-300 hover:text-white hover:bg-white/5 transition-colors first:rounded-t-md last:rounded-b-md"
-                                                >
-                                                    {option}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-
-                            <div className="flex-1 flex items-center px-8 h-full relative">
-                                <Search size={20} className="absolute left-8 text-zinc-600" />
-                                <input
-                                    type="text"
-                                    value={query}
-                                    onChange={(e) => setQuery(e.target.value)}
-                                    placeholder={activeSubTab === 'assistant' ? "Explain the vibe you want..." : "Search by mood, genre, energy..."}
-                                    className="w-full bg-transparent text-white focus:outline-none text-[16px] h-full pl-10 placeholder-zinc-700"
-                                />
-                            </div>
-                            <div className="bg-white/5 text-zinc-600 px-10 flex items-center justify-center opacity-40 border-l border-white/5">
-                                <Music size={24} />
-                            </div>
+                    {activeRule && (
+                        <div className="px-6 py-2 bg-indigo-600/10 border border-indigo-500/20 rounded-full flex items-center gap-3 animate-pulse">
+                            <div className="h-2 w-2 rounded-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,1)]" />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 italic">
+                                Flow Active: {activeRule.name}
+                            </span>
                         </div>
                     )}
                 </div>
 
-                {/* Content Logic */}
-                {activeSubTab === 'flow' ? (
-                    <ScheduleManager />
-                ) : (
-                    <>
-                        {/* 2. Track List Area (Top 5 Pieces) */}
-                        <div className="flex gap-10 items-start">
-                            <div className="flex-1 space-y-8">
-                                <div className="flex items-center justify-between border-b border-white/5 pb-6">
-                                    <div>
-                                        <h2 className="text-2xl font-black tracking-tight text-white uppercase italic">
-                                            {query ? `Aura Results for "${query}"` : 'Recommended tracks'}
-                                        </h2>
+                {activeSubTab !== 'flow' && (
+                    <div className="flex items-stretch bg-[#1E1E22] rounded-md overflow-visible relative z-[100] h-14 border border-white/5 shadow-2xl animate-in fade-in duration-500">
+                        <div className="relative h-full flex items-center border-r border-white/5">
+                            <button
+                                type="button"
+                                onClick={() => setIsSearchDropdownOpen(!isSearchDropdownOpen)}
+                                className="px-8 h-full flex items-center gap-3 hover:bg-white/5 transition-colors group min-w-[180px]"
+                            >
+                                <span className="text-[14px] font-bold text-white">{searchType}</span>
+                                <ChevronDown size={18} className={`text-zinc-500 group-hover:text-white transition-all ${isSearchDropdownOpen ? 'rotate-180' : ''}`} />
+                            </button>
+                            {isSearchDropdownOpen && (
+                                <>
+                                    <div className="fixed inset-0 z-[110]" onClick={() => setIsSearchDropdownOpen(false)} />
+                                    <div className="absolute top-full left-0 mt-2 w-56 bg-[#1E1E22] border border-white/10 rounded-xl shadow-2xl z-[120] py-2 overflow-hidden">
+                                        {['Music', 'Sound Effects'].map((option) => (
+                                            <button
+                                                key={option}
+                                                onClick={() => { setSearchType(option); setIsSearchDropdownOpen(false); }}
+                                                className="w-full text-left px-5 py-3 text-[13px] font-bold text-zinc-300 hover:text-white hover:bg-white/5 transition-colors first:rounded-t-md last:rounded-b-md"
+                                            >
+                                                {option}
+                                            </button>
+                                        ))}
                                     </div>
-                                    <div className="flex items-center gap-4">
-                                        <button
-                                            onClick={() => setShowFilters(!showFilters)}
-                                            className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all border ${showFilters ? 'bg-white text-black border-white' : 'bg-zinc-900/50 text-zinc-400 border-white/5 hover:text-white hover:bg-zinc-800'}`}
-                                        >
-                                            <Sliders size={14} /> {showFilters ? 'Hide Filters' : 'Show Filters'}
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="divide-y divide-white/5 bg-zinc-900/5 rounded-3xl overflow-hidden min-h-[300px]">
-                                    {loading && tracks.length === 0 ? (
-                                        <div className="py-20 flex flex-col items-center justify-center space-y-6 opacity-30">
-                                            <div className="h-10 w-10 border-4 border-white/10 border-t-white rounded-full animate-spin" />
-                                        </div>
-                                    ) : tracks.length > 0 ? (
-                                        tracks.slice(0, 5).map((track) => (
-                                            <TrackRow key={track.id} {...track} onSimilar={handleSimilar} />
-                                        ))
-                                    ) : (
-                                        <div className="py-20 text-center flex flex-col items-center space-y-4 opacity-40">
-                                            <LucideSparkles size={64} strokeWidth={1} />
-                                            <p className="text-xl font-bold">No matches found</p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            {showFilters && (
-                                <div className="w-80 space-y-10 animate-in slide-in-from-right duration-500 sticky top-24">
-                                    <div className="p-8 rounded-3xl bg-[#1E1E22] border border-white/5 space-y-10 shadow-2xl">
-                                        <div className="space-y-6">
-                                            <div className="flex items-center justify-between">
-                                                <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500">Tempo (BPM)</h3>
-                                                <span className="text-white text-xs font-bold">{bpmRange[0]} - {bpmRange[1]}</span>
-                                            </div>
-                                            <input
-                                                type="range" min="60" max="180" step="5"
-                                                value={bpmRange[1]}
-                                                onChange={(e) => setBpmRange([bpmRange[0], parseInt(e.target.value)])}
-                                                className="w-full accent-white opacity-70 hover:opacity-100 transition-opacity"
-                                            />
-                                        </div>
-                                        <div className="space-y-6">
-                                            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500">Mood / Vibe</h3>
-                                            <div className="grid grid-cols-2 gap-2">
-                                                {moods.map(mood => (
-                                                    <button
-                                                        key={mood}
-                                                        onClick={() => setSelectedMoods(prev => prev.includes(mood) ? prev.filter(m => m !== mood) : [...prev, mood])}
-                                                        className={`px-4 py-3 rounded-xl text-[12px] font-bold transition-all border ${selectedMoods.includes(mood) ? 'bg-white text-black border-white shadow-xl scale-105' : 'bg-white/5 text-zinc-400 border-white/5 hover:bg-white/10 hover:text-white'}`}
-                                                    >
-                                                        {mood}
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-                                        <button
-                                            onClick={() => { setBpmRange([60, 180]); setSelectedMoods([]); setQuery(''); }}
-                                            className="w-full py-4 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-500 hover:text-white text-[11px] font-black uppercase tracking-[0.2em] transition-all border border-white/5"
-                                        >
-                                            Reset All
-                                        </button>
-                                    </div>
-                                </div>
+                                </>
                             )}
                         </div>
 
-                        {/* 3. Featured Playlists Section (12 items) */}
-                        <div className="space-y-8 pt-8 border-t border-white/5">
-                            <div className="flex items-center justify-between">
-                                <h2 className="text-2xl font-black tracking-tight text-white uppercase italic">Featured playlists</h2>
-                                <button className="text-[11px] font-black text-zinc-500 hover:text-white transition-colors uppercase tracking-[0.2em]">View all</button>
+                        <div className="flex-1 flex items-center px-8 h-full relative">
+                            <Search size={20} className="absolute left-8 text-zinc-600" />
+                            <input
+                                type="text"
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                placeholder={activeSubTab === 'assistant' ? "Explain the vibe you want..." : "Search by mood, genre, energy..."}
+                                className="w-full bg-transparent text-white focus:outline-none text-[16px] h-full pl-10 placeholder-zinc-700 font-bold"
+                            />
+                        </div>
+                        <div className="bg-white/5 text-zinc-600 px-10 flex items-center justify-center opacity-40 border-l border-white/5">
+                            <Music size={24} />
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Content Logic */}
+            {activeSubTab === 'flow' ? (
+                <ScheduleManager />
+            ) : (
+                <div className="flex gap-10 items-start">
+                    {/* LEFT SIDEBAR: ADVANCED TAXONOMY */}
+                    {showFilters && (
+                        <aside className="w-64 space-y-10 animate-in slide-in-from-left duration-500 sticky top-24 pb-20">
+                            <div className="space-y-6">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 ml-1">Venue</h3>
+                                {VENUE_SECTORS.map(s => (
+                                    <div key={s.name} className="space-y-2">
+                                        <p className="text-[8px] font-bold text-zinc-600 uppercase ml-1">{s.name}</p>
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {s.tags.map(t => (
+                                                <button key={t} onClick={() => toggleTag(selectedVenues, setSelectedVenues, t)} className={`px-2 py-1 rounded-md text-[9px] font-bold transition-all border ${selectedVenues.includes(t) ? 'bg-white text-black border-white shadow-xl' : 'bg-black text-zinc-600 border-white/5 hover:border-white/10 hover:text-zinc-400'}`}>{t}</button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                            <div className="space-y-4">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 ml-1">Vibe</h3>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {VIBE_TAGS.map(v => (
+                                        <button key={v} onClick={() => toggleTag(selectedVibes, setSelectedVibes, v)} className={`px-2 py-1 rounded-md text-[9px] font-bold transition-all border ${selectedVibes.includes(v) ? 'bg-pink-600 text-white border-pink-500 shadow-xl' : 'bg-white/5 text-zinc-500 border-white/5 hover:border-white/10'}`}>{v}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="space-y-4">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 ml-1">Genre</h3>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {GENRE_TAGS.map(g => (
+                                        <button key={g} onClick={() => toggleTag(selectedGenres, setSelectedGenres, g)} className={`px-2 py-1 rounded-md text-[9px] font-bold transition-all border ${selectedGenres.includes(g) ? 'bg-indigo-600 text-white border-indigo-500 shadow-xl' : 'bg-black text-zinc-600 border-white/5 hover:border-white/10'}`}>{g}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 space-y-4">
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 ml-1">BPM</h3>
+                                <input type="range" min="60" max="180" value={bpmRange[1]} onChange={(e) => setBpmRange([bpmRange[0], parseInt(e.target.value)])} className="w-full h-1 accent-white opacity-40 hover:opacity-100 transition-opacity" />
+                                <button onClick={() => { setSelectedVenues([]); setSelectedVibes([]); setSelectedGenres([]); setBpmRange([60, 180]); setQuery(''); }} className="w-full py-2 rounded-lg bg-white/5 text-zinc-600 text-[9px] font-black uppercase tracking-[0.3em] border border-white/5">Reset</button>
+                            </div>
+                        </aside>
+                    )}
+
+                    <div className="flex-1 space-y-12">
+                        {/* 2. Track List Area (Top 5 Pieces) */}
+                        <div className="space-y-8">
+                            <div className="flex items-center justify-between border-b border-white/5 pb-6">
+                                <div>
+                                    <h2 className="text-2xl font-black tracking-tight text-white uppercase italic">
+                                        {query ? `Aura Results for "${query}"` : (selectedPlaylist ? selectedPlaylist : 'Discovery Flow')}
+                                    </h2>
+                                    {(activeRule || selectedVenues.length > 0 || selectedVibes.length > 0) && (
+                                        <div className="flex items-center gap-2 mt-2">
+                                            <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-pulse" />
+                                            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest italic">
+                                                Intelligence-Layer Active
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                                <button
+                                    onClick={() => setShowFilters(!showFilters)}
+                                    className={`flex items-center gap-3 px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all border ${showFilters ? 'bg-white text-black border-white' : 'bg-zinc-900/50 text-zinc-500 border-white/5 hover:text-white'}`}
+                                >
+                                    <Sliders size={14} /> {showFilters ? 'Hide Engine' : 'Advanced Filters'}
+                                </button>
+                            </div>
+
+                            <div className="divide-y divide-white/5 bg-zinc-900/5 rounded-[2.5rem] overflow-hidden min-h-[400px]">
+                                {loading && tracks.length === 0 ? (
+                                    <div className="py-20 flex flex-col items-center justify-center space-y-6 opacity-30">
+                                        <div className="h-10 w-10 border-4 border-white/10 border-t-white rounded-full animate-spin" />
+                                    </div>
+                                ) : tracks.length > 0 ? (
+                                    tracks.slice(0, 5).map((track) => (
+                                        <TrackRow key={track.id} {...track} lyrics={track.lyrics} allTracks={tracks} />
+                                    ))
+                                ) : (
+                                    <div className="py-20 text-center flex flex-col items-center space-y-4 opacity-40">
+                                        <LucideSparkles size={64} strokeWidth={1} />
+                                        <p className="text-xl font-bold uppercase italic tracking-tighter">No assets matching criteria</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* 3. Premium Curation Section (8 boxes) */}
+                        <div className="space-y-8 pt-8 border-t border-white/5">
+                            <h2 className="text-2xl font-black tracking-tight text-white uppercase italic">Premium Curation</h2>
+                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
                                 {playlists.map((playlist, i) => (
-                                    <PlaylistCard key={i} {...playlist} />
+                                    <PlaylistCard 
+                                        key={i} 
+                                        {...playlist} 
+                                        onClick={() => {
+                                            setSelectedPlaylist(playlist.title);
+                                            setQuery(playlist.title === "Recommended tracks" ? "" : playlist.title);
+                                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        }}
+                                    />
                                 ))}
                             </div>
                         </div>
 
                         {/* 4. Music on Request Promotion Banner */}
                         <div className="pt-12">
-                            <div className="bg-[#D9E1EB] rounded-sm overflow-hidden flex flex-col md:flex-row items-stretch border border-white/5">
+                            <div className="bg-[#D9E1EB] rounded-[3rem] overflow-hidden flex flex-col md:flex-row items-stretch border border-white/5 group/banner">
                                 <div className="flex-1 p-12 md:p-16 flex flex-col justify-center space-y-6">
-                                    <h2 className="text-5xl font-serif text-[#111111] leading-tight max-w-md italic font-black uppercase tracking-tighter">Music on Request</h2>
+                                    <h2 className="text-5xl font-serif text-[#111111] font-black uppercase tracking-tighter italic leading-tight max-w-md">Music on Request</h2>
                                     <p className="text-[15px] text-zinc-800 max-w-sm font-medium">Elevate your venue with exclusive, custom-tailored sounds. Our AI and expert curators work for your brand.</p>
                                     <div>
-                                        <button className="bg-black text-white px-10 py-4 font-bold text-[13px] hover:bg-zinc-900 transition-all active:scale-95 uppercase tracking-[0.2em] shadow-2xl">
-                                            Get info
-                                        </button>
+                                        <Link 
+                                            href="/dashboard/request"
+                                            className="inline-block bg-black text-white px-10 py-4 font-bold text-[13px] hover:bg-zinc-900 transition-all active:scale-95 uppercase tracking-[0.2em] shadow-2xl"
+                                        >
+                                            Get Started
+                                        </Link>
                                     </div>
                                 </div>
-                                <div className="flex-1 bg-[#FF77AA] flex items-center justify-center min-h-[400px] relative">
-                                    <div className="absolute inset-0 bg-gradient-to-tr from-pink-500/10 to-transparent z-10" />
-                                    <div className="w-full h-full flex items-center justify-center overflow-hidden">
-                                        <div className="w-72 h-56 bg-[#1D9BF0] rounded-xl shadow-[0_40px_80px_-15px_rgba(0,0,0,0.5)] relative translate-y-8 rotate-[-2deg] hover:rotate-0 transition-transform duration-500">
-                                            <div className="absolute -top-8 right-10 w-16 h-16 bg-black rounded-full shadow-2xl flex items-center justify-center border-4 border-[#FF77AA]">
-                                                <LucideSparkles className="text-white" size={28} />
-                                            </div>
-                                            <div className="absolute bottom-8 left-8 flex gap-4">
-                                                <div className="w-6 h-6 rounded-full bg-white/20" />
-                                                <div className="w-6 h-6 rounded-full bg-yellow-400 shadow-lg" />
-                                                <div className="w-6 h-6 rounded-full bg-rose-500 shadow-lg" />
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div className="flex-1 relative min-h-[400px] overflow-hidden group/studio">
+                                    <div 
+                                        className="absolute inset-0 bg-cover bg-[center_bottom_30%] transition-transform duration-[2000ms] group-hover/studio:scale-110" 
+                                        style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=1600)' }} 
+                                    />
+                                    <div className="absolute inset-0 bg-black/20 group-hover/studio:bg-black/10 transition-colors duration-700" />
+                                    <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[#D9E1EB]/30" />
                                 </div>
                             </div>
                         </div>
 
-                        {/* 5. Second Track List (Bottom 10 Pieces) */}
+                        {/* 5. Trending in Venues List */}
                         <div className="space-y-8 pt-12 border-t border-white/5">
                             <div className="flex items-center justify-between">
-                                <div>
-                                    <h2 className="text-2xl font-black tracking-tight text-white uppercase italic">Trending in Venues</h2>
-                                    <p className="text-[14px] text-zinc-500 mt-1 font-medium">Global curation picked by Aura AI.</p>
-                                </div>
+                                <h2 className="text-2xl font-black tracking-tight text-white uppercase italic">Trending in Venues</h2>
                                 <button className="text-[11px] font-black text-zinc-500 hover:text-white transition-colors uppercase tracking-[0.2em]">Explore More</button>
                             </div>
 
-                            <div className="divide-y divide-white/5 bg-zinc-900/5 rounded-3xl overflow-hidden min-h-[400px]">
-                                {loading && tracks.length < 10 ? (
-                                    <div className="py-20 flex flex-col items-center justify-center space-y-4 opacity-30">
-                                        <div className="h-8 w-8 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                                    </div>
-                                ) : tracks.length > 5 ? (
+                            <div className="divide-y divide-white/5 bg-zinc-900/5 rounded-[2.5rem] overflow-hidden min-h-[400px]">
+                                {tracks.length > 5 ? (
                                     tracks.slice(5, 15).map((track) => (
-                                        <TrackRow key={track.id} {...track} onSimilar={handleSimilar} />
+                                        <TrackRow key={track.id} {...track} lyrics={track.lyrics} allTracks={tracks} />
                                     ))
                                 ) : (
-                                    <div className="py-20 text-center flex flex-col items-center space-y-4 opacity-40">
-                                        <LucideSparkles size={64} strokeWidth={1} />
-                                        <p className="text-xl font-bold">No matches found</p>
+                                    <div className="py-20 text-center flex items-center justify-center text-zinc-700 font-black uppercase tracking-widest text-[10px]">
+                                        Discovering more harmonics...
                                     </div>
                                 )}
                             </div>
                         </div>
-                    </>
-                )}
-            </div>
+
+                        {/* 6. Premium Vibes Section (8 Boxes) */}
+                        <div className="space-y-8 pt-12 border-t border-white/5">
+                            <h2 className="text-2xl font-black tracking-tight text-white uppercase italic text-glow-indigo">Premium Vibes</h2>
+                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+                                {vibes.map((vibe, i) => (
+                                    <PlaylistCard 
+                                        key={i} 
+                                        title={vibe.title}
+                                        tracks="Aura Curation"
+                                        color={vibe.color}
+                                        image={vibe.image}
+                                        onClick={() => {
+                                            setSelectedVibes([vibe.title]);
+                                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+export default function VenueDashboardPage() {
+    return (
+        <SmartFlowProvider venueId="default-venue">
+            <VenueDashboardContent />
         </SmartFlowProvider>
     );
 }

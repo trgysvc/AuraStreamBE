@@ -9,7 +9,8 @@ import {
     ArrowUpRight,
     UploadCloud,
     Music as MusicIcon,
-    DollarSign
+    DollarSign,
+    Save
 } from 'lucide-react';
 import { updateRequestStatus_Action } from '@/app/actions/admin-requests';
 
@@ -29,6 +30,8 @@ export function RequestActionCard({ req }: { req: any }) {
     const [loading, setLoading] = useState(false);
     const [quotePrice, setQuotePrice] = useState(req.price_paid || '199.00');
     const [isEditingPrice, setIsEditingPrice] = useState(false);
+    const [adminNotes, setAdminNotes] = useState(req.admin_notes || '');
+    const [isSavingNotes, setIsSavingNotes] = useState(false);
 
     const handleUpdateStatus = async (status: 'pending' | 'processing' | 'review' | 'completed' | 'rejected') => {
         setLoading(true);
@@ -39,6 +42,18 @@ export function RequestActionCard({ req }: { req: any }) {
             alert('Status update failed');
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleSaveNotes = async () => {
+        setIsSavingNotes(true);
+        try {
+            await updateRequestNotes_Action(req.id, adminNotes);
+        } catch (e) {
+            console.error(e);
+            alert('Saving notes failed');
+        } finally {
+            setIsSavingNotes(false);
         }
     };
 
@@ -106,11 +121,27 @@ export function RequestActionCard({ req }: { req: any }) {
                             </a>
                         </SimpleTooltip>
                     )}
-                    <SimpleTooltip text="Open Project Discussion">
-                        <button className="p-2 text-zinc-600 hover:text-white transition-colors bg-white/5 rounded-xl border border-white/5">
-                            <MessageSquare size={18} />
+                </div>
+
+                {/* Admin Notes Section */}
+                <div className="space-y-3 pt-6 border-t border-white/5">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Internal Operational Notes</p>
+                    <div className="flex gap-2">
+                        <textarea 
+                            value={adminNotes}
+                            onChange={e => setAdminNotes(e.target.value)}
+                            placeholder="Add internal notes about production progress..."
+                            className="flex-1 bg-black/20 border border-white/5 rounded-xl p-3 text-xs text-zinc-400 focus:outline-none focus:border-indigo-500 transition-all resize-none"
+                            rows={2}
+                        />
+                        <button 
+                            onClick={handleSaveNotes}
+                            disabled={isSavingNotes}
+                            className="p-3 bg-white/5 hover:bg-white/10 rounded-xl text-zinc-500 hover:text-white transition-all flex items-center justify-center"
+                        >
+                            {isSavingNotes ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
                         </button>
-                    </SimpleTooltip>
+                    </div>
                 </div>
 
                 {/* Production Area (Conditional) */}

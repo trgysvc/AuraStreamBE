@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
+import React, { createContext, useContext, useState, useRef, useEffect, useCallback } from 'react';
 import { EnergyCurve } from '@/lib/logic/EnergyCurve';
 import { OfflineManager } from '@/lib/logic/OfflineManager';
 import { createClient } from '@/lib/db/client';
@@ -9,7 +9,11 @@ interface Track {
     id: string;
     title: string;
     artist: string;
+    duration: string;
+    bpm: number;
     src?: string;
+    lyrics?: string;
+    lyrics_synced?: any;
     availableTunings?: Record<string, string>;
 }
 
@@ -25,11 +29,21 @@ interface PlayerContextType {
     tier: Tier;
     role: string | null;
     analyser: AnalyserNode | null;
-    playTrack: (track: Track) => void;
+    isMuted: boolean;
+    volume: number;
+    isShuffle: boolean;
+    isRepeat: boolean;
+    playTrack: (track: Track, list?: Track[]) => void;
     togglePlay: () => void;
     seek: (time: number) => void;
     setTuning: (tuning: '440hz' | '432hz' | '528hz') => void;
     setAutoTuning: (enabled: boolean) => void;
+    setMuted: (muted: boolean) => void;
+    setVolume: (volume: number) => void;
+    setShuffle: (enabled: boolean) => void;
+    setRepeat: (enabled: boolean) => void;
+    playNext: () => void;
+    playPrevious: () => void;
     stop: () => void;
 }
 
@@ -37,6 +51,7 @@ const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
 
 export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [currentTrack, setCurrentTrack] = useState<Track | null>(null);
+    const [trackList, setTrackList] = useState<Track[]>([]);
     const [isPlaying, setIsPlaying] = useState(false);
     const [duration, setDuration] = useState(0);
     const [currentTime, setCurrentTime] = useState(0);
@@ -45,218 +60,210 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [tier, setTier] = useState<Tier>('free');
     const [role, setRole] = useState<string | null>(null);
     const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
+    
+    // Player settings
+    const [isMuted, setIsMuted] = useState(false);
+    const [volume, setVolumeState] = useState(80);
+    const [isShuffle, setIsShuffle] = useState(false);
+    const [isRepeat, setIsRepeat] = useState(false);
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const audioContextRef = useRef<AudioContext | null>(null);
-    const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
 
-    // Fetch User Tier & Role on Mount
+    // 1. Initialize Audio Instance (Singleton)
+    useEffect(() => {
+        if (!audioRef.current) {
+            const audio = new Audio();
+            audio.crossOrigin = "anonymous";
+            audioRef.current = audio;
+
+            audio.addEventListener('timeupdate', () => setCurrentTime(audio.currentTime));
+            audio.addEventListener('loadedmetadata', () => setDuration(audio.duration));
+            audio.addEventListener('ended', () => {
+                // When audio ends, trigger next
+                // Note: using direct function call to avoid closure issues
+                handleTrackEnd();
+            });
+        }
+
+        // Web Audio API for visualizer
+        try {
+            const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+            if (AudioCtx && !audioContextRef.current) {
+                const ctx = new AudioCtx();
+                const node = ctx.createAnalyser();
+                node.fftSize = 256;
+                const source = ctx.createMediaElementSource(audioRef.current);
+                source.connect(node);
+                node.connect(ctx.destination);
+                audioContextRef.current = ctx;
+                setAnalyser(node);
+            }
+        } catch (e) {
+            console.warn("Web Audio setup failed");
+        }
+    }, []);
+
+    // Fetch User Data
     useEffect(() => {
         const fetchUserData = async () => {
-            try {
-                const supabase = createClient();
-                const { data: { session } } = await supabase.auth.getSession();
-
-                if (session?.user) {
-                    const { data: profile } = await supabase
-                        .from('profiles')
-                        .select('subscription_tier, role')
-                        .eq('id', session.user.id)
-                        .single();
-
-                    if (profile) {
-                        setTier(profile.subscription_tier as Tier);
-                        setRole(profile.role);
-                    }
+            const supabase = createClient();
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+                const { data: profile } = await supabase.from('profiles').select('subscription_tier, role').eq('id', session.user.id).single();
+                if (profile) {
+                    setTier(profile.subscription_tier as Tier);
+                    setRole(profile.role);
                 }
-            } catch {
-                // Silent fail for unauthenticated users
             }
         };
         fetchUserData();
     }, []);
 
-    // Initial Tuning logic
-    useEffect(() => {
-        if (isAutoTuning && (tier === 'business' || tier === 'enterprise' || role === 'admin')) {
-            setCurrentTuning(EnergyCurve.getCurrentTuning());
+    const togglePlay = async () => {
+        if (!audioRef.current || !currentTrack) return;
+        
+        if (audioContextRef.current?.state === 'suspended') {
+            await audioContextRef.current.resume();
         }
-    }, [isAutoTuning, tier, role]);
 
-    useEffect(() => {
-        const audio = new Audio();
-        audio.crossOrigin = "anonymous";
-        audioRef.current = audio;
-
-        const onTimeUpdate = () => setCurrentTime(audio.currentTime);
-        const onLoadedMetadata = () => setDuration(audio.duration);
-        const onEnded = () => {
+        if (audioRef.current.paused) {
+            await audioRef.current.play();
+            setIsPlaying(true);
+        } else {
+            audioRef.current.pause();
             setIsPlaying(false);
-            setCurrentTime(0);
-        };
-
-        audio.addEventListener('timeupdate', onTimeUpdate);
-        audio.addEventListener('loadedmetadata', onLoadedMetadata);
-        audio.addEventListener('ended', onEnded);
-
-        try {
-            const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            if (AudioCtx) {
-                const ctx = new AudioCtx();
-                const node = ctx.createAnalyser();
-                node.fftSize = 256;
-                const source = ctx.createMediaElementSource(audio);
-                source.connect(node);
-                node.connect(ctx.destination);
-                audioContextRef.current = ctx;
-                sourceRef.current = source;
-                setAnalyser(node);
-            }
-        } catch {
-            console.error("Web Audio API setup failed");
         }
+    };
 
-        return () => {
-            audio.pause();
-            audio.removeEventListener('timeupdate', onTimeUpdate);
-            audio.removeEventListener('loadedmetadata', onLoadedMetadata);
-            audio.removeEventListener('ended', onEnded);
-            if (audioContextRef.current) audioContextRef.current.close();
-            audioRef.current = null;
-        };
-    }, []);
+    const playTrack = async (track: Track, list?: Track[]) => {
+        if (!track || !audioRef.current) return;
+        if (list) setTrackList(list);
 
-    const setAutoTuning = (enabled: boolean) => {
-        if (role !== 'admin' && tier !== 'business' && tier !== 'enterprise') {
-            alert('Auto-Tuning (Energy Curve) is only available for Business and Enterprise tiers.');
+        // If clicking current track, toggle it
+        if (currentTrack?.id === track.id) {
+            togglePlay();
             return;
         }
-        setIsAutoTuning(enabled);
+
+        const targetTuning = isAutoTuning ? EnergyCurve.getCurrentTuning() : tuning;
+        let playUrl = track.availableTunings?.[targetTuning] || track.src;
+
+        if (!playUrl) {
+            playUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+        }
+
+        try {
+            if (audioContextRef.current?.state === 'suspended') {
+                await audioContextRef.current.resume();
+            }
+
+            audioRef.current.src = playUrl;
+            
+            // Apply DSP (Simplified for reliability)
+            if (!track.availableTunings?.[targetTuning]) {
+                if (targetTuning === '432hz') audioRef.current.playbackRate = 0.9818;
+                else if (targetTuning === '528hz') audioRef.current.playbackRate = 1.05; // Safer multiplier
+                else audioRef.current.playbackRate = 1.0;
+            } else {
+                audioRef.current.playbackRate = 1.0;
+            }
+
+            audioRef.current.load();
+            await audioRef.current.play();
+            
+            setIsPlaying(true);
+            setCurrentTrack(track);
+
+        } catch (e) {
+            console.error("Play failed:", e);
+            setIsPlaying(false);
+        }
+    };
+
+    const playNext = useCallback(() => {
+        if (trackList.length === 0 || !currentTrack) return;
+        let index = trackList.findIndex(t => t.id === currentTrack.id);
+        if (index === -1) index = 0;
+
+        let nextIndex = index + 1;
+        if (isShuffle) {
+            nextIndex = Math.floor(Math.random() * trackList.length);
+        } else if (nextIndex >= trackList.length) {
+            if (isRepeat) nextIndex = 0;
+            else {
+                setIsPlaying(false);
+                return;
+            }
+        }
+        playTrack(trackList[nextIndex]);
+    }, [trackList, currentTrack, isShuffle, isRepeat]);
+
+    const playPrevious = () => {
+        if (trackList.length === 0 || !currentTrack) return;
+        let index = trackList.findIndex(t => t.id === currentTrack.id);
+        let prevIndex = index - 1;
+        if (prevIndex < 0) prevIndex = trackList.length - 1;
+        playTrack(trackList[prevIndex]);
+    };
+
+    const handleTrackEnd = () => {
+        // This is called by the audio event listener
+        // We use a separate trigger to avoid stale closures in the event listener
+        const btn = document.getElementById('aura-play-next-trigger');
+        if (btn) btn.click();
+    };
+
+    const setMuted = (muted: boolean) => {
+        setIsMuted(muted);
+        if (audioRef.current) audioRef.current.muted = muted;
+    };
+
+    const setVolume = (val: number) => {
+        setVolumeState(val);
+        if (audioRef.current) audioRef.current.volume = val / 100;
+    };
+
+    const applyTuning = async (newTuning: '440hz' | '432hz' | '528hz') => {
+        if (!audioRef.current || !currentTrack) return;
+        setCurrentTuning(newTuning);
+
+        const nextSrc = currentTrack.availableTunings?.[newTuning];
+        if (nextSrc && nextSrc !== audioRef.current.src) {
+            const savedTime = audioRef.current.currentTime;
+            audioRef.current.src = nextSrc;
+            audioRef.current.playbackRate = 1.0; 
+            audioRef.current.load();
+            audioRef.current.currentTime = savedTime;
+            if (isPlaying) audioRef.current.play().catch(() => {});
+        } else {
+            if (newTuning === '432hz') audioRef.current.playbackRate = 0.9818;
+            else if (newTuning === '528hz') audioRef.current.playbackRate = 1.05;
+            else audioRef.current.playbackRate = 1.0;
+        }
     };
 
     const setTuning = (newTuning: '440hz' | '432hz' | '528hz') => {
         if (role !== 'admin' && tier === 'free' && newTuning !== '440hz') {
-            alert('Tuning features are only available for Pro tiers and above.');
+            alert('Tuning features require Pro tier.');
             return;
         }
         setIsAutoTuning(false);
         applyTuning(newTuning);
     };
 
-    const applyTuning = async (newTuning: '440hz' | '432hz' | '528hz') => {
-        if (newTuning === tuning) return;
-        setCurrentTuning(newTuning);
-
-        if (currentTrack && audioRef.current) {
-            const nextSrc = currentTrack.availableTunings?.[newTuning];
-
-            // 1. If we have a dedicated high-fidelity pre-rendered file, use it
-            if (nextSrc && nextSrc !== audioRef.current.src) {
-                const savedTime = audioRef.current.currentTime;
-                const wasPlaying = isPlaying;
-                audioRef.current.src = nextSrc;
-                audioRef.current.playbackRate = 1.0; // Reset rate for dedicated file
-                audioRef.current.load();
-                audioRef.current.currentTime = savedTime;
-                if (wasPlaying) audioRef.current.play().catch(() => { });
-                console.log(`Frequency Shift: Switched to pre-rendered ${newTuning} file.`);
-            } 
-            // 2. Real-time DSP Fallback (Frequency Engineering)
-            // If the file is missing, we use the original and apply a pitch shift via playbackRate
-            else {
-                console.log(`Frequency Shift: Pre-rendered ${newTuning} missing. Applying Real-time DSP.`);
-                
-                if (newTuning === '432hz') {
-                    // 432Hz is approx 1.8% lower than 440Hz
-                    audioRef.current.playbackRate = 0.9818;
-                } else if (newTuning === '528hz') {
-                    // 528Hz is significantly higher (Awakening)
-                    audioRef.current.playbackRate = 1.2;
-                } else {
-                    audioRef.current.playbackRate = 1.0;
-                }
-            }
+    const setAutoTuning = (enabled: boolean) => {
+        if (role !== 'admin' && tier !== 'business' && tier !== 'enterprise') {
+            alert('Auto-Tuning requires Business tier.');
+            return;
         }
-    };
-
-    const playTrack = async (track: Track) => {
-        console.log('--- Aura Smart Player: Initializing Session ---');
-        const targetTuning = isAutoTuning ? EnergyCurve.getCurrentTuning() : tuning;
-        
-        // 1. Determine Play URL
-        // Priority: Cached locally -> Pre-rendered on S3 -> On-demand Trigger
-        let playUrl = track.availableTunings?.[targetTuning] || (targetTuning === '440hz' ? track.src : null);
-
-        if (role === 'admin' || tier === 'business' || tier === 'enterprise') {
-            const cachedLocal = await OfflineManager.getCachedTrack(`${track.id}-${targetTuning}`);
-            if (cachedLocal) playUrl = cachedLocal;
-        }
-
-        // 2. JIT (Just-In-Time) Rendering Logic
-        if (!playUrl && targetTuning !== '440hz') {
-            console.log(`JIT: ${targetTuning} file missing for ${track.title}. Triggering Aura Cloud Renderer...`);
-            // Here we would call a server action to trigger Lambda processing
-            // For MVP/Demo: Fallback to real-time DSP if cloud is processing
-            playUrl = track.src; 
-        }
-
-        if (!playUrl) playUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
-
-        if (audioRef.current) {
-            if (audioContextRef.current?.state === 'suspended') await audioContextRef.current.resume();
-
-            if (currentTrack?.id === track.id) {
-                togglePlay();
-            } else {
-                audioRef.current.src = playUrl;
-                
-                // Real-time DSP Application (if using original 440Hz file for other Hz)
-                const isOriginalFile = playUrl === track.src;
-                if (isOriginalFile && targetTuning !== '440hz') {
-                    console.log("Applying Real-time DSP (BPM preserved logic pending)...");
-                    if (targetTuning === '432hz') audioRef.current.playbackRate = 0.9818;
-                    else if (targetTuning === '528hz') audioRef.current.playbackRate = 1.2;
-                } else {
-                    audioRef.current.playbackRate = 1.0;
-                }
-
-                audioRef.current.load();
-                audioRef.current.play().then(() => {
-                    setIsPlaying(true);
-                    setCurrentTrack(track);
-
-                    if (role === 'admin' || tier === 'business' || tier === 'enterprise') {
-                        OfflineManager.cacheTrack(`${track.id}-${targetTuning}`, playUrl!).catch(() => { });
-                    }
-                }).catch(() => {
-                    setCurrentTrack(track);
-                    setIsPlaying(false);
-                });
-            }
-        }
-    };
-
-    const togglePlay = async () => {
-        if (audioRef.current && currentTrack) {
-            if (audioContextRef.current?.state === 'suspended') await audioContextRef.current.resume();
-            if (isPlaying) {
-                audioRef.current.pause();
-                setIsPlaying(false);
-            } else {
-                audioRef.current.play().catch(() => { });
-                setIsPlaying(true);
-            }
-        }
-    };
-
-    const seek = (time: number) => {
-        if (audioRef.current) audioRef.current.currentTime = time;
+        setIsAutoTuning(enabled);
     };
 
     const stop = () => {
         if (audioRef.current) {
             audioRef.current.pause();
-            audioRef.current.currentTime = 0;
+            audioRef.current.src = "";
             setIsPlaying(false);
             setCurrentTrack(null);
         }
@@ -265,10 +272,14 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     return (
         <PlayerContext.Provider value={{
             currentTrack, isPlaying, duration, currentTime, tuning, isAutoTuning, tier, role,
-            analyser, playTrack, togglePlay, seek, setTuning,
-            setAutoTuning, stop
+            analyser, isMuted, volume, isShuffle, isRepeat,
+            playTrack, togglePlay, seek: (t) => { if(audioRef.current) audioRef.current.currentTime = t; }, 
+            setTuning, setAutoTuning, setMuted, setVolume, setShuffle: setIsShuffle, setRepeat: setIsRepeat, 
+            playNext, playPrevious, stop
         }}>
             {children}
+            {/* Hidden trigger for auto-play b/c of event listener closures */}
+            <button id="aura-play-next-trigger" onClick={playNext} className="hidden" />
         </PlayerContext.Provider>
     );
 }

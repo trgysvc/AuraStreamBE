@@ -1,73 +1,254 @@
-'use client';
+import { createClient } from '@/lib/db/server';
+import { 
+    Sparkles, 
+    Music, 
+    Zap, 
+    ShieldCheck,
+    Download,
+    ArrowRight,
+    Play,
+    Settings,
+    Crown
+} from 'lucide-react';
+import Link from 'next/link';
+import { EnergyCurve } from '@/lib/logic/EnergyCurve';
+import { SmartWeatherCard } from '@/components/feature/venue/SmartWeatherCard';
+import { WeatherService } from '@/lib/services/weather';
 
-import TrackRow from '@/components/dashboard/TrackRow';
-import { Search, ChevronDown, Sliders } from 'lucide-react';
+async function getAuraHomeData() {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) return null;
 
-export default function DashboardPage() {
-    const tracks = [
-        { id: "1", title: "Neon Nights", artist: "Synthwave Boy", duration: "3:45", bpm: 120, tags: ["Electronic", "Retro"], audioSrc: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-        { id: "2", title: "Mountain Peak", artist: "Nature Sounds", duration: "4:12", bpm: 85, tags: ["Ambient", "Chill"], audioSrc: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
-        { id: "3", title: "City Hustle", artist: "Urban Beats", duration: "2:50", bpm: 95, tags: ["Hip Hop", "Energetic"], audioSrc: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
-        { id: "4", title: "Deep Focus", artist: "Brainwaves", duration: "5:30", bpm: 60, tags: ["Study", "Focus"], audioSrc: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
-        { id: "5", title: "Summer Vibes", artist: "Pop Star", duration: "3:15", bpm: 128, tags: ["Pop", "Happy"], audioSrc: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" },
-        { id: "6", title: "Dark Matter", artist: "Space Explorer", duration: "4:05", bpm: 140, tags: ["Cinematic", "Sci-Fi"], audioSrc: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3" },
-        { id: "7", title: "Acoustic Morning", artist: "Guitar Hero", duration: "3:20", bpm: 100, tags: ["Acoustic", "Folk"], audioSrc: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3" },
-        { id: "8", title: "Night Drive", artist: "Nightcrawler", duration: "3:55", bpm: 110, tags: ["Synthwave", "Driving"], audioSrc: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" },
-    ];
+    // Parallel fetching for speed
+    const [profileRes, venueRes, licenseRes, trackRes, requestRes] = await Promise.all([
+        supabase.from('profiles').select('*, tenants(*)').eq('id', user.id).single(),
+        supabase.from('venues').select('*').eq('owner_id', user.id).limit(1),
+        supabase.from('licenses').select('*, tracks(title, cover_image_url)').eq('user_id', user.id).order('created_at', { ascending: false }).limit(3),
+        supabase.from('tracks').select('*').eq('status', 'active').order('popularity_score', { ascending: false }).limit(4),
+        supabase.from('custom_requests').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(2)
+    ]);
+
+    const weather = await WeatherService.getCurrentWeather();
+    const currentTuning = EnergyCurve.getCurrentTuning();
+
+    return {
+        profile: profileRes.data,
+        venue: venueRes.data?.[0],
+        latestLicenses: licenseRes.data || [],
+        topTracks: trackRes.data || [],
+        myRequests: requestRes.data || [],
+        weather,
+        currentTuning,
+        time: new Date().getHours()
+    };
+}
+
+export default async function AuraHomePage() {
+    const data = await getAuraHomeData();
+    if (!data) return null;
+
+    const { profile, venue, latestLicenses, topTracks, myRequests, currentTuning, time } = data;
+    
+    const greeting = time < 12 ? 'Good Morning' : time < 18 ? 'Good Afternoon' : 'Good Evening';
 
     return (
-        <div className="space-y-8">
-            {/* Header / Search */}
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                <div>
-                    <h1 className="text-4xl font-bold tracking-tight mb-2">Browse Catalog</h1>
-                    <p className="text-gray-400">Find the perfect sound for your next project.</p>
+        <div className="space-y-12 pb-20 animate-in fade-in duration-1000">
+            {/* 1. Architecture Welcome Bar */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-white/5 pb-12">
+                <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                        <h1 className="text-6xl font-black italic uppercase tracking-tighter text-white text-glow">
+                            {greeting}, <span className="text-indigo-500">{profile?.full_name?.split(' ')[0] || 'Architect'}</span>
+                        </h1>
+                        {profile?.subscription_tier !== 'free' && (
+                            <span className="bg-gradient-to-r from-amber-400 to-orange-500 text-black text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest mt-4">
+                                {profile?.subscription_tier} Member
+                            </span>
+                        )}
+                    </div>
+                    <p className="text-zinc-500 font-medium text-xl">The Sonaraura ecosystem is fully operational under your command.</p>
+                </div>
+                
+                <div className="flex items-center gap-4">
+                    <div className="px-6 py-3 bg-white/5 border border-white/10 rounded-2xl flex items-center gap-4 shadow-2xl backdrop-blur-xl">
+                        <div className="flex flex-col items-end">
+                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest italic">Aura Tuning</span>
+                            <span className="text-lg font-black text-white italic leading-none">{currentTuning.toUpperCase()}</span>
+                        </div>
+                        <div className="h-10 w-10 bg-indigo-600/20 rounded-xl flex items-center justify-center text-indigo-400 border border-indigo-500/20 shadow-[0_0_20px_rgba(79,70,229,0.3)]">
+                            <Zap size={20} fill="currentColor" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                {/* 2. Venue Intelligence (B2B Hub) */}
+                <div className="lg:col-span-8 space-y-6">
+                    <div className="flex items-center justify-between ml-2">
+                        <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-zinc-600">Venue Intelligence</h3>
+                        <Link href="/dashboard/venue" className="text-[10px] font-black text-indigo-400 hover:text-white transition-colors uppercase tracking-widest flex items-center gap-2 group">
+                            Open Dashboard <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                        </Link>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Weather & Vibe Card - NOW DYNAMIC */}
+                        <SmartWeatherCard />
+
+                        {/* Active Rule Card */}
+                        <div className="bg-[#1E1E22] p-8 rounded-[3rem] border border-white/5 shadow-2xl relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity duration-700 pointer-events-none">
+                                <Music size={200} />
+                            </div>
+                            <div className="space-y-6 relative z-10 h-full flex flex-col">
+                                <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest italic">Smart Flow Status</p>
+                                {venue ? (
+                                    <div className="space-y-4 flex-1">
+                                        <div className="flex items-center gap-4">
+                                            <div className="h-14 w-14 bg-green-500/10 rounded-2xl flex items-center justify-center text-green-500 border border-green-500/20 shadow-inner">
+                                                <ShieldCheck size={28} />
+                                            </div>
+                                            <div>
+                                                <h4 className="text-2xl font-black text-white italic uppercase truncate max-w-[200px]">{venue.business_name}</h4>
+                                                <p className="text-xs font-bold text-green-500 uppercase tracking-tighter">System Protected</p>
+                                            </div>
+                                        </div>
+                                        <div className="pt-4 border-t border-white/5">
+                                            <p className="text-[10px] font-black text-zinc-600 uppercase mb-2">Next Transition</p>
+                                            <p className="text-sm font-bold text-zinc-300 italic">Smart Schedule Active • 18:00 UTC</p>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4 flex-1 flex flex-col justify-center">
+                                        <p className="text-sm font-bold text-zinc-500 italic">No venue registered.</p>
+                                        <Link href="/dashboard/venue" className="text-xs font-black text-white underline tracking-widest">REGISTER BUSINESS</Link>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Quick Store Highlights */}
+                    <div className="bg-[#111] p-10 rounded-[3rem] border border-white/5 shadow-2xl space-y-8">
+                        <div className="flex items-center justify-between">
+                            <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-zinc-500">Popular Harmonics</h4>
+                            <Link href="/store" className="text-[9px] font-black text-zinc-600 hover:text-white transition-colors uppercase tracking-widest">Enter Store</Link>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            {topTracks.map((track) => (
+                                <div key={track.id} className="space-y-4 group cursor-pointer">
+                                    <div className="relative aspect-square rounded-2xl overflow-hidden shadow-2xl border border-white/5 bg-zinc-800">
+                                        {track.cover_image_url ? (
+                                            <img src={track.cover_image_url} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-2xl">🎵</div>
+                                        )}
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                            <Play size={24} className="text-white fill-current" />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-0.5 px-1">
+                                        <p className="text-[11px] font-black text-white truncate uppercase italic">{track.title}</p>
+                                        <p className="text-[9px] font-bold text-zinc-600 uppercase truncate">{track.artist}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
 
-                <div className="relative w-full md:w-96">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-                    <input
-                        type="text"
-                        placeholder="Search tracks, artists, or albums..."
-                        className="w-full pl-12 pr-4 py-3 bg-zinc-900 border border-transparent focus:border-white/20 rounded-full text-white placeholder-gray-500 focus:outline-none focus:ring-0 transition-colors"
-                    />
+                {/* 3. Creative Reach (Creator Sidebar) */}
+                <div className="lg:col-span-4 space-y-8">
+                    <div className="space-y-6">
+                        <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-zinc-600 ml-2">Creative Assets</h3>
+                        <div className="bg-[#1E1E22] rounded-[3rem] border border-white/5 p-8 space-y-8 shadow-2xl h-full">
+                            <div className="space-y-6">
+                                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest border-l-2 border-indigo-500 pl-4">Recently Licensed</p>
+                                {latestLicenses.length > 0 ? latestLicenses.map((license: any) => (
+                                    <div key={license.id} className="flex items-center gap-4 group cursor-default">
+                                        <div className="h-12 w-12 rounded-xl bg-zinc-800 border border-white/5 overflow-hidden flex-shrink-0">
+                                            {license.tracks?.cover_image_url && <img src={license.tracks.cover_image_url} alt="" className="w-full h-full object-cover" />}
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <h5 className="text-[11px] font-black text-white uppercase italic truncate">{license.tracks?.title}</h5>
+                                            <p className="text-[9px] font-bold text-zinc-600 uppercase truncate">Project: {license.project_name}</p>
+                                        </div>
+                                        <button className="text-zinc-700 hover:text-indigo-400 transition-colors">
+                                            <Download size={16} />
+                                        </button>
+                                    </div>
+                                )) : (
+                                    <p className="text-[10px] text-zinc-700 italic font-medium">No licenses registered yet.</p>
+                                )}
+                            </div>
+
+                            <div className="pt-8 border-t border-white/5 space-y-6">
+                                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest border-l-2 border-pink-500 pl-4">Account Health</p>
+                                <div className="space-y-4">
+                                    <ReachItem icon={ShieldCheck} label="Content ID Whitelist" status="Sync Active" color="text-green-500" />
+                                    <ReachItem icon={Zap} label="Frequency Access" status="Full (528Hz)" color="text-indigo-500" />
+                                    <ReachItem icon={Crown} label="Elite Support" status="Dedicated" color="text-amber-500" />
+                                </div>
+                            </div>
+
+                            <Link href="/account" className="block w-full py-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-[2rem] text-center text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:text-white transition-all mt-8">
+                                <div className="flex items-center justify-center gap-2">
+                                    <Settings size={14} /> Global Settings
+                                </div>
+                            </Link>
+                        </div>
+                    </div>
+
+                    {/* Custom Order Status */}
+                    {myRequests.length > 0 && (
+                        <div className="space-y-6">
+                             <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-zinc-600 ml-2">Active Requests</h3>
+                             <div className="bg-[#1E1E22] rounded-[3rem] border border-white/5 p-8 space-y-6 shadow-2xl">
+                                {myRequests.map((req: any) => (
+                                    <div key={req.id} className="flex items-center justify-between group">
+                                        <div className="space-y-1">
+                                            <p className="text-[11px] font-black text-white uppercase italic truncate max-w-[150px]">{req.specs?.project_name || 'Custom Track'}</p>
+                                            <p className="text-[9px] font-bold text-zinc-600 uppercase">{req.status}</p>
+                                        </div>
+                                        <div className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
+                                            req.status === 'completed' ? 'bg-green-500/10 text-green-500' : 'bg-indigo-500/10 text-indigo-400'
+                                        }`}>
+                                            {req.status === 'review' ? 'Action Required' : req.status}
+                                        </div>
+                                    </div>
+                                ))}
+                             </div>
+                        </div>
+                    )}
+
+                    {/* Premium Callout */}
+                    <div className="bg-gradient-to-br from-indigo-600 to-violet-800 rounded-[2.5rem] p-8 space-y-6 shadow-2xl relative overflow-hidden group cursor-pointer">
+                        <div className="absolute -right-8 -bottom-8 opacity-20 group-hover:scale-110 transition-transform duration-700">
+                            <Sparkles size={160} />
+                        </div>
+                        <h4 className="text-2xl font-black text-white italic uppercase tracking-tighter leading-none">Need <br/> Something <br/> Unique?</h4>
+                        <p className="text-xs text-white/70 font-medium leading-relaxed">Commission a custom AI track tailored specifically for your brand identity.</p>
+                        <Link href="/dashboard/request" className="inline-flex items-center gap-2 text-[10px] font-black text-white uppercase tracking-widest bg-black/20 hover:bg-black/40 px-4 py-2 rounded-full transition-all">
+                            Music on Request <ArrowRight size={12} />
+                        </Link>
+                    </div>
                 </div>
             </div>
+        </div>
+    );
+}
 
-            {/* Filters */}
-            <div className="flex flex-wrap items-center gap-3 pb-4 border-b border-white/10">
-                <button className="flex items-center gap-2 px-4 py-2 bg-zinc-900 hover:bg-zinc-800 rounded-full text-sm font-medium transition-colors">
-                    <Sliders size={16} />
-                    Filters
-                </button>
-                <div className="h-6 w-px bg-white/10 mx-2" />
-                {['Mood', 'Genre', 'Vocals', 'Length', 'BPM'].map((filter) => (
-                    <button key={filter} className="flex items-center gap-2 px-4 py-2 bg-transparent hover:bg-white/5 rounded-full text-sm transition-colors border border-white/10">
-                        {filter}
-                        <ChevronDown size={14} className="text-gray-500" />
-                    </button>
-                ))}
+function ReachItem({ icon: Icon, label, status, color }: any) {
+    return (
+        <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+                <Icon size={14} className="text-zinc-700" />
+                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">{label}</span>
             </div>
-
-            {/* Track List Header */}
-            <div className="hidden md:flex items-center px-4 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                <div className="w-10"></div> {/* Play button space */}
-                <div className="flex-1">Title / Artist</div>
-                <div className="flex-1">Waveform</div>
-                <div className="w-64 flex justify-end gap-16 pr-12">
-                    <span>Tags</span>
-                    <span>BPM</span>
-                    <span>Time</span>
-                </div>
-                <div className="w-24">Actions</div>
-            </div>
-
-            {/* Tracks */}
-            <div className="space-y-1">
-                {tracks.map((track, i) => (
-                    <TrackRow key={i} {...track} />
-                ))}
-            </div>
+            <span className={`text-[9px] font-black uppercase tracking-widest ${color}`}>{status}</span>
         </div>
     );
 }

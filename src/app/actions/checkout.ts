@@ -3,7 +3,6 @@
 import Stripe from 'stripe';
 import { createAdminClient } from '@/lib/db/admin-client';
 import { createClient } from '@/lib/db/server';
-import { redirect } from 'next/navigation';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: '2026-01-28.clover', // Use latest or matching version as per TS

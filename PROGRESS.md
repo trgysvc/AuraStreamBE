@@ -1,7 +1,8 @@
-# Sonaraura v3.6 Progress Tracker
+# Sonaraura v3.8 Progress Tracker
 
 ## Phase 1: Foundation (Weeks 1-2)
 - [x] **Project Setup**
+    - [x] Global Rebranding: AuraStream -> **SONARAURA**
     - [x] Initialize Next.js 14 Monorepo structure
     - [x] Configure TypeScript, ESLint, Prettier
     - [x] Setup Tailwind CSS & Design Tokens
@@ -23,8 +24,9 @@
 - [x] **Audio Engine**
     - [x] Implement Web Audio API wrapper
     - [x] Build 432Hz/528Hz Real-time DSP Logic
-    - [x] Create Crossfade & Gapless Player
+    - [x] Create Crossfade & Gapless Player (Auto-play, Shuffle, Repeat Active)
     - [x] **Epidemic Sound Style Waveform Implementation** (Real data extraction)
+    - [x] **Interactive Discovery Waveforms:** Animated list waveforms with seeking.
 - [x] **Search Engine**
     - [x] Implement Supabase -> Meilisearch Sync (Meili-sync worker)
     - [x] Build Search API with Filters & Facets (Hybrid Meilisearch Ready)
@@ -34,40 +36,41 @@
     - [x] Setup SQS & Lambda (Client Ready)
     - [x] **Aura Metadata Factory (Python Worker - Librosa)**
     - [x] Implement BPM, Key, and Energy level extraction logic
-    - [x] Create Admin Upload Workflow (Server Actions + UI)
+    - [x] Create Admin Upload Workflow (Bulk Ingest with Auto-Cataloging)
     - [x] Create Admin QC Interface
 - [x] **Smart Features**
     - [x] **Smart Flow Scheduling:** Time/Day based music rules for venues.
-    - [x] **Weather-Aware Energy Curve:** Auto-adjust tuning based on weather.
-    - [x] **Steganographic Watermarking:** High-fidelity metadata/identifier injection.
+    - [x] **Weather-Aware Energy Curve:** Auto-adjust tuning based on live location/weather.
+    - [x] **Steganographic Watermarking:** Signal-level UUID embedding (LSB V1).
+    - [x] **Aura Karaoke Engine:** Word-level lyric synchronization and highlighting.
 
 ## Phase 3: Applications (Weeks 5-8)
 - [x] **Creator Store (B2C)**
     - [x] Discovery & Search Page (Meilisearch Integrated)
     - [x] License Wizard & Checkout (Stripe)
     - [x] **YouTube Dispute Center:** Automated legal support for copyright claims.
-    - [x] Track List & Player Integration
+    - [x] Track List & Player Integration (Live Sync active)
 - [x] **Venue Player (B2B)**
-    - [x] **Dashboard/Venue Premium Interface (Epidemic Style)**
-    - [x] **Smart Flow Management UI:** Visual schedule editor.
+    - [x] **Aura Home / Central Intelligence Dashboard** (Unified ecosystem view)
+    - [x] **Dashboard/Venue Premium Interface** (Compact 8-box grid system)
+    - [x] **Smart Flow Management UI:** Visual schedule editor with Live Sync.
     - [x] Real-time Track List from Supabase/S3
     - [x] **Offline Manager v2:** 500MB Quota management & Auto-purge.
 - [x] **Admin Factory (The Nerve Center)**
     - [x] **Unified Command Center:** Real-time stats & system pulse.
-    - [x] **QC Station:** Approval/Rejection workflow with Meilisearch sync.
+    - [x] **QC Station:** Approval/Rejection with S3 Purge & Metadata/Lyrics Editing.
     - [x] **User Intelligence:** Global user/venue management & tier control.
-    - [x] **Catalog Mgmt:** Metadata editing & library optimization.
-    - [x] **Request Hub:** Custom "Music on Request" order management.
-    - [x] **Global Config:** Infrastructure & DSP parameter tuning.
+    - [x] **Catalog Mgmt:** Full Taxonomy control (Theme, Character, Vibe, Venue, Genre).
+    - [x] **Request Hub:** Custom "Music on Request" dynamic quoting system.
+    - [x] **Global Config:** Remote tuning of DSP and Infrastructure parameters.
 
 ## Phase 4: Polish & Launch
+- [x] **Google OAuth Integration:** Restored and optimized SSR auth flow.
+- [x] **Build & Stability:** Zero-error production build configuration.
 - [ ] **Testing & Quality**
     - [ ] Unit Tests (Jest)
     - [ ] E2E Tests (Playwright)
     - [ ] Security Audit (RLS check, API limits)
-- [ ] **Optimization**
-    - [ ] Performance Tuning (LCP, CLS)
-    - [ ] SEO Optimization
 - [ ] **Deployment**
     - [ ] Staging Deployment
     - [ ] Production Launch

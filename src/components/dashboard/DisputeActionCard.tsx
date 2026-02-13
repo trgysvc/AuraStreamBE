@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Video, Link2, ArrowUpRight, Loader2, ShieldCheck } from 'lucide-react';
 import { resolveDispute_Action, rejectDispute_Action } from '@/app/actions/dispute';
+import { DisputeAsset } from '@/types/admin';
 
 const SimpleTooltip = ({ children, text }: { children: React.ReactNode; text: string }) => {
     return (
@@ -16,7 +17,7 @@ const SimpleTooltip = ({ children, text }: { children: React.ReactNode; text: st
     );
 };
 
-export function DisputeActionCard({ dispute }: { dispute: any }) {
+export function DisputeActionCard({ dispute }: { dispute: DisputeAsset }) {
     const [loading, setLoading] = useState(false);
     const [actionType, setActionType] = useState<'resolve' | 'reject' | null>(null);
 

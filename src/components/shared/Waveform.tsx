@@ -13,6 +13,7 @@ interface WaveformProps {
     className?: string;
     onSeek?: (progress: number) => void;
     bpm?: number; // New prop for rhythm
+    isPlaying?: boolean;
 }
 
 /**
@@ -29,8 +30,9 @@ export function Waveform({
     className = '',
     onSeek,
     bpm = 120,
+    isPlaying = false,
     data
-}: WaveformProps & { data?: number[] }) {
+}: WaveformProps & { data?: number[], isPlaying?: boolean }) {
     const bars = useMemo(() => {
         // If real data is provided, use it (resampled to 100 max if needed)
         if (data && data.length > 0) {
@@ -83,15 +85,16 @@ export function Waveform({
         onSeek(newProgress);
     };
 
-    const renderBars = (color: string) => (
+    const renderBars = (color: string, isForeground: boolean) => (
         <div className="flex items-center h-full w-full justify-between" style={{ gap: `${gap}px` }}>
             {bars.map((val, i) => (
                 <div key={i} className="flex flex-col items-center justify-center h-full flex-1" style={{ maxWidth: `${barWidth}px` }}>
                     <div
-                        className="w-full rounded-full transition-colors duration-300"
+                        className={`w-full rounded-full transition-all duration-300 ${isForeground && isPlaying ? 'animate-aura-waveform' : ''}`}
                         style={{
                             height: `${val * 100}%`,
-                            backgroundColor: color
+                            backgroundColor: color,
+                            animationDelay: `${i * 0.05}s`
                         }}
                     />
                 </div>
@@ -105,9 +108,18 @@ export function Waveform({
             style={{ height: `${height}px` }}
             onClick={handleClick}
         >
+            <style jsx global>{`
+                @keyframes aura-waveform {
+                    0%, 100% { transform: scaleY(1); opacity: 1; }
+                    50% { transform: scaleY(1.4); opacity: 0.8; }
+                }
+                .animate-aura-waveform {
+                    animation: aura-waveform 0.8s ease-in-out infinite;
+                }
+            `}</style>
             {/* Background Layer */}
             <div className="absolute inset-0">
-                {renderBars(inactiveColor)}
+                {renderBars(inactiveColor, false)}
             </div>
 
             {/* Progress Clipping Layer */}
@@ -116,7 +128,7 @@ export function Waveform({
                 style={{ width: `${progress * 100}%` }}
             >
                 <div className="absolute inset-0" style={{ width: `${(1 / (progress || 1)) * 100}%` }}>
-                    {renderBars(activeColor)}
+                    {renderBars(activeColor, true)}
                 </div>
             </div>
 

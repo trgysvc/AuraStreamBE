@@ -46,16 +46,36 @@ export async function approveTrack_Action(trackId: string) {
     return { success: true };
 }
 
+import { S3Service } from '@/lib/services/s3';
+
 /**
- * Rejects a track and marks it as rejected. 
- * Actual file deletion from S3 can be handled by a cleanup worker to avoid UI lag.
+ * Rejects and Purges a track (Deletes from DB and S3)
  */
 export async function rejectTrack_Action(trackId: string) {
     const supabase = createAdminClient();
 
+    // 1. Get associated files from S3 before deleting records
+    const { data: files } = await supabase
+        .from('track_files')
+        .select('s3_key')
+        .eq('track_id', trackId);
+
+    // 2. Delete from S3
+    if (files && files.length > 0) {
+        for (const file of files) {
+            try {
+                // Determine bucket based on key or use default raw/processed
+                await S3Service.deleteFile(file.s3_key, process.env.AWS_S3_BUCKET_RAW!);
+            } catch (e) {
+                console.error(`S3 Deletion failed for ${file.s3_key}:`, e);
+            }
+        }
+    }
+
+    // 3. Delete from Database (Cascades to track_files and others)
     const { error } = await supabase
         .from('tracks')
-        .update({ status: 'rejected', updated_at: new Date().toISOString() })
+        .delete()
         .eq('id', trackId);
 
     if (error) throw error;
@@ -73,6 +93,7 @@ export async function updateTrackQC_Action(trackId: string, data: {
     bpm?: number;
     key?: string;
     mood_tags?: string[];
+    lyrics?: string;
 }) {
     const supabase = createAdminClient();
 

@@ -197,6 +197,8 @@ create table public.tracks (
   -- Expected keys: prompt, model, seed, generated_at
   
   waveform_data jsonb, -- Extracted amplitude points
+  lyrics text,
+  lyrics_synced jsonb, -- New: Word-level timestamps
   cover_image_url text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()

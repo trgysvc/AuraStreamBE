@@ -16,6 +16,11 @@ const nextConfig = {
                 tls: false,
             };
         }
+        // Specific ignore for jsmediatags react-native issue
+        config.resolve.alias = {
+            ...config.resolve.alias,
+            'react-native-fs': false,
+        };
         return config;
     },
 };

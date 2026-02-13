@@ -11,6 +11,8 @@ export interface VenueTrack {
     duration: number;
     genre: string;
     coverImage?: string;
+    lyrics?: string;
+    lyrics_synced?: any;
     src: string;
     availableTunings: Record<string, string>;
     tags: string[];
@@ -35,6 +37,8 @@ export async function getVenueTracks_Action(options?: {
             duration_sec,
             genre,
             mood_tags,
+            lyrics,
+            lyrics_synced,
             cover_image_url,
             track_files (
                 s3_key,
@@ -73,7 +77,7 @@ export async function getVenueTracks_Action(options?: {
         let defaultSrc = '';
 
         // Generate signed URLs for all streamable files
-        const files = (track.track_files as any[]) || [];
+        const files = (track.track_files as unknown as { file_type: string, s3_key: string, tuning: string }[]) || [];
         const streamFiles = files.filter((f) => f.file_type === 'stream_aac' || f.file_type === 'stream_mp3');
 
         for (const file of streamFiles) {
@@ -113,6 +117,8 @@ export async function getVenueTracks_Action(options?: {
             duration: track.duration_sec || 0,
             genre: track.genre || 'Music',
             coverImage: track.cover_image_url || undefined,
+            lyrics: track.lyrics || undefined,
+            lyrics_synced: track.lyrics_synced || undefined,
             src: defaultSrc,
             availableTunings,
             tags: track.mood_tags || [track.genre || "Music"]
