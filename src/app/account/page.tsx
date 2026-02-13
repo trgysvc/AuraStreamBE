@@ -270,7 +270,7 @@ function SubscriptionSection({ tenant, history }: any) {
                     <div className="inline-block px-3 py-1 bg-pink-500 text-white text-[9px] font-black uppercase tracking-widest rounded-full mb-2">
                         {tenant?.plan_status?.toUpperCase() || 'FREE'}
                     </div>
-                    <h2 className="text-5xl font-black italic uppercase tracking-tighter leading-none">AuraStream {tenant?.current_plan?.toUpperCase() || 'FREE'}</h2>
+                    <h2 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Sonaraura {tenant?.current_plan?.toUpperCase() || 'FREE'}</h2>
                     <p className="font-bold text-zinc-500 uppercase text-[10px] tracking-widest pt-2">Next payment: {tenant?.subscription_id ? 'Scheduled' : 'No Active Subscription'}</p>
                 </div>
                 <div className="flex flex-col gap-3 w-full md:w-auto">

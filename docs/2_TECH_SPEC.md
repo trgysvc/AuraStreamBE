@@ -1,8 +1,8 @@
-# AuraStream v3.6 Technical Specifications
-**Reference:** AuraStream Implementation Plan.pdf
+# Sonaraura v3.6 Technical Specifications
+**Reference:** Sonaraura Implementation Plan.pdf
 
 ## 1. Architecture Overview
-**Project:** AuraStream v3.4 (Enterprise Grade)
+**Project:** Sonaraura v3.4 (Enterprise Grade)
 **Stack:** Next.js 14 Monorepo, Supabase (Normalized), AWS SQS/Lambda, Web Audio API
 
 ### Critical Architecture Decisions

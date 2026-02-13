@@ -1,66 +1,119 @@
-
 import { ReactNode } from 'react';
 import Link from 'next/link';
+import { 
+    LayoutDashboard, 
+    UploadCloud, 
+    Headphones, 
+    Library, 
+    Users, 
+    Settings, 
+    ArrowLeft,
+    ShieldCheck,
+    Bell
+} from 'lucide-react';
+import { createClient } from '@/lib/db/server';
+import { redirect } from 'next/navigation';
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
+export default async function AdminLayout({ children }: { children: ReactNode }) {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        redirect('/login');
+    }
+
+    // Check Role
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+    if (profile?.role !== 'admin') {
+        redirect('/dashboard/venue'); // Unauthorized
+    }
+
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-            {/* Sidebar */}
-            <aside className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 hidden md:flex flex-col">
-                <div className="p-6">
-                    <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
-                        AuraStream Factory
-                    </h1>
+        <div className="min-h-screen bg-black text-white flex">
+            {/* Sidebar - Command Center Style */}
+            <aside className="w-72 bg-[#0A0A0A] border-r border-white/5 hidden md:flex flex-col sticky top-0 h-screen">
+                <div className="p-10">
+                    <Link href="/admin" className="flex items-center gap-3 group">
+                        <div className="h-10 w-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(79,70,229,0.4)] group-hover:scale-110 transition-transform">
+                            <ShieldCheck size={22} className="text-white" />
+                        </div>
+                        <div className="flex flex-col">
+                            <span className="text-xl font-black italic tracking-widest text-white leading-none">
+                                SONAR<span className="font-light text-zinc-500">AURA</span>
+                            </span>
+                            <span className="text-[9px] font-black uppercase tracking-[0.4em] text-indigo-500 mt-1">Command Center</span>
+                        </div>
+                    </Link>
                 </div>
 
-                <nav className="flex-1 px-4 space-y-1">
-                    <NavLink href="/admin" icon="📊">Dashboard</NavLink>
-                    <NavLink href="/admin/upload" icon="☁️">Upload New</NavLink>
-                    <NavLink href="/admin/qc" icon="🎧">QC Station</NavLink>
-                    <NavLink href="/admin/catalog" icon="📂">Catalog</NavLink>
-                    <div className="pt-4 mt-4 border-t border-gray-100 dark:border-gray-700">
-                        <NavLink href="/admin/users" icon="👥">Users</NavLink>
-                        <NavLink href="/admin/settings" icon="⚙️">Settings</NavLink>
+                <nav className="flex-1 px-6 space-y-2">
+                    <p className="px-4 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4">Operations</p>
+                    <NavLink href="/admin" icon={<LayoutDashboard size={18} />}>Dashboard</NavLink>
+                    <NavLink href="/admin/upload" icon={<UploadCloud size={18} />}>Ingest Engine</NavLink>
+                    <NavLink href="/admin/qc" icon={<Headphones size={18} />}>QC Station</NavLink>
+                    <NavLink href="/admin/catalog" icon={<Library size={18} />}>Catalog Mgmt</NavLink>
+                    
+                    <div className="pt-8">
+                        <p className="px-4 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4">Ecosystem</p>
+                        <NavLink href="/admin/users" icon={<Users size={18} />}>User Intelligence</NavLink>
+                        <NavLink href="/admin/settings" icon={<Settings size={18} />}>Global Config</NavLink>
                     </div>
                 </nav>
 
-                <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
-                            A
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium dark:text-white">Admin User</p>
-                            <p className="text-xs text-gray-500">Super Admin</p>
-                        </div>
-                    </div>
+                {/* Back to Player */}
+                <div className="p-8 border-t border-white/5">
+                    <Link 
+                        href="/dashboard/venue"
+                        className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-all text-xs font-black uppercase tracking-widest"
+                    >
+                        <ArrowLeft size={14} />
+                        Back to Player
+                    </Link>
                 </div>
             </aside>
 
-            {/* Main Content */}
-            <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-                {/* Mobile Header (Visible only on small screens) */}
-                <header className="md:hidden bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 flex items-center justify-between">
-                    <span className="font-bold">Factory</span>
-                    <button className="p-2">☰</button>
+            {/* Main Content Area */}
+            <main className="flex-1 flex flex-col min-w-0">
+                {/* Admin Top Header */}
+                <header className="h-20 border-b border-white/5 px-10 flex items-center justify-between bg-black/50 backdrop-blur-xl sticky top-0 z-40">
+                    <div className="flex items-center gap-4">
+                        <span className="h-2 w-2 rounded-full bg-indigo-500 animate-pulse shadow-[0_0_10px_rgba(99,102,241,0.8)]" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Live Production Environment</span>
+                    </div>
+                    <div className="flex items-center gap-6">
+                        <button className="relative p-2 text-zinc-400 hover:text-white transition-colors">
+                            <Bell size={20} />
+                            <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 bg-rose-500 rounded-full" />
+                        </button>
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 border border-white/10 flex items-center justify-center font-bold text-sm">
+                            A
+                        </div>
+                    </div>
                 </header>
 
-                <div className="flex-1 overflow-auto p-4 md:p-8">
-                    {children}
+                <div className="flex-1 overflow-auto p-10">
+                    <div className="max-w-[1400px] mx-auto">
+                        {children}
+                    </div>
                 </div>
             </main>
         </div>
     );
 }
 
-function NavLink({ href, icon, children }: { href: string; icon: string; children: ReactNode }) {
+function NavLink({ href, icon, children }: { href: string; icon: ReactNode; children: ReactNode }) {
     return (
         <Link
             href={href}
-            className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            className="flex items-center gap-4 px-4 py-3 text-sm font-bold rounded-2xl text-zinc-500 hover:text-white hover:bg-white/5 transition-all group border border-transparent hover:border-white/5"
         >
-            <span className="text-lg">{icon}</span>
-            {children}
+            <span className="text-zinc-600 group-hover:text-indigo-500 transition-colors">{icon}</span>
+            <span className="tracking-tight">{children}</span>
         </Link>
     );
 }

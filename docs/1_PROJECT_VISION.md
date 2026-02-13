@@ -1,7 +1,7 @@
-# AuraStream Proje Dokümantasyonu (v3.6)
+# Sonaraura Proje Dokümantasyonu (v3.6)
 **Yapay Zeka Destekli Hibrit Müzik Lisanslama ve Frekans Mühendisliği Ekosistemi**
 
-> **Referans:** AuraStream Proje Dokümantasyonu.pdf (v3.0 - 10 Ocak 2026)
+> **Referans:** Sonaraura Proje Dokümantasyonu.pdf (v3.0 - 10 Ocak 2026)
 
 ## 1. Proje Vizyonu ve Değer Önerisi
 
@@ -14,7 +14,7 @@
 - Kullanım kısıtlamaları
 
 ### 1.2. Çözüm Önerisi
-**AuraStream:** Teknoloji tabanlı, AI destekli, yasal güvenceli müzik ekosistemi.
+**Sonaraura:** Teknoloji tabanlı, AI destekli, yasal güvenceli müzik ekosistemi.
 **Temel Felsefe:** "Güvenli ve Lisanslı Ticari Müzik"
 
 #### Üç Temel Dayanak:
@@ -26,7 +26,7 @@
 
 **B2B (Mekanlar) için:**
 - %99.9 uptime garantili offline çalışma
-- "AuraStream Lisanslı Mekan" sertifikasyonu
+- "Sonaraura Lisanslı Mekan" sertifikasyonu
 - Mekan enerjisine göre frekans optimizasyonu
 - Telif karmaşasından tam muafiyet
 
@@ -44,7 +44,7 @@
 
 ## 2. Hedef Kitle ve Ürün Ayrımı
 
-### 2.1. AuraStream Venue (B2B - Mekanlar)
+### 2.1. Sonaraura Venue (B2B - Mekanlar)
 **Hedef Segmentler:** Kafeler, restoranlar, barlar, oteller, spa merkezleri, perakende mağazaları, ofisler.
 
 **Çözüm Özellikleri:**
@@ -53,7 +53,7 @@
 - **Smart Scheduling:** Zaman çizelgeleri, hava durumu entegrasyonu.
 - **Biorhythm & Energy Curve:** Günün saatine göre otomatik enerji/frekans yönetimi.
 
-### 2.2. AuraStream Creator (B2C - İçerik Üreticiler)
+### 2.2. Sonaraura Creator (B2C - İçerik Üreticiler)
 **Hedef Segmentler:** YouTube üreticileri, podcast yapımcıları, reklam ajansları.
 
 **Çözüm Özellikleri:**
@@ -65,7 +65,7 @@
 ### 2.3. Sonic Tailor (Özel Sipariş)
 Premium kullanıcılar için referans link ve prompt ile özel AI müzik üretimi.
 
-### 2.4. AuraStream Admin (İç Yönetim)
+### 2.4. Sonaraura Admin (İç Yönetim)
 Müzik editörleri ve QC uzmanları için yüksek verimlilikli yönetim paneli.
 
 ---

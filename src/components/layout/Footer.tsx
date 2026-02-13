@@ -16,8 +16,11 @@ export function Footer({ variant = 'light' }: FooterProps) {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-24">
                     {/* Logo & Lang */}
                     <div className="lg:col-span-4 space-y-8">
-                        <div className={`flex items-center gap-2 ${isDark ? 'text-white' : 'text-black'}`}>
-                            <span className="text-2xl font-black tracking-tighter uppercase italic">AuraStream</span>
+                        <div className="flex items-center gap-2 mb-4">
+                            <div className="h-10 w-10 bg-white/10 rounded items-center justify-center flex font-bold text-lg">S</div>
+                            <span className="text-xl font-black italic tracking-widest select-none">
+                                SONAR<span className={`font-light ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>AURA</span>
+                            </span>
                         </div>
                         <div className={`inline-flex items-center gap-2 px-4 py-2 border rounded text-sm font-medium cursor-pointer transition-colors ${isDark
                             ? 'border-white/20 text-white hover:bg-white/10'
@@ -64,7 +67,7 @@ export function Footer({ variant = 'light' }: FooterProps) {
 
                 <div className={`pt-8 border-t flex flex-col md:flex-row items-center justify-between gap-6 text-[11px] font-bold uppercase tracking-wider ${isDark ? 'border-white/10 text-zinc-500' : 'border-zinc-200 text-zinc-400'}`}>
                     <div className="flex gap-4">
-                        <p>Copyright © AuraStream</p>
+                        <p>Copyright © SonarAura</p>
                         <Link href="#" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Legal</Link>
                         <Link href="#" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Privacy</Link>
                         <Link href="#" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Cookie</Link>

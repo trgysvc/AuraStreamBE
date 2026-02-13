@@ -14,7 +14,7 @@ export default function CreatorLayout({
                     <div className="flex items-center gap-8">
                         <Link href="/store" className="flex items-center space-x-2">
                             <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">
-                                AuraStream
+                                Sonaraura
                             </span>
                         </Link>
                         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">

@@ -90,7 +90,7 @@ export default function SignupPage() {
                 <div className="w-full max-w-md space-y-8">
                     <div className="text-center lg:text-left">
                         <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">Create an account</h1>
-                        <p className="text-gray-500">Join the AuraStream community today.</p>
+                        <p className="text-gray-500">Join the Sonaraura community today.</p>
                     </div>
 
                     <form onSubmit={handleSignup} className="space-y-6">

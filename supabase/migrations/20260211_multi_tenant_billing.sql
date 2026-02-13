@@ -1,5 +1,5 @@
 
--- AuraStream Multi-Tenant & Subscription Schema Update
+-- Sonaraura Multi-Tenant & Subscription Schema Update
 -- Based on User Requirements [2026-02-11]
 
 --------------------------------------------------------------------------------

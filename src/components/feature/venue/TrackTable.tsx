@@ -59,13 +59,13 @@ export function TrackTable({ tracks }: TrackTableProps) {
                                 </div>
                                 <div className="min-w-0">
                                     <h4 className={`text-sm font-medium truncate ${isCurrent ? 'text-orange-500' : 'text-white'}`}>{track.title}</h4>
-                                    <p className="text-xs text-gray-500 truncate">{track.artist || 'AuraStream'}</p>
+                                    <p className="text-xs text-gray-500 truncate">{track.artist || 'Sonaraura'}</p>
                                 </div>
                             </div>
 
                             {/* Artist */}
                             <div className="col-span-2 text-sm text-gray-300 truncate">
-                                {track.artist || 'AuraStream'}
+                                {track.artist || 'Sonaraura'}
                             </div>
 
                             {/* Tags */}

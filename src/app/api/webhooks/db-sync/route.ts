@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { SearchSync } from '@/lib/search/sync';
 
 // This secret should be set in Supabase Database Webhook config as a query param or header
-// e.g. https://api.aurastream.com/api/webhooks/db-sync?secret=YOUR_SECRET
+// e.g. https://api.sonaraura.com/api/webhooks/db-sync?secret=YOUR_SECRET
 const SYNC_SECRET = process.env.MEILISEARCH_SYNC_SECRET;
 
 export async function POST(req: NextRequest) {

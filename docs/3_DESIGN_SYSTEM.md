@@ -1,5 +1,5 @@
-# AuraStream UI/UX Design System (v3.6)
-**Reference:** AuraStream UI:UX Detaylı Tasarım Dokümantasyonu
+# Sonaraura UI/UX Design System (v3.6)
+**Reference:** Sonaraura UI:UX Detaylı Tasarım Dokümantasyonu
 
 ## 1. Design System Foundation
 

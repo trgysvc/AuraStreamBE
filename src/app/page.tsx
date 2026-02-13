@@ -18,12 +18,12 @@ export default async function LandingPage() {
             <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-5 bg-black/90 backdrop-blur-sm transition-all duration-300 border-b border-white/10">
                 <div className="flex items-center gap-8">
                     {/* Logo Area */}
-                    <Link href="/" className="flex items-center gap-2 cursor-pointer">
-                        <div className="h-8 w-8 bg-white rounded-full flex items-center justify-center">
-                            <span className="text-black font-bold text-lg text-center">A</span>
-                        </div>
-                        <span className="text-xl font-bold tracking-tight">AuraStream</span>
-                    </Link>
+                    <div className="flex items-center gap-2 mb-6">
+                        <div className="h-8 w-8 bg-white text-black rounded flex items-center justify-center font-bold">S</div>
+                        <span className="text-xl font-black italic tracking-widest text-white">
+                            SONAR<span className="font-light text-zinc-300">AURA</span>
+                        </span>
+                    </div>
 
                     {/* Desktop Navigation */}
                     <nav className="hidden lg:flex items-center gap-8 text-[15px] font-medium text-gray-300">
@@ -195,16 +195,16 @@ export default async function LandingPage() {
                 </div>
             </section>
 
-            {/* 2. AuraStream Venue / Business Section (Light Grey/Blue) */}
+            {/* 2. Sonaraura Venue / Business Section (Light Grey/Blue) */}
             <section className="py-32 px-6 bg-[#E8EDF2] text-black overflow-hidden border-b border-black/5">
                 <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-center gap-16">
                     <div className="flex-1 text-center md:text-left space-y-10">
-                        <p className="text-xs font-black uppercase tracking-[0.4em] text-zinc-500">AuraStream Venue</p>
+                        <p className="text-xs font-black uppercase tracking-[0.4em] text-zinc-500">Sonaraura Venue</p>
                         <h2 className="text-4xl md:text-[5rem] font-black tracking-tight leading-[0.9]">
                             Define the <br />spirit of your <br />venue with Aura.
                         </h2>
                         <p className="text-xl md:text-2xl font-medium opacity-70 leading-relaxed max-w-xl">
-                            Seamless, high-fidelity, and fully licensed music for your business. AuraStream Venue doesn&apos;t just play music; it scientifically optimizes your atmosphere with frequency tuning.
+                            Seamless, high-fidelity, and fully licensed music for your business. Sonaraura Venue doesn&apos;t just play music; it scientifically optimizes your atmosphere with frequency tuning.
                         </p>
                         <div className="flex flex-wrap justify-center md:justify-start gap-6 pt-4">
                             <Link href="/venue" className="px-10 py-5 bg-black text-white rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-2xl uppercase tracking-wider">
@@ -320,8 +320,8 @@ export default async function LandingPage() {
                         <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-[1.1]">
                             Aura Tailor: Music on Request.
                         </h2>
-                        <p className="text-lg opacity-80 leading-relaxed">
-                            Need something truly unique? Our artists and AI ecosystem can craft custom tracks tailored to your specific project needs. Your vision, our sound.
+                        <p className="text-gray-400 text-sm leading-relaxed">
+                            SonarAura provides intelligent background music solutions for venues, creators, and businesses.
                         </p>
                         <button className="flex items-center gap-2 font-bold border-b-2 border-black pb-1 group mt-4">
                             Request custom music <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />

@@ -111,7 +111,7 @@ export async function getVenueTracks_Action(options?: {
         return {
             id: track.id,
             title: track.title,
-            artist: track.artist || 'AuraStream AI',
+            artist: track.artist || 'Sonaraura AI',
             bpm: track.bpm,
             duration: track.duration_sec || 0,
             genre: track.genre,

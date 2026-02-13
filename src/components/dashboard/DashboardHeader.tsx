@@ -17,7 +17,8 @@ import {
     MessageSquare,
     LifeBuoy,
     Menu,
-    LayoutGrid
+    LayoutGrid,
+    ShieldCheck
 } from 'lucide-react';
 import { createClient } from '@/lib/db/client';
 
@@ -26,6 +27,22 @@ export default function DashboardHeader() {
     const router = useRouter();
     const supabase = createClient();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [role, setRole] = useState<string | null>(null);
+
+    useState(() => {
+        const fetchRole = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data } = await supabase
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', user.id)
+                    .single();
+                setRole(data?.role || 'creator');
+            }
+        };
+        fetchRole();
+    });
 
     const handleLogout = async () => {
         await supabase.auth.signOut();
@@ -44,7 +61,9 @@ export default function DashboardHeader() {
             {/* Left: Logo & Nav */}
             <div className="flex items-center gap-12">
                 <Link href="/" className="flex items-center gap-2 group">
-                    <span className="text-2xl font-black tracking-tighter text-white uppercase italic">AuraStream</span>
+                    <span className="text-xl font-black italic tracking-widest text-white select-none">
+                        SONAR<span className="font-light text-zinc-300">AURA</span>
+                    </span>
                 </Link>
 
                 <nav className="hidden lg:flex items-center gap-8">
@@ -100,6 +119,17 @@ export default function DashboardHeader() {
                                     <Settings size={16} />
                                     Account
                                 </Link>
+
+                                {role === 'admin' && (
+                                    <Link
+                                        href="/admin"
+                                        onClick={() => setIsMenuOpen(false)}
+                                        className="flex items-center gap-3 px-4 py-3 text-sm font-black text-indigo-400 hover:text-indigo-300 hover:bg-white/5 transition-colors border-l-2 border-transparent hover:border-indigo-500 italic uppercase"
+                                    >
+                                        <ShieldCheck size={16} />
+                                        Admin Factory
+                                    </Link>
+                                )}
                                 <button className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-zinc-300 hover:text-white hover:bg-white/5 transition-colors">
                                     <Users size={16} />
                                     Refer a friend

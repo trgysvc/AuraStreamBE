@@ -1,4 +1,4 @@
-# AuraStream v3.6 Progress Tracker
+# Sonaraura v3.6 Progress Tracker
 
 ## Phase 1: Foundation (Weeks 1-2)
 - [x] **Project Setup**

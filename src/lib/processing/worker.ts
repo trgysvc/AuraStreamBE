@@ -11,7 +11,7 @@ import os from 'os';
 const QUEUE_URL = process.env.AWS_SQS_QUEUE_URL!;
 
 export async function startWorker() {
-    console.log('AuraStream Worker started. Listening for high-fidelity audio jobs...');
+    console.log('Sonaraura Worker started. Listening for high-fidelity audio jobs...');
 
     while (true) {
         try {
@@ -46,7 +46,7 @@ export async function startWorker() {
 
 async function processTrackJob(trackId: string) {
     const supabase = createAdminClient();
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), `aurastream-${trackId}-`));
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), `sonaraura-${trackId}-`));
 
     try {
         // 1. Get Track and Raw File Info

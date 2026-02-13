@@ -48,7 +48,7 @@ export default function PricingPage() {
             price: "$25",
             description: "For venues & commercial spaces",
             features: [
-                "AuraStream Venue Player",
+                "Sonaraura Venue Player",
                 "Biorhythm Energy Curve",
                 "Smart Offline Caching",
                 "Public Performance License",
@@ -84,7 +84,7 @@ export default function PricingPage() {
                 <div className="flex items-center gap-8">
                     <Link href="/" className="flex items-center gap-2 cursor-pointer text-white">
                         <div className="h-8 w-8 bg-white rounded-full flex items-center justify-center text-black font-bold text-lg leading-none">A</div>
-                        <span className="text-xl font-bold tracking-tight">AuraStream</span>
+                        <span className="text-xl font-bold tracking-tight">Sonaraura</span>
                     </Link>
                     <nav className="hidden lg:flex items-center gap-8 text-[15px] font-medium text-gray-300">
                         <Link href="/music" className="hover:text-white transition-colors">Music</Link>

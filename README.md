@@ -1,6 +1,6 @@
-# 🌊 AuraStream - The Software Factory for Sound
+# 🌊 Sonaraura - The Software Factory for Sound
 
-AuraStream is an elite, AI-driven audio ecosystem designed for both digital creators and commercial venues. Acting as the "Chief Architect" for sound, it combines a high-performance music catalog with autonomous project management and strategic audio processing.
+Sonaraura is an elite, AI-driven audio ecosystem designed for both digital creators and commercial venues. Acting as the "Chief Architect" for sound, it combines a high-performance music catalog with autonomous project management and strategic audio processing.
 
 ## 🚀 All Features & Capabilities
 

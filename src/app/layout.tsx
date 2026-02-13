@@ -7,8 +7,8 @@ import { GlobalPlayer } from '@/components/feature/player/GlobalPlayer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "AuraStream",
-  description: "AI-Powered Background Music Platform",
+  title: "SonarAura | Intelligent Music for Venues",
+  description: "The Sound of Light. Professional background music for business.",
 };
 
 export default function RootLayout({

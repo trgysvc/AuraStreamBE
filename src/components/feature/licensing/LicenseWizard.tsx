@@ -95,7 +95,7 @@ export function LicenseWizard({ track, onClose }: LicenseWizardProps) {
                     <p className="text-white/60 text-sm mb-6">{track.artist}</p>
                     {isSubscribed && (
                         <div className="bg-indigo-500/20 border border-indigo-500/30 p-3 rounded-lg text-indigo-300 text-xs font-bold mb-4 text-center">
-                            AuraStream {tier.toUpperCase()} Member
+                            Sonaraura {tier.toUpperCase()} Member
                         </div>
                     )}
                 </div>

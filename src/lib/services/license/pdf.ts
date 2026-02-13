@@ -32,7 +32,7 @@ export const PDFService = {
             color: rgb(0.06, 0.09, 0.16), // Slate 900
         });
 
-        page.drawText('AURASTREAM', {
+        page.drawText('SONARAURA', {
             x: 50,
             y: height - 60,
             size: 30,
@@ -69,7 +69,7 @@ export const PDFService = {
         });
 
         // 3. QR Code Verification
-        const qrDataUrl = await QRCode.toDataURL(`https://aurastream.ai/verify/${data.licenseKey}`);
+        const qrDataUrl = await QRCode.toDataURL(`https://sonaraura.ai/verify/${data.licenseKey}`);
         const qrImage = await pdfDoc.embedPng(qrDataUrl);
         
         page.drawImage(qrImage, {

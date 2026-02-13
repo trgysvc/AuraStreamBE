@@ -1,4 +1,4 @@
--- AuraStream v3.6 Database Schema
+-- Sonaraura v3.6 Database Schema
 -- Native Supabase / PostgreSQL
 -- Single Source of Truth: Implementation Plan PDF
 
@@ -178,7 +178,7 @@ create policy "Venue owners can update their venues"
 create table public.tracks (
   id uuid default uuid_generate_v4() primary key,
   title text not null,
-  artist text default 'AuraStream AI',
+  artist text default 'Sonaraura AI',
   bpm integer,
   duration_sec integer,
   key text,

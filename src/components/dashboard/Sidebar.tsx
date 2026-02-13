@@ -81,6 +81,14 @@ export default function Sidebar() {
                     <span className="text-sm font-medium">Log out</span>
                 </button>
             </div>
+            <div className="p-6 flex items-center gap-3">
+                <div className="h-8 w-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <span className="font-bold text-white text-lg">S</span>
+                </div>
+                <span className="text-xl font-black italic tracking-widest text-white select-none">
+                    SONAR<span className="font-light text-zinc-400">AURA</span>
+                </span>
+            </div>
         </aside>
     );
 }

@@ -52,7 +52,7 @@ export function CreatorLibrary() {
             const base64 = await generateLicensePDF_Action(licenseId);
             const link = document.createElement('a');
             link.href = `data:application/pdf;base64,${base64}`;
-            link.download = `AuraStream-License-${licenseId.slice(0, 8)}.pdf`;
+            link.download = `Sonaraura-License-${licenseId.slice(0, 8)}.pdf`;
             link.click();
         } catch (error) {
             console.error('Failed to download PDF:', error);
@@ -74,7 +74,7 @@ export function CreatorLibrary() {
                         YouTube Content ID Protection
                     </h2>
                     <p className="text-slate-400 max-w-xl mb-6">
-                        Enter your YouTube Channel ID below. We will automatically whitelist your channel to prevent copyright claims on your videos using AuraStream music.
+                        Enter your YouTube Channel ID below. We will automatically whitelist your channel to prevent copyright claims on your videos using Sonaraura music.
                     </p>
                     <div className="flex gap-4 max-w-md">
                         <div className="flex-1 relative">
