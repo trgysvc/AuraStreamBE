@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import TrackRow from '@/components/dashboard/TrackRow';
 import { Search, ChevronDown, Sliders } from 'lucide-react';
 

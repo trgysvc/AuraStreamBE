@@ -3,15 +3,15 @@ export const OfflineManager = {
     STORE_NAME: 'tracks',
     QUOTA_MB: 500, // 500MB Limit
 
-    async init() {
+    async init(): Promise<IDBDatabase | null> {
         if (typeof window === 'undefined' || !window.indexedDB) {
             return null;
         }
 
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(this.DB_NAME, 2); // Version 2 for schema updates
-            request.onupgradeneeded = (e: any) => {
-                const db = request.result;
+            request.onupgradeneeded = (e: IDBVersionChangeEvent) => {
+                const db = (e.target as IDBOpenDBRequest).result;
                 if (!db.objectStoreNames.contains(this.STORE_NAME)) {
                     db.createObjectStore(this.STORE_NAME, { keyPath: 'id' });
                 }
@@ -25,7 +25,7 @@ export const OfflineManager = {
      * Caches a track with simulated encryption and quota management
      */
     async cacheTrack(trackId: string, url: string) {
-        const db = await this.init() as IDBDatabase | null;
+        const db = await this.init();
         if (!db) return false;
 
         try {
@@ -66,7 +66,7 @@ export const OfflineManager = {
     },
 
     async getCacheSize(): Promise<number> {
-        const db = await this.init() as IDBDatabase | null;
+        const db = await this.init();
         if (!db) return 0;
 
         return new Promise((resolve) => {
@@ -75,15 +75,15 @@ export const OfflineManager = {
             const request = store.getAll();
             
             request.onsuccess = () => {
-                const tracks = request.result || [];
-                const total = tracks.reduce((acc: number, t: any) => acc + (t.size || 0), 0);
+                const tracks = (request.result as { size?: number }[]) || [];
+                const total = tracks.reduce((acc: number, t) => acc + (t.size || 0), 0);
                 resolve(total);
             };
         });
     },
 
     async purgeOldTracks() {
-        const db = await this.init() as IDBDatabase | null;
+        const db = await this.init();
         if (!db) return;
 
         const transaction = db.transaction(this.STORE_NAME, 'readwrite');
@@ -91,16 +91,16 @@ export const OfflineManager = {
         const request = store.getAll();
 
         request.onsuccess = () => {
-            const tracks = request.result || [];
+            const tracks = (request.result as { id: string, cachedAt: number }[]) || [];
             // Sort by cachedAt and delete oldest 20%
-            tracks.sort((a: any, b: any) => a.cachedAt - b.cachedAt);
+            tracks.sort((a, b) => a.cachedAt - b.cachedAt);
             const toDelete = tracks.slice(0, Math.ceil(tracks.length * 0.2));
-            toDelete.forEach((t: any) => store.delete(t.id));
+            toDelete.forEach((t) => store.delete(t.id));
         };
     },
 
     async getCachedTrack(trackId: string): Promise<string | null> {
-        const db = await this.init() as IDBDatabase | null;
+        const db = await this.init();
         if (!db) return null;
 
         return new Promise((resolve) => {
@@ -109,8 +109,9 @@ export const OfflineManager = {
             const request = store.get(trackId);
             
             request.onsuccess = () => {
-                if (request.result) {
-                    resolve(URL.createObjectURL(request.result.blob));
+                const result = request.result as { blob: Blob } | undefined;
+                if (result) {
+                    resolve(URL.createObjectURL(result.blob));
                 } else {
                     resolve(null);
                 }

@@ -5,8 +5,14 @@ import { Card } from '@/components/shared/Card';
 import { Button } from '@/components/shared/Button';
 import { Input } from '@/components/shared/Input';
 import { getSignedUploadUrl_Action, createTrackRecord_Action } from '@/app/actions/upload';
-// @ts-ignore
+// @ts-expect-error - music-tempo lacks types
 import MusicTempo from 'music-tempo';
+
+declare global {
+    interface Window {
+        webkitAudioContext: typeof AudioContext;
+    }
+}
 
 export default function UploadPage() {
     const [file, setFile] = useState<File | null>(null);
@@ -36,7 +42,8 @@ export default function UploadPage() {
 
             try {
                 const arrayBuffer = await selectedFile.arrayBuffer();
-                const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                const audioContext = new AudioCtx();
 
                 // Decode audio data
                 const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);

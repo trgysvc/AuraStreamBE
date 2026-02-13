@@ -59,7 +59,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                     const { data: profile } = await supabase.from('profiles').select('subscription_tier').eq('id', session.user.id).single();
                     if (profile) setTier(profile.subscription_tier as Tier);
                 }
-            } catch (e) {
+            } catch {
                 // Silent fail for unauthenticated users
             }
         };
@@ -90,9 +90,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         audio.addEventListener('ended', onEnded);
 
         try {
-            const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext);
-            if (AudioContextClass) {
-                const ctx = new AudioContextClass();
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtx) {
+                const ctx = new AudioCtx();
                 const node = ctx.createAnalyser();
                 node.fftSize = 256;
                 const source = ctx.createMediaElementSource(audio);
@@ -102,8 +102,8 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                 sourceRef.current = source;
                 setAnalyser(node);
             }
-        } catch (e) {
-            console.error("Web Audio API setup failed:", e);
+        } catch {
+            console.error("Web Audio API setup failed");
         }
 
         return () => {

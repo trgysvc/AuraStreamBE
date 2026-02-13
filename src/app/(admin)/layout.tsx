@@ -9,7 +9,8 @@ import {
     Settings, 
     ArrowLeft,
     ShieldCheck,
-    Bell
+    Bell,
+    Sparkles
 } from 'lucide-react';
 import { createClient } from '@/lib/db/server';
 import { redirect } from 'next/navigation';
@@ -57,6 +58,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
                     <NavLink href="/admin/upload" icon={<UploadCloud size={18} />}>Ingest Engine</NavLink>
                     <NavLink href="/admin/qc" icon={<Headphones size={18} />}>QC Station</NavLink>
                     <NavLink href="/admin/catalog" icon={<Library size={18} />}>Catalog Mgmt</NavLink>
+                    <NavLink href="/admin/requests" icon={<Sparkles size={18} />}>Request Hub</NavLink>
                     
                     <div className="pt-8">
                         <p className="px-4 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4">Ecosystem</p>

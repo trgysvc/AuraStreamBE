@@ -1,82 +1,88 @@
 'use server'
 
 import { createAdminClient } from '@/lib/db/admin-client';
-import { QueueService } from '@/lib/queue/client';
-
-export interface QCState {
-    message?: string;
-    error?: string;
-    success?: boolean;
-}
+import { searchClient } from '@/lib/search/client';
+import { revalidatePath } from 'next/cache';
 
 /**
- * Fetch tracks waiting for QC
+ * Approves a track, makes it live in the catalog and syncs to Meilisearch.
  */
-export async function getPendingTracks_Action() {
-    // Use Admin Client to bypass RLS (Anon users can't see pending tracks)
-    const supabase = createAdminClient();
-
-    const { data, error } = await supabase
-        .from('tracks')
-        .select('*')
-        .eq('status', 'pending_qc')
-        .order('created_at', { ascending: true });
-
-    if (error) {
-        console.error('Fetch Error:', error);
-        return [];
-    }
-
-    return data;
-}
-
-/**
- * Approve a track and send to processing pipeline
- */
-export async function approveTrack_Action(trackId: string): Promise<QCState> {
+export async function approveTrack_Action(trackId: string) {
     const supabase = createAdminClient();
 
     // 1. Update status in DB
-    const { error } = await supabase
+    const { data: track, error } = await supabase
         .from('tracks')
-        .update({ status: 'processing' })
-        .eq('id', trackId);
+        .update({ status: 'active', updated_at: new Date().toISOString() })
+        .eq('id', trackId)
+        .select()
+        .single();
 
-    if (error) {
-        return { error: 'Failed to update track status' };
-    }
+    if (error) throw error;
 
-    // 2. Trigger SQS for processing
+    // 2. Sync to Meilisearch for instant discovery
     try {
-        await QueueService.triggerProcessing(trackId);
-    } catch (err) {
-        console.error('Queue Error:', err);
-        // If queue fails, revert DB status (optimistic constraint)
-        await supabase.from('tracks').update({ status: 'pending_qc' }).eq('id', trackId);
-        return { error: 'Failed to queue processing job' };
+        const index = searchClient.index('tracks');
+        await index.addDocuments([{
+            id: track.id,
+            title: track.title,
+            artist: track.artist,
+            bpm: track.bpm,
+            genre: track.genre,
+            mood_tags: track.mood_tags,
+            duration_sec: track.duration_sec,
+            popularity_score: track.popularity_score
+        }]);
+    } catch (e) {
+        console.error('Meilisearch Sync Error during approval:', e);
+        // We don't throw here to ensure the DB state is preserved, 
+        // but a background sync worker should pick this up.
     }
 
-    return { success: true, message: 'Track approved and queued for processing.' };
+    revalidatePath('/admin/qc');
+    revalidatePath('/admin/catalog');
+    revalidatePath('/dashboard/venue');
+    
+    return { success: true };
 }
 
 /**
- * Reject a track
+ * Rejects a track and marks it as rejected. 
+ * Actual file deletion from S3 can be handled by a cleanup worker to avoid UI lag.
  */
-export async function rejectTrack_Action(trackId: string, reason: string): Promise<QCState> {
+export async function rejectTrack_Action(trackId: string) {
     const supabase = createAdminClient();
-
-    console.log('Rejecting track', trackId, 'Reason:', reason);
 
     const { error } = await supabase
         .from('tracks')
-        .update({
-            status: 'rejected',
-        })
+        .update({ status: 'rejected', updated_at: new Date().toISOString() })
         .eq('id', trackId);
 
-    if (error) {
-        return { error: 'Failed to reject track' };
-    }
+    if (error) throw error;
 
-    return { success: true, message: 'Track rejected.' };
+    revalidatePath('/admin/qc');
+    return { success: true };
+}
+
+/**
+ * Updates track metadata during QC.
+ */
+export async function updateTrackQC_Action(trackId: string, data: {
+    title?: string;
+    artist?: string;
+    bpm?: number;
+    key?: string;
+    mood_tags?: string[];
+}) {
+    const supabase = createAdminClient();
+
+    const { error } = await supabase
+        .from('tracks')
+        .update({ ...data, updated_at: new Date().toISOString() })
+        .eq('id', trackId);
+
+    if (error) throw error;
+
+    revalidatePath('/admin/qc');
+    return { success: true };
 }

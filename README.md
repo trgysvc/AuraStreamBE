@@ -1,80 +1,111 @@
-# 🌊 Sonaraura - The Software Factory for Sound
+# 🌊 Sonaraura - The AI-Driven Audio Ecosystem
 
 Sonaraura is an elite, AI-driven audio ecosystem designed for both digital creators and commercial venues. Acting as the "Chief Architect" for sound, it combines a high-performance music catalog with autonomous project management and strategic audio processing.
 
-## 🚀 All Features & Capabilities
+---
 
-### 1. Advanced Search & Discovery
-*   **Hybrid Search Engine:** Combines Meilisearch (keyword/faceted) and pgvector (semantic) for lightning-fast results.
-*   **Faceted Filtering:** Filter by BPM range, Mood, Genre, Instrument, and Vocal presence.
-*   **AI Intent Search:** Natural language search like "uplifting music for a sunny coffee shop morning".
-*   **Audio Similarity Engine:** "Find Similar" feature using vector cosine similarity to discover musically related tracks.
-*   **Zero-Result AI Recovery:** Suggests alternative tracks when exact keyword matches aren't found.
-*   **Context-Aware Suggestions:** Recommends tracks based on the time of day and venue timezone.
+## 🚀 Project Overview
 
-### 2. Aura Metadata Factory (Autonomous Analysis)
-*   **Python-Powered Ingestion:** Automatic extraction of technical metadata using Librosa and Essentia.
-*   **Technical Profiling:** Automatic detection of BPM, Musical Key (e.g., Cm, F#), and Duration.
-*   **Vibe & Energy Analysis:** RMS Energy level calculation and AI-based mood tagging.
-*   **Aura Score:** A proprietary popularity and quality scoring system for every asset.
-*   **Cloud Processing:** Automated pipeline from S3 upload to database enrichment.
+Sonaraura goes beyond traditional streaming. It leverages **Frequency Engineering** and **Weather-Aware AI** to scientifically optimize environments. Whether it's a high-end commercial venue seeking the perfect biorhythm-aligned atmosphere or a creator needing bulletproof copyright protection, Sonaraura provides a unified, intelligent solution.
 
-### 3. Professional Venue Player (B2B)
-*   **Epidemic Sound Style UI:** Premium, high-performance dashboard for corporate environments.
-*   **Scientific Audio Tuning:** Real-time 432Hz and 528Hz DSP frequency shifting.
-*   **Venue Scheduling:** Visual calendar for automated energy level changes throughout the day.
-*   **Offline Mode:** Robust playback support via IndexedDB and encrypted local storage.
-*   **Multi-Zone Support:** Manage different playlists for different areas of a physical venue.
-*   **Brand Voice Integration:** Insert custom audio branding and ads between tracks.
-
-### 4. Creator Store & Licensing (B2C)
-*   **Interactive Waveforms:** High-fidelity, mirrored waveform visualizations with hover-seek.
-*   **License Wizard:** Dynamic PDF license generation for YouTube, Films, and Social Media.
-*   **Stripe Checkout:** Secure global payment processing for single tracks or subscriptions.
-*   **Elite Analytics:** Track playback stats and popular trends within the creator community.
-*   **Library Management:** Personal folders for saved tracks and licensed assets.
-
-### 5. Admin & Infrastructure
-*   **QC Interface:** Dedicated dashboard for track approval and quality control.
-*   **Real-time Sync:** Database webhooks automatically syncing Supabase changes to Meilisearch.
-*   **Automatic Backup:** Multi-region S3 storage with versioning.
-*   **Role-Based Access Control (RBAC):** Granular permissions for Admins, Venues, and Creators via Supabase RLS.
-
-## 🛠 Complete Technology Stack
-
-### Frontend Ecosystem
-*   **[Next.js 14](https://nextjs.org/docs):** Server-Side Rendering & App Router.
-*   **[React 18](https://react.dev/):** UI Component architecture.
-*   **[Tailwind CSS 3.4](https://tailwindcss.com/docs):** Atomic CSS styling.
-*   **[Lucide React](https://lucide.dev/docs):** SVG Icon system.
-*   **[Framer Motion](https://www.framer.com/motion/):** Advanced UI animations.
-*   **[React InstantSearch](https://www.meilisearch.com/docs/learn/relevance/instant_search):** Search UI hooks.
-
-### Backend & Cloud Infrastructure
-*   **[Supabase](https://supabase.com/docs):** Postgres Database, Auth, and Edge Functions.
-*   **[pgvector](https://github.com/pgvector/pgvector):** Vector database for semantic search.
-*   **[Amazon S3](https://docs.aws.amazon.com/s3/):** Binary object storage.
-*   **[Amazon SQS](https://aws.amazon.com/sqs/):** Distributed job queue.
-*   **[Meilisearch](https://www.meilisearch.com/docs):** Dedicated search engine.
-*   **[Stripe API](https://docs.stripe.com/):** Subscription and payment logic.
-
-### Audio Processing & AI
-*   **[Web Audio API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API):** Real-time DSP in the browser.
-*   **[Librosa (Python 3.9)](https://librosa.org/):** Music and audio analysis library.
-*   **[FFmpeg](https://ffmpeg.org/):** Audio transcoding and duration probing.
-*   **[OpenAI Embeddings](https://platform.openai.com/docs/guides/embeddings):** Powering the semantic vector search.
-*   **[Soundfile](https://pysoundfile.readthedocs.io/):** Python audio reading/writing.
-
-### Dev Tools & Utilities
-*   **[TypeScript](https://www.typescriptlang.org/):** Static type checking.
-*   **[ESLint](https://eslint.org/):** Code linting.
-*   **[Prettier](https://prettier.io/):** Code formatting.
-*   **[PostCSS](https://postcss.org/):** CSS transformations.
-*   **[Node.js 24](https://nodejs.org/):** Modern JavaScript runtime.
-
-## 📈 Development Progress
-
-See the [PROGRESS.md](./PROGRESS.md) file for a detailed roadmap.
+### 💎 Unique Value Propositions (USP)
+- **Frekans Mühendisliği:** Real-time shifting between 440Hz, 432Hz (Healing), and 528Hz (Awakening).
+- **Weather-Aware AI:** Automatic atmosphere adjustment based on live local weather data (e.g., rain triggers calming frequencies).
+- **Smart Flow:** Otonom music director that manages venue transitions (Morning -> Evening) without human intervention.
+- **YouTube Dispute Center:** Instant legal claim resolution with automated license verification.
 
 ---
-*Built with strategic depth by Aura - Your Digital Twin.*
+
+## 🛠️ Technical Stack & Frameworks
+
+### Core Architecture
+- **Framework:** [Next.js 14](https://nextjs.org/) (App Router, Server Actions, RSC)
+- **Language:** TypeScript (Strict Mode)
+- **Styling:** Vanilla Tailwind CSS 3.4
+- **State Management:** Zustand & React Context API
+
+### Backend & Cloud Infrastructure
+- **Database & Auth:** [Supabase](https://supabase.com/) (PostgreSQL, RLS, Edge Functions)
+- **Storage:** [AWS S3](https://aws.amazon.com/s3/) (Raw ingest, processed assets, CDN public storage)
+- **Compute:** AWS Lambda (Audio processing) & Node.js Server Actions
+- **Queue System:** AWS SQS (Job orchestration for audio analysis)
+- **CDN:** AWS CloudFront (Secure delivery with Signed URLs)
+
+### Audio & AI Processing
+- **Audio Engine:** Web Audio API (Client-side DSP, visualization, and crossfading)
+- **Analysis:** Python (Librosa) for BPM, Key, and Energy extraction
+- **Processing:** FFmpeg (Transcoding, Normalization -14 LUFS, Metadata Watermarking)
+- **Search:** [Meilisearch](https://www.meilisearch.com/) (Hybrid Vector + Keyword Search)
+
+---
+
+## 📦 Key Packages & Dependencies
+
+### Frontend UI/UX
+- `lucide-react`: Modern icon set
+- `framer-motion`: High-performance animations
+- `clsx` & `tailwind-merge`: Dynamic styling utilities
+
+### Audio & Visualization
+- `music-tempo`: Client-side BPM detection during upload
+- `waveform-data`: Advanced amplitude mapping
+- `canvas`: Real-time frequency spectrum visualizer
+
+### Utilities & Services
+- `@supabase/ssr`: Secure server-side supabase integration
+- `stripe`: Global payment and subscription orchestration
+- `pdf-lib`: Dynamic PDF license generation
+- `qrcode`: Verification link generation for certificates
+
+---
+
+## 📂 Project Structure
+
+```text
+/src
+├── app/
+│   ├── (admin)/         # Admin Factory (QC, User Intel, Catalog, Requests)
+│   ├── (auth)/          # Authentication Flow (Login, Signup)
+│   ├── (creator)/       # B2C Store and Personal Library
+│   ├── (venue)/         # B2B Dashboard and Smart Flow Management
+│   ├── account/         # User & Business Settings
+│   └── api/             # Backend Webhooks (Stripe, SQS)
+├── components/          # Shared Component Library
+│   ├── dashboard/       # Internal layout components
+│   ├── feature/         # Feature-specific modules (Player, Licensing)
+│   └── shared/          # Atomic UI components (Buttons, Inputs)
+├── context/             # Global Context (Player, Smart Flow)
+├── lib/                 # Core logic and service wrappers
+│   ├── audio/           # Web Audio API Engine
+│   ├── logic/           # Biorhythm & Cache Management
+│   └── services/        # Third-party integrations (S3, Weather)
+└── types/               # TypeScript Schema & Definitions
+```
+
+---
+
+## 📖 Internal Documentation
+
+Detailed technical and strategic guides can be found in the `/docs` folder:
+1.  **[Project Vision](./docs/1_PROJECT_VISION.md):** Deep dive into the "Digital Twin" concept and business model.
+2.  **[Technical Specs](./docs/2_TECH_SPEC.md):** Infrastructure, database schema, and RLS policies.
+3.  **[Design System](./docs/3_DESIGN_SYSTEM.md):** UI/UX principles, typography, and premium aesthetic guidelines.
+4.  **[Progress Tracker](./PROGRESS.md):** Live status of features and roadmap phases.
+5.  **[Ad Copy](./ADVERT.md):** Marketing highlights and unique selling points.
+
+---
+
+## ⚙️ Environment Configuration
+
+To run Sonaraura locally or in production, the following keys are required in `.env.local`:
+- `NEXT_PUBLIC_SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY`
+- `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`
+- `STRIPE_SECRET_KEY`
+- `MEILISEARCH_HOST` / `MEILISEARCH_API_KEY`
+
+---
+
+## 🏛️ Development Philosophy
+**Sonaraura** operates as a **"Software Factory"**. Every code change must respect the core architecture: No ORMs (Native Supabase only), High-Fidelity Audio Standards, and AI-First workflow.
+
+🌊 **Sonaraura: The Future of Sound.**

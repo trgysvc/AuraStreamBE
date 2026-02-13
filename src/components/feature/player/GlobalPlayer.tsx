@@ -99,7 +99,7 @@ export function GlobalPlayer() {
                 <div className="flex items-center gap-4 w-72 min-w-0 group/meta">
                     <div className="w-14 h-14 rounded-lg overflow-hidden bg-zinc-800 shadow-2xl border border-white/10 relative">
                         {currentTrack?.src ? (
-                            <img src={currentTrack.src.includes('cover') ? currentTrack.src : "/placeholder-cover.jpg"} className="w-full h-full object-cover transition-transform duration-500 group-hover/meta:scale-110" alt="" />
+                            <img src={currentTrack.src.includes('cover') ? currentTrack.src : "/placeholder-cover.jpg"} className="w-full h-full object-cover transition-transform duration-500 group-hover/meta:scale-110" alt={currentTrack.title} />
                         ) : <div className="w-full h-full flex items-center justify-center">🎵</div>}
                         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/meta:opacity-100 transition-opacity" />
                     </div>

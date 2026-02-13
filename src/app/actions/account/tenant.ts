@@ -1,186 +1,129 @@
-'use server';
+'use server'
 
 import { createAdminClient } from '@/lib/db/admin-client';
 import { createClient } from '@/lib/db/server';
 import { revalidatePath } from 'next/cache';
 
-export async function getTenantAction() {
+/**
+ * Interface for Tenant Identity
+ */
+export interface TenantIdentity {
+    legal_name?: string;
+    display_name?: string;
+    industry?: string;
+    website?: string;
+    logo_url?: string;
+    brand_color?: string;
+    volume_limit?: number;
+}
+
+/**
+ * Fetches the current user's profile and linked tenant.
+ * Uses the server client for secure server-side fetching.
+ */
+export async function getMyProfileWithTenant_Action() {
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    
+    // 1. Get Session User
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) return null;
 
-    if (!user) throw new Error('Unauthorized');
-
-    let { data: profile } = await supabase
+    // 2. Fetch Profile with joined Tenant
+    const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select(`
+            *,
+            tenants (*)
+        `)
         .eq('id', user.id)
         .single();
 
-    // If profile doesn't exist yet (unlikely with trigger, but possible), or is missing tenant_id
-    if (!profile) {
-        // Force create profile via admin client if something went wrong with trigger
-        const adminClient = createAdminClient();
-        const { data: newProfile } = await adminClient.from('profiles').upsert({
-            id: user.id,
-            email: user.email,
-            full_name: user.user_metadata?.full_name
-        }).select().single();
-        profile = newProfile;
+    if (error) {
+        console.error('Profile fetch error:', error);
+        return null;
     }
 
-    if (!profile?.tenant_id) {
-        const adminClient = createAdminClient();
-
-        // 1. Check if user already owns a tenant that isn't linked
-        let { data: tenant } = await adminClient
-            .from('tenants')
-            .select('*')
-            .eq('owner_id', user.id)
-            .maybeSingle();
-
-        if (!tenant) {
-            // 2. Create new tenant
-            const { data: newTenant } = await adminClient
-                .from('tenants')
-                .insert({
-                    owner_id: user.id,
-                    display_name: profile?.full_name || 'My Workspace',
-                    current_plan: 'free',
-                    plan_status: 'active'
-                })
-                .select()
-                .single();
-            tenant = newTenant;
-        }
-
-        // 3. Link profile to tenant (only if tenant creation succeeded)
-        if (tenant && profile) {
-            await adminClient
-                .from('profiles')
-                .update({ tenant_id: tenant.id })
-                .eq('id', user.id);
-
-            profile.tenant_id = tenant.id;
-        }
-
-        return { profile, tenant };
-    }
-
-    const { data: tenant } = await supabase
-        .from('tenants')
-        .select('*')
-        .eq('id', profile.tenant_id)
-        .single();
-
-    return { profile, tenant };
+    return data;
 }
 
-export async function updateTenantAction(formData: any) {
+/**
+ * Updates the current user's tenant identity.
+ * Restricted by RLS, but we use admin client for certain cross-table logic if needed.
+ */
+export async function updateTenantIdentity_Action(tenantId: string, formData: TenantIdentity) {
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) throw new Error('Unauthorized');
-
-    try {
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('tenant_id')
-            .eq('id', user.id)
-            .single();
-
-        const adminClient = createAdminClient();
-
-        // 1. Update Profile (Personal Info)
-        const profileUpdate: any = {};
-        if (formData.full_name !== undefined) profileUpdate.full_name = formData.full_name;
-        if (formData.avatar_url !== undefined) profileUpdate.avatar_url = formData.avatar_url;
-
-        if (Object.keys(profileUpdate).length > 0) {
-            await adminClient
-                .from('profiles')
-                .update(profileUpdate)
-                .eq('id', user.id);
-        }
-
-        // 2. Update or Create Tenant
-        const tenantData: any = {
+    
+    const { data, error } = await supabase
+        .from('tenants')
+        .update({
             legal_name: formData.legal_name,
             display_name: formData.display_name,
             industry: formData.industry,
             website: formData.website,
-            tax_office: formData.tax_office,
-            vkn: formData.vkn,
-            billing_address: formData.billing_address,
-            invoice_email: formData.invoice_email,
-            phone: formData.phone,
-            authorized_person_name: formData.authorized_person_name,
-            authorized_person_phone: formData.authorized_person_phone,
+            logo_url: formData.logo_url,
             brand_color: formData.brand_color,
             volume_limit: formData.volume_limit,
-            logo_url: formData.logo_url
-        };
+            updated_at: new Date().toISOString()
+        })
+        .eq('id', tenantId)
+        .select()
+        .single();
 
-        // Filter out undefined/null values to allow partial updates
-        const cleanTenantData = Object.fromEntries(
-            Object.entries(tenantData).filter(([_, v]) => v !== undefined && v !== null)
-        );
-
-        if (!profile?.tenant_id) {
-            // Create new tenant if not exists
-            const { data: newTenant, error: createError } = await adminClient
-                .from('tenants')
-                .insert({
-                    owner_id: user.id,
-                    ...cleanTenantData
-                })
-                .select()
-                .single();
-
-            if (createError) throw createError;
-
-            // Link profile to tenant
-            await adminClient
-                .from('profiles')
-                .update({ tenant_id: newTenant.id })
-                .eq('id', user.id);
-        } else {
-            // Update existing tenant
-            if (Object.keys(cleanTenantData).length > 0) {
-                const { error: updateError } = await adminClient
-                    .from('tenants')
-                    .update(cleanTenantData)
-                    .eq('id', profile.tenant_id);
-
-                if (updateError) throw updateError;
-            }
-        }
-    } catch (error: any) {
-        console.error("UpdateTenantAction Error:", error);
-        throw error;
+    if (error) {
+        console.error('Tenant update error:', error);
+        throw new Error(error.message);
     }
 
     revalidatePath('/account');
+    return data;
 }
 
-export async function getBillingHistoryAction() {
+/**
+ * Admin Only: Verifies a venue's commercial status.
+ */
+export async function adminVerifyVenue_Action(venueId: string) {
+    const supabase = createAdminClient();
+    
+    const { error } = await supabase
+        .from('venues')
+        .update({ 
+            verification_status: 'verified',
+            updated_at: new Date().toISOString()
+        })
+        .eq('id', venueId);
+
+    if (error) throw error;
+    
+    revalidatePath('/admin');
+    return { success: true };
+}
+
+/**
+ * Onboards a new venue under a tenant.
+ */
+export async function createVenue_Action(venueData: {
+    business_name: string;
+    address_line1?: string;
+    city?: string;
+    country?: string;
+    tenant_id: string;
+}) {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
 
-    if (!user) throw new Error('Unauthorized');
-
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('tenant_id')
-        .eq('id', user.id)
+    const { data, error } = await supabase
+        .from('venues')
+        .insert({
+            ...venueData,
+            owner_id: user.id,
+            verification_status: 'pending'
+        })
+        .select()
         .single();
 
-    if (!profile?.tenant_id) return [];
+    if (error) throw error;
 
-    const { data: history } = await supabase
-        .from('billing_history')
-        .select('*')
-        .eq('tenant_id', profile.tenant_id)
-        .order('created_at', { ascending: false });
-
-    return history || [];
+    revalidatePath('/dashboard/venue');
+    return data;
 }

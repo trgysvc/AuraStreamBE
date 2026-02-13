@@ -67,7 +67,7 @@ export function LicenseWizard({ track, onClose }: LicenseWizardProps) {
                         <CheckCircle className="w-10 h-10" />
                     </div>
                     <h2 className="text-2xl font-bold text-white mb-2">License Secured!</h2>
-                    <p className="text-white/60 mb-8">Your license for "{projectName}" has been registered. You can download the certificate from your library.</p>
+                    <p className="text-white/60 mb-8">Your license for &quot;{projectName}&quot; has been registered. You can download the certificate from your library.</p>
                     <button onClick={onClose} className="w-full bg-emerald-600 hover:bg-emerald-700 py-3 rounded-xl font-bold text-white transition-all">
                         Great, thanks!
                     </button>

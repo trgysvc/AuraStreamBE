@@ -1,4 +1,3 @@
-import Sidebar from '@/components/dashboard/Sidebar';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import { Footer } from '@/components/layout/Footer';
 

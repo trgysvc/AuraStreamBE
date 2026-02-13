@@ -59,9 +59,10 @@ export default function SignupPage() {
                 console.log('Redirecting to provider...');
                 window.location.href = data.url;
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Signup error details:', error);
-            setError(error.message || 'Authentication failed');
+            const msg = error instanceof Error ? error.message : 'Authentication failed';
+            setError(msg);
             setLoading(false);
         }
     };

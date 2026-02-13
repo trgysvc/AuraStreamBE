@@ -33,6 +33,8 @@ drop table if exists public.search_logs cascade;
 drop table if exists public.saved_searches cascade;
 drop table if exists public.custom_requests cascade;
 drop table if exists public.playback_sessions cascade;
+drop table if exists public.venue_schedules cascade;
+drop table if exists public.disputes cascade;
 drop table if exists public.licenses cascade;
 drop table if exists public.track_files cascade;
 drop table if exists public.tracks cascade;
@@ -194,6 +196,7 @@ create table public.tracks (
   ai_metadata jsonb not null default '{}'::jsonb, 
   -- Expected keys: prompt, model, seed, generated_at
   
+  waveform_data jsonb, -- Extracted amplitude points
   cover_image_url text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
@@ -298,6 +301,39 @@ create policy "Users can insert playback stats"
   with check ( auth.uid() = user_id or exists (select 1 from venues where id = venue_id and owner_id = auth.uid()) );
 
 --------------------------------------------------------------------------------
+-- 6.1 VENUE SCHEDULES
+--------------------------------------------------------------------------------
+
+create table public.venue_schedules (
+  id uuid default uuid_generate_v4() primary key,
+  venue_id uuid references public.venues(id) on delete cascade not null,
+  name text not null,
+  start_time time not null, 
+  end_time time not null,   
+  day_of_week integer[],    
+  moods text[],             
+  genres text[],            
+  target_energy float,      
+  target_tuning tuning_f default '440hz',
+  is_active boolean default true,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+-- RLS: Venue Schedules
+alter table public.venue_schedules enable row level security;
+
+create policy "Venue owners can manage their schedules"
+  on public.venue_schedules for all
+  using ( 
+    exists (
+        select 1 from public.venues 
+        where id = venue_schedules.venue_id 
+        and owner_id = auth.uid()
+    ) 
+  );
+
+--------------------------------------------------------------------------------
 -- 7. CUSTOM REQUESTS (Sonic Tailor)
 --------------------------------------------------------------------------------
 
@@ -322,6 +358,28 @@ alter table public.custom_requests enable row level security;
 
 create policy "Users can view own requests"
   on custom_requests for select
+  using ( auth.uid() = user_id );
+
+--------------------------------------------------------------------------------
+-- 7.1 YOUTUBE DISPUTES
+--------------------------------------------------------------------------------
+
+create table public.disputes (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  license_id uuid references public.licenses(id) on delete cascade not null,
+  video_url text,
+  status text default 'pending', -- pending, resolved, rejected
+  dispute_text text,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+-- RLS: Disputes
+alter table public.disputes enable row level security;
+
+create policy "Users can manage their disputes"
+  on public.disputes for all
   using ( auth.uid() = user_id );
 
 --------------------------------------------------------------------------------
@@ -460,7 +518,7 @@ begin
     new.email,
     new.raw_user_meta_data->>'full_name',
     new.raw_user_meta_data->>'avatar_url',
-    new_tenant_id
+    new_tenant_id;
   );
   
   return new;
@@ -471,6 +529,7 @@ create trigger update_profiles_modtime before update on profiles for each row ex
 create trigger update_tenants_modtime before update on tenants for each row execute procedure update_updated_at();
 create trigger update_venues_modtime before update on venues for each row execute procedure update_updated_at();
 create trigger update_tracks_modtime before update on tracks for each row execute procedure update_updated_at();
+create trigger update_venue_schedules_modtime before update on venue_schedules for each row execute procedure update_updated_at();
 
 -- Trigger the function every time a user is created
 create trigger on_auth_user_created

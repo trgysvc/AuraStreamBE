@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, Check, X, ChevronDown } from 'lucide-react';
+import { Check, X, ChevronDown } from 'lucide-react';
 import { useRef } from 'react';
 import { Footer } from '@/components/layout/Footer';
 

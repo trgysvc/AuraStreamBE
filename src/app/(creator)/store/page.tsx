@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { getStoreTracks_Action, StoreTrack } from '@/app/actions/store';
 import { TrackRow } from '@/components/feature/store/TrackRow';
-import { Search, Flame, Cloud, Zap, Cpu, Waves, Sparkles } from 'lucide-react';
+import { Search, Flame, Cloud, Zap, Waves, Sparkles } from 'lucide-react';
 
 const MOODS = [
     { id: 'cinematic', name: 'Cinematic', icon: <Sparkles />, color: 'from-amber-500/20 to-orange-500/20', img: '🎬' },

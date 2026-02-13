@@ -54,13 +54,7 @@ export async function getVenueTracks_Action(options?: {
         queryBuilder = queryBuilder.ilike('title', `%${options.query}%`);
     }
 
-    // Note: 'mood_tags' filtering might need specific logic if it's an array column or similar.
-    // Assuming simple text search or intersection if Postgres array. 
-    // For now, if moods are provided, we filter in memory or Use 'cs' (contains) if array
     if (options?.moods && options.moods.length > 0) {
-        // Filter logic for array column:
-        // queryBuilder = queryBuilder.contains('mood_tags', options.moods); 
-        // Depending on how strict we want to be. 'overlaps' is &&
         queryBuilder = queryBuilder.overlaps('mood_tags', options.moods);
     }
 
@@ -71,13 +65,15 @@ export async function getVenueTracks_Action(options?: {
         return [];
     }
 
+    if (!tracks) return [];
+
     // 3. Generate Signed URLs
-    const tracksWithUrls = await Promise.all(tracks.map(async (track: any) => {
+    const tracksWithUrls = await Promise.all(tracks.map(async (track) => {
         const availableTunings: Record<string, string> = {};
         let defaultSrc = '';
 
         // Generate signed URLs for all streamable files
-        const streamFiles = track.track_files.filter((f: any) => f.file_type === 'stream_aac' || f.file_type === 'stream_mp3');
+        const streamFiles = (track.track_files as any[]).filter((f) => f.file_type === 'stream_aac' || f.file_type === 'stream_mp3');
 
         for (const file of streamFiles) {
             try {
@@ -100,11 +96,11 @@ export async function getVenueTracks_Action(options?: {
 
         // Final Fallback: Raw file
         if (!defaultSrc) {
-            const rawFile = track.track_files.find((f: any) => f.file_type === 'raw');
+            const rawFile = (track.track_files as any[]).find((f) => f.file_type === 'raw');
             if (rawFile) {
                 try {
                     defaultSrc = await S3Service.getDownloadUrl(rawFile.s3_key);
-                } catch (e) { }
+                } catch { }
             }
         }
 
@@ -112,10 +108,10 @@ export async function getVenueTracks_Action(options?: {
             id: track.id,
             title: track.title,
             artist: track.artist || 'Sonaraura AI',
-            bpm: track.bpm,
+            bpm: track.bpm || 120,
             duration: track.duration_sec || 0,
-            genre: track.genre,
-            coverImage: track.cover_image_url,
+            genre: track.genre || 'Music',
+            coverImage: track.cover_image_url || undefined,
             src: defaultSrc,
             availableTunings,
             tags: track.mood_tags || [track.genre || "Music"]

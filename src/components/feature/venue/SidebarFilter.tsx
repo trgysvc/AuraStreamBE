@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/shared/Button';
 
 // Mock data based on design system
 const MOODS = ['Chill', 'Cinematic', 'Lixnour', 'Laine', 'Graty'];

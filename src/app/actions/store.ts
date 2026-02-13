@@ -59,13 +59,15 @@ export async function getStoreTracks_Action(options?: {
         return [];
     }
 
+    if (!tracks) return [];
+
     // 2. Generate Signed URLs for each track and its tunings
-    const tracksWithUrls = await Promise.all(tracks.map(async (track: any) => {
+    const tracksWithUrls = await Promise.all(tracks.map(async (track) => {
         const availableTunings: Record<string, string> = {};
         let defaultSrc = '';
 
         // Generate signed URLs for all streamable files
-        const streamFiles = track.track_files.filter((f: any) => f.file_type === 'stream_aac');
+        const streamFiles = (track.track_files as any[]).filter((f) => f.file_type === 'stream_aac');
         
         for (const file of streamFiles) {
             try {
@@ -82,11 +84,11 @@ export async function getStoreTracks_Action(options?: {
 
         // Fallback for defaultSrc if 440hz stream not found
         if (!defaultSrc) {
-            const rawFile = track.track_files.find((f: any) => f.file_type === 'raw');
+            const rawFile = (track.track_files as any[]).find((f) => f.file_type === 'raw');
             if (rawFile) {
                 try {
                     defaultSrc = await S3Service.getDownloadUrl(rawFile.s3_key);
-                } catch (e) {}
+                } catch { }
             }
         }
 
@@ -94,10 +96,10 @@ export async function getStoreTracks_Action(options?: {
             id: track.id,
             title: track.title,
             artist: track.artist || 'Sonaraura AI',
-            bpm: track.bpm,
+            bpm: track.bpm || 0,
             duration: track.duration_sec || 0,
-            genre: track.genre,
-            coverImage: track.cover_image_url,
+            genre: track.genre || 'Ambient',
+            coverImage: track.cover_image_url || undefined,
             src: defaultSrc,
             availableTunings
         };

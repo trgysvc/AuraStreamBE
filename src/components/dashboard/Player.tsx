@@ -5,8 +5,8 @@ import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat, Shuffle, Heart, Pl
 
 export default function Player() {
     const [isPlaying, setIsPlaying] = useState(false);
-    const [volume, setVolume] = useState(80);
-    const [progress, setProgress] = useState(30);
+    const [volume] = useState(80);
+    const [progress] = useState(30);
 
     return (
         <div className="h-24 bg-[#121212] border-t border-white/10 fixed bottom-0 left-0 right-0 z-50 flex items-center px-6 justify-between text-white">

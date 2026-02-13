@@ -1,4 +1,4 @@
-import { WeatherService, WeatherData } from '../services/weather';
+import { WeatherService } from '../services/weather';
 
 export const EnergyCurve = {
     /**

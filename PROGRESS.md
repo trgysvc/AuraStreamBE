@@ -22,9 +22,9 @@
 ## Phase 2: Core Services (Weeks 3-4)
 - [x] **Audio Engine**
     - [x] Implement Web Audio API wrapper
-    - [x] Build 432Hz Real-time DSP Logic
+    - [x] Build 432Hz/528Hz Real-time DSP Logic
     - [x] Create Crossfade & Gapless Player
-    - [x] **Epidemic Sound Style Waveform Implementation**
+    - [x] **Epidemic Sound Style Waveform Implementation** (Real data extraction)
 - [x] **Search Engine**
     - [x] Implement Supabase -> Meilisearch Sync (Meili-sync worker)
     - [x] Build Search API with Filters & Facets (Hybrid Meilisearch Ready)
@@ -36,22 +36,29 @@
     - [x] Implement BPM, Key, and Energy level extraction logic
     - [x] Create Admin Upload Workflow (Server Actions + UI)
     - [x] Create Admin QC Interface
+- [x] **Smart Features**
+    - [x] **Smart Flow Scheduling:** Time/Day based music rules for venues.
+    - [x] **Weather-Aware Energy Curve:** Auto-adjust tuning based on weather.
+    - [x] **Steganographic Watermarking:** High-fidelity metadata/identifier injection.
 
 ## Phase 3: Applications (Weeks 5-8)
-- [ ] **Creator Store (B2C)**
+- [x] **Creator Store (B2C)**
     - [x] Discovery & Search Page (Meilisearch Integrated)
     - [x] License Wizard & Checkout (Stripe)
-    - [ ] User Library & Downloads
+    - [x] **YouTube Dispute Center:** Automated legal support for copyright claims.
     - [x] Track List & Player Integration
 - [x] **Venue Player (B2B)**
     - [x] **Dashboard/Venue Premium Interface (Epidemic Style)**
+    - [x] **Smart Flow Management UI:** Visual schedule editor.
     - [x] Real-time Track List from Supabase/S3
-    - [ ] Player Interface & Schedule Manager
-    - [ ] Offline Manager (IndexedDB + Encryption)
-    - [ ] Device Pairing & Session Management
-- [ ] **Admin Factory**
-    - [ ] Dashboard & Analytics
-    - [ ] User Management & Support
+    - [x] **Offline Manager v2:** 500MB Quota management & Auto-purge.
+- [x] **Admin Factory (The Nerve Center)**
+    - [x] **Unified Command Center:** Real-time stats & system pulse.
+    - [x] **QC Station:** Approval/Rejection workflow with Meilisearch sync.
+    - [x] **User Intelligence:** Global user/venue management & tier control.
+    - [x] **Catalog Mgmt:** Metadata editing & library optimization.
+    - [x] **Request Hub:** Custom "Music on Request" order management.
+    - [x] **Global Config:** Infrastructure & DSP parameter tuning.
 
 ## Phase 4: Polish & Launch
 - [ ] **Testing & Quality**

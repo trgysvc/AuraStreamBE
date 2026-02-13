@@ -51,6 +51,40 @@ export async function createDispute_Action(data: {
     return dispute as Dispute;
 }
 
+/**
+ * Resolves a dispute, marking it as cleared.
+ */
+export async function resolveDispute_Action(disputeId: string) {
+    const supabase = createAdminClient();
+
+    const { error } = await supabase
+        .from('disputes')
+        .update({ status: 'resolved', updated_at: new Date().toISOString() })
+        .eq('id', disputeId);
+
+    if (error) throw error;
+
+    revalidatePath('/admin/disputes');
+    return { success: true };
+}
+
+/**
+ * Rejects a dispute.
+ */
+export async function rejectDispute_Action(disputeId: string) {
+    const supabase = createAdminClient();
+
+    const { error } = await supabase
+        .from('disputes')
+        .update({ status: 'rejected', updated_at: new Date().toISOString() })
+        .eq('id', disputeId);
+
+    if (error) throw error;
+
+    revalidatePath('/admin/disputes');
+    return { success: true };
+}
+
 export async function getMyDisputes_Action() {
     const supabase = createAdminClient();
     // Assuming auth context is available or passing userId

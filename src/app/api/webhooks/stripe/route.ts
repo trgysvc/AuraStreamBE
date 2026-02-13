@@ -2,7 +2,6 @@ import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createAdminClient } from '@/lib/db/admin-client';
-import crypto from 'crypto';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     apiVersion: '2026-01-28.clover', // Update to match CLI/Types
@@ -21,9 +20,10 @@ export async function POST(req: Request) {
             throw new Error('STRIPE_WEBHOOK_SECRET is not configured');
         }
         event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-    } catch (err: any) {
-        console.error(`❌ Webhook signature verification failed: ${err.message}`);
-        return NextResponse.json({ error: err.message }, { status: 400 });
+    } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Unknown error';
+        console.error(`❌ Webhook signature verification failed: ${msg}`);
+        return NextResponse.json({ error: msg }, { status: 400 });
     }
 
     // Handle Subscription Events
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
         const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
 
-        const tier = (subscription.metadata.tier as any) || 'pro';
+        const tier = (subscription.metadata.tier as 'free' | 'pro' | 'business' | 'enterprise') || 'pro';
         const status = subscription.status as string;
 
         const supabase = createAdminClient();
@@ -100,7 +100,6 @@ export async function POST(req: Request) {
 
     // Legacy support for checkout sessions (initial purchase)
     if (event.type === 'checkout.session.completed') {
-        const session = event.data.object as Stripe.Checkout.Session;
         // ... existing logic if needed for one-off trials or specific credits
     }
 
