@@ -1,206 +1,204 @@
 'use client';
 
-import { useState, useRef, FormEvent, ChangeEvent } from 'react';
-import { Card } from '@/components/shared/Card';
-import { Button } from '@/components/shared/Button';
-import { Input } from '@/components/shared/Input';
+import { useState, useRef, ChangeEvent } from 'react';
 import { getSignedUploadUrl_Action, createTrackRecord_Action } from '@/app/actions/upload';
-// @ts-expect-error - music-tempo lacks types
-import MusicTempo from 'music-tempo';
+import { UploadCloud, Music, X, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { createClient } from '@/lib/db/client';
 
-declare global {
-    interface Window {
-        webkitAudioContext: typeof AudioContext;
-    }
+interface UploadingFile {
+    id: string;
+    file: File;
+    title: string;
+    artist: string;
+    bpm: string;
+    genre: string;
+    coverUrl?: string;
+    status: 'idle' | 'analyzing' | 'uploading' | 'processing' | 'success' | 'error' | 'duplicate';
+    progress: number;
+    error?: string;
 }
 
-export default function UploadPage() {
-    const [file, setFile] = useState<File | null>(null);
-    const [uploading, setUploading] = useState(false);
-    const [processing, setProcessing] = useState(false);
-    const [status, setStatus] = useState<{ type: 'success' | 'error' | 'idle'; message: string }>({ type: 'idle', message: '' });
-
-    // Form State for controlled inputs
-    const [title, setTitle] = useState('');
-    const [bpm, setBpm] = useState<string>('');
-
-    const formRef = useRef<HTMLFormElement>(null);
+export default function BulkUploadPage() {
+    const [files, setFiles] = useState<UploadingFile[]>([]);
+    const [isGlobalUploading, setIsGlobalUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const supabase = createClient();
 
     const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const selectedFile = e.target.files[0];
-            setFile(selectedFile);
+        if (e.target.files) {
+            const selectedFiles = Array.from(e.target.files);
+            
+            for (const f of selectedFiles) {
+                const id = Math.random().toString(36).substr(2, 9);
+                const baseTitle = f.name.replace(/\.[^/.]+$/, "");
+                
+                setFiles(prev => [...prev, {
+                    id,
+                    file: f,
+                    title: baseTitle,
+                    artist: 'Aura AI',
+                    bpm: '120',
+                    genre: 'Ambient',
+                    status: 'analyzing',
+                    progress: 0
+                }]);
 
-            // 1. Auto-Title Logic
-            const fileName = selectedFile.name;
-            const titleFromFileName = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
-            setTitle(titleFromFileName);
+                // 1. Duplicate Check
+                const { data: existing } = await supabase
+                    .from('tracks')
+                    .select('id')
+                    .eq('title', baseTitle)
+                    .maybeSingle();
 
-            // 2. BPM Detection Logic
-            setProcessing(true);
-            setStatus({ type: 'idle', message: 'Analyzing audio for BPM...' });
-
-            try {
-                const arrayBuffer = await selectedFile.arrayBuffer();
-                const AudioCtx = window.AudioContext || window.webkitAudioContext;
-                const audioContext = new AudioCtx();
-
-                // Decode audio data
-                const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-
-                // Detect BPM
-                // We need to pass the channel data to MusicTempo
-                const channelData = [];
-                // MusicTempo expects non-interleaved IEEE754 32-bit linear PCM with a nominal range of -1 to +1
-                // logic: just take the first channel if stereo
-                if (audioBuffer.numberOfChannels > 0) {
-                    channelData.push(audioBuffer.getChannelData(0));
+                if (existing) {
+                    updateFileData(id, { status: 'duplicate', error: 'Existing Asset' });
+                    continue;
                 }
 
-                // If we have data
-                if (channelData.length > 0) {
-                    const mt = new MusicTempo(channelData[0]);
-                    // Check if tempo is valid
-                    if (mt.tempo) {
-                        const detectedBpm = Math.round(parseFloat(mt.tempo));
-                        setBpm(detectedBpm.toString());
-                        setStatus({ type: 'success', message: `BPM Detected: ${detectedBpm}` });
-                    } else {
-                        setStatus({ type: 'idile', message: 'Could not detect BPM automatically.' });
-                    }
-                }
-
-            } catch (error) {
-                console.error("BPM Detection Error:", error);
-                setStatus({ type: 'error', message: 'Failed to analyze audio file.' });
-            } finally {
-                setProcessing(false);
+                // 2. Client-side Placeholder Metadata (Deep analysis happens on server via Ingest Engine)
+                // We mark it as idle ready for upload
+                updateFileData(id, { status: 'idle' });
             }
         }
     };
 
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (!file) return;
+    const removeFile = (id: string) => {
+        setFiles(prev => prev.filter(f => f.id !== id));
+    };
 
-        // FIX: Capture form data immediately before any await execution to preserve e.currentTarget
-        const formData = new FormData(e.currentTarget);
+    const updateFileData = (id: string, data: Partial<UploadingFile>) => {
+        setFiles(prev => prev.map(f => f.id === id ? { ...f, ...data } : f));
+    };
 
-        setUploading(true);
-        setStatus({ type: 'idle', message: 'Starting upload...' });
+    const processUploads = async () => {
+        setIsGlobalUploading(true);
+        const pendingFiles = files.filter(f => f.status === 'idle');
 
-        try {
-            // 1. Get Signed URL
-            setStatus({ type: 'idle', message: 'Authorizing upload...' });
-            const { url, key } = await getSignedUploadUrl_Action(file.type, file.name);
+        for (const fileObj of pendingFiles) {
+            updateFileData(fileObj.id, { status: 'uploading', progress: 10 });
 
-            // 2. Upload to S3 directly
-            setStatus({ type: 'idle', message: 'Uploading to S3...' });
-            const uploadRes = await fetch(url, {
-                method: 'PUT',
-                body: file,
-                headers: { 'Content-Type': file.type },
-            });
+            try {
+                const { url, key } = await getSignedUploadUrl_Action(fileObj.file.type, fileObj.file.name);
+                updateFileData(fileObj.id, { progress: 30 });
 
-            if (!uploadRes.ok) throw new Error('Failed to upload file to S3');
+                const uploadRes = await fetch(url, {
+                    method: 'PUT',
+                    body: fileObj.file,
+                    headers: { 'Content-Type': fileObj.file.type },
+                });
 
-            // 3. Save Metadata to DB
-            setStatus({ type: 'idle', message: 'Saving metadata...' });
+                if (!uploadRes.ok) throw new Error('S3 Push Failed');
+                updateFileData(fileObj.id, { status: 'processing', progress: 70 });
 
-            // formData is already captured safely
-            // Rough duration estimation or getting it from file could be done here. 
-            // For MVP, we mock duration if not extracted.
-            formData.set('duration', '180');
+                const formData = new FormData();
+                formData.set('title', fileObj.title);
+                formData.set('artist', fileObj.artist);
+                formData.set('bpm', fileObj.bpm);
+                formData.set('genre', fileObj.genre);
+                formData.set('duration', '180'); 
 
-            // Explicitly set controlled values if FormData missed them (though it shouldn't if inputs have names)
-            if (title) formData.set('title', title);
-            if (bpm) formData.set('bpm', bpm);
+                const result = await createTrackRecord_Action(formData, key);
 
-            const result = await createTrackRecord_Action(formData, key);
+                if (result.success) {
+                    updateFileData(fileObj.id, { status: 'success', progress: 100 });
+                } else {
+                    throw new Error(result.error || 'DB Error');
+                }
 
-            if (result.success) {
-                setStatus({ type: 'success', message: 'Track uploaded successfully! Ready for QC.' });
-                formRef.current?.reset();
-                setFile(null);
-                setTitle('');
-                setBpm('');
-            } else {
-                setStatus({ type: 'error', message: result.error || 'Database Error' });
+            } catch (err: any) {
+                updateFileData(fileObj.id, { status: 'error', error: err.message });
             }
-
-        } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-            setStatus({ type: 'error', message: errorMessage });
-        } finally {
-            setUploading(false);
         }
+        setIsGlobalUploading(false);
     };
 
     return (
-        <div className="max-w-2xl mx-auto space-y-6">
-            <h1 className="text-2xl font-bold">Upload New Track</h1>
+        <div className="max-w-6xl mx-auto space-y-10 pb-20 animate-in fade-in duration-700">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
+                <div>
+                    <h1 className="text-5xl font-black italic uppercase tracking-tighter text-white">Ingest Engine</h1>
+                    <p className="text-zinc-500 font-medium mt-2 text-lg uppercase tracking-tight">Autonomous Cataloging & Metadata Extraction</p>
+                </div>
+                <div className="flex gap-4">
+                    <input type="file" multiple accept="audio/*" className="hidden" ref={fileInputRef} onChange={handleFileChange} />
+                    <button onClick={() => fileInputRef.current?.click()} className="px-8 py-4 bg-white/5 border border-white/10 rounded-full text-xs font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-white hover:bg-white/10 transition-all">Select Audio</button>
+                    <button onClick={processUploads} disabled={isGlobalUploading || files.length === 0} className="px-10 py-4 bg-indigo-600 text-white rounded-full text-xs font-black uppercase tracking-[0.2em] hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-500/20 disabled:opacity-50 flex items-center gap-3">
+                        {isGlobalUploading ? <Loader2 className="animate-spin" size={16} /> : <UploadCloud size={16} />} Start Ingest
+                    </button>
+                </div>
+            </div>
 
-            <Card>
-                <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
-                    {/* File Drop Zone (Simplified) */}
-                    <div className={`border-2 border-dashed ${processing ? 'border-orange-500 bg-orange-50/10' : 'border-gray-300 dark:border-gray-700'} rounded-lg p-8 text-center hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors`}>
-                        <input
-                            type="file"
-                            accept="audio/*"
-                            onChange={handleFileChange}
-                            className="hidden"
-                            id="audio-upload"
-                            disabled={processing || uploading}
-                        />
-                        <label htmlFor="audio-upload" className={`cursor-pointer block ${processing || uploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                            <div className="text-4xl mb-2">☁️</div>
-                            <span className="text-sm font-medium">Click to select audio file (WAV/FLAC)</span>
-                            {file && <p className="mt-2 text-primary font-bold">{file.name}</p>}
-                            {processing && <p className="mt-2 text-sm text-orange-500 animate-pulse">Detecting BPM...</p>}
-                        </label>
+            {files.length === 0 ? (
+                <div onClick={() => fileInputRef.current?.click()} className="py-40 border-2 border-dashed border-white/5 bg-[#1E1E22]/30 rounded-[4rem] text-center space-y-8 cursor-pointer hover:bg-[#1E1E22]/50 hover:border-white/10 transition-all group">
+                    <div className="h-24 w-24 bg-white/5 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
+                        <UploadCloud size={48} className="text-zinc-600 group-hover:text-indigo-400 transition-colors" />
                     </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <Input
-                            name="title"
-                            label="Track Title"
-                            placeholder="e.g. Sunset Vibes"
-                            required
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                        />
-                        <Input
-                            name="bpm"
-                            label="BPM"
-                            type="number"
-                            placeholder="120"
-                            required
-                            value={bpm}
-                            onChange={(e) => setBpm(e.target.value)}
-                        />
+                    <div className="space-y-3">
+                        <p className="text-white font-black uppercase italic tracking-[0.2em] text-xl">Awaiting Assets</p>
+                        <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.4em]">Audio files will be auto-analyzed upon ingest</p>
                     </div>
-
-                    <div>
-                        <label className="block text-sm font-medium mb-1">Genre</label>
-                        <select name="genre" className="w-full p-2 border rounded-md dark:bg-gray-800 dark:border-gray-700">
-                            <option>Cinematic</option>
-                            <option>Pop</option>
-                            <option>Corporate</option>
-                            <option>Lo-Fi</option>
-                        </select>
-                    </div>
-
-                    {status.message && (
-                        <div className={`p-3 rounded text-sm ${status.type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-                            {status.message}
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 gap-4">
+                    {files.map((fileObj) => (
+                        <div key={fileObj.id} className={`bg-[#1E1E22] p-8 rounded-[2rem] border border-white/5 flex flex-col md:flex-row items-center gap-10 group relative transition-all ${fileObj.status === 'duplicate' ? 'opacity-40 grayscale' : ''}`}>
+                            <div className="flex items-center gap-8 flex-1 min-w-0">
+                                <div className="h-20 w-20 bg-zinc-800 rounded-2xl flex items-center justify-center flex-shrink-0 relative overflow-hidden shadow-2xl border border-white/5">
+                                    <Music className="text-zinc-700" size={32} />
+                                    {fileObj.status === 'analyzing' && (
+                                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                            <Loader2 className="animate-spin text-white" size={24} />
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="min-w-0 flex-1 space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="space-y-1">
+                                            <p className="text-[9px] font-black uppercase text-zinc-600 tracking-widest ml-1 italic">Identity</p>
+                                            <h4 className="text-lg font-black text-white uppercase truncate tracking-tight">{fileObj.title}</h4>
+                                            <p className="text-xs font-bold text-indigo-500 uppercase tracking-widest">{fileObj.artist}</p>
+                                        </div>
+                                        <div className="flex gap-10">
+                                            <div className="space-y-1">
+                                                <p className="text-[9px] font-black uppercase text-zinc-600 tracking-widest italic">Specs</p>
+                                                <p className="text-sm font-black text-white">{fileObj.bpm} <span className="text-[9px] text-zinc-600">BPM</span></p>
+                                                <p className="text-sm font-black text-white uppercase italic">{fileObj.genre}</p>
+                                            </div>
+                                            <div className="space-y-1 flex-1">
+                                                <p className="text-[9px] font-black uppercase text-zinc-600 tracking-widest italic">Health</p>
+                                                <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden mt-2">
+                                                    <div className={`h-full transition-all duration-700 ${fileObj.status === 'success' ? 'bg-green-500' : fileObj.status === 'error' ? 'bg-rose-500' : 'bg-indigo-500'}`} style={{ width: `${fileObj.progress}%` }} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-8 pr-4">
+                                {fileObj.status === 'duplicate' ? (
+                                    <div className="flex flex-col items-center gap-1">
+                                        <AlertCircle className="text-yellow-500/50" size={28} />
+                                        <span className="text-[8px] font-black text-yellow-500/50 uppercase tracking-widest">Exists</span>
+                                    </div>
+                                ) : fileObj.status === 'success' ? (
+                                    <CheckCircle2 className="text-green-500 shadow-[0_0_20px_rgba(34,197,94,0.3)]" size={32} />
+                                ) : fileObj.status === 'error' ? (
+                                    <div className="group/err relative flex items-center justify-center">
+                                        <AlertCircle className="text-rose-500" size={32} />
+                                        <div className="absolute right-full mr-4 bg-rose-600 text-white text-[9px] font-black px-3 py-1.5 rounded-lg whitespace-nowrap shadow-2xl">
+                                            {fileObj.error}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <button onClick={() => removeFile(fileObj.id)} className="p-4 text-zinc-700 hover:text-white hover:bg-white/5 rounded-2xl transition-all border border-transparent hover:border-white/5">
+                                        <X size={24} />
+                                    </button>
+                                )}
+                            </div>
                         </div>
-                    )}
-
-                    <Button type="submit" disabled={!file || uploading || processing} isLoading={uploading} className="w-full">
-                        {uploading ? 'Processing...' : processing ? 'Analyzing...' : 'Upload Track'}
-                    </Button>
-                </form>
-            </Card>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

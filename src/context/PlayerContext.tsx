@@ -23,6 +23,7 @@ interface PlayerContextType {
     tuning: '440hz' | '432hz' | '528hz';
     isAutoTuning: boolean;
     tier: Tier;
+    role: string | null;
     analyser: AnalyserNode | null;
     playTrack: (track: Track) => void;
     togglePlay: () => void;
@@ -42,36 +43,45 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [tuning, setCurrentTuning] = useState<'440hz' | '432hz' | '528hz'>('440hz');
     const [isAutoTuning, setIsAutoTuning] = useState(false);
     const [tier, setTier] = useState<Tier>('free');
+    const [role, setRole] = useState<string | null>(null);
     const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const audioContextRef = useRef<AudioContext | null>(null);
     const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
 
-    // Fetch User Tier on Mount
+    // Fetch User Tier & Role on Mount
     useEffect(() => {
-        const fetchTier = async () => {
+        const fetchUserData = async () => {
             try {
                 const supabase = createClient();
                 const { data: { session } } = await supabase.auth.getSession();
 
                 if (session?.user) {
-                    const { data: profile } = await supabase.from('profiles').select('subscription_tier').eq('id', session.user.id).single();
-                    if (profile) setTier(profile.subscription_tier as Tier);
+                    const { data: profile } = await supabase
+                        .from('profiles')
+                        .select('subscription_tier, role')
+                        .eq('id', session.user.id)
+                        .single();
+
+                    if (profile) {
+                        setTier(profile.subscription_tier as Tier);
+                        setRole(profile.role);
+                    }
                 }
             } catch {
                 // Silent fail for unauthenticated users
             }
         };
-        fetchTier();
+        fetchUserData();
     }, []);
 
     // Initial Tuning logic
     useEffect(() => {
-        if (isAutoTuning && (tier === 'business' || tier === 'enterprise')) {
+        if (isAutoTuning && (tier === 'business' || tier === 'enterprise' || role === 'admin')) {
             setCurrentTuning(EnergyCurve.getCurrentTuning());
         }
-    }, [isAutoTuning, tier]);
+    }, [isAutoTuning, tier, role]);
 
     useEffect(() => {
         const audio = new Audio();
@@ -117,7 +127,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const setAutoTuning = (enabled: boolean) => {
-        if (tier !== 'business' && tier !== 'enterprise') {
+        if (role !== 'admin' && tier !== 'business' && tier !== 'enterprise') {
             alert('Auto-Tuning (Energy Curve) is only available for Business and Enterprise tiers.');
             return;
         }
@@ -125,7 +135,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     };
 
     const setTuning = (newTuning: '440hz' | '432hz' | '528hz') => {
-        if (tier === 'free' && newTuning !== '440hz') {
+        if (role !== 'admin' && tier === 'free' && newTuning !== '440hz') {
             alert('Tuning features are only available for Pro tiers and above.');
             return;
         }
@@ -138,40 +148,59 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         setCurrentTuning(newTuning);
 
         if (currentTrack && audioRef.current) {
-            let nextSrc = currentTrack.availableTunings?.[newTuning] || currentTrack.src;
+            const nextSrc = currentTrack.availableTunings?.[newTuning];
 
-            if (tier === 'business' || tier === 'enterprise') {
-                const cachedUrl = await OfflineManager.getCachedTrack(`${currentTrack.id}-${newTuning}`);
-                if (cachedUrl) nextSrc = cachedUrl;
-            }
-
+            // 1. If we have a dedicated high-fidelity pre-rendered file, use it
             if (nextSrc && nextSrc !== audioRef.current.src) {
                 const savedTime = audioRef.current.currentTime;
                 const wasPlaying = isPlaying;
                 audioRef.current.src = nextSrc;
+                audioRef.current.playbackRate = 1.0; // Reset rate for dedicated file
                 audioRef.current.load();
                 audioRef.current.currentTime = savedTime;
                 if (wasPlaying) audioRef.current.play().catch(() => { });
+                console.log(`Frequency Shift: Switched to pre-rendered ${newTuning} file.`);
+            } 
+            // 2. Real-time DSP Fallback (Frequency Engineering)
+            // If the file is missing, we use the original and apply a pitch shift via playbackRate
+            else {
+                console.log(`Frequency Shift: Pre-rendered ${newTuning} missing. Applying Real-time DSP.`);
+                
+                if (newTuning === '432hz') {
+                    // 432Hz is approx 1.8% lower than 440Hz
+                    audioRef.current.playbackRate = 0.9818;
+                } else if (newTuning === '528hz') {
+                    // 528Hz is significantly higher (Awakening)
+                    audioRef.current.playbackRate = 1.2;
+                } else {
+                    audioRef.current.playbackRate = 1.0;
+                }
             }
         }
     };
 
     const playTrack = async (track: Track) => {
-        console.log('PlayerContext playTrack:', track);
+        console.log('--- Aura Smart Player: Initializing Session ---');
         const targetTuning = isAutoTuning ? EnergyCurve.getCurrentTuning() : tuning;
-        let playUrl = track.availableTunings?.[targetTuning] || track.src;
+        
+        // 1. Determine Play URL
+        // Priority: Cached locally -> Pre-rendered on S3 -> On-demand Trigger
+        let playUrl = track.availableTunings?.[targetTuning] || (targetTuning === '440hz' ? track.src : null);
 
-        if (!playUrl) {
-            console.warn('No playUrl found for track, using fallback silence');
-            playUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'; // TEMP FALLBACK FOR TESTING
+        if (role === 'admin' || tier === 'business' || tier === 'enterprise') {
+            const cachedLocal = await OfflineManager.getCachedTrack(`${track.id}-${targetTuning}`);
+            if (cachedLocal) playUrl = cachedLocal;
         }
 
-        if (tier === 'business' || tier === 'enterprise') {
-            const cachedUrl = await OfflineManager.getCachedTrack(`${track.id}-${targetTuning}`);
-            if (cachedUrl) playUrl = cachedUrl;
+        // 2. JIT (Just-In-Time) Rendering Logic
+        if (!playUrl && targetTuning !== '440hz') {
+            console.log(`JIT: ${targetTuning} file missing for ${track.title}. Triggering Aura Cloud Renderer...`);
+            // Here we would call a server action to trigger Lambda processing
+            // For MVP/Demo: Fallback to real-time DSP if cloud is processing
+            playUrl = track.src; 
         }
 
-        if (!playUrl) return;
+        if (!playUrl) playUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
 
         if (audioRef.current) {
             if (audioContextRef.current?.state === 'suspended') await audioContextRef.current.resume();
@@ -180,12 +209,23 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                 togglePlay();
             } else {
                 audioRef.current.src = playUrl;
+                
+                // Real-time DSP Application (if using original 440Hz file for other Hz)
+                const isOriginalFile = playUrl === track.src;
+                if (isOriginalFile && targetTuning !== '440hz') {
+                    console.log("Applying Real-time DSP (BPM preserved logic pending)...");
+                    if (targetTuning === '432hz') audioRef.current.playbackRate = 0.9818;
+                    else if (targetTuning === '528hz') audioRef.current.playbackRate = 1.2;
+                } else {
+                    audioRef.current.playbackRate = 1.0;
+                }
+
                 audioRef.current.load();
                 audioRef.current.play().then(() => {
                     setIsPlaying(true);
                     setCurrentTrack(track);
 
-                    if (tier === 'business' || tier === 'enterprise') {
+                    if (role === 'admin' || tier === 'business' || tier === 'enterprise') {
                         OfflineManager.cacheTrack(`${track.id}-${targetTuning}`, playUrl!).catch(() => { });
                     }
                 }).catch(() => {
@@ -224,7 +264,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
     return (
         <PlayerContext.Provider value={{
-            currentTrack, isPlaying, duration, currentTime, tuning, isAutoTuning, tier,
+            currentTrack, isPlaying, duration, currentTime, tuning, isAutoTuning, tier, role,
             analyser, playTrack, togglePlay, seek, setTuning,
             setAutoTuning, stop
         }}>

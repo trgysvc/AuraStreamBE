@@ -26,7 +26,7 @@ const SimpleTooltip = ({ children, text }: { children: React.ReactNode; text: st
 export function GlobalPlayer() {
     const {
         currentTrack, isPlaying, togglePlay, duration, currentTime,
-        seek, analyser, tuning, setTuning, isAutoTuning, setAutoTuning, tier, stop
+        seek, analyser, tuning, setTuning, isAutoTuning, setAutoTuning, tier, role, stop
     } = usePlayer();
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -158,7 +158,7 @@ export function GlobalPlayer() {
                             <SimpleTooltip text="Auto-Tune">
                                 <button
                                     onClick={() => setAutoTuning(!isAutoTuning)}
-                                    className={`text-[9px] font-black px-2 py-1.5 rounded-full transition-all ${isAutoTuning ? 'bg-indigo-600 text-white shadow-lg' : 'text-zinc-600 hover:text-zinc-400'}`}
+                                    className={`text-[9px] font-black px-2 py-1.5 rounded-full transition-all ${isAutoTuning ? 'bg-indigo-600 text-white shadow-lg' : 'text-zinc-600 hover:text-zinc-400'} ${role !== 'admin' && tier !== 'business' && tier !== 'enterprise' ? 'opacity-20 cursor-not-allowed' : ''}`}
                                 >
                                     AUTO
                                 </button>
@@ -167,7 +167,7 @@ export function GlobalPlayer() {
                                 <SimpleTooltip key={t} text={`Tuning: ${t}`}>
                                     <button
                                         onClick={() => setTuning(t)}
-                                        className={`text-[9px] font-black px-2 py-1.5 rounded-full transition-all ${tuning === t ? 'bg-violet-600 text-white shadow-lg' : 'text-zinc-600 hover:text-zinc-400'} ${tier === 'free' && t !== '440hz' ? 'opacity-20 cursor-not-allowed' : ''}`}
+                                        className={`text-[9px] font-black px-2 py-1.5 rounded-full transition-all ${tuning === t ? 'bg-violet-600 text-white shadow-lg' : 'text-zinc-600 hover:text-zinc-400'} ${role !== 'admin' && tier === 'free' && t !== '440hz' ? 'opacity-20 cursor-not-allowed' : ''}`}
                                     >
                                         {t.toUpperCase()}
                                     </button>

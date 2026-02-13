@@ -67,7 +67,8 @@ export async function getStoreTracks_Action(options?: {
         let defaultSrc = '';
 
         // Generate signed URLs for all streamable files
-        const streamFiles = (track.track_files as any[]).filter((f) => f.file_type === 'stream_aac');
+        const files = (track.track_files as any[]) || [];
+        const streamFiles = files.filter((f) => f.file_type === 'stream_aac');
         
         for (const file of streamFiles) {
             try {
@@ -84,7 +85,7 @@ export async function getStoreTracks_Action(options?: {
 
         // Fallback for defaultSrc if 440hz stream not found
         if (!defaultSrc) {
-            const rawFile = (track.track_files as any[]).find((f) => f.file_type === 'raw');
+            const rawFile = files.find((f) => f.file_type === 'raw');
             if (rawFile) {
                 try {
                     defaultSrc = await S3Service.getDownloadUrl(rawFile.s3_key);

@@ -1,8 +1,9 @@
 import { createClient } from '@/lib/db/server';
 import { ShieldAlert } from 'lucide-react';
 import { DisputeActionCard } from '@/components/dashboard/DisputeActionCard';
+import { DisputeAsset } from '@/types/admin';
 
-async function getDisputes() {
+async function getDisputes(): Promise<DisputeAsset[]> {
     const supabase = createClient();
     const { data, error } = await supabase
         .from('disputes')
@@ -13,7 +14,7 @@ async function getDisputes() {
         console.error('Fetch Disputes Error:', error);
         return [];
     }
-    return data || [];
+    return (data as any) || [];
 }
 
 export default async function DisputeCenterPage() {

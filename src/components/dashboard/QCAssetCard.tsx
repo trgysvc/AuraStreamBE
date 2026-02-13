@@ -1,14 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-import { Play, Tag, XCircle, Music, Loader2 } from 'lucide-react';
-import { approveTrack_Action, rejectTrack_Action } from '@/app/actions/qc';
+import { Play, Tag, XCircle, Music, Loader2, X, Check } from 'lucide-react';
+import { approveTrack_Action, rejectTrack_Action, updateTrackQC_Action } from '@/app/actions/qc';
+
+const ALL_MOODS = ['Happy', 'Melancholic', 'Energetic', 'Dark', 'Hopeful', 'Aggressive', 'Relaxing', 'Chill', 'Cinematic', 'Lounge'];
 
 const SimpleTooltip = ({ children, text }: { children: React.ReactNode; text: string }) => {
     return (
         <div className="group/tooltip relative flex items-center justify-center">
             {children}
-            <div className="absolute bottom-full mb-2 hidden group-hover/tooltip:block whitespace-nowrap rounded bg-zinc-800 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-white shadow-2xl border border-white/10 z-50">
+            <div className="absolute bottom-full mb-2 hidden group-hover/tooltip:block whitespace-nowrap rounded bg-zinc-800 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-white shadow-2xl border border-white/10 z-[100]">
                 {text}
                 <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-800" />
             </div>
@@ -18,7 +20,9 @@ const SimpleTooltip = ({ children, text }: { children: React.ReactNode; text: st
 
 export function QCAssetCard({ track }: { track: any }) {
     const [loading, setLoading] = useState(false);
-    const [actionType, setActionType] = useState<'approve' | 'reject' | null>(null);
+    const [actionType, setActionType] = useState<'approve' | 'reject' | 'tags' | null>(null);
+    const [isTagging, setIsTagging] = useState(false);
+    const [selectedMoods, setSelectedMoods] = useState<string[]>(track.mood_tags || []);
 
     const handleApprove = async () => {
         setLoading(true);
@@ -49,8 +53,29 @@ export function QCAssetCard({ track }: { track: any }) {
         }
     };
 
+    const handleSaveTags = async () => {
+        setLoading(true);
+        setActionType('tags');
+        try {
+            await updateTrackQC_Action(track.id, { mood_tags: selectedMoods });
+            setIsTagging(false);
+        } catch (e) {
+            console.error(e);
+            alert('Tag update failed');
+        } finally {
+            setLoading(false);
+            setActionType(null);
+        }
+    };
+
+    const toggleMood = (mood: string) => {
+        setSelectedMoods(prev => 
+            prev.includes(mood) ? prev.filter(m => m !== mood) : [...prev, mood]
+        );
+    };
+
     return (
-        <div className={`bg-[#1E1E22] p-6 rounded-2xl border border-white/5 hover:border-white/10 transition-all group flex flex-col md:flex-row items-center gap-8 ${loading ? 'opacity-50 pointer-events-none' : ''}`}>
+        <div className={`bg-[#1E1E22] p-6 rounded-2xl border border-white/5 hover:border-white/10 transition-all group flex flex-col md:flex-row items-center gap-8 ${loading && actionType !== 'tags' ? 'opacity-50 pointer-events-none' : ''} relative`}>
             {/* Track Preview Info */}
             <div className="flex items-center gap-6 flex-1">
                 <div className="h-16 w-16 bg-zinc-800 rounded-xl flex items-center justify-center relative overflow-hidden shadow-2xl">
@@ -77,17 +102,49 @@ export function QCAssetCard({ track }: { track: any }) {
             </div>
 
             {/* Tags Section */}
-            <div className="flex flex-wrap gap-2 flex-1 justify-center">
+            <div className="flex flex-wrap gap-2 flex-1 justify-center relative">
                 {track.mood_tags?.map((tag: string) => (
                     <span key={tag} className="px-3 py-1 bg-white/5 rounded-lg text-[9px] font-black uppercase text-zinc-400 border border-white/5">
                         {tag}
                     </span>
                 ))}
                 <SimpleTooltip text="Edit Mood Tags">
-                    <button className="p-1 text-indigo-500 hover:text-white transition-colors">
-                        <Tag size={14} />
+                    <button 
+                        onClick={() => setIsTagging(!isTagging)}
+                        className={`p-2 rounded-lg transition-all ${isTagging ? 'bg-indigo-600 text-white shadow-lg' : 'text-indigo-500 hover:text-white hover:bg-white/5'}`}
+                    >
+                        <Tag size={16} />
                     </button>
                 </SimpleTooltip>
+
+                {/* Inline Tag Editor Popover */}
+                {isTagging && (
+                    <div className="absolute top-full mt-4 left-1/2 -translate-x-1/2 w-80 bg-[#18181b] border border-white/10 rounded-2xl shadow-2xl z-[150] p-6 space-y-6 animate-in zoom-in-95 duration-200">
+                        <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                            <h5 className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Select Moods</h5>
+                            <button onClick={() => setIsTagging(false)} className="text-zinc-600 hover:text-white"><X size={16} /></button>
+                        </div>
+                        <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto custom-scrollbar">
+                            {ALL_MOODS.map(mood => (
+                                <button
+                                    key={mood}
+                                    onClick={() => toggleMood(mood)}
+                                    className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all border ${selectedMoods.includes(mood) ? 'bg-indigo-600 text-white border-indigo-500 shadow-lg' : 'bg-black text-zinc-500 border-white/5 hover:border-white/10'}`}
+                                >
+                                    {mood}
+                                </button>
+                            ))}
+                        </div>
+                        <button 
+                            onClick={handleSaveTags}
+                            disabled={loading}
+                            className="w-full py-3 bg-white text-black rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-500 hover:text-white transition-all flex items-center justify-center gap-2"
+                        >
+                            {loading && actionType === 'tags' ? <Loader2 size={12} className="animate-spin" /> : <Check size={14} strokeWidth={3} />}
+                            Update Metadata
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Actions */}

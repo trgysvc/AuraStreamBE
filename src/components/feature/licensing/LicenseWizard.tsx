@@ -19,7 +19,7 @@ interface LicenseWizardProps {
 type LicenseType = 'personal' | 'commercial';
 
 export function LicenseWizard({ track, onClose }: LicenseWizardProps) {
-    const { tier } = usePlayer();
+    const { tier, role } = usePlayer();
     const [step, setStep] = useState<1 | 2>(1);
     const [selectedLicense, setSelectedLicense] = useState<LicenseType | null>(null);
     const [projectName, setProjectName] = useState('');
@@ -27,7 +27,7 @@ export function LicenseWizard({ track, onClose }: LicenseWizardProps) {
     const [error, setError] = useState<string | null>(null);
     const [isSuccess, setIsSuccess] = useState(false);
 
-    const isSubscribed = tier !== 'free';
+    const isSubscribed = tier !== 'free' || role === 'admin';
 
     const handleAction = async () => {
         if (!selectedLicense || !projectName.trim()) return;

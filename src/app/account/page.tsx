@@ -5,9 +5,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
     User, 
-    Settings, 
-    CreditCard, 
     Shield, 
+    CreditCard, 
     Bell, 
     LogOut,
     Save,
@@ -22,7 +21,7 @@ export default function AccountPage() {
     const [profile, setProfile] = useState<any>(null);
     const [tenant, setTenant] = useState<any>(null);
 
-    const [data, setData] = useState({
+    const [formData, setFormData] = useState({
         full_name: '',
         display_name: '',
         legal_name: '',
@@ -49,7 +48,7 @@ export default function AccountPage() {
                 setProfile(profileData);
                 const t = profileData.tenants;
                 setTenant(t);
-                setData({
+                setFormData({
                     full_name: profileData.full_name || '',
                     display_name: t?.display_name || '',
                     legal_name: t?.legal_name || '',
@@ -73,7 +72,7 @@ export default function AccountPage() {
             // Update Profile
             await supabase
                 .from('profiles')
-                .update({ full_name: data.full_name })
+                .update({ full_name: formData.full_name })
                 .eq('id', user.id);
 
             // Update Tenant
@@ -81,11 +80,11 @@ export default function AccountPage() {
                 await supabase
                     .from('tenants')
                     .update({
-                        display_name: data.display_name,
-                        legal_name: data.legal_name,
-                        industry: data.industry,
-                        website: data.website,
-                        logo_url: data.logo_url
+                        display_name: formData.display_name,
+                        legal_name: formData.legal_name,
+                        industry: formData.industry,
+                        website: formData.website,
+                        logo_url: formData.logo_url
                     })
                     .eq('id', tenant.id);
             }
@@ -158,8 +157,8 @@ export default function AccountPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <InputField 
                                 label="Full Name" 
-                                value={data.full_name} 
-                                onChange={val => setData({...data, full_name: val})} 
+                                value={formData.full_name} 
+                                onChange={val => setFormData({...formData, full_name: val})} 
                                 placeholder="Your Name" 
                             />
                             <InputField 
@@ -179,34 +178,34 @@ export default function AccountPage() {
                         <div className="space-y-6">
                             <InputField 
                                 label="Brand Display Name" 
-                                value={data.display_name} 
-                                onChange={val => setData({...data, display_name: val})} 
+                                value={formData.display_name} 
+                                onChange={val => setFormData({...formData, display_name: val})} 
                                 placeholder="e.g. Aura Coffee Frankfurt" 
                             />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <InputField 
                                     label="Legal Entity Name" 
-                                    value={data.legal_name} 
-                                    onChange={val => setData({...data, legal_name: val})} 
+                                    value={formData.legal_name} 
+                                    onChange={val => setFormData({...formData, legal_name: val})} 
                                     placeholder="Legal Name Co. Ltd." 
                                 />
                                 <InputField 
                                     label="Industry / Sector" 
-                                    value={data.industry} 
-                                    onChange={val => setData({...data, industry: val})} 
+                                    value={formData.industry} 
+                                    onChange={val => setFormData({...formData, industry: val})} 
                                     placeholder="Hospitality" 
                                 />
                             </div>
                             <InputField 
                                 label="Website URL" 
-                                value={data.website} 
-                                onChange={val => setData({...data, website: val})} 
+                                value={formData.website} 
+                                onChange={val => setFormData({...formData, website: val})} 
                                 placeholder="https://..." 
                             />
                             <InputField 
                                 label="Brand Logo URL" 
-                                value={data.logo_url} 
-                                onChange={val => setData({...data, logo_url: val})} 
+                                value={formData.logo_url} 
+                                onChange={val => setFormData({...formData, logo_url: val})} 
                                 placeholder="https://image.com/logo.png" 
                             />
                         </div>

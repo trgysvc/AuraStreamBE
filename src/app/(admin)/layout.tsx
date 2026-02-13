@@ -17,21 +17,25 @@ import { redirect } from 'next/navigation';
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    
+    // 1. Check Authentication
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    if (!user) {
+    if (authError || !user) {
         redirect('/login');
     }
 
-    // Check Role
-    const { data: profile } = await supabase
+    // 2. Check Role
+    const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', user.id)
         .single();
 
-    if (profile?.role !== 'admin') {
-        redirect('/dashboard/venue'); // Unauthorized
+    if (profileError || !profile || profile.role !== 'admin') {
+        // Log error but don't catch the redirect exception
+        console.error('Admin Access Denied:', profileError?.message || 'Not an admin');
+        redirect('/dashboard/venue');
     }
 
     return (

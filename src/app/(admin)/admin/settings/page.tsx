@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { 
-    Database, 
     Zap, 
     HardDrive, 
     Code2, 
@@ -66,7 +65,7 @@ export default function GlobalConfigPage() {
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <div className="h-12 w-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-500">
-                                <Database size={24} />
+                                <Zap size={24} />
                             </div>
                             <h3 className="text-xl font-black uppercase italic tracking-tight">Core Infrastructure</h3>
                         </div>
@@ -104,11 +103,13 @@ export default function GlobalConfigPage() {
 
                 {/* 3. Venue & B2B Performance */}
                 <div className="bg-[#1E1E22] rounded-[2.5rem] border border-white/5 p-10 space-y-8 relative overflow-hidden">
-                    <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 bg-green-500/10 rounded-2xl flex items-center justify-center text-green-500">
-                            <HardDrive size={24} />
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 bg-green-500/10 rounded-2xl flex items-center justify-center text-green-500">
+                                <HardDrive size={24} />
+                            </div>
+                            <h3 className="text-xl font-black uppercase italic tracking-tight">Venue Performance</h3>
                         </div>
-                        <h3 className="text-xl font-black uppercase italic tracking-tight">Venue Performance</h3>
                     </div>
 
                     <div className="space-y-6">
@@ -121,11 +122,13 @@ export default function GlobalConfigPage() {
 
                 {/* 4. Music on Request (Commerce) */}
                 <div className="bg-[#1E1E22] rounded-[2.5rem] border border-white/5 p-10 space-y-8 relative overflow-hidden">
-                    <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 bg-orange-500/10 rounded-2xl flex items-center justify-center text-orange-500">
-                            <Code2 size={24} />
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 bg-orange-500/10 rounded-2xl flex items-center justify-center text-orange-500">
+                                <Code2 size={24} />
+                            </div>
+                            <h3 className="text-xl font-black uppercase italic tracking-tight">Commerce & Pricing</h3>
                         </div>
-                        <h3 className="text-xl font-black uppercase italic tracking-tight">Commerce & Pricing</h3>
                     </div>
 
                     <div className="space-y-6">

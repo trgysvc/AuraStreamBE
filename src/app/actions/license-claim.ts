@@ -13,10 +13,10 @@ export async function claimLicense_Action(trackId: string, projectName: string, 
 
     if (!user) throw new Error('Unauthorized');
 
-    // 1. Check Subscription Tier
-    const { data: profile } = await supabase.from('profiles').select('subscription_tier').eq('id', user.id).single();
+    // 1. Check Subscription Tier & Role
+    const { data: profile } = await supabase.from('profiles').select('subscription_tier, role').eq('id', user.id).single();
     
-    if (!profile || profile.subscription_tier === 'free') {
+    if (!profile || (profile.subscription_tier === 'free' && profile.role !== 'admin')) {
         throw new Error('Active subscription required to claim licenses.');
     }
 

@@ -42,7 +42,7 @@ export default async function RequestHubPage() {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-6">
-                    {requests.map((req) => (
+                    {requests.map((req: any) => (
                         <RequestActionCard key={req.id} req={req} />
                     ))}
                 </div>
