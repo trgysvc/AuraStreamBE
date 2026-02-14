@@ -16,10 +16,10 @@ export default function TermsOfServicePage() {
                         <Scale size={32} />
                     </div>
                     <h1 className="text-5xl md:text-6xl font-black italic uppercase tracking-tighter">Terms of Service</h1>
-                    <p className="text-zinc-500 text-lg font-medium">Last Updated: February 14, 2026</p>
+                    <p className="text-zinc-400 text-lg font-medium">Last Updated: February 14, 2026</p>
                 </header>
 
-                <div className="prose prose-invert max-w-none space-y-12 text-zinc-400 leading-relaxed text-sm md:text-base">
+                <div className="prose prose-invert max-w-none space-y-12 text-zinc-300 leading-relaxed text-sm md:text-base">
                     <section className="space-y-4">
                         <h2 className="text-2xl font-black text-white uppercase italic tracking-tight flex items-center gap-3">
                             <div className="h-2 w-2 rounded-full bg-indigo-500" /> 1. Acceptance of Terms

@@ -1,8 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Check, MapPin, Globe, ShieldCheck, Zap } from 'lucide-react';
+import { ArrowRight, Check, Globe, MapPin, Globe2, Zap, Shield, Menu } from 'lucide-react';
 import { Footer } from '@/components/layout/Footer';
+import { MainHeader } from '@/components/layout/MainHeader';
 import { createClient } from '@/lib/db/server';
+import { BUSINESS_SECTORS } from './data';
 
 export default async function EnterprisePage() {
     const supabase = createClient();
@@ -11,46 +13,7 @@ export default async function EnterprisePage() {
     return (
         <div className="min-h-screen bg-[#111111] text-white font-sans selection:bg-white selection:text-black">
             {/* Header */}
-            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 bg-black/90 backdrop-blur-sm transition-all duration-300 border-b border-white/10 h-20">
-                <div className="flex items-center gap-12 h-full">
-                    <Link href="/" className="flex items-center gap-2 group leading-none">
-                        <div className="h-8 w-8 bg-white text-black rounded flex items-center justify-center font-bold transition-transform group-hover:scale-110">S</div>
-                        <span className="text-xl font-black italic tracking-widest text-white leading-none">
-                            SONAR<span className="font-light text-zinc-300">AURA</span>
-                        </span>
-                    </Link>
-
-                    <nav className="hidden lg:flex items-center gap-8 text-[15px] font-medium text-gray-300">
-                        <Link href="/music" className="hover:text-white transition-colors">Music</Link>
-                        <Link href="/sound-effects" className="hover:text-white transition-colors">Sound Effects</Link>
-                        <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
-                        <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
-                        <Link href="/enterprise" className="text-white transition-colors">Enterprise</Link>
-                    </nav>
-                </div>
-
-                <div className="flex items-center gap-6 h-full">
-                    {!user ? (
-                        <>
-                            <Link href="/login" className="hidden sm:block text-sm font-bold hover:text-gray-300 transition-colors">
-                                Log in
-                            </Link>
-                            <Link href="/signup" className="h-10 px-6 flex items-center justify-center rounded-full bg-white text-black text-sm font-bold hover:bg-gray-200 transition-colors">
-                                Start free trial
-                            </Link>
-                        </>
-                    ) : (
-                        <>
-                            <Link href="/dashboard" className="hidden sm:block text-sm font-bold hover:text-gray-300 transition-colors">
-                                Dashboard
-                            </Link>
-                            <Link href="/account" className="h-10 px-6 flex items-center justify-center rounded-full bg-white text-black text-sm font-bold hover:bg-gray-200 transition-colors">
-                                Account
-                            </Link>
-                        </>
-                    )}
-                </div>
-            </header>
+            <MainHeader initialUser={user} />
 
             {/* Hero Section */}
             <section className="relative min-h-[90vh] flex flex-col items-center justify-center px-6 overflow-hidden pt-20">
@@ -196,7 +159,7 @@ export default async function EnterprisePage() {
                 <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
                     <div className="space-y-8">
                         <div>
-                            <p className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-500 mb-4">A Unique License Model</p>
+                            <p className="text-xs font-bold uppercase tracking-[0.2em] text-black/50 mb-4">A Unique License Model</p>
                             <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none">
                                 Music licensing <br /> made easy
                             </h2>
@@ -235,7 +198,7 @@ export default async function EnterprisePage() {
                     <BusinessGrid />
 
                     <div className="flex justify-end">
-                        <Link href="/dashboard" className="px-8 py-3 bg-white/10 text-white rounded-full font-bold text-sm hover:bg-white/20 transition-colors uppercase tracking-widest">
+                        <Link href="/enterprise/spaces" className="px-8 py-3 bg-white/10 text-white rounded-full font-bold text-sm hover:bg-white/20 transition-colors uppercase tracking-widest">
                             Explore all sectors
                         </Link>
                     </div>
@@ -248,7 +211,7 @@ export default async function EnterprisePage() {
                     <p className="text-xs font-bold uppercase tracking-[0.3em] text-zinc-500">Trusted by Global Brands</p>
                     <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
                         {/* Placeholders for logos - mimicking text logos for now */}
-                        {['Revo Hospitality Group', 'Marriott', 'Equinox', 'W Hotels', 'Sephora'].map(brand => (
+                        {['Revo Hospitality Group', 'Marriott', 'Equinox', 'W Hotels', 'Aesop'].map(brand => (
                             <span key={brand} className="text-2xl md:text-3xl font-black text-white">{brand}</span>
                         ))}
                     </div>
@@ -261,7 +224,7 @@ export default async function EnterprisePage() {
                     <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none uppercase italic">
                         Ready to scale your sound?
                     </h2>
-                    <p className="text-xl text-zinc-600 max-w-2xl mx-auto">
+                    <p className="text-xl text-black/60 max-w-2xl mx-auto">
                         Get a custom quote tailored to your number of locations and specific needs.
                     </p>
                     <form className="max-w-5xl mx-auto space-y-8 text-left">
@@ -332,48 +295,6 @@ export default async function EnterprisePage() {
     );
 }
 
-// Data for random business selection
-const BUSINESS_SECTORS = [
-    // 1. Hospitality & Dining
-    { name: "Third Wave Coffee Shops", imageId: "1495474472287-4d71bcdd2085" }, // Coffee
-    { name: "Boutique Hotels & Lobbies", imageId: "1566073771259-6a8506099945" }, // Hotel/Lounge
-    { name: "Fine Dining Restaurants", imageId: "1517248135467-4c7edcad34c4" }, // Dining
-    { name: "Cocktail Bars & Gastro-Pubs", imageId: "1514362545857-3bc16c4c7d1b" }, // Bar
-    { name: "Airport Lounges", imageId: "1486406146926-c627a92ad1ab" }, // Modern Building
-    { name: "Bistros & Brasseries", imageId: "1559339352-11d035aa65de" }, // Bistro (Long ID approximated from research)
-    { name: "Rooftop Terraces", imageId: "1519671482538-30f98070a7ebd" }, // Rooftop (Long ID approximated)
-
-    // 2. Wellness & Health
-    { name: "SPA & Massage Centers", imageId: "1544161515-4fa6b917d58f" }, // Spa
-    { name: "Yoga & Pilates Studios", imageId: "1599447421404-5cb13e898f06" }, // Yoga
-    { name: "Dental Clinics & Waiting Rooms", imageId: "1497366216548-37526070297c" }, // Clean Office
-    { name: "Therapy & Psychology Offices", imageId: "1576091160399-112da8d2535d" }, // Therapy
-    { name: "Beauty Salons & Hairdressers", imageId: "1441986300917-64674bd600d8" }, // Fashion
-    { name: "Meditation Centers", imageId: "1518241353330-0fbf85506f96" }, // Meditation (Alternate Yoga)
-
-    // 3. Retail & Fashion
-    { name: "Luxury Fashion Boutiques", imageId: "1483985988355-763728e1935b" }, // Fashion Store
-    { name: "Concept Stores", imageId: "1441984904996-e0b6ba687e04" }, // Concept Store
-    { name: "Automotive Showrooms", imageId: "1552519507-da8b122735f9" }, // Auto
-    { name: "Shopping Mall Common Areas", imageId: "1519567750427-010834d6514e" }, // Mall
-    { name: "Jewelry Stores", imageId: "1611085583191-d3ca48f7654a" }, // Jewelry
-    { name: "Tech Stores", imageId: "1531297461362-76ce383859f4" }, // Tech
-
-    // 4. Work & Study Spaces
-    { name: "Coworking Spaces", imageId: "1524758631624-e2822e304c36" }, // Coworking
-    { name: "Creative Agencies & Offices", imageId: "1497215728101-856f4ea42174" }, // Creative Office
-    { name: "Libraries & Book Cafes", imageId: "1507842217153-e52fbc5f0f78" }, // Library
-    { name: "Corporate Lobbies", imageId: "1497366754035-f200968a6e72" }, // Lobby
-    { name: "Study Halls", imageId: "1524995943209-ea8443300f89" }, // Study Hall
-
-    // 5. Entertainment & Lifestyle
-    { name: "Art Galleries & Museums", imageId: "1547891654-e66ad7bd3f49" }, // Art Gallery
-    { name: "Gyms & CrossFit Centers", imageId: "1534368943719-74ce40763529" }, // Gym
-    { name: "Esports Arenas & Gaming Cafes", imageId: "1616450873138-009d73d6118d" }, // Gaming
-    { name: "Social Clubs", imageId: "1630138980860-60b64d78709e" }, // Social Club
-    { name: "Exhibition Halls", imageId: "1571477465225-b4636f322302" } // Exhibition
-];
-
 function BusinessGrid() {
     // Randomly select 8 unique items
     // Fisher-Yates shuffle approximation for simplicity in server component
@@ -386,7 +307,7 @@ function BusinessGrid() {
                 <div key={i} className="group relative aspect-square bg-zinc-900 overflow-hidden cursor-pointer">
                     <div
                         className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                        style={{ backgroundImage: `url(https://images.unsplash.com/photo-${item.imageId}?auto=format&fit=crop&q=80&w=800)` }}
+                        style={{ backgroundImage: `url(${item.imagePath || `https://images.unsplash.com/photo-${item.imageId}?auto=format&fit=crop&q=80&w=800`})` }}
                     />
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
                     <div className="absolute bottom-4 left-4 right-4">

@@ -49,23 +49,24 @@ Bu dosya, Sonaraura'nın pazarlama stratejisi ve global reklam kampanyaları iç
 | Hava Durumu Awareness | ❌ Yok | ✅ Canlı Lokasyon Senkronlu |
 | Otonom Flow Scheduling | ⚠️ Sınırlı | ✅ 24h Görsel Editör & Otomatik Geçiş |
 | Digital Watermarking | ❌ Yok (Sadece ID3) | ✅ Sinyal Seviyesinde (LSB v1) |
+| YouTube Dispute Center | ❌ Yok | ✅ Otomatik Hak İtirazı (Pro) |
 | Metadata Extraction | ❌ Manuel | ✅ Otonom Bulk Ingest (BPM, Key, Cover) |
+| Infrastructure ROI | ❌ Yok | ✅ JIT Rendering & Latency Optimization |
 | Special Production | ❌ Yok | ✅ Aura Tailor (Music on Request) Hub |
 
 
 
-### 1. Otonom Biyoritim Eğitimi (AI Optimization)                                                                      
+ ### 1. Otonom Biyoritim Eğitimi & JIT Rendering                                                                   
                                                                                                                         
  - İşimize Yarayan Veri: "Hangi saatte hangi parça atlanıyor (skip rate)?"                                              
  - Uygulama: Eğer bir restoran öğleden sonra saat 16:00'da sürekli "Chill" parçaları geçip daha "Deep House" tınılarını 
- dinliyorsa, Aura AI bunu öğrenir. Bir sonraki hafta o mekanın Smart Flow takvimini sormadan günceller.                 
+ dinliyorsa, Aura AI bunu öğrenir. **Just-In-Time (JIT) Renderer** sayesinde sadece talep edilen frekanslar (432Hz/528Hz) anlık üretilerek bulut depolama maliyetlerini %70 optimize ederiz.             
  - Sonuç: Kullanıcıya "Sizin yerinize düşünen bir sistem" vaadini teknik olarak gerçekleştirmiş oluruz.                 
                                                                                                                         
- ### 2. Bölgesel Altyapı Yatırımı (Infrastructure ROI)                                                                  
+ ### 2. Bölgesel Altyapı Yatırımı & ROI Analytics                                                                 
                                                                                                                         
  - İşimize Yarayan Veri: "Hangi coğrafi bölgede arama ve yükleme gecikmesi (latency) artıyor?"                          
- - Uygulama: Veriler bize Berlin'deki mekanların yavaşlama yaşadığını söylüyorsa, hemen o bölgeye yeni bir Edge Worker  
- veya S3 kopyası (replication) kurarız.                                                                                 
+ - Uygulama: **Elite AI Analytics** katmanımız, Berlin'deki mekanların yavaşlama yaşadığını raporlarsa, sistem otomatik olarak o bölgeye yeni bir Edge Worker veya S3 kopyası (replication) tetikler.                                     
  - Sonuç: Veriyi "Nereye yatırım yapmalıyım?" sorusuna yanıt olarak kullanırız; körleme büyüme yerine veri odaklı       
  genişleriz.                                                                                                            
                                                                                                                         
@@ -77,11 +78,10 @@ Bu dosya, Sonaraura'nın pazarlama stratejisi ve global reklam kampanyaları iç
  yönlendiririz.                                                                                                         
  - Sonuç: Kütüphane stokumuzu "varsayımlar" üzerine değil, "gerçek pazar talebi" üzerine inşa ederiz.                   
                                                                                                                         
- ### 4. Müşteri Kaybını Önleme (Churn Prediction)                                                                       
+ ### 4. Müşteri Kaybını Önleme (Churn Heartbeat)                                                                     
                                                                                                                         
  - İşimize Yarayan Veri: "Oturum süresi (session duration) azalıyor mu?"                                                
- - Uygulama: Bir müşterinin Player'ı kullanma süresi son 3 hafta içinde %50 düştüyse, sistem bunu "Riskli Müşteri"      
- olarak işaretler. Satış ekibine veya otomasyona "Ona yeni kış kürasyonumuzu hatırlat" tetikleyicisi gönderilir.        
+ - Uygulama: **Heartbeat Telemetry** üzerinden bir müşterinin Player'ı kullanma süresi son 3 hafta içinde %50 düştüyse, sistem bunu "Riskli Müşteri" olarak işaretler. Satış ekibine veya otomasyona "Ona yeni kış kürasyonumuzu hatırlat" tetikleyicisi gönderilir.        
  - Sonuç: Müşteri daha gitmeyi düşünmeden biz ona değer katarak geri kazanırız.                                         
                                                                                                                         
  ### 5. A/B Testleri ve UI Evrimi (Architectural Integrity)                                                             

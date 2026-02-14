@@ -79,9 +79,24 @@ create table public.profiles (
 -- RLS: Profiles
 alter table public.profiles enable row level security;
 
+-- Helper Function for Admin Check (Avoids Recursion)
+create or replace function public.is_admin()
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  return exists (
+    select 1 from profiles
+    where id = auth.uid() and role = 'admin'
+  );
+end;
+$$;
+
 create policy "Users can view own profile"
   on public.profiles for select
-  using ( auth.uid() = id );
+  using ( auth.uid() = id or is_admin() );
 
 create policy "Users can insert their own profile."
   on profiles for insert
@@ -198,8 +213,22 @@ create table public.tracks (
   
   waveform_data jsonb, -- Extracted amplitude points
   lyrics text,
-  lyrics_synced jsonb, -- New: Word-level timestamps
+  lyrics_synced jsonb, -- Word-level timestamps
   cover_image_url text,
+  
+  -- Deep Taxonomy & AI Features
+  metadata jsonb default '{}'::jsonb, -- Technical/Audio metadata
+  embedding vector(1536), -- Vector for similarity search
+  theme text,
+  character text,
+  vibe_tags text[],
+  venue_tags text[],
+  sfx_tags text[],
+  sub_genres text[],
+  character_tags text[],
+  vocal_type text,
+  theme_tags text[],
+
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
@@ -213,12 +242,7 @@ create policy "Active tracks are viewable by everyone"
 
 create policy "Admins can view all tracks"
   on tracks for select
-  using ( 
-    exists (
-      select 1 from profiles 
-      where id = auth.uid() and role = 'admin'
-    )
-  );
+  using ( is_admin() );
 
 --------------------------------------------------------------------------------
 -- 4. TRACK FILES (Assets)
@@ -362,6 +386,28 @@ create policy "Users can view own requests"
   on custom_requests for select
   using ( auth.uid() = user_id );
 
+create policy "Users can insert own requests"
+  on custom_requests for insert
+  with check ( auth.uid() = user_id );
+
+create policy "Admins can view all requests"
+  on custom_requests for select
+  using (
+    exists (
+      select 1 from public.profiles
+      where id = auth.uid() and role = 'admin'
+    )
+  );
+
+create policy "Admins can update requests"
+  on custom_requests for update
+  using (
+    exists (
+      select 1 from public.profiles
+      where id = auth.uid() and role = 'admin'
+    )
+  );
+
 --------------------------------------------------------------------------------
 -- 7.1 YOUTUBE DISPUTES
 --------------------------------------------------------------------------------
@@ -404,7 +450,8 @@ create table public.search_logs (
   filters_used jsonb,
   result_count integer,
   latency_ms integer,
-  created_at timestamptz default now()
+  created_at timestamptz default now(),
+  region text -- New: Cloud region for latency tracking
 );
 
 -- RLS: Saved Searches
@@ -413,6 +460,28 @@ alter table public.saved_searches enable row level security;
 create policy "Users manage own saved searches"
   on saved_searches for all
   using ( auth.uid() = user_id );
+
+--------------------------------------------------------------------------------
+-- 8.1 SEARCH LOGS
+--------------------------------------------------------------------------------
+alter table public.search_logs enable row level security;
+
+create policy "Anyone can insert logs"
+  on public.search_logs for insert
+  with check ( true );
+
+create policy "Users can view own logs"
+  on public.search_logs for select
+  using ( auth.uid() = user_id );
+
+create policy "Admins can view all logs"
+  on public.search_logs for select
+  using (
+    exists (
+      select 1 from public.profiles
+      where id = auth.uid() and role = 'admin'
+    )
+  );
 
 --------------------------------------------------------------------------------
 -- 9. QC & REVIEWS
@@ -614,8 +683,20 @@ create trigger on_auth_user_created
   for each row execute procedure public.handle_new_user();
 
 -- Performance Grants
+-- Secure by Default: Revoke broad public access
+revoke select on all tables in schema public from anon;
+revoke select on all tables in schema public from authenticated;
+
+-- Explicitly allow authenticated users to perform standard operations
 grant select, insert, update, delete on all tables in schema public to authenticated;
-grant select on all tables in schema public to anon;
 grant usage on all sequences in schema public to authenticated;
+
+-- Explicitly allow anonymous users ONLY to see active tracks and their streamable files
+grant select on public.tracks to anon;
+grant select on public.track_files to anon;
+grant insert on public.search_logs to anon;
+
+-- System level permissions
+grant usage on all sequences in schema public to service_role;
 
 -- All RLS policies are defined contextually above.

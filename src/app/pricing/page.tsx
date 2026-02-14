@@ -1,7 +1,7 @@
-import React from 'react';
 import Link from 'next/link';
 import { Check, X, ChevronDown, Menu } from 'lucide-react';
 import { Footer } from '@/components/layout/Footer';
+import { MainHeader } from '@/components/layout/MainHeader';
 import { createClient } from '@/lib/db/server';
 
 export default async function PricingPage() {
@@ -76,51 +76,7 @@ export default async function PricingPage() {
     return (
         <div className="min-h-screen bg-black text-white font-sans selection:bg-black selection:text-white">
             {/* Header */}
-            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 bg-black/90 backdrop-blur-sm transition-all duration-300 border-b border-white/10 h-20">
-                <div className="flex items-center gap-12 h-full">
-                    {/* Logo Area */}
-                    <Link href="/" className="flex items-center gap-2 group leading-none">
-                        <div className="h-8 w-8 bg-white text-black rounded flex items-center justify-center font-bold transition-transform group-hover:scale-110">S</div>
-                        <span className="text-xl font-black italic tracking-widest text-white leading-none">
-                            SONAR<span className="font-light text-zinc-300">AURA</span>
-                        </span>
-                    </Link>
-
-                    {/* Desktop Navigation */}
-                    <nav className="hidden lg:flex items-center gap-8 text-[15px] font-medium text-gray-300">
-                        <Link href="/music" className="hover:text-white transition-colors">Music</Link>
-                        <Link href="/sound-effects" className="hover:text-white transition-colors">Sound Effects</Link>
-                        <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
-                        <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
-                        <Link href="/enterprise" className="hover:text-white transition-colors">Enterprise</Link>
-                    </nav>
-                </div>
-
-                <div className="flex items-center gap-6 h-full">
-                    {!user ? (
-                        <>
-                            <Link href="/login" className="hidden sm:block text-sm font-bold hover:text-gray-300 transition-colors">
-                                Log in
-                            </Link>
-                            <Link href="/signup" className="h-10 px-6 flex items-center justify-center rounded-full bg-white text-black text-sm font-bold hover:bg-gray-200 transition-colors">
-                                Start free trial
-                            </Link>
-                        </>
-                    ) : (
-                        <>
-                            <Link href="/dashboard" className="hidden sm:block text-sm font-bold hover:text-gray-300 transition-colors">
-                                Dashboard
-                            </Link>
-                            <Link href="/account" className="h-10 px-6 flex items-center justify-center rounded-full bg-white text-black text-sm font-bold hover:bg-gray-200 transition-colors">
-                                Account
-                            </Link>
-                        </>
-                    )}
-                    <button className="lg:hidden text-white">
-                        <Menu size={24} />
-                    </button>
-                </div>
-            </header>
+            <MainHeader initialUser={user} />
 
             {/* 2. Hero Section */}
             <section className="relative min-h-[90vh] flex flex-col items-center pt-48 pb-32 px-6">
@@ -156,7 +112,7 @@ export default async function PricingPage() {
                                     </div>
                                 )}
                                 <h3 className="text-4xl font-black uppercase italic mb-2 tracking-tighter leading-none">{plan.name}</h3>
-                                <p className={`text-[11px] mb-10 font-bold uppercase tracking-widest leading-relaxed min-h-[40px] ${plan.highlight ? 'text-zinc-500' : 'text-zinc-400'}`}>
+                                <p className={`text-[11px] mb-10 font-bold uppercase tracking-widest leading-relaxed min-h-[40px] ${plan.highlight ? 'text-black/60' : 'text-white/60'}`}>
                                     {plan.description}
                                 </p>
                                 <div className="flex items-baseline gap-1 mb-10 border-b pb-10 border-white/5">
@@ -204,7 +160,7 @@ export default async function PricingPage() {
             <section id="technical-breakdown" className="py-40 px-6 bg-[#F5F5F0] text-black rounded-t-[4rem]">
                 <div className="max-w-[1200px] mx-auto">
                     <div className="mb-24 text-center md:text-left space-y-4">
-                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">Technical Breakdown</p>
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-black/40">Technical Breakdown</p>
                         <h2 className="text-6xl md:text-8xl font-black tracking-tight uppercase italic leading-[0.8]">
                             Symmetry <br />of Value.
                         </h2>
@@ -214,7 +170,7 @@ export default async function PricingPage() {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="border-b-[6px] border-black">
-                                    <th className="py-10 px-6 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">Architectural Layer</th>
+                                    <th className="py-10 px-6 text-[10px] font-black uppercase tracking-[0.3em] text-black/50">Architectural Layer</th>
                                     <th className="py-10 px-6 text-2xl font-black uppercase italic">Free</th>
                                     <th className="py-10 px-6 text-2xl font-black uppercase italic">Pro</th>
                                     <th className="py-10 px-6 text-2xl font-black uppercase italic text-indigo-600 underline decoration-4 underline-offset-8">Business</th>
@@ -228,7 +184,7 @@ export default async function PricingPage() {
                                     { f: "Weather-Aware Atmosphere AI", v: [false, false, true, true] },
                                     { f: "Autonomous Smart Flow Director", v: [false, false, true, true] },
                                     { f: "Steganographic Watermarking", v: [false, true, true, true] },
-                                    { f: "YouTube Dispute Auto-Center", v: [false, true, true, true] },
+                                    { f: "YouTube Dispute Auto-Center", v: [false, true, false, false] },
                                     { f: "500MB Intelligent Offline Cache", v: [false, false, true, true] },
                                     { f: "Aura Tailor (Custom Production)", v: ["Request", "Request", "Request", true] },
                                     { f: "Licensed Venue Certification (QR)", v: [false, false, true, true] },
@@ -236,11 +192,11 @@ export default async function PricingPage() {
                                     { f: "Master Stems & WAV Delivery", v: [false, true, true, true] },
                                 ].map((row, idx) => (
                                     <tr key={idx} className="border-b border-black/5 hover:bg-black/[0.02] transition-colors group">
-                                        <td className="py-8 px-6 text-[10px] font-black uppercase tracking-widest text-zinc-500 group-hover:text-black transition-colors">{row.f}</td>
+                                        <td className="py-8 px-6 text-[10px] font-black uppercase tracking-widest text-black/60 group-hover:text-black transition-colors">{row.f}</td>
                                         {row.v.map((val, i) => (
                                             <td key={i} className="py-8 px-6">
                                                 {typeof val === 'boolean' ? (
-                                                    val ? <Check size={24} strokeWidth={4} className="text-black" /> : <X size={24} strokeWidth={3} className="text-zinc-200" />
+                                                    val ? <Check size={24} strokeWidth={4} className="text-black" /> : <X size={24} strokeWidth={3} className="text-black/10" />
                                                 ) : <span className="text-[10px] uppercase font-black tracking-widest bg-black text-white px-3 py-1 rounded-full">{val}</span>}
                                             </td>
                                         ))}

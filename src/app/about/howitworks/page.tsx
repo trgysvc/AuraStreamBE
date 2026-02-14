@@ -19,7 +19,8 @@ import {
     Layout,
     CloudLightning,
     DollarSign,
-    FileText
+    FileText,
+    BarChart3
 } from 'lucide-react';
 import { Footer } from '@/components/layout/Footer';
 
@@ -42,6 +43,7 @@ const HELP_SECTIONS = [
         pages: [
             { id: 'core-stack', title: 'Modern Architecture', icon: Layers },
             { id: 'ai-engine', title: 'Aura AI Intelligence', icon: Zap },
+            { id: 'strategic-intel', title: 'Strategic Intelligence', icon: BarChart3 },
         ]
     },
     {
@@ -174,22 +176,22 @@ function renderContent(id: string) {
                             <Zap size={32} />
                         </div>
                         <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Molecular <br /> Sound</h1>
-                        <p className="text-xl text-zinc-500 font-medium">Frequency engineering that bypasses traditional streaming limits.</p>
+                        <p className="text-xl text-zinc-400 font-medium">Frequency engineering that bypasses traditional streaming limits.</p>
                     </header>
 
                     <div className="prose prose-invert max-w-none space-y-8">
-                        <p className="text-zinc-400 leading-relaxed text-lg">
+                        <p className="text-zinc-300 leading-relaxed text-lg">
                             Sonaraura is the first platform to implement <strong>Real-time Molecular Tuning</strong>. We don't just play audio; we manipulate the physical frequency of sound waves on the fly.
                         </p>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="p-8 bg-[#111] border border-white/5 rounded-3xl space-y-4">
                                 <h4 className="text-white font-black italic uppercase">432Hz (Healing)</h4>
-                                <p className="text-xs text-zinc-500 leading-relaxed">Mathematically consistent with the universe. Ideal for spa, wellness, and early morning hospitality environments to reduce stress.</p>
+                                <p className="text-xs text-zinc-400 leading-relaxed">Mathematically consistent with the universe. Ideal for spa, wellness, and early morning hospitality environments to reduce stress.</p>
                             </div>
                             <div className="p-8 bg-[#111] border border-white/5 rounded-3xl space-y-4">
                                 <h4 className="text-white font-black italic uppercase">528Hz (Focus)</h4>
-                                <p className="text-xs text-zinc-500 leading-relaxed">The 'miracle' frequency. Used to increase clarity, repair DNA vibrationally, and enhance concentration in workspaces.</p>
+                                <p className="text-xs text-zinc-400 leading-relaxed">The 'miracle' frequency. Used to increase clarity, repair DNA vibrationally, and enhance concentration in workspaces.</p>
                             </div>
                         </div>
 
@@ -209,11 +211,11 @@ function renderContent(id: string) {
                             <Music size={32} />
                         </div>
                         <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Aura <br /> Karaoke</h1>
-                        <p className="text-xl text-zinc-500 font-medium">Word-level precision for a truly immersive lyrical experience.</p>
+                        <p className="text-xl text-zinc-400 font-medium">Word-level precision for a truly immersive lyrical experience.</p>
                     </header>
 
                     <div className="prose prose-invert max-w-none space-y-8">
-                        <p className="text-zinc-400 leading-relaxed text-lg">
+                        <p className="text-zinc-300 leading-relaxed text-lg">
                             Move beyond basic line-by-line scrolling. The Aura Karaoke Engine provides <strong>temporal glow synchronization</strong> at the word level.
                         </p>
 
@@ -248,13 +250,13 @@ function renderContent(id: string) {
                             <CloudLightning size={32} />
                         </div>
                         <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Atmospheric <br /> Zeka</h1>
-                        <p className="text-xl text-zinc-500 font-medium">Your space, synchronized with the outside world.</p>
+                        <p className="text-xl text-zinc-400 font-medium">Your space, synchronized with the outside world.</p>
                     </header>
 
                     <div className="prose prose-invert max-w-none space-y-8">
                         <section className="space-y-4">
                             <h2 className="text-2xl font-black uppercase italic tracking-tight text-white border-b border-white/5 pb-2">Weather-Aware Optimization</h2>
-                            <p className="text-zinc-400 leading-relaxed">
+                            <p className="text-zinc-300 leading-relaxed">
                                 Aura AI uses the GPS coordinates of your venue to fetch real-time atmospheric data. When it starts to rain or the sun begins to set, the auditory environment adapts instantly.
                             </p>
                         </section>
@@ -284,11 +286,11 @@ function renderContent(id: string) {
                             <Shield size={32} />
                         </div>
                         <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Signal <br /> Protection</h1>
-                        <p className="text-xl text-zinc-500 font-medium">Invisible security built into the very fabric of the sound.</p>
+                        <p className="text-xl text-zinc-400 font-medium">Invisible security built into the very fabric of the sound.</p>
                     </header>
 
                     <div className="prose prose-invert max-w-none space-y-8">
-                        <p className="text-zinc-400 leading-relaxed text-lg">
+                        <p className="text-zinc-300 leading-relaxed text-lg">
                             We use <strong>LSB (Least Significant Bit) Watermarking</strong> to embed a permanent, digital UUID into every high-fidelity asset in our library.
                         </p>
 
@@ -318,26 +320,26 @@ function renderContent(id: string) {
                             <Zap size={32} />
                         </div>
                         <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">The Future of Sound, <br /> Frequency of Intelligence</h1>
-                        <p className="text-xl text-zinc-500 font-medium">Architecture beyond silence and frequency engineering.</p>
+                        <p className="text-xl text-zinc-400 font-medium">Architecture beyond silence and frequency engineering.</p>
                     </header>
 
                     <div className="prose prose-invert max-w-none space-y-8">
                         <section className="space-y-4">
                             <h2 className="text-2xl font-black uppercase italic tracking-tight text-white border-b border-white/5 pb-2">Who We Are?</h2>
-                            <p className="text-zinc-400 leading-relaxed text-lg">
+                            <p className="text-zinc-300 leading-relaxed text-lg">
                                 Sonaraura transforms music from a mere background element into a living intelligence that manages the atmosphere of a space on biological and emotional levels.
                             </p>
-                            <p className="text-zinc-400 leading-relaxed">
+                            <p className="text-zinc-300 leading-relaxed">
                                 By merging sound engineering, artificial intelligence, and psychoacoustics, we have built the world's first <strong>Atmospheric Intelligence</strong> platform. We are a technology company that synchronizes the frequency of sound, the vibe of the environment, and the listener's pulse.
                             </p>
                         </section>
 
                         <section className="space-y-4">
                             <h2 className="text-2xl font-black uppercase italic tracking-tight text-white border-b border-white/5 pb-2">Our Vision</h2>
-                            <p className="text-zinc-400 leading-relaxed">
+                            <p className="text-zinc-300 leading-relaxed">
                                 Every space has a soul, every moment has a frequency. Our goal is to deepen the connection between businesses and creators with their target audiences through <strong>Frequency Engineering</strong>.
                             </p>
-                            <p className="text-zinc-400 leading-relaxed">
+                            <p className="text-zinc-300 leading-relaxed">
                                 We evolve music from the standard 440Hz mold into <strong>432Hz (Peace)</strong> and <strong>528Hz (Focus/Vitality)</strong> frequencies, synchronized with human biology in real-time. While doing this, we maintain the musical rhythm (BPM), re-engineering art with scientific precision.
                             </p>
                         </section>
@@ -367,7 +369,7 @@ function renderContent(id: string) {
                             <Cpu size={32} />
                         </div>
                         <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Modern <br /> Architecture</h1>
-                        <p className="text-xl text-zinc-500 font-medium">Built on the bleeding edge for speed, security, and scalability.</p>
+                        <p className="text-xl text-zinc-400 font-medium">Built on the bleeding edge for speed, security, and scalability.</p>
                     </header>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -401,6 +403,11 @@ function renderContent(id: string) {
                             tech="Stripe & Iyzico"
                             desc="Global and local payment gateways for secure B2B and B2C transactions."
                         />
+                        <TechCard
+                            title="Infrastructure"
+                            tech="JIT Cloud Renderer"
+                            desc="Just-In-Time high-fidelity audio rendering to optimize cloud storage and delivery costs."
+                        />
                     </div>
                 </article>
             );
@@ -413,11 +420,11 @@ function renderContent(id: string) {
                             <Zap size={32} />
                         </div>
                         <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Smart Flow <br /> Mastery</h1>
-                        <p className="text-xl text-zinc-500 font-medium">Automated energy management for professional venues.</p>
+                        <p className="text-xl text-zinc-400 font-medium">Automated energy management for professional venues.</p>
                     </header>
 
                     <div className="prose prose-invert max-w-none space-y-8">
-                        <p className="text-zinc-400 leading-relaxed text-lg">
+                        <p className="text-zinc-300 leading-relaxed text-lg">
                             Smart Flow is the heart of the Sonaraura venue experience. It removes the need for manual playlist management by using advanced rulesets.
                         </p>
 
@@ -448,7 +455,7 @@ function renderContent(id: string) {
                             <Info size={32} />
                         </div>
                         <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">The Sonaraura <br /> Ecosystem</h1>
-                        <p className="text-xl text-zinc-500 font-medium">A simplified overview of how sound becomes a strategic asset.</p>
+                        <p className="text-xl text-zinc-400 font-medium">A simplified overview of how sound becomes a strategic asset.</p>
                     </header>
 
                     <div className="grid grid-cols-1 gap-12 pt-8">
@@ -480,13 +487,13 @@ function renderContent(id: string) {
                             <Zap size={32} />
                         </div>
                         <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Aura AI <br /> Intelligence</h1>
-                        <p className="text-xl text-zinc-500 font-medium">Powering the next generation of auditory context-awareness.</p>
+                        <p className="text-xl text-zinc-400 font-medium">Powering the next generation of auditory context-awareness.</p>
                     </header>
 
                     <div className="prose prose-invert max-w-none space-y-8">
                         <section className="space-y-4">
                             <h2 className="text-2xl font-black uppercase italic tracking-tight text-white border-b border-white/5 pb-2">Neural Content Analysis</h2>
-                            <p className="text-zinc-400 leading-relaxed">
+                            <p className="text-zinc-300 leading-relaxed">
                                 Our AI engine, built on <strong>Google Gemini</strong> models, understands the emotional and functional purpose of every sound. It analyzes spectral data to distinguish between contexts like 'Deep Focus' and 'Euphoric Celebration'.
                             </p>
                         </section>
@@ -509,6 +516,44 @@ function renderContent(id: string) {
                 </article>
             );
 
+        case 'strategic-intel':
+            return (
+                <article className="space-y-10">
+                    <header className="space-y-4">
+                        <div className="h-16 w-16 bg-emerald-600/10 rounded-2xl flex items-center justify-center text-emerald-500">
+                            <BarChart3 size={32} />
+                        </div>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Strategic <br /> Intelligence</h1>
+                        <p className="text-xl text-zinc-400 font-medium">Data-driven growth and infrastructure ROI at every level.</p>
+                    </header>
+
+                    <div className="prose prose-invert max-w-none space-y-8">
+                        <section className="space-y-4">
+                            <h2 className="text-2xl font-black uppercase italic tracking-tight text-white border-b border-white/5 pb-2">Elite AI Analytics</h2>
+                            <p className="text-zinc-300 leading-relaxed">
+                                Sonaraura monitors infrastructure ROI and production gaps in real-time. By tracking search patterns and UI interactions, we identify precisely where the market demand is shifting.
+                            </p>
+                        </section>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="p-8 bg-[#111] border border-white/5 rounded-3xl space-y-4">
+                                <h4 className="text-white font-black italic uppercase">ROI Layer (Latency)</h4>
+                                <p className="text-xs text-zinc-400 leading-relaxed">Real-time mapping of geographical search latency allows us to deploy Edge Workers exactly where they are needed most.</p>
+                            </div>
+                            <div className="p-8 bg-[#111] border border-white/5 rounded-3xl space-y-4">
+                                <h4 className="text-white font-black italic uppercase">Churn Prediction</h4>
+                                <p className="text-xs text-zinc-400 leading-relaxed">Heartbeat Telemetry monitors user session health, proactively flagging accounts with declining engagement for retention automation.</p>
+                            </div>
+                        </div>
+
+                        <div className="p-6 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400 mb-2">Revenue Intelligence</p>
+                            <p className="text-sm text-zinc-300">We analyze metadata gaps to direct the Aura Tailor production teams toward high-demand, low-supply musical genres.</p>
+                        </div>
+                    </div>
+                </article>
+            );
+
         case 'scheduling':
             return (
                 <article className="space-y-10">
@@ -517,7 +562,7 @@ function renderContent(id: string) {
                             <Clock size={32} />
                         </div>
                         <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Dynamic <br /> Scheduling</h1>
-                        <p className="text-xl text-zinc-500 font-medium">Set it and forget it. Aura handles the transitions.</p>
+                        <p className="text-xl text-zinc-400 font-medium">Set it and forget it. Aura handles the transitions.</p>
                     </header>
 
                     <div className="space-y-8">
@@ -542,7 +587,7 @@ function renderContent(id: string) {
                             <Layout size={32} />
                         </div>
                         <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">The Tailor <br /> Workflow</h1>
-                        <p className="text-xl text-zinc-500 font-medium">How custom music production works for high-ticket clients.</p>
+                        <p className="text-xl text-zinc-400 font-medium">How custom music production works for high-ticket clients.</p>
                     </header>
 
                     <div className="space-y-12">
@@ -550,22 +595,22 @@ function renderContent(id: string) {
                             <div className="p-8 bg-[#111] border border-white/5 rounded-3xl space-y-4">
                                 <div className="text-4xl font-black text-white/10 italic leading-none">01</div>
                                 <h4 className="text-lg font-bold text-white uppercase italic">Briefing & Story</h4>
-                                <p className="text-sm text-zinc-500 leading-relaxed">The client submits a detailed prompt and the <strong>Project Soul (PDF)</strong> explaining the brand identity.</p>
+                                <p className="text-sm text-zinc-400 leading-relaxed">The client submits a detailed prompt and the <strong>Project Soul (PDF)</strong> explaining the brand identity.</p>
                             </div>
                             <div className="p-8 bg-[#111] border border-white/5 rounded-3xl space-y-4">
                                 <div className="text-4xl font-black text-white/10 italic leading-none">02</div>
                                 <h4 className="text-lg font-bold text-white uppercase italic">AI Orchestration</h4>
-                                <p className="text-sm text-zinc-500 leading-relaxed">AI Architects generate blueprints. These aren't final tracks, but sonic foundations.</p>
+                                <p className="text-sm text-zinc-400 leading-relaxed">AI Architects generate blueprints. These aren't final tracks, but sonic foundations.</p>
                             </div>
                             <div className="p-8 bg-[#111] border border-white/5 rounded-3xl space-y-4">
                                 <div className="text-4xl font-black text-white/10 italic leading-none">03</div>
                                 <h4 className="text-lg font-bold text-white uppercase italic">Producer Polish</h4>
-                                <p className="text-sm text-zinc-500 leading-relaxed">Human producers take the blueprints and perform final instrumentation and mastering to WAV standards.</p>
+                                <p className="text-sm text-zinc-400 leading-relaxed">Human producers take the blueprints and perform final instrumentation and mastering to WAV standards.</p>
                             </div>
                             <div className="p-8 bg-[#111] border border-white/5 rounded-3xl space-y-4">
                                 <div className="text-4xl font-black text-white/10 italic leading-none">04</div>
                                 <h4 className="text-lg font-bold text-white uppercase italic">Delivery</h4>
-                                <p className="text-sm text-zinc-500 leading-relaxed">The client receives full commercial usage rights and high-fidelity masters in their dashboard.</p>
+                                <p className="text-sm text-zinc-400 leading-relaxed">The client receives full commercial usage rights and high-fidelity masters in their dashboard.</p>
                             </div>
                         </div>
                     </div>
@@ -580,11 +625,11 @@ function renderContent(id: string) {
                             <CheckCircle2 size={32} />
                         </div>
                         <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Account <br /> Initialization</h1>
-                        <p className="text-xl text-zinc-500 font-medium">Getting your credentials synchronized with the ecosystem.</p>
+                        <p className="text-xl text-zinc-400 font-medium">Getting your credentials synchronized with the ecosystem.</p>
                     </header>
 
                     <div className="space-y-8">
-                        <p className="text-zinc-400 leading-relaxed">
+                        <p className="text-zinc-300 leading-relaxed">
                             Every user in the Sonaraura network starts with a Unified Identity. Whether you are a solo creator or a multi-location hotel chain, your account lifecycle follows these phases:
                         </p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -609,13 +654,13 @@ function renderContent(id: string) {
                             <Shield size={32} />
                         </div>
                         <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Commercial <br /> Licensing</h1>
-                        <p className="text-xl text-zinc-500 font-medium">Fully cleared audio for high-traffic environments.</p>
+                        <p className="text-xl text-zinc-400 font-medium">Fully cleared audio for high-traffic environments.</p>
                     </header>
 
                     <div className="prose prose-invert max-w-none space-y-8">
                         <div className="p-10 bg-indigo-600/5 border border-indigo-600/20 rounded-[3rem] space-y-6">
                             <h3 className="text-2xl font-black italic text-white uppercase leading-tight">The 100% Clearance Guarantee</h3>
-                            <p className="text-sm text-zinc-400 leading-relaxed">Sonaraura provides a <strong>Commercial Performance License</strong> with every subscription. This covers:</p>
+                            <p className="text-sm text-zinc-300 leading-relaxed">Sonaraura provides a <strong>Commercial Performance License</strong> with every subscription. This covers:</p>
                             <ul className="space-y-2 text-xs font-medium text-zinc-300">
                                 <li className="flex items-center gap-2"><div className="h-1 w-1 rounded-full bg-indigo-500" /> Public Performance Rights (PPR)</li>
                                 <li className="flex items-center gap-2"><div className="h-1 w-1 rounded-full bg-indigo-500" /> Synchronization Rights for Digital Signage</li>
@@ -634,28 +679,28 @@ function renderContent(id: string) {
                             <FileText size={32} />
                         </div>
                         <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Music Licensing <br /> Made Easy</h1>
-                        <p className="text-xl text-zinc-500 font-medium">A Direct License Model that removes legal risk.</p>
+                        <p className="text-xl text-zinc-400 font-medium">A Direct License Model that removes legal risk.</p>
                     </header>
 
                     <div className="prose prose-invert max-w-none space-y-8">
-                        <p className="text-zinc-400 leading-relaxed text-lg">
+                        <p className="text-zinc-300 leading-relaxed text-lg">
                             Forget lawsuits, surprise fees, copyright claims, and admin headaches. Our <strong>Direct License Model</strong> means you&apos;re cleared to use our music globally — regardless of media, territory, or type of content, both online and offline.
                         </p>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="p-8 bg-[#111] border border-white/5 rounded-3xl space-y-4">
                                 <h4 className="text-white font-black italic uppercase">100% Owned Rights</h4>
-                                <p className="text-xs text-zinc-500 leading-relaxed">Because we own all the rights to our music, including public performance rights, we can customize our plans to cover all of your soundtracking needs, now and in the future.</p>
+                                <p className="text-xs text-zinc-400 leading-relaxed">Because we own all the rights to our music, including public performance rights, we can customize our plans to cover all of your soundtracking needs, now and in the future.</p>
                             </div>
                             <div className="p-8 bg-[#111] border border-white/5 rounded-3xl space-y-4">
                                 <h4 className="text-white font-black italic uppercase">Admin-Free Zone</h4>
-                                <p className="text-xs text-zinc-500 leading-relaxed">No reporting to PROs (Performance Rights Organizations). No cue sheets. Just plug and play with total peace of mind.</p>
+                                <p className="text-xs text-zinc-400 leading-relaxed">No reporting to PROs (Performance Rights Organizations). No cue sheets. Just plug and play with total peace of mind.</p>
                             </div>
                         </div>
 
                         <div className="p-6 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl">
                             <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400 mb-2">Total Coverage</p>
-                            <p className="text-sm text-zinc-300">Whether you are streaming in a lobby, using tracks for a YouTube ad, or broadcasting in a retail chain, a single Sonaraura subscription covers it all.</p>
+                            <p className="text-sm text-zinc-300">Whether you are streaming in a boutique lobby, a high-traffic hotel, or a global retail chain, a single Sonaraura subscription covers your entire physical environment.</p>
                         </div>
                     </div>
                 </article>
@@ -669,11 +714,11 @@ function renderContent(id: string) {
                             <FileText size={32} />
                         </div>
                         <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Project Soul <br /> Concept</h1>
-                        <p className="text-xl text-zinc-500 font-medium">Capturing the intangible spirit of your brand in a single document.</p>
+                        <p className="text-xl text-zinc-400 font-medium">Capturing the intangible spirit of your brand in a single document.</p>
                     </header>
 
                     <div className="space-y-8">
-                        <p className="text-zinc-400 leading-relaxed text-lg italic">
+                        <p className="text-zinc-300 leading-relaxed text-lg italic">
                             &quot;Music on Request is not about following a tempo; it's about translating a mission into frequencies.&quot;
                         </p>
                         <div className="bg-[#111] p-10 rounded-[3rem] border border-white/5 space-y-6">
@@ -709,11 +754,11 @@ function renderContent(id: string) {
                             <Layout size={32} />
                         </div>
                         <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">The Production <br /> Factory</h1>
-                        <p className="text-xl text-zinc-500 font-medium">Ensuring world-class audio consistency across the ecosystem.</p>
+                        <p className="text-xl text-zinc-400 font-medium">Ensuring world-class audio consistency across the ecosystem.</p>
                     </header>
 
                     <div className="prose prose-invert max-w-none space-y-8">
-                        <p className="text-zinc-400 leading-relaxed">
+                        <p className="text-zinc-300 leading-relaxed">
                             Sonaraura does not operate as an open marketplace. Our library is an exclusive collection of engineered sound, designed to maintain a consistent 'Aura' across all touchpoints. All assets are either produced internally or by strictly vetted partners.
                         </p>
 
@@ -743,7 +788,7 @@ function renderContent(id: string) {
                             <DollarSign size={32} />
                         </div>
                         <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Strategic <br /> Partnerships</h1>
-                        <p className="text-xl text-zinc-500 font-medium">Revenue models for our vetted production units.</p>
+                        <p className="text-xl text-zinc-400 font-medium">Revenue models for our vetted production units.</p>
                     </header>
 
                     <div className="p-10 bg-white/[0.02] border border-white/5 rounded-[3rem] space-y-8">
@@ -751,7 +796,7 @@ function renderContent(id: string) {
                             <h4 className="text-sm font-black text-white uppercase tracking-[0.2em]">Partner Revenue Share</h4>
                             <span className="text-6xl font-black text-indigo-500 italic leading-none">40%</span>
                         </div>
-                        <p className="text-xs text-zinc-500 leading-relaxed italic border-t border-white/5 pt-6">
+                        <p className="text-xs text-zinc-400 leading-relaxed italic border-t border-white/5 pt-6">
                             * Vetted partners receive 40% of every license sold (B2C) and a proportionate share of B2B streaming pools. This model ensures high-quality output over high-volume noise.
                         </p>
                     </div>

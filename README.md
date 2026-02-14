@@ -15,7 +15,9 @@ SONARAURA goes beyond traditional streaming. It leverages **Frequency Engineerin
 - **Weather-Aware AI:** Automatic atmosphere adjustment based on live GPS location and weather data (e.g., rain triggers calming 432Hz flow).
 - **Smart Flow:** Autonomous music director for B2B venues with visual 24h schedule management.
 - **Steganographic Watermarking:** Signal-level UUID embedding (LSB V1) for bulletproof copyright protection and traceablity.
-- **YouTube Dispute Center:** Instant legal claim resolution with automated, license-backed evidence generation.
+- **YouTube Dispute Center:** Instant legal claim resolution for creators with automated, license-backed evidence generation.
+- **Elite Analytics (ROI Layer):** Strategic search and interaction telemetry for infrastructure ROI and production gap analysis.
+- **Churn Prediction Heartbeat:** Intelligent monitoring of user session health to proactively manage retention.
 - **Ingest Engine:** Bulk upload with autonomous metadata extraction (ID3, BPM, Key, Lyrics, Cover Art).
 
 ---
@@ -31,8 +33,8 @@ SONARAURA goes beyond traditional streaming. It leverages **Frequency Engineerin
 ### Backend & Cloud Infrastructure
 - **Database & Auth:** [Supabase](https://supabase.com/) (PostgreSQL, RLS, Edge Functions, pgvector)
 - **Storage:** [AWS S3](https://aws.amazon.com/s3/) (Automated post-process purge to optimize storage costs)
-- **Compute:** AWS Lambda (High-fidelity audio processing) & Node.js Server Actions
-- **Queue System:** AWS SQS (Job orchestration for sonic analysis)
+- **Compute:** AWS Lambda & **JIT Cloud Renderer** (Just-In-Time high-fidelity audio rendering on demand)
+- **Queue System:** AWS SQS (Job orchestration for sonic analysis and JIT triggers)
 - **CDN:** AWS CloudFront (Secure delivery with 3600s Signed URLs)
 
 ### Audio & AI Processing
