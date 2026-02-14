@@ -35,17 +35,17 @@ export function Footer({ variant = 'light' }: FooterProps) {
                         <div className="space-y-6">
                             <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Product</h4>
                             <ul className={`space-y-4 text-sm font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-800'}`}>
-                                <li><Link href="#" className="hover:text-white transition-opacity">Royalty-free music</Link></li>
-                                <li><Link href="#" className="hover:text-white transition-opacity">Sound effects</Link></li>
+                                <li><Link href="/dashboard/venue" className="hover:text-white transition-opacity">Royalty-free music</Link></li>
+                                <li><Link href="/dashboard/venue" className="hover:text-white transition-opacity">Sound effects</Link></li>
                                 <li><Link href="#" className="hover:text-white transition-opacity">AI voiceovers</Link></li>
                                 <li><Link href="/pricing" className="hover:text-white transition-opacity">Pricing</Link></li>
-                                <li><Link href="#" className="hover:text-white transition-opacity">Aura Tailor</Link></li>
+                                <li><Link href="/dashboard/request" className="hover:text-white transition-opacity">Aura Tailor</Link></li>
                             </ul>
                         </div>
                         <div className="space-y-6">
                             <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Learn More</h4>
                             <ul className={`space-y-4 text-sm font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-800'}`}>
-                                <li><Link href="#" className="hover:text-white transition-opacity">How it works</Link></li>
+                                <li><Link href="/about/howitworks" className="hover:text-white transition-opacity">How it works</Link></li>
                                 <li><Link href="#" className="hover:text-white transition-opacity">Use cases</Link></li>
                                 <li><Link href="#" className="hover:text-white transition-opacity">For businesses</Link></li>
                                 <li><Link href="#" className="hover:text-white transition-opacity">Enterprise</Link></li>
@@ -55,8 +55,8 @@ export function Footer({ variant = 'light' }: FooterProps) {
                         <div className="space-y-6">
                             <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">About</h4>
                             <ul className={`space-y-4 text-sm font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-800'}`}>
-                                <li><Link href="#" className="hover:text-white transition-opacity">Help center</Link></li>
-                                <li><Link href="#" className="hover:text-white transition-opacity">About us</Link></li>
+                                <li><Link href="/about/help" className="hover:text-white transition-opacity">Help center</Link></li>
+                                <li><Link href="/about/us" className="hover:text-white transition-opacity">About us</Link></li>
                                 <li><Link href="#" className="hover:text-white transition-opacity">Press</Link></li>
                                 <li><Link href="#" className="hover:text-white transition-opacity">Careers</Link></li>
                                 <li><Link href="#" className="hover:text-white transition-opacity">Contact</Link></li>
@@ -68,9 +68,9 @@ export function Footer({ variant = 'light' }: FooterProps) {
                 <div className={`pt-8 border-t flex flex-col md:flex-row items-center justify-between gap-6 text-[11px] font-bold uppercase tracking-wider ${isDark ? 'border-white/10 text-zinc-500' : 'border-zinc-200 text-zinc-400'}`}>
                     <div className="flex gap-4">
                         <p>Copyright © SonarAura</p>
-                        <Link href="#" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Legal</Link>
-                        <Link href="#" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Privacy</Link>
-                        <Link href="#" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Cookie</Link>
+                        <Link href="/legal" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Legal</Link>
+                        <Link href="/privacy" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Privacy</Link>
+                        <Link href="/cookies" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Cookie</Link>
                     </div>
                     <div className={`flex gap-8 ${isDark ? 'text-white/40' : 'text-black opacity-40'}`}>
                         <span>Instagram</span>

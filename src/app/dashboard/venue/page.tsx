@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Search, ChevronDown, Sliders, Music, Sparkles as LucideSparkles, Play } from 'lucide-react';
 import TrackRow from '@/components/dashboard/TrackRow';
 import { getVenueTracks_Action } from '@/app/actions/venue';
+import { logSearchQuery_Action } from '@/app/actions/elite-analytics';
 import { ScheduleManager } from '@/components/feature/venue/ScheduleManager';
 import { SmartFlowProvider, useSmartFlow } from '@/context/SmartFlowContext';
 import { usePlayer } from '@/context/PlayerContext';
@@ -57,6 +58,7 @@ function VenueDashboardContent() {
         bpm: [number, number]
     ) => {
         setLoading(true);
+        const startTime = Date.now();
         try {
             let combinedMoods = [...vibes, ...genres, ...venues];
             
@@ -70,6 +72,16 @@ function VenueDashboardContent() {
                 bpmRange: activeRule ? undefined : bpm, 
                 moods: combinedMoods.length > 0 ? combinedMoods : undefined
             });
+
+            // Log search for analytics (Aura Tailor & Infrastructure ROI)
+            if (searchQuery || combinedMoods.length > 0) {
+                logSearchQuery_Action(
+                    searchQuery, 
+                    { venues, vibes, genres, bpm, rule_active: !!activeRule }, 
+                    data.length, 
+                    Date.now() - startTime
+                );
+            }
 
             setTracks(data.map(t => ({
                 id: t.id,

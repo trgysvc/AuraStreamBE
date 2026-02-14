@@ -82,7 +82,7 @@ export default function DashboardHeader() {
                     {/* AI Link with Badge */}
                     <div className="flex items-center gap-2 cursor-default group">
                         <span className="text-[13px] font-bold text-zinc-500 group-hover:text-white transition-colors">AI</span>
-                        <span className="bg-[#1D9BF0] text-white text-[9px] font-black px-1.5 py-0.5 rounded italic uppercase leading-none">Soon</span>
+                        <span className="bg-indigo-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded italic uppercase leading-none">Soon</span>
                     </div>
 
                     {/* Music on Request (Active) */}

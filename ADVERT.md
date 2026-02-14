@@ -51,3 +51,42 @@ Bu dosya, Sonaraura'nın pazarlama stratejisi ve global reklam kampanyaları iç
 | Digital Watermarking | ❌ Yok (Sadece ID3) | ✅ Sinyal Seviyesinde (LSB v1) |
 | Metadata Extraction | ❌ Manuel | ✅ Otonom Bulk Ingest (BPM, Key, Cover) |
 | Special Production | ❌ Yok | ✅ Aura Tailor (Music on Request) Hub |
+
+
+
+### 1. Otonom Biyoritim Eğitimi (AI Optimization)                                                                      
+                                                                                                                        
+ - İşimize Yarayan Veri: "Hangi saatte hangi parça atlanıyor (skip rate)?"                                              
+ - Uygulama: Eğer bir restoran öğleden sonra saat 16:00'da sürekli "Chill" parçaları geçip daha "Deep House" tınılarını 
+ dinliyorsa, Aura AI bunu öğrenir. Bir sonraki hafta o mekanın Smart Flow takvimini sormadan günceller.                 
+ - Sonuç: Kullanıcıya "Sizin yerinize düşünen bir sistem" vaadini teknik olarak gerçekleştirmiş oluruz.                 
+                                                                                                                        
+ ### 2. Bölgesel Altyapı Yatırımı (Infrastructure ROI)                                                                  
+                                                                                                                        
+ - İşimize Yarayan Veri: "Hangi coğrafi bölgede arama ve yükleme gecikmesi (latency) artıyor?"                          
+ - Uygulama: Veriler bize Berlin'deki mekanların yavaşlama yaşadığını söylüyorsa, hemen o bölgeye yeni bir Edge Worker  
+ veya S3 kopyası (replication) kurarız.                                                                                 
+ - Sonuç: Veriyi "Nereye yatırım yapmalıyım?" sorusuna yanıt olarak kullanırız; körleme büyüme yerine veri odaklı       
+ genişleriz.                                                                                                            
+                                                                                                                        
+ ### 3. Aura Tailor Satış Dönüşümü (Revenue Intelligence)                                                               
+                                                                                                                        
+ - İşimize Yarayan Veri: "Müşteri kütüphanede en çok hangi taksonomi etiketini arıyor ama bulamıyor?"                   
+ - Uygulama: Eğer admin panelinde "Dark Cinematic" etiketinin çok arandığını ama çalma oranının düşük olduğunu          
+ görürsek, bu bir üretim boşluğudur (gap). Hemen Aura Tailor prodüksiyon birimini bu tarzda parçalar üretmeye           
+ yönlendiririz.                                                                                                         
+ - Sonuç: Kütüphane stokumuzu "varsayımlar" üzerine değil, "gerçek pazar talebi" üzerine inşa ederiz.                   
+                                                                                                                        
+ ### 4. Müşteri Kaybını Önleme (Churn Prediction)                                                                       
+                                                                                                                        
+ - İşimize Yarayan Veri: "Oturum süresi (session duration) azalıyor mu?"                                                
+ - Uygulama: Bir müşterinin Player'ı kullanma süresi son 3 hafta içinde %50 düştüyse, sistem bunu "Riskli Müşteri"      
+ olarak işaretler. Satış ekibine veya otomasyona "Ona yeni kış kürasyonumuzu hatırlat" tetikleyicisi gönderilir.        
+ - Sonuç: Müşteri daha gitmeyi düşünmeden biz ona değer katarak geri kazanırız.                                         
+                                                                                                                        
+ ### 5. A/B Testleri ve UI Evrimi (Architectural Integrity)                                                             
+                                                                                                                        
+ - İşimize Yarayan Veri: "Hangi butonlara daha çok tıklanıyor, hangileri görmezden geliniyor?"                          
+ - Uygulama: Menüdeki "Sound Effects" butonu hiç kullanılmıyorsa, onu kaldırıp yerine "Aura AI Suggester" gibi daha     
+ verimli bir modül koyarız.                                                                                             
+ - Sonuç: Arayüzü "güzel göründüğü için" değil, "en hızlı çözümü sunduğu için" evriltiriz.                 

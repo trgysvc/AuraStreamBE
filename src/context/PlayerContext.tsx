@@ -4,6 +4,8 @@ import React, { createContext, useContext, useState, useRef, useEffect, useCallb
 import { EnergyCurve } from '@/lib/logic/EnergyCurve';
 import { OfflineManager } from '@/lib/logic/OfflineManager';
 import { createClient } from '@/lib/db/client';
+import { logPlaybackEvent_Action } from '@/app/actions/playback';
+import { logUIInteraction_Action } from '@/app/actions/elite-analytics';
 
 interface Track {
     id: string;
@@ -104,7 +106,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         }
     }, []);
 
-    // Fetch User Data
+    // Fetch User Data & Heartbeat (Feature 4: Churn Prediction)
     useEffect(() => {
         const fetchUserData = async () => {
             const supabase = createClient();
@@ -115,6 +117,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                     setTier(profile.subscription_tier as Tier);
                     setRole(profile.role);
                 }
+                
+                // Log Heartbeat for Churn Prediction
+                await supabase.from('profiles').update({ updated_at: new Date().toISOString() }).eq('id', session.user.id);
             }
         };
         fetchUserData();
@@ -138,6 +143,19 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
     const playTrack = async (track: Track, list?: Track[]) => {
         if (!track || !audioRef.current) return;
+        
+        // Log telemetry for the PREVIOUS track before switching
+        if (currentTrack && currentTrack.id !== track.id) {
+            const durationPlayed = Math.floor(audioRef.current.currentTime);
+            logPlaybackEvent_Action({
+                trackId: currentTrack.id,
+                durationListened: durationPlayed,
+                skipped: durationPlayed < (audioRef.current.duration * 0.8), // Considered skipped if < 80%
+                tuningUsed: tuning,
+                venueId: 'default-venue' // In production, this comes from venue context
+            });
+        }
+
         if (list) setTrackList(list);
 
         // If clicking current track, toggle it
@@ -248,6 +266,10 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             alert('Tuning features require Pro tier.');
             return;
         }
+        
+        // Feature 5: UI Evolution - Log manual tuning switch
+        logUIInteraction_Action('tuning_selector', 'manual_switch', { tuning: newTuning });
+
         setIsAutoTuning(false);
         applyTuning(newTuning);
     };

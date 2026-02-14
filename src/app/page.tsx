@@ -94,15 +94,6 @@ export default async function LandingPage() {
                             Search
                         </button>
                     </div>
-
-                    <div className="pt-6">
-                        <p className="text-sm text-gray-300 mb-4 font-medium uppercase tracking-wider">Trusted by</p>
-                        <div className="flex justify-center gap-8 opacity-70 grayscale">
-                            <div className="h-8 w-24 bg-white/20 rounded"></div>
-                            <div className="h-8 w-24 bg-white/20 rounded"></div>
-                            <div className="h-8 w-24 bg-white/20 rounded"></div>
-                        </div>
-                    </div>
                 </div>
             </section>
 
