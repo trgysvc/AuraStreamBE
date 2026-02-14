@@ -10,7 +10,9 @@ import {
     UploadCloud,
     Music as MusicIcon,
     DollarSign,
-    Save
+    Save,
+    FileText,
+    ExternalLink
 } from 'lucide-react';
 import { updateRequestStatus_Action } from '@/app/actions/admin-requests';
 
@@ -121,7 +123,40 @@ export function RequestActionCard({ req }: { req: any }) {
                             </a>
                         </SimpleTooltip>
                     )}
+
+                    {req.specs?.project_soul_pdf && (
+                        <SimpleTooltip text="Read Project Story / Soul">
+                            <a 
+                                href={req.specs.project_soul_pdf} 
+                                target="_blank" 
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:bg-emerald-500/20 transition-all"
+                            >
+                                Project Soul PDF <FileText size={12} />
+                            </a>
+                        </SimpleTooltip>
+                    )}
                 </div>
+
+                {/* Taxonomy Summary */}
+                {(req.specs?.themes?.length > 0 || req.specs?.characters?.length > 0 || req.specs?.vibes?.length > 0 || req.specs?.venue_tags?.length > 0) && (
+                    <div className="space-y-3 pt-6 border-t border-white/5">
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Selected Taxonomy</p>
+                        <div className="flex flex-wrap gap-2">
+                            {req.specs?.themes?.map((t: string) => (
+                                <span key={t} className="px-2 py-1 bg-blue-500/10 text-blue-400 rounded-md text-[8px] font-black uppercase border border-blue-500/20">{t}</span>
+                            ))}
+                            {req.specs?.characters?.map((t: string) => (
+                                <span key={t} className="px-2 py-1 bg-purple-500/10 text-purple-400 rounded-md text-[8px] font-black uppercase border border-purple-500/20">{t}</span>
+                            ))}
+                            {req.specs?.vibes?.map((t: string) => (
+                                <span key={t} className="px-2 py-1 bg-pink-500/10 text-pink-400 rounded-md text-[8px] font-black uppercase border border-pink-500/20">#{t}</span>
+                            ))}
+                            {req.specs?.venue_tags?.map((t: string) => (
+                                <span key={t} className="px-2 py-1 bg-green-500/10 text-green-400 rounded-md text-[8px] font-black uppercase border border-green-500/20">{t}</span>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* Admin Notes Section */}
                 <div className="space-y-3 pt-6 border-t border-white/5">

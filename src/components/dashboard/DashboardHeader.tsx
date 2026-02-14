@@ -50,14 +50,8 @@ export default function DashboardHeader() {
         router.refresh();
     };
 
-    const navItems = [
-        { label: 'Venue', href: '/dashboard/venue' },
-        { label: 'Music', href: '/dashboard/music' },
-        { label: 'Sound effects', href: '/dashboard/sfx' },
-    ];
-
     return (
-        <header className="h-16 border-b border-white/5 bg-black flex items-center justify-between px-8 sticky top-0 z-50">
+        <header className="h-16 border-b border-white/5 bg-black flex items-center justify-between px-8 sticky top-0 z-[100]">
             {/* Left: Logo & Nav */}
             <div className="flex items-center gap-12">
                 <Link href="/" className="flex items-center gap-2 group">
@@ -67,16 +61,23 @@ export default function DashboardHeader() {
                 </Link>
 
                 <nav className="hidden lg:flex items-center gap-8">
-                    {navItems.map((item) => (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            className={`text-[13px] font-bold transition-colors ${pathname === item.href ? 'text-white' : 'text-zinc-500 hover:text-white'
-                                }`}
-                        >
-                            {item.label}
-                        </Link>
-                    ))}
+                    <Link
+                        href="/dashboard/venue"
+                        className={`text-[13px] font-bold transition-colors ${pathname === '/dashboard/venue' ? 'text-white' : 'text-zinc-500 hover:text-white'
+                            }`}
+                    >
+                        Venue
+                    </Link>
+
+                    {/* Music */}
+                    <div className="flex items-center gap-2 cursor-default group">
+                        <span className="text-[13px] font-bold text-zinc-500 group-hover:text-white transition-colors">Music</span>
+                    </div>
+
+                    {/* Sound Effects */}
+                    <div className="flex items-center gap-2 cursor-default group">
+                        <span className="text-[13px] font-bold text-zinc-500 group-hover:text-white transition-colors">Sound effects</span>
+                    </div>
 
                     {/* AI Link with Badge */}
                     <div className="flex items-center gap-2 cursor-default group">

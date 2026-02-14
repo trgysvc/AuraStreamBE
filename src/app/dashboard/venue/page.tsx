@@ -114,7 +114,15 @@ function VenueDashboardContent() {
         { title: "Championships", tracks: "35 tracks", color: "bg-[#FFCC44]", image: "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=800" },
         { title: "Sports & Action", tracks: "8 playlists", color: "bg-[#9966FF]", image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=800" },
         { title: "Valentine's Day", tracks: "35 tracks", color: "bg-[#FF99CC]", image: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800" },
-        { title: "Anti-Valentine's", tracks: "35 tracks", color: "bg-[#4466FF]", image: "https://images.unsplash.com/photo-1501901664533-51633cfbcab4?q=80&w=800" }
+        { title: "Anti-Valentine's", tracks: "35 tracks", color: "bg-[#4466FF]", image: "https://images.unsplash.com/photo-1501901664533-51633cfbcab4?q=80&w=800" },
+        { title: "Morning Coffee", tracks: "Aura Chill", color: "bg-[#D2B48C]", image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=800" },
+        { title: "Deep Focus", tracks: "Workspace", color: "bg-[#2F4F4F]", image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=800" },
+        { title: "Late Night Jazz", tracks: "Lounge", color: "bg-[#4B0082]", image: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=800" },
+        { title: "Golden Hour", tracks: "Sunset", color: "bg-[#FF8C00]", image: "https://images.unsplash.com/photo-1470252649358-9c9e6c739946?q=80&w=800" },
+        { title: "Techno Bunker", tracks: "Underground", color: "bg-[#000000]", image: "https://images.unsplash.com/photo-1574433232643-49f0f6cc0d00?q=80&w=800" },
+        { title: "Aura Classics", tracks: "Legacy", color: "bg-[#DAA520]", image: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=800" },
+        { title: "Global Beats", tracks: "World", color: "bg-[#228B22]", image: "https://images.unsplash.com/photo-1526218626217-dc65a29bb444?q=80&w=800" },
+        { title: "Cinematic Vibe", tracks: "Storytelling", color: "bg-[#800000]", image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=800" }
     ];
 
     const vibes = [
@@ -125,7 +133,15 @@ function VenueDashboardContent() {
         { title: 'Happy', image: 'https://images.unsplash.com/photo-1500835595351-263d8137b6a9?q=80&w=800', color: 'bg-yellow-500' },
         { title: 'Romantic', image: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800', color: 'bg-pink-500' },
         { title: 'Relaxing', image: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?q=80&w=800', color: 'bg-indigo-500' },
-        { title: 'Suspense', image: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=800', color: 'bg-zinc-800' }
+        { title: 'Suspense', image: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=800', color: 'bg-zinc-800' },
+        { title: 'Euphoric', image: 'https://images.unsplash.com/photo-1493225255756-d9584f8606e9?q=80&w=800', color: 'bg-orange-500' },
+        { title: 'Melancholic', image: 'https://images.unsplash.com/photo-1494232410401-ad00d5433cfa?q=80&w=800', color: 'bg-blue-900' },
+        { title: 'Mysterious', image: 'https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?q=80&w=800', color: 'bg-violet-950' },
+        { title: 'Peaceful', image: 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=800', color: 'bg-emerald-500' },
+        { title: 'Workout', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800', color: 'bg-orange-600' },
+        { title: 'Smooth', image: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=800', color: 'bg-amber-500' },
+        { title: 'Dark', image: 'https://images.unsplash.com/photo-1514525253344-f856335d7d67?q=80&w=800', color: 'bg-black' },
+        { title: 'Quirky', image: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=800', color: 'bg-lime-500' }
     ];
 
     const VENUE_SECTORS = [
@@ -171,7 +187,7 @@ function VenueDashboardContent() {
                 </div>
 
                 {activeSubTab !== 'flow' && (
-                    <div className="flex items-stretch bg-[#1E1E22] rounded-md overflow-visible relative z-[100] h-14 border border-white/5 shadow-2xl animate-in fade-in duration-500">
+                    <div className="flex items-stretch bg-[#1E1E22] rounded-md overflow-visible relative z-30 h-14 border border-white/5 shadow-2xl animate-in fade-in duration-500">
                         <div className="relative h-full flex items-center border-r border-white/5">
                             <button
                                 type="button"
@@ -183,8 +199,8 @@ function VenueDashboardContent() {
                             </button>
                             {isSearchDropdownOpen && (
                                 <>
-                                    <div className="fixed inset-0 z-[110]" onClick={() => setIsSearchDropdownOpen(false)} />
-                                    <div className="absolute top-full left-0 mt-2 w-56 bg-[#1E1E22] border border-white/10 rounded-xl shadow-2xl z-[120] py-2 overflow-hidden">
+                                    <div className="fixed inset-0 z-40" onClick={() => setIsSearchDropdownOpen(false)} />
+                                    <div className="absolute top-full left-0 mt-2 w-56 bg-[#1E1E22] border border-white/10 rounded-xl shadow-2xl z-50 py-2 overflow-hidden">
                                         {['Music', 'Sound Effects'].map((option) => (
                                             <button
                                                 key={option}
