@@ -10,6 +10,11 @@ export interface VenueTrack {
     bpm: number;
     duration: number;
     genre: string;
+    sub_genres: string[];
+    character_tags: string[];
+    theme_tags: string[];
+    venue_tags: string[];
+    vocal_type?: string;
     coverImage?: string;
     lyrics?: string;
     lyrics_synced?: any;
@@ -36,6 +41,11 @@ export async function getVenueTracks_Action(options?: {
             bpm,
             duration_sec,
             genre,
+            sub_genres,
+            character_tags,
+            theme_tags,
+            venue_tags,
+            vocal_type,
             mood_tags,
             lyrics,
             lyrics_synced,
@@ -116,6 +126,11 @@ export async function getVenueTracks_Action(options?: {
             bpm: track.bpm || 120,
             duration: track.duration_sec || 0,
             genre: track.genre || 'Music',
+            sub_genres: track.sub_genres || [],
+            character_tags: track.character_tags || [],
+            theme_tags: track.theme_tags || [],
+            venue_tags: track.venue_tags || [],
+            vocal_type: track.vocal_type || undefined,
             coverImage: track.cover_image_url || undefined,
             lyrics: track.lyrics || undefined,
             lyrics_synced: track.lyrics_synced || undefined,

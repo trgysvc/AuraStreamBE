@@ -62,7 +62,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [tier, setTier] = useState<Tier>('free');
     const [role, setRole] = useState<string | null>(null);
     const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
-    
+
     // Player settings
     const [isMuted, setIsMuted] = useState(false);
     const [volume, setVolumeState] = useState(80);
@@ -117,7 +117,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                     setTier(profile.subscription_tier as Tier);
                     setRole(profile.role);
                 }
-                
+
                 // Log Heartbeat for Churn Prediction
                 await supabase.from('profiles').update({ updated_at: new Date().toISOString() }).eq('id', session.user.id);
             }
@@ -127,7 +127,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
     const togglePlay = async () => {
         if (!audioRef.current || !currentTrack) return;
-        
+
         if (audioContextRef.current?.state === 'suspended') {
             await audioContextRef.current.resume();
         }
@@ -143,7 +143,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
     const playTrack = async (track: Track, list?: Track[]) => {
         if (!track || !audioRef.current) return;
-        
+
         // Log telemetry for the PREVIOUS track before switching
         if (currentTrack && currentTrack.id !== track.id) {
             const durationPlayed = Math.floor(audioRef.current.currentTime);
@@ -152,7 +152,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                 durationListened: durationPlayed,
                 skipped: durationPlayed < (audioRef.current.duration * 0.8), // Considered skipped if < 80%
                 tuningUsed: tuning,
-                venueId: 'default-venue' // In production, this comes from venue context
+                venueId: '00000000-0000-0000-0000-000000000000' // Placeholder UUID for development
             });
         }
 
@@ -167,8 +167,10 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         const targetTuning = isAutoTuning ? EnergyCurve.getCurrentTuning() : tuning;
         let playUrl = track.availableTunings?.[targetTuning] || track.src;
 
+
         if (!playUrl) {
-            playUrl = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';
+            console.error("No valid source found for track:", track.title);
+            return;
         }
 
         try {
@@ -177,7 +179,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             }
 
             audioRef.current.src = playUrl;
-            
+
             // Apply DSP (Simplified for reliability)
             if (!track.availableTunings?.[targetTuning]) {
                 if (targetTuning === '432hz') audioRef.current.playbackRate = 0.9818;
@@ -189,7 +191,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
             audioRef.current.load();
             await audioRef.current.play();
-            
+
             setIsPlaying(true);
             setCurrentTrack(track);
 
@@ -250,10 +252,10 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         if (nextSrc && nextSrc !== audioRef.current.src) {
             const savedTime = audioRef.current.currentTime;
             audioRef.current.src = nextSrc;
-            audioRef.current.playbackRate = 1.0; 
+            audioRef.current.playbackRate = 1.0;
             audioRef.current.load();
             audioRef.current.currentTime = savedTime;
-            if (isPlaying) audioRef.current.play().catch(() => {});
+            if (isPlaying) audioRef.current.play().catch(() => { });
         } else {
             if (newTuning === '432hz') audioRef.current.playbackRate = 0.9818;
             else if (newTuning === '528hz') audioRef.current.playbackRate = 1.05;
@@ -266,7 +268,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             alert('Tuning features require Pro tier.');
             return;
         }
-        
+
         // Feature 5: UI Evolution - Log manual tuning switch
         logUIInteraction_Action('tuning_selector', 'manual_switch', { tuning: newTuning });
 
@@ -295,8 +297,8 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         <PlayerContext.Provider value={{
             currentTrack, isPlaying, duration, currentTime, tuning, isAutoTuning, tier, role,
             analyser, isMuted, volume, isShuffle, isRepeat,
-            playTrack, togglePlay, seek: (t) => { if(audioRef.current) audioRef.current.currentTime = t; }, 
-            setTuning, setAutoTuning, setMuted, setVolume, setShuffle: setIsShuffle, setRepeat: setIsRepeat, 
+            playTrack, togglePlay, seek: (t) => { if (audioRef.current) audioRef.current.currentTime = t; },
+            setTuning, setAutoTuning, setMuted, setVolume, setShuffle: setIsShuffle, setRepeat: setIsRepeat,
             playNext, playPrevious, stop
         }}>
             {children}

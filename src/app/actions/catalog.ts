@@ -12,12 +12,12 @@ export async function updateTrackMetadata_Action(trackId: string, data: {
     bpm?: number;
     key?: string;
     genre?: string;
+    sub_genres?: string[];
     mood_tags?: string[];
-    theme?: string[];
-    character?: string[];
-    vibe_tags?: string[];
+    theme_tags?: string[];
+    character_tags?: string[];
     venue_tags?: string[];
-    sfx_tags?: string[];
+    vocal_type?: string;
     is_instrumental?: boolean;
     popularity_score?: number;
     lyrics?: string;

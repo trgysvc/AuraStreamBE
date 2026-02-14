@@ -1,4 +1,5 @@
 
+console.log('Script init started...');
 import { S3Client, GetObjectCommand, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
@@ -43,14 +44,22 @@ async function processAllTracks() {
         const { data: files } = await supabase.from('track_files').select('s3_key, file_type').eq('track_id', track.id).eq('file_type', 'raw').limit(1);
         if (!files?.length) continue;
 
+
         const s3Key = files[0].s3_key;
+
+        // SKIP if already processed
+        if (s3Key.startsWith('processed/')) {
+            console.log(` [Skip] Already processed: ${track.title}`);
+            continue;
+        }
+
         const tempPath = path.join(__dirname, `tmp_${track.id}${path.extname(s3Key)}`);
 
         try {
             // 1. Download from S3 (Raw)
             const response = await s3Client.send(new GetObjectCommand({ Bucket: env.AWS_S3_BUCKET_RAW, Key: s3Key }));
             const writer = fs.createWriteStream(tempPath);
-            
+
             // Wait for pipe to complete
             await new Promise((res, rej) => {
                 response.Body.pipe(writer);
@@ -69,10 +78,10 @@ async function processAllTracks() {
             // 3. Upload Watermarked File to S3
             const processedKey = `processed/${track.id}/master.wav`;
             console.log(` Uploading Watermarked Master...`);
-            
+
             // Use Buffer for smaller files to avoid streaming header issues in some environments
             const fileBuffer = fs.readFileSync(tempPath);
-            
+
             await s3Client.send(new PutObjectCommand({
                 Bucket: env.AWS_S3_BUCKET_PROCESSED || env.AWS_S3_BUCKET_RAW,
                 Key: processedKey,
@@ -96,7 +105,7 @@ async function processAllTracks() {
 
             await supabase.from('track_files').upsert({
                 track_id: track.id,
-                file_type: 'raw', 
+                file_type: 'raw',
                 s3_key: processedKey,
                 tuning: '440hz'
             }, { onConflict: 'track_id,file_type,tuning' });
