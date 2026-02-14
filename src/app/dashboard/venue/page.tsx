@@ -38,7 +38,7 @@ function VenueDashboardContent() {
     const [activeSubTab, setActiveSubTab] = useState<'search' | 'assistant' | 'flow'>('search');
     const [searchType, setSearchType] = useState('Music');
     const [isSearchDropdownOpen, setIsSearchDropdownOpen] = useState(false);
-    const [showFilters, setShowFilters] = useState(false); 
+    const [showFilters, setShowFilters] = useState(false);
     const [query, setQuery] = useState('');
     const [tracks, setTracks] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -51,17 +51,17 @@ function VenueDashboardContent() {
     const [bpmRange, setBpmRange] = useState<[number, number]>([60, 180]);
 
     const performSearch = useCallback(async (
-        searchQuery: string, 
-        venues: string[], 
-        vibes: string[], 
-        genres: string[], 
+        searchQuery: string,
+        venues: string[],
+        vibes: string[],
+        genres: string[],
         bpm: [number, number]
     ) => {
         setLoading(true);
         const startTime = Date.now();
         try {
             let combinedMoods = [...vibes, ...genres, ...venues];
-            
+
             if (activeRule) {
                 if (activeRule.moods) combinedMoods = [...new Set([...combinedMoods, ...activeRule.moods])];
                 if (activeRule.genres) combinedMoods = [...new Set([...combinedMoods, ...activeRule.genres])];
@@ -69,16 +69,16 @@ function VenueDashboardContent() {
 
             const data = await getVenueTracks_Action({
                 query: searchQuery,
-                bpmRange: activeRule ? undefined : bpm, 
+                bpmRange: activeRule ? undefined : bpm,
                 moods: combinedMoods.length > 0 ? combinedMoods : undefined
             });
 
             // Log search for analytics (Aura Tailor & Infrastructure ROI)
             if (searchQuery || combinedMoods.length > 0) {
                 logSearchQuery_Action(
-                    searchQuery, 
-                    { venues, vibes, genres, bpm, rule_active: !!activeRule }, 
-                    data.length, 
+                    searchQuery,
+                    { venues, vibes, genres, bpm, rule_active: !!activeRule },
+                    data.length,
                     Date.now() - startTime
                 );
             }
@@ -92,7 +92,8 @@ function VenueDashboardContent() {
                 tags: t.tags?.length ? t.tags : [t.genre || "Music", "General"],
                 image: t.coverImage,
                 lyrics: t.lyrics, // Correctly pass lyrics to the frontend state
-                audioSrc: t.src, 
+                audioSrc: t.src,
+                src: t.src, // Required for PlayerContext auto-play next
                 metadata: (t as any).metadata
             })));
 
@@ -177,11 +178,10 @@ function VenueDashboardContent() {
                             <button
                                 key={tab}
                                 onClick={() => { setActiveSubTab(tab as any); setSelectedPlaylist(null); }}
-                                className={`px-8 py-2.5 rounded-full text-[13px] font-black uppercase tracking-widest transition-all shadow-lg border ${
-                                    activeSubTab === tab 
-                                    ? 'bg-white text-black border-white scale-105' 
+                                className={`px-8 py-2.5 rounded-full text-[13px] font-black uppercase tracking-widest transition-all shadow-lg border ${activeSubTab === tab
+                                    ? 'bg-white text-black border-white scale-105'
                                     : 'text-zinc-500 hover:text-white bg-white/5 border-transparent hover:bg-white/10'
-                                }`}
+                                    }`}
                             >
                                 {tab === 'flow' ? 'Smart Flow' : tab}
                             </button>
@@ -273,6 +273,7 @@ function VenueDashboardContent() {
                                     ))}
                                 </div>
                             </div>
+
                             <div className="space-y-4">
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 ml-1">Genre</h3>
                                 <div className="flex flex-wrap gap-1.5">
@@ -337,9 +338,9 @@ function VenueDashboardContent() {
                             <h2 className="text-2xl font-black tracking-tight text-white uppercase italic">Premium Curation</h2>
                             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
                                 {playlists.map((playlist, i) => (
-                                    <PlaylistCard 
-                                        key={i} 
-                                        {...playlist} 
+                                    <PlaylistCard
+                                        key={i}
+                                        {...playlist}
                                         onClick={() => {
                                             setSelectedPlaylist(playlist.title);
                                             setQuery(playlist.title === "Recommended tracks" ? "" : playlist.title);
@@ -357,7 +358,7 @@ function VenueDashboardContent() {
                                     <h2 className="text-5xl font-serif text-[#111111] font-black uppercase tracking-tighter italic leading-tight max-w-md">Music on Request</h2>
                                     <p className="text-[15px] text-zinc-800 max-w-sm font-medium">Elevate your venue with exclusive, custom-tailored sounds. Our AI and expert curators work for your brand.</p>
                                     <div>
-                                        <Link 
+                                        <Link
                                             href="/dashboard/request"
                                             className="inline-block bg-black text-white px-10 py-4 font-bold text-[13px] hover:bg-zinc-900 transition-all active:scale-95 uppercase tracking-[0.2em] shadow-2xl"
                                         >
@@ -366,9 +367,9 @@ function VenueDashboardContent() {
                                     </div>
                                 </div>
                                 <div className="flex-1 relative min-h-[400px] overflow-hidden group/studio">
-                                    <div 
-                                        className="absolute inset-0 bg-cover bg-[center_bottom_30%] transition-transform duration-[2000ms] group-hover/studio:scale-110" 
-                                        style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=1600)' }} 
+                                    <div
+                                        className="absolute inset-0 bg-cover bg-[center_bottom_30%] transition-transform duration-[2000ms] group-hover/studio:scale-110"
+                                        style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=1600)' }}
                                     />
                                     <div className="absolute inset-0 bg-black/20 group-hover/studio:bg-black/10 transition-colors duration-700" />
                                     <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[#D9E1EB]/30" />
@@ -401,8 +402,8 @@ function VenueDashboardContent() {
                             <h2 className="text-2xl font-black tracking-tight text-white uppercase italic text-glow-indigo">Premium Vibes</h2>
                             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
                                 {vibes.map((vibe, i) => (
-                                    <PlaylistCard 
-                                        key={i} 
+                                    <PlaylistCard
+                                        key={i}
                                         title={vibe.title}
                                         tracks="Aura Curation"
                                         color={vibe.color}

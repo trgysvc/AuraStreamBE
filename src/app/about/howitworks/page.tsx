@@ -2,17 +2,17 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { 
-    Search, 
-    Book, 
-    Zap, 
-    Music, 
-    Shield, 
-    Layers, 
-    Cpu, 
-    ChevronRight, 
-    Clock, 
-    Building2, 
+import {
+    Search,
+    Book,
+    Zap,
+    Music,
+    Shield,
+    Layers,
+    Cpu,
+    ChevronRight,
+    Clock,
+    Building2,
     Sparkles,
     CheckCircle2,
     Info,
@@ -22,7 +22,6 @@ import {
     FileText
 } from 'lucide-react';
 import { Footer } from '@/components/layout/Footer';
-import DashboardHeader from '@/components/dashboard/DashboardHeader';
 
 // --- Documentation Content Structure ---
 const HELP_SECTIONS = [
@@ -64,6 +63,7 @@ const HELP_SECTIONS = [
             { id: 'smart-flow', title: 'Mastering Smart Flow', icon: Zap },
             { id: 'scheduling', title: 'Dynamic Scheduling', icon: Clock },
             { id: 'b2b-licensing', title: 'Commercial Licensing', icon: Shield },
+            { id: 'direct-licensing', title: 'Music Licensing Made Easy', icon: FileText },
         ]
     },
     {
@@ -86,21 +86,25 @@ const HELP_SECTIONS = [
     }
 ];
 
-export default function HelpCenterPage() {
-    const [activePage, setActivePage] = useState('vision');
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
+
+function HelpCenterContent() {
+    const searchParams = useSearchParams();
+    const initialPage = searchParams.get('page') || 'vision';
+    const [activePage, setActivePage] = useState(initialPage);
     const [searchQuery, setSearchQuery] = useState('');
 
     return (
-        <div className="min-h-screen bg-black text-white flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
-            <DashboardHeader />
+        <div className="min-h-screen flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
 
             <main className="flex-1 flex flex-col md:flex-row max-w-[1600px] mx-auto w-full">
                 {/* Sidebar Navigation */}
-                <aside className="w-full md:w-80 border-r border-white/5 bg-[#0A0A0A] overflow-y-auto p-8 space-y-10 sticky top-16 h-[calc(100vh-64px)] hidden md:block custom-scrollbar">
+                <aside className="w-full md:w-80 border-r border-white/5 bg-[#0A0A0A] overflow-y-auto p-8 space-y-10 sticky top-20 h-[calc(100vh-80px)] hidden md:block custom-scrollbar">
                     <div className="space-y-2">
                         <div className="relative">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" size={16} />
-                            <input 
+                            <input
                                 type="text"
                                 placeholder="Search help..."
                                 value={searchQuery}
@@ -121,11 +125,10 @@ export default function HelpCenterPage() {
                                         <button
                                             key={page.id}
                                             onClick={() => setActivePage(page.id)}
-                                            className={`w-full text-left px-4 py-3 rounded-xl flex items-center justify-between group transition-all ${
-                                                activePage === page.id 
-                                                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' 
-                                                    : 'text-zinc-500 hover:text-zinc-200 hover:bg-white/5'
-                                            }`}
+                                            className={`w-full text-left px-4 py-3 rounded-xl flex items-center justify-between group transition-all ${activePage === page.id
+                                                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20'
+                                                : 'text-zinc-500 hover:text-zinc-200 hover:bg-white/5'
+                                                }`}
                                         >
                                             <div className="flex items-center gap-3">
                                                 <page.icon size={16} className={activePage === page.id ? 'text-white' : 'text-zinc-600 group-hover:text-indigo-400'} />
@@ -153,6 +156,14 @@ export default function HelpCenterPage() {
     );
 }
 
+export default function HelpCenterPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-black text-white flex items-center justify-center">Loading...</div>}>
+            <HelpCenterContent />
+        </Suspense>
+    );
+}
+
 function renderContent(id: string) {
     switch (id) {
         case 'frequency-eng':
@@ -162,7 +173,7 @@ function renderContent(id: string) {
                         <div className="h-16 w-16 bg-indigo-600/10 rounded-2xl flex items-center justify-center text-indigo-500">
                             <Zap size={32} />
                         </div>
-                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Molecular <br/> Sound</h1>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Molecular <br /> Sound</h1>
                         <p className="text-xl text-zinc-500 font-medium">Frequency engineering that bypasses traditional streaming limits.</p>
                     </header>
 
@@ -197,7 +208,7 @@ function renderContent(id: string) {
                         <div className="h-16 w-16 bg-pink-600/10 rounded-2xl flex items-center justify-center text-pink-500">
                             <Music size={32} />
                         </div>
-                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Aura <br/> Karaoke</h1>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Aura <br /> Karaoke</h1>
                         <p className="text-xl text-zinc-500 font-medium">Word-level precision for a truly immersive lyrical experience.</p>
                     </header>
 
@@ -236,7 +247,7 @@ function renderContent(id: string) {
                         <div className="h-16 w-16 bg-blue-600/10 rounded-2xl flex items-center justify-center text-blue-500">
                             <CloudLightning size={32} />
                         </div>
-                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Atmospheric <br/> Zeka</h1>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Atmospheric <br /> Zeka</h1>
                         <p className="text-xl text-zinc-500 font-medium">Your space, synchronized with the outside world.</p>
                     </header>
 
@@ -272,7 +283,7 @@ function renderContent(id: string) {
                         <div className="h-16 w-16 bg-zinc-800 rounded-2xl flex items-center justify-center text-white">
                             <Shield size={32} />
                         </div>
-                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Signal <br/> Protection</h1>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Signal <br /> Protection</h1>
                         <p className="text-xl text-zinc-500 font-medium">Invisible security built into the very fabric of the sound.</p>
                     </header>
 
@@ -306,7 +317,7 @@ function renderContent(id: string) {
                         <div className="h-16 w-16 bg-indigo-600/10 rounded-2xl flex items-center justify-center text-indigo-500">
                             <Zap size={32} />
                         </div>
-                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">The Future of Sound, <br/> Frequency of Intelligence</h1>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">The Future of Sound, <br /> Frequency of Intelligence</h1>
                         <p className="text-xl text-zinc-500 font-medium">Architecture beyond silence and frequency engineering.</p>
                     </header>
 
@@ -355,39 +366,39 @@ function renderContent(id: string) {
                         <div className="h-16 w-16 bg-pink-500/10 rounded-2xl flex items-center justify-center text-pink-500">
                             <Cpu size={32} />
                         </div>
-                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Modern <br/> Architecture</h1>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Modern <br /> Architecture</h1>
                         <p className="text-xl text-zinc-500 font-medium">Built on the bleeding edge for speed, security, and scalability.</p>
                     </header>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <TechCard 
-                            title="Frontend" 
-                            tech="Next.js 14 (App Router)" 
+                        <TechCard
+                            title="Frontend"
+                            tech="Next.js 14 (App Router)"
                             desc="Server Components for instant loading and SEO-optimized dynamic routes."
                         />
-                        <TechCard 
-                            title="Backend" 
-                            tech="Supabase" 
+                        <TechCard
+                            title="Backend"
+                            tech="Supabase"
                             desc="Real-time subscriptions, RLS security policies, and PostgreSQL power."
                         />
-                        <TechCard 
-                            title="Styling" 
-                            tech="Tailwind CSS 4" 
+                        <TechCard
+                            title="Styling"
+                            tech="Tailwind CSS 4"
                             desc="The latest in utility-first CSS for high-performance UI designs."
                         />
-                        <TechCard 
-                            title="AI Layer" 
-                            tech="Google Gemini AI" 
+                        <TechCard
+                            title="AI Layer"
+                            tech="Google Gemini AI"
                             desc="Powering Aura Orchestrator for content analysis and metadata generation."
                         />
-                        <TechCard 
-                            title="State" 
-                            tech="React Context & Hooks" 
+                        <TechCard
+                            title="State"
+                            tech="React Context & Hooks"
                             desc="Lightweight, reactive player state and Smart Flow logic."
                         />
-                        <TechCard 
-                            title="Payments" 
-                            tech="Stripe & Iyzico" 
+                        <TechCard
+                            title="Payments"
+                            tech="Stripe & Iyzico"
                             desc="Global and local payment gateways for secure B2B and B2C transactions."
                         />
                     </div>
@@ -401,7 +412,7 @@ function renderContent(id: string) {
                         <div className="h-16 w-16 bg-green-500/10 rounded-2xl flex items-center justify-center text-green-500">
                             <Zap size={32} />
                         </div>
-                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Smart Flow <br/> Mastery</h1>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Smart Flow <br /> Mastery</h1>
                         <p className="text-xl text-zinc-500 font-medium">Automated energy management for professional venues.</p>
                     </header>
 
@@ -436,26 +447,26 @@ function renderContent(id: string) {
                         <div className="h-16 w-16 bg-orange-500/10 rounded-2xl flex items-center justify-center text-orange-500">
                             <Info size={32} />
                         </div>
-                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">The Sonaraura <br/> Ecosystem</h1>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">The Sonaraura <br /> Ecosystem</h1>
                         <p className="text-xl text-zinc-500 font-medium">A simplified overview of how sound becomes a strategic asset.</p>
                     </header>
 
                     <div className="grid grid-cols-1 gap-12 pt-8">
-                        <FlowItem 
-                            title="1. Production & AI Orchestration" 
-                            desc="Every asset in the library is a product of the Sonaraura Factory. Our AI Architects design the core sonic foundations, which are then refined by specialized production units to ensure absolute brand alignment." 
+                        <FlowItem
+                            title="1. Production & AI Orchestration"
+                            desc="Every asset in the library is a product of the Sonaraura Factory. Our AI Architects design the core sonic foundations, which are then refined by specialized production units to ensure absolute brand alignment."
                         />
-                        <FlowItem 
-                            title="2. Quality Control (QC)" 
-                            desc="Every asset passes through a rigorous QC pipeline. We verify technical standards like LUFS and bitrate, while Aura AI assigns precise taxonomy tags (Mood, Vibe, Theme) for intelligent delivery." 
+                        <FlowItem
+                            title="2. Quality Control (QC)"
+                            desc="Every asset passes through a rigorous QC pipeline. We verify technical standards like LUFS and bitrate, while Aura AI assigns precise taxonomy tags (Mood, Vibe, Theme) for intelligent delivery."
                         />
-                        <FlowItem 
-                            title="3. Smart Curation" 
-                            desc="Approved tracks are intelligently mapped to Premium Vibes—curated collections designed for specific business contexts (e.g., Luxury Boutique, Fine Dining, Gym & CrossFit)." 
+                        <FlowItem
+                            title="3. Smart Curation"
+                            desc="Approved tracks are intelligently mapped to Premium Vibes—curated collections designed for specific business contexts (e.g., Luxury Boutique, Fine Dining, Gym & CrossFit)."
                         />
-                        <FlowItem 
-                            title="4. Intelligent Playback" 
-                            desc="Venues use the Aura Player with Smart Flow enabled. The system automatically shifts the environment based on time, customer volume, and local weather conditions." 
+                        <FlowItem
+                            title="4. Intelligent Playback"
+                            desc="Venues use the Aura Player with Smart Flow enabled. The system automatically shifts the environment based on time, customer volume, and local weather conditions."
                         />
                     </div>
                 </article>
@@ -468,7 +479,7 @@ function renderContent(id: string) {
                         <div className="h-16 w-16 bg-indigo-600/10 rounded-2xl flex items-center justify-center text-indigo-500">
                             <Zap size={32} />
                         </div>
-                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Aura AI <br/> Intelligence</h1>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Aura AI <br /> Intelligence</h1>
                         <p className="text-xl text-zinc-500 font-medium">Powering the next generation of auditory context-awareness.</p>
                     </header>
 
@@ -505,7 +516,7 @@ function renderContent(id: string) {
                         <div className="h-16 w-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500">
                             <Clock size={32} />
                         </div>
-                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Dynamic <br/> Scheduling</h1>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Dynamic <br /> Scheduling</h1>
                         <p className="text-xl text-zinc-500 font-medium">Set it and forget it. Aura handles the transitions.</p>
                     </header>
 
@@ -530,7 +541,7 @@ function renderContent(id: string) {
                         <div className="h-16 w-16 bg-indigo-600/10 rounded-2xl flex items-center justify-center text-indigo-500">
                             <Layout size={32} />
                         </div>
-                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">The Tailor <br/> Workflow</h1>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">The Tailor <br /> Workflow</h1>
                         <p className="text-xl text-zinc-500 font-medium">How custom music production works for high-ticket clients.</p>
                     </header>
 
@@ -568,7 +579,7 @@ function renderContent(id: string) {
                         <div className="h-16 w-16 bg-green-600/10 rounded-2xl flex items-center justify-center text-green-500">
                             <CheckCircle2 size={32} />
                         </div>
-                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Account <br/> Initialization</h1>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Account <br /> Initialization</h1>
                         <p className="text-xl text-zinc-500 font-medium">Getting your credentials synchronized with the ecosystem.</p>
                     </header>
 
@@ -597,7 +608,7 @@ function renderContent(id: string) {
                         <div className="h-16 w-16 bg-zinc-600/10 rounded-2xl flex items-center justify-center text-zinc-400">
                             <Shield size={32} />
                         </div>
-                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Commercial <br/> Licensing</h1>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Commercial <br /> Licensing</h1>
                         <p className="text-xl text-zinc-500 font-medium">Fully cleared audio for high-traffic environments.</p>
                     </header>
 
@@ -615,6 +626,41 @@ function renderContent(id: string) {
                 </article>
             );
 
+        case 'direct-licensing':
+            return (
+                <article className="space-y-10">
+                    <header className="space-y-4">
+                        <div className="h-16 w-16 bg-emerald-600/10 rounded-2xl flex items-center justify-center text-emerald-500">
+                            <FileText size={32} />
+                        </div>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Music Licensing <br /> Made Easy</h1>
+                        <p className="text-xl text-zinc-500 font-medium">A Direct License Model that removes legal risk.</p>
+                    </header>
+
+                    <div className="prose prose-invert max-w-none space-y-8">
+                        <p className="text-zinc-400 leading-relaxed text-lg">
+                            Forget lawsuits, surprise fees, copyright claims, and admin headaches. Our <strong>Direct License Model</strong> means you&apos;re cleared to use our music globally — regardless of media, territory, or type of content, both online and offline.
+                        </p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="p-8 bg-[#111] border border-white/5 rounded-3xl space-y-4">
+                                <h4 className="text-white font-black italic uppercase">100% Owned Rights</h4>
+                                <p className="text-xs text-zinc-500 leading-relaxed">Because we own all the rights to our music, including public performance rights, we can customize our plans to cover all of your soundtracking needs, now and in the future.</p>
+                            </div>
+                            <div className="p-8 bg-[#111] border border-white/5 rounded-3xl space-y-4">
+                                <h4 className="text-white font-black italic uppercase">Admin-Free Zone</h4>
+                                <p className="text-xs text-zinc-500 leading-relaxed">No reporting to PROs (Performance Rights Organizations). No cue sheets. Just plug and play with total peace of mind.</p>
+                            </div>
+                        </div>
+
+                        <div className="p-6 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400 mb-2">Total Coverage</p>
+                            <p className="text-sm text-zinc-300">Whether you are streaming in a lobby, using tracks for a YouTube ad, or broadcasting in a retail chain, a single Sonaraura subscription covers it all.</p>
+                        </div>
+                    </div>
+                </article>
+            );
+
         case 'project-soul':
             return (
                 <article className="space-y-10">
@@ -622,7 +668,7 @@ function renderContent(id: string) {
                         <div className="h-16 w-16 bg-pink-600/10 rounded-2xl flex items-center justify-center text-pink-500">
                             <FileText size={32} />
                         </div>
-                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Project Soul <br/> Concept</h1>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Project Soul <br /> Concept</h1>
                         <p className="text-xl text-zinc-500 font-medium">Capturing the intangible spirit of your brand in a single document.</p>
                     </header>
 
@@ -662,7 +708,7 @@ function renderContent(id: string) {
                         <div className="h-16 w-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-500">
                             <Layout size={32} />
                         </div>
-                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">The Production <br/> Factory</h1>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">The Production <br /> Factory</h1>
                         <p className="text-xl text-zinc-500 font-medium">Ensuring world-class audio consistency across the ecosystem.</p>
                     </header>
 
@@ -696,7 +742,7 @@ function renderContent(id: string) {
                         <div className="h-16 w-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-500">
                             <DollarSign size={32} />
                         </div>
-                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Strategic <br/> Partnerships</h1>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Strategic <br /> Partnerships</h1>
                         <p className="text-xl text-zinc-500 font-medium">Revenue models for our vetted production units.</p>
                     </header>
 

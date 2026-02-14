@@ -44,25 +44,41 @@ SONARAURA goes beyond traditional streaming. It leverages **Frequency Engineerin
 
 ---
 
-## 📂 Project Structure
-
 ```text
 /src
-├── app/
-│   ├── (admin)/         # Admin Factory (Unified Command Center, QC, Hubs)
-│   ├── (auth)/          # Authentication Flow (Google OAuth SSR)
-│   ├── (creator)/       # B2C Store and Personal Library
-│   ├── (venue)/         # B2B Dashboard and Smart Flow Management
-│   ├── account/         # User & Business Intelligence Settings
-│   └── api/             # Backend Webhooks (Stripe, SQS)
-├── components/          # Shared Component Library
-│   ├── dashboard/       # Internal layout (Sidebar, Header, Player)
-│   ├── feature/         # Feature modules (Smart Flow, Licensing, Weather)
-│   └── shared/          # Atomic UI (Waveform, Buttons, Inputs)
-├── context/             # Global State (Player, Smart Flow, Location)
-├── lib/                 # Core logic and service wrappers
-└── types/               # TypeScript Schema & Admin Definitions
+├── app/         # Admin, Creator, Venue dashboards and SSR flows
+├── components/  # Shared Atomic UI & Feature modules
+├── context/     # Global State (Player, Smart Flow, Location)
+├── lib/         # Core logic and service wrappers
+└── types/       # TypeScript Schema & Admin Definitions
 ```
+
+---
+
+## 🛠️ Automation & Scripts
+
+The `scripts/` directory contains various automation tools for data processing, database maintenance, and system synchronization.
+
+### Execution
+Most scripts require environment variables from `.env.local`. Run them via terminal:
+```bash
+node --env-file=.env.local scripts/[filename].mjs
+```
+
+### Script Categories
+- **Data Ingestion:**
+  - `process-tracks.mjs`: Core engine for uploading and extracting metadata from music.
+  - `aura-autotag.mjs`: AI-assisted tagging for genre and mood.
+- **Database & Sync:**
+  - `meili-sync.mjs`: Synchronizes Supabase data with Meilisearch.
+  - `migrate.js` / `run-scheduling-migration.js`: Handles database schema structural changes.
+  - `check-db.js`: Connection and table health diagnostic tool.
+- **Maintenance:**
+  - `db-surgeon.mjs`: Precision cleanup of corrupted or duplicated records.
+  - `fix-cors.mjs`: Automated fix for S3/Storage access permission issues.
+  - `rename-brand.mjs`: Bulk branding updates across the entire codebase.
+- **Analysis:**
+  - `audio_analyzer.py`: Technical signal level analysis (BPM, Frequency).
 
 ---
 

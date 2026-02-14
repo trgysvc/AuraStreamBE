@@ -198,7 +198,7 @@ export default async function LandingPage() {
                             Seamless, high-fidelity, and fully licensed music for your business. Sonaraura Venue doesn&apos;t just play music; it scientifically optimizes your atmosphere with frequency tuning.
                         </p>
                         <div className="flex flex-wrap justify-center md:justify-start gap-6 pt-4">
-                            <Link href="/venue" className="px-10 py-5 bg-black text-white rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-2xl uppercase tracking-wider">
+                            <Link href="/pricing" className="px-10 py-5 bg-black text-white rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-2xl uppercase tracking-wider">
                                 Start for your business
                             </Link>
                             <button className="flex items-center gap-3 font-bold border-b-2 border-black/20 pb-1 hover:border-black transition-all uppercase text-sm tracking-widest">
@@ -314,7 +314,7 @@ export default async function LandingPage() {
                         <p className="text-gray-400 text-sm leading-relaxed">
                             SonarAura provides intelligent background music solutions for venues, creators, and businesses.
                         </p>
-                        <Link 
+                        <Link
                             href="/dashboard/request"
                             className="inline-flex items-center gap-2 font-bold border-b-2 border-black pb-1 group mt-4 text-black"
                         >

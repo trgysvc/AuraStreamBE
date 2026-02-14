@@ -471,6 +471,81 @@ create policy "Users can view their own billing history"
   ));
 
 --------------------------------------------------------------------------------
+-- 11. REFERRALS
+--------------------------------------------------------------------------------
+
+create table public.referrals (
+  id uuid default uuid_generate_v4() primary key,
+  referrer_id uuid references public.profiles(id) on delete set null,
+  friend_name text not null,
+  friend_email text not null,
+  status text default 'pending', -- pending, accepted, rewarded
+  created_at timestamptz default now()
+);
+
+-- RLS: Referrals
+alter table public.referrals enable row level security;
+
+create policy "Users can view their own referrals"
+  on public.referrals for select
+  using ( auth.uid() = referrer_id );
+
+create policy "Users can insert referrals"
+  on public.referrals for insert
+  with check ( auth.uid() = referrer_id );
+
+--------------------------------------------------------------------------------
+-- 12. FEEDBACK SYSTEM
+--------------------------------------------------------------------------------
+
+create type public.feedback_category as enum ('bug', 'feature', 'content', 'billing');
+create type public.feedback_severity as enum ('low', 'medium', 'high', 'critical');
+create type public.feedback_status as enum ('new', 'in_progress', 'resolved', 'ignored');
+
+create table public.feedbacks (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references public.profiles(id) on delete set null,
+  category feedback_category not null,
+  severity feedback_severity default 'low',
+  status feedback_status default 'new',
+  title text,
+  description text,
+  metadata jsonb default '{}'::jsonb,
+  admin_notes text,
+  created_at timestamptz default now(),
+  resolved_at timestamptz
+);
+
+-- RLS: Feedbacks
+alter table public.feedbacks enable row level security;
+
+create policy "Users can insert their own feedbacks"
+  on public.feedbacks for insert
+  with check ( auth.uid() = user_id );
+
+create policy "Users can view their own feedbacks"
+  on public.feedbacks for select
+  using ( auth.uid() = user_id );
+
+create policy "Admins can view all feedbacks"
+  on public.feedbacks for select
+  using ( 
+    exists (
+      select 1 from public.profiles
+      where profiles.id = auth.uid() and profiles.role = 'admin'
+    )
+  );
+
+create policy "Admins can update feedbacks"
+  on public.feedbacks for update
+  using ( 
+    exists (
+      select 1 from public.profiles
+      where profiles.id = auth.uid() and profiles.role = 'admin'
+    )
+  );
+
+--------------------------------------------------------------------------------
 -- INDEXES
 --------------------------------------------------------------------------------
 

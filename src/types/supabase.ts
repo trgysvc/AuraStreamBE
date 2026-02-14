@@ -192,6 +192,91 @@ export type Database = {
           },
         ]
       }
+      feedbacks: {
+        Row: {
+          admin_notes: string | null
+          category: Database["public"]["Enums"]["feedback_category"]
+          created_at: string | null
+          description: string | null
+          id: string
+          metadata: Json | null
+          resolved_at: string | null
+          severity: Database["public"]["Enums"]["feedback_severity"] | null
+          status: Database["public"]["Enums"]["feedback_status"] | null
+          title: string | null
+          user_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          category: Database["public"]["Enums"]["feedback_category"]
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          resolved_at?: string | null
+          severity?: Database["public"]["Enums"]["feedback_severity"] | null
+          status?: Database["public"]["Enums"]["feedback_status"] | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          category?: Database["public"]["Enums"]["feedback_category"]
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          resolved_at?: string | null
+          severity?: Database["public"]["Enums"]["feedback_severity"] | null
+          status?: Database["public"]["Enums"]["feedback_status"] | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedbacks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referrals: {
+        Row: {
+          created_at: string | null
+          friend_email: string
+          friend_name: string
+          id: string
+          referrer_id: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          friend_email: string
+          friend_name: string
+          id?: string
+          referrer_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          friend_email?: string
+          friend_name?: string
+          id?: string
+          referrer_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -642,6 +727,9 @@ export type Database = {
     }
     Enums: {
       delivery_status: "pending" | "packaged" | "delivered" | "failed"
+      feedback_category: "bug" | "feature" | "content" | "billing"
+      feedback_severity: "low" | "medium" | "high" | "critical"
+      feedback_status: "new" | "in_progress" | "resolved" | "ignored"
       file_type:
       | "raw"
       | "stream_aac"

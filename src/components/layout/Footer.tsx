@@ -35,7 +35,7 @@ export function Footer({ variant = 'light' }: FooterProps) {
                         <div className="space-y-6">
                             <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Product</h4>
                             <ul className={`space-y-4 text-sm font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-800'}`}>
-                                <li><Link href="/dashboard/venue" className="hover:text-white transition-opacity">Royalty-free music</Link></li>
+                                <li><Link href="/about/howitworks?page=direct-licensing" className="hover:text-white transition-opacity">Royalty-free music</Link></li>
                                 <li><Link href="/dashboard/venue" className="hover:text-white transition-opacity">Sound effects</Link></li>
                                 <li><Link href="#" className="hover:text-white transition-opacity">AI voiceovers</Link></li>
                                 <li><Link href="/pricing" className="hover:text-white transition-opacity">Pricing</Link></li>

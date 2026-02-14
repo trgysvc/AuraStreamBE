@@ -1,24 +1,25 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
-import { 
-    LayoutDashboard, 
-    UploadCloud, 
-    Headphones, 
-    Library, 
-    Users, 
-    Settings, 
+import {
+    LayoutDashboard,
+    UploadCloud,
+    Headphones,
+    Library,
+    Users,
+    Settings,
     ArrowLeft,
     ShieldCheck,
     Bell,
     Sparkles,
-    Activity
+    Activity,
+    MessageSquare
 } from 'lucide-react';
 import { createClient } from '@/lib/db/server';
 import { redirect } from 'next/navigation';
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
     const supabase = createClient();
-    
+
     // 1. Check Authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
@@ -65,14 +66,15 @@ export default async function AdminLayout({ children }: { children: ReactNode })
                     <NavLink href="/admin/catalog" icon={<Library size={18} />}>Catalog Mgmt</NavLink>
                     <NavLink href="/admin/requests" icon={<Sparkles size={18} />}>Request Hub</NavLink>
                     <NavLink href="/admin/telemetry" icon={<Activity size={18} />}>System Telemetry</NavLink>
-                    
+
                     <div className="pt-8">
                         <p className="px-4 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4">Ecosystem</p>
                         <NavLink href="/admin/users" icon={<Users size={18} />}>User Intelligence</NavLink>
+                        <NavLink href="/admin/feedback" icon={<MessageSquare size={18} />}>Feedback Triage</NavLink>
                         <NavLink href="/admin/settings" icon={<Settings size={18} />}>Global Config</NavLink>
-                        
+
                         <div className="pt-4 mt-4 border-t border-white/5">
-                            <Link 
+                            <Link
                                 href="/dashboard/venue"
                                 className="flex items-center gap-4 px-4 py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-all text-[11px] font-black uppercase tracking-widest"
                             >

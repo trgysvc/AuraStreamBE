@@ -1,16 +1,12 @@
-'use client';
-
+import React from 'react';
 import Link from 'next/link';
-import { Check, X, ChevronDown } from 'lucide-react';
-import { useRef } from 'react';
+import { Check, X, ChevronDown, Menu } from 'lucide-react';
 import { Footer } from '@/components/layout/Footer';
+import { createClient } from '@/lib/db/server';
 
-export default function PricingPage() {
-    const compareRef = useRef<HTMLDivElement>(null);
-
-    const scrollToCompare = () => {
-        compareRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
+export default async function PricingPage() {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
     const plans = [
         {
@@ -79,26 +75,50 @@ export default function PricingPage() {
 
     return (
         <div className="min-h-screen bg-black text-white font-sans selection:bg-black selection:text-white">
-            {/* 1. Header */}
-            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-5 bg-black/90 backdrop-blur-sm border-b border-white/10">
-                <div className="flex items-center gap-8">
-                    <Link href="/" className="flex items-center gap-2 cursor-pointer text-white">
-                        <div className="h-8 w-8 bg-white rounded-full flex items-center justify-center text-black font-bold text-lg leading-none shadow-[0_0_15px_rgba(255,255,255,0.3)]">S</div>
-                        <span className="text-xl font-black italic tracking-widest text-white">SONARAURA</span>
+            {/* Header */}
+            <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 bg-black/90 backdrop-blur-sm transition-all duration-300 border-b border-white/10 h-20">
+                <div className="flex items-center gap-12 h-full">
+                    {/* Logo Area */}
+                    <Link href="/" className="flex items-center gap-2 group leading-none">
+                        <div className="h-8 w-8 bg-white text-black rounded flex items-center justify-center font-bold transition-transform group-hover:scale-110">S</div>
+                        <span className="text-xl font-black italic tracking-widest text-white leading-none">
+                            SONAR<span className="font-light text-zinc-300">AURA</span>
+                        </span>
                     </Link>
-                    <nav className="hidden lg:flex items-center gap-8 text-[11px] font-black uppercase tracking-[0.2em] text-zinc-500">
+
+                    {/* Desktop Navigation */}
+                    <nav className="hidden lg:flex items-center gap-8 text-[15px] font-medium text-gray-300">
                         <Link href="/music" className="hover:text-white transition-colors">Music</Link>
                         <Link href="/sound-effects" className="hover:text-white transition-colors">Sound Effects</Link>
-                        <Link href="/pricing" className="text-white">Pricing</Link>
+                        <Link href="/pricing" className="hover:text-white transition-colors">Pricing</Link>
                         <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
                         <Link href="/enterprise" className="hover:text-white transition-colors">Enterprise</Link>
                     </nav>
                 </div>
-                <div className="flex items-center gap-6">
-                    <Link href="/login" className="hidden sm:block text-[10px] font-black uppercase tracking-[0.2em] hover:text-gray-300 transition-colors text-white">Log in</Link>
-                    <Link href="/signup" className="h-10 px-6 flex items-center justify-center rounded-full bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] hover:bg-gray-200 transition-all active:scale-95 shadow-xl shadow-white/10">
-                        Start free trial
-                    </Link>
+
+                <div className="flex items-center gap-6 h-full">
+                    {!user ? (
+                        <>
+                            <Link href="/login" className="hidden sm:block text-sm font-bold hover:text-gray-300 transition-colors">
+                                Log in
+                            </Link>
+                            <Link href="/signup" className="h-10 px-6 flex items-center justify-center rounded-full bg-white text-black text-sm font-bold hover:bg-gray-200 transition-colors">
+                                Start free trial
+                            </Link>
+                        </>
+                    ) : (
+                        <>
+                            <Link href="/dashboard" className="hidden sm:block text-sm font-bold hover:text-gray-300 transition-colors">
+                                Dashboard
+                            </Link>
+                            <Link href="/account" className="h-10 px-6 flex items-center justify-center rounded-full bg-white text-black text-sm font-bold hover:bg-gray-200 transition-colors">
+                                Account
+                            </Link>
+                        </>
+                    )}
+                    <button className="lg:hidden text-white">
+                        <Menu size={24} />
+                    </button>
                 </div>
             </header>
 
@@ -115,25 +135,23 @@ export default function PricingPage() {
                 <div className="relative z-20 w-full max-w-[1600px] mx-auto text-center mb-20 space-y-4 animate-in fade-in slide-in-from-top-4 duration-1000">
                     <p className="text-[10px] font-black uppercase tracking-[0.5em] text-indigo-400">Scientific Pricing</p>
                     <h1 className="text-5xl md:text-8xl font-black uppercase italic tracking-tighter text-white leading-[0.9]">
-                        Elite Audio <br/> Plans.
+                        Elite Audio <br /> Plans.
                     </h1>
                 </div>
 
                 <div className="relative z-20 w-full max-w-[1600px] mx-auto">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-[1400px] mx-auto items-stretch">
                         {plans.map((plan) => (
-                            <div 
+                            <div
                                 key={plan.name}
-                                className={`relative p-10 rounded-[2.5rem] text-left flex flex-col h-full transition-all duration-700 hover:scale-[1.02] border ${
-                                    plan.highlight 
-                                    ? 'bg-white text-black border-white z-10 shadow-[0_40px_120px_-15px_rgba(255,255,255,0.2)]' 
+                                className={`relative p-10 rounded-[2.5rem] text-left flex flex-col h-full transition-all duration-700 hover:scale-[1.02] border ${plan.highlight
+                                    ? 'bg-white text-black border-white z-10 shadow-[0_40px_120px_-15px_rgba(255,255,255,0.2)]'
                                     : 'bg-zinc-950/60 backdrop-blur-3xl text-white border-white/5 shadow-2xl'
-                                }`}
+                                    }`}
                             >
                                 {plan.badge && (
-                                    <div className={`absolute -top-4 left-10 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] rounded-full shadow-lg ${
-                                        plan.highlight ? 'bg-indigo-600 text-white' : 'bg-white text-black'
-                                    }`}>
+                                    <div className={`absolute -top-4 left-10 px-4 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] rounded-full shadow-lg ${plan.highlight ? 'bg-indigo-600 text-white' : 'bg-white text-black'
+                                        }`}>
                                         {plan.badge}
                                     </div>
                                 )}
@@ -145,7 +163,7 @@ export default function PricingPage() {
                                     <span className="text-7xl font-black tracking-tighter">{plan.price}</span>
                                     {plan.name !== 'Enterprise' && <span className="text-sm font-black uppercase opacity-60 ml-2">/ mo</span>}
                                 </div>
-                                
+
                                 <ul className="space-y-5 mb-14 flex-1">
                                     {plan.features.map((feature) => (
                                         <li key={feature} className="flex items-start gap-4 text-[13px] font-bold leading-snug">
@@ -155,15 +173,14 @@ export default function PricingPage() {
                                     ))}
                                 </ul>
 
-                                <Link 
-                                    href={plan.disabled ? "#" : (plan.name === 'Enterprise' ? '/dashboard/request' : '/signup')} 
-                                    className={`w-full py-5 text-center rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] transition-all ${
-                                        plan.disabled 
-                                        ? 'bg-zinc-900 text-zinc-600 cursor-not-allowed' 
-                                        : (plan.highlight 
-                                            ? 'bg-black text-white hover:bg-indigo-600 shadow-xl' 
+                                <Link
+                                    href={plan.disabled ? "#" : (plan.name === 'Enterprise' ? '/enterprise#contact-section' : '/signup')}
+                                    className={`w-full py-5 text-center rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] transition-all ${plan.disabled
+                                        ? 'bg-zinc-900 text-zinc-600 cursor-not-allowed'
+                                        : (plan.highlight
+                                            ? 'bg-black text-white hover:bg-indigo-600 shadow-xl'
                                             : 'bg-white text-black hover:bg-indigo-500 hover:text-white')
-                                    }`}
+                                        }`}
                                 >
                                     {plan.buttonText}
                                 </Link>
@@ -172,27 +189,27 @@ export default function PricingPage() {
                     </div>
 
                     <div className="mt-20 text-center">
-                        <button 
-                            onClick={scrollToCompare}
+                        <Link
+                            href="#technical-breakdown"
                             className="inline-flex flex-col items-center gap-3 font-black text-[9px] uppercase tracking-[0.5em] text-zinc-500 hover:text-white transition-all group"
                         >
                             Deep Technical Analysis
                             <ChevronDown size={24} className="animate-bounce text-indigo-400 group-hover:text-white transition-colors" />
-                        </button>
+                        </Link>
                     </div>
                 </div>
             </section>
 
             {/* 3. Comparison Section */}
-            <section ref={compareRef} className="py-40 px-6 bg-[#F5F5F0] text-black rounded-t-[4rem]">
+            <section id="technical-breakdown" className="py-40 px-6 bg-[#F5F5F0] text-black rounded-t-[4rem]">
                 <div className="max-w-[1200px] mx-auto">
                     <div className="mb-24 text-center md:text-left space-y-4">
                         <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">Technical Breakdown</p>
                         <h2 className="text-6xl md:text-8xl font-black tracking-tight uppercase italic leading-[0.8]">
-                            Symmetry <br/>of Value.
+                            Symmetry <br />of Value.
                         </h2>
                     </div>
-                    
+
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
