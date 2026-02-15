@@ -12,7 +12,7 @@ import { usePlayer } from '@/context/PlayerContext';
 
 const PlaylistCard = ({ title, tracks, color, image, onClick }: { title: string, tracks: string, color: string, image?: string, onClick?: () => void }) => (
     <div className="group cursor-pointer" onClick={onClick}>
-        <div className="relative aspect-square rounded-sm overflow-hidden mb-2">
+        <div className="relative aspect-square rounded-md overflow-hidden mb-1.5 md:mb-2 border border-white/5">
             {image ? (
                 <div
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
@@ -22,13 +22,13 @@ const PlaylistCard = ({ title, tracks, color, image, onClick }: { title: string,
                 <div className={`absolute inset-0 bg-gradient-to-br ${color} transition-transform duration-500 group-hover:scale-110`} />
             )}
             <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center scale-0 group-hover:scale-100 transition-transform duration-300 border border-white/20">
-                    <Play className="text-white fill-current" size={20} />
+                <div className="w-8 h-8 md:w-10 md:h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center scale-0 group-hover:scale-100 transition-transform duration-300 border border-white/20">
+                    <Play className="text-white fill-current" size={16} />
                 </div>
             </div>
         </div>
-        <h4 className="text-[12px] font-bold text-white truncate group-hover:text-indigo-400 transition-colors tracking-tight">{title}</h4>
-        <p className="text-[10px] text-zinc-500 font-medium">{tracks}</p>
+        <h4 className="text-[10px] md:text-[12px] font-bold text-white truncate group-hover:text-indigo-400 transition-colors tracking-tight">{title}</h4>
+        <p className="text-[8px] md:text-[10px] text-zinc-500 font-medium">{tracks}</p>
     </div>
 );
 
@@ -83,19 +83,26 @@ function VenueDashboardContent() {
                 );
             }
 
-            setTracks(data.map(t => ({
-                id: t.id,
-                title: t.title,
-                artist: t.artist,
-                duration: t.duration ? `${Math.floor(t.duration / 60)}:${(t.duration % 60).toString().padStart(2, '0')}` : "3:00",
-                bpm: t.bpm || 120,
-                tags: t.tags?.length ? t.tags : [t.genre || "Music", "General"],
-                image: t.coverImage,
-                lyrics: t.lyrics, // Correctly pass lyrics to the frontend state
-                audioSrc: t.src,
-                src: t.src, // Required for PlayerContext auto-play next
-                metadata: (t as any).metadata
-            })));
+            setTracks(data.map(t => {
+                const totalSeconds = (t.duration && t.duration > 10000) ? t.duration / 1000 : (t.duration || 0);
+                const displayDuration = totalSeconds > 0 
+                    ? `${Math.floor(totalSeconds / 60)}:${Math.round(totalSeconds % 60).toString().padStart(2, '0')}`
+                    : "0:00";
+
+                return {
+                    id: t.id,
+                    title: t.title,
+                    artist: t.artist,
+                    duration: displayDuration,
+                    bpm: t.bpm || 120,
+                    tags: t.tags?.length ? t.tags : [t.genre || "Music", "General"],
+                    image: t.coverImage,
+                    lyrics: t.lyrics,
+                    audioSrc: t.src,
+                    src: t.src,
+                    metadata: (t as any).metadata
+                };
+            }));
 
         } catch (err) {
             console.error('Search error:', err);
@@ -169,16 +176,16 @@ function VenueDashboardContent() {
     const GENRE_TAGS = ['Ambient', 'Cinematic', 'Electronic', 'Jazz', 'Lounge', 'Pop'];
 
     return (
-        <div className="flex flex-col gap-12 pb-20 max-w-[1600px] mx-auto">
+        <div className="flex flex-col gap-8 md:gap-12 pb-24 md:pb-20 max-w-[1600px] mx-auto">
             {/* 1. Header & Navigation */}
-            <div className="space-y-10">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+            <div className="space-y-6 md:space-y-10">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="flex items-center gap-2 md:gap-3 w-full sm:w-auto">
                         {['search', 'assistant', 'flow'].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => { setActiveSubTab(tab as any); setSelectedPlaylist(null); }}
-                                className={`px-8 py-2.5 rounded-full text-[13px] font-black uppercase tracking-widest transition-all shadow-lg border ${activeSubTab === tab
+                                className={`flex-1 sm:flex-initial px-4 md:px-8 py-2 md:py-2.5 rounded-full text-[10px] md:text-[13px] font-black uppercase tracking-widest transition-all shadow-lg border ${activeSubTab === tab
                                     ? 'bg-white text-black border-white scale-105'
                                     : 'text-zinc-500 hover:text-white bg-white/5 border-transparent hover:bg-white/10'
                                     }`}
@@ -189,9 +196,9 @@ function VenueDashboardContent() {
                     </div>
 
                     {activeRule && (
-                        <div className="px-6 py-2 bg-indigo-600/10 border border-indigo-500/20 rounded-full flex items-center gap-3 animate-pulse">
-                            <div className="h-2 w-2 rounded-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,1)]" />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 italic">
+                        <div className="px-4 md:px-6 py-1.5 md:py-2 bg-indigo-600/10 border border-indigo-500/20 rounded-full flex items-center gap-2 md:gap-3 animate-pulse">
+                            <div className="h-1.5 w-1.5 md:h-2 md:w-2 rounded-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,1)]" />
+                            <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-indigo-400 italic">
                                 Flow Active: {activeRule.name}
                             </span>
                         </div>
@@ -199,25 +206,25 @@ function VenueDashboardContent() {
                 </div>
 
                 {activeSubTab !== 'flow' && (
-                    <div className="flex items-stretch bg-[#1E1E22] rounded-md overflow-visible relative z-30 h-14 border border-white/5 shadow-2xl animate-in fade-in duration-500">
+                    <div className="flex items-stretch bg-[#1E1E22] rounded-xl md:rounded-md overflow-visible relative z-30 h-12 md:h-14 border border-white/5 shadow-2xl animate-in fade-in duration-500">
                         <div className="relative h-full flex items-center border-r border-white/5">
                             <button
                                 type="button"
                                 onClick={() => setIsSearchDropdownOpen(!isSearchDropdownOpen)}
-                                className="px-8 h-full flex items-center gap-3 hover:bg-white/5 transition-colors group min-w-[180px]"
+                                className="px-4 md:px-8 h-full flex items-center gap-2 md:gap-3 hover:bg-white/5 transition-colors group min-w-[120px] md:min-w-[180px]"
                             >
-                                <span className="text-[14px] font-bold text-white">{searchType}</span>
-                                <ChevronDown size={18} className={`text-zinc-500 group-hover:text-white transition-all ${isSearchDropdownOpen ? 'rotate-180' : ''}`} />
+                                <span className="text-[12px] md:text-[14px] font-bold text-white">{searchType}</span>
+                                <ChevronDown size={14} className={`text-zinc-500 group-hover:text-white transition-all ${isSearchDropdownOpen ? 'rotate-180' : ''}`} />
                             </button>
                             {isSearchDropdownOpen && (
                                 <>
                                     <div className="fixed inset-0 z-40" onClick={() => setIsSearchDropdownOpen(false)} />
-                                    <div className="absolute top-full left-0 mt-2 w-56 bg-[#1E1E22] border border-white/10 rounded-xl shadow-2xl z-50 py-2 overflow-hidden">
+                                    <div className="absolute top-full left-0 mt-2 w-48 md:w-56 bg-[#1E1E22] border border-white/10 rounded-xl shadow-2xl z-50 py-1 md:py-2 overflow-hidden">
                                         {['Music', 'Sound Effects'].map((option) => (
                                             <button
                                                 key={option}
                                                 onClick={() => { setSearchType(option); setIsSearchDropdownOpen(false); }}
-                                                className="w-full text-left px-5 py-3 text-[13px] font-bold text-zinc-300 hover:text-white hover:bg-white/5 transition-colors first:rounded-t-md last:rounded-b-md"
+                                                className="w-full text-left px-4 py-2.5 md:px-5 md:py-3 text-[11px] md:text-[13px] font-bold text-zinc-300 hover:text-white hover:bg-white/5 transition-colors first:rounded-t-md last:rounded-b-md"
                                             >
                                                 {option}
                                             </button>
@@ -227,18 +234,18 @@ function VenueDashboardContent() {
                             )}
                         </div>
 
-                        <div className="flex-1 flex items-center px-8 h-full relative">
-                            <Search size={20} className="absolute left-8 text-zinc-600" />
+                        <div className="flex-1 flex items-center px-4 md:px-8 h-full relative">
+                            <Search size={16} className="absolute left-4 md:left-8 text-zinc-600" />
                             <input
                                 type="text"
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
-                                placeholder={activeSubTab === 'assistant' ? "Explain the vibe you want..." : "Search by mood, genre, energy..."}
-                                className="w-full bg-transparent text-white focus:outline-none text-[16px] h-full pl-10 placeholder-zinc-700 font-bold"
+                                placeholder={activeSubTab === 'assistant' ? "Explain the vibe..." : "Search vibes..."}
+                                className="w-full bg-transparent text-white focus:outline-none text-[13px] md:text-[16px] h-full pl-6 md:pl-10 placeholder-zinc-700 font-bold"
                             />
                         </div>
-                        <div className="bg-white/5 text-zinc-600 px-10 flex items-center justify-center opacity-40 border-l border-white/5">
-                            <Music size={24} />
+                        <div className="hidden sm:flex bg-white/5 text-zinc-600 px-6 md:px-10 items-center justify-center opacity-40 border-l border-white/5">
+                            <Music size={20} />
                         </div>
                     </div>
                 )}
@@ -248,10 +255,10 @@ function VenueDashboardContent() {
             {activeSubTab === 'flow' ? (
                 <ScheduleManager />
             ) : (
-                <div className="flex gap-10 items-start">
+                <div className="flex flex-col lg:flex-row gap-8 md:gap-10 items-start">
                     {/* LEFT SIDEBAR: ADVANCED TAXONOMY */}
                     {showFilters && (
-                        <aside className="w-64 space-y-10 animate-in slide-in-from-left duration-500 sticky top-24 pb-20">
+                        <aside className="w-full lg:w-64 space-y-8 md:space-y-10 animate-in slide-in-from-left duration-500 lg:sticky lg:top-24 pb-10">
                             <div className="space-y-6">
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 ml-1">Venue</h3>
                                 {VENUE_SECTORS.map(s => (
@@ -334,9 +341,9 @@ function VenueDashboardContent() {
                         </div>
 
                         {/* 3. Premium Curation Section (8 boxes) */}
-                        <div className="space-y-8 pt-8 border-t border-white/5">
-                            <h2 className="text-2xl font-black tracking-tight text-white uppercase italic">Premium Curation</h2>
-                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+                        <div className="space-y-6 md:space-y-8 pt-8 border-t border-white/5">
+                            <h2 className="text-xl md:text-2xl font-black tracking-tight text-white uppercase italic">Premium Curation</h2>
+                            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 md:gap-4">
                                 {playlists.map((playlist, i) => (
                                     <PlaylistCard
                                         key={i}
@@ -352,21 +359,21 @@ function VenueDashboardContent() {
                         </div>
 
                         {/* 4. Music on Request Promotion Banner */}
-                        <div className="pt-12">
-                            <div className="bg-[#D9E1EB] rounded-[3rem] overflow-hidden flex flex-col md:flex-row items-stretch border border-white/5 group/banner">
-                                <div className="flex-1 p-12 md:p-16 flex flex-col justify-center space-y-6">
-                                    <h2 className="text-5xl font-serif text-[#111111] font-black uppercase tracking-tighter italic leading-tight max-w-md">Music on Request</h2>
-                                    <p className="text-[15px] text-zinc-800 max-w-sm font-medium">Elevate your venue with exclusive, custom-tailored sounds. Our AI and expert curators work for your brand.</p>
+                        <div className="pt-8">
+                            <div className="bg-[#D9E1EB] rounded-3xl md:rounded-[3rem] overflow-hidden flex flex-col md:flex-row items-stretch border border-white/5 group/banner">
+                                <div className="flex-1 p-8 md:p-16 flex flex-col justify-center space-y-4 md:space-y-6">
+                                    <h2 className="text-3xl md:text-5xl font-serif text-[#111111] font-black uppercase tracking-tighter italic leading-tight max-w-md">Music on Request</h2>
+                                    <p className="text-[13px] md:text-[15px] text-zinc-800 max-w-sm font-medium">Elevate your venue with exclusive, custom-tailored sounds. Our AI and expert curators work for your brand.</p>
                                     <div>
                                         <Link
                                             href="/dashboard/request"
-                                            className="inline-block bg-black text-white px-10 py-4 font-bold text-[13px] hover:bg-zinc-900 transition-all active:scale-95 uppercase tracking-[0.2em] shadow-2xl"
+                                            className="inline-block bg-black text-white px-8 py-3 md:px-10 md:py-4 font-bold text-xs md:text-[13px] hover:bg-zinc-900 transition-all active:scale-95 uppercase tracking-[0.2em] shadow-2xl"
                                         >
                                             Get Started
                                         </Link>
                                     </div>
                                 </div>
-                                <div className="flex-1 relative min-h-[400px] overflow-hidden group/studio">
+                                <div className="flex-1 relative min-h-[200px] md:min-h-[400px] overflow-hidden group/studio">
                                     <div
                                         className="absolute inset-0 bg-cover bg-[center_bottom_30%] transition-transform duration-[2000ms] group-hover/studio:scale-110"
                                         style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=1600)' }}
@@ -398,9 +405,9 @@ function VenueDashboardContent() {
                         </div>
 
                         {/* 6. Premium Vibes Section (8 Boxes) */}
-                        <div className="space-y-8 pt-12 border-t border-white/5">
-                            <h2 className="text-2xl font-black tracking-tight text-white uppercase italic text-glow-indigo">Premium Vibes</h2>
-                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+                        <div className="space-y-6 md:space-y-8 pt-12 border-t border-white/5">
+                            <h2 className="text-xl md:text-2xl font-black tracking-tight text-white uppercase italic text-glow-indigo">Premium Vibes</h2>
+                            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 md:gap-4">
                                 {vibes.map((vibe, i) => (
                                     <PlaylistCard
                                         key={i}

@@ -119,6 +119,21 @@ export async function getVenueTracks_Action(options?: {
             }
         }
 
+        // 4. Handle Cover Image Signing
+        let finalCoverImage = track.cover_image_url;
+        if (finalCoverImage && finalCoverImage.includes('amazonaws.com')) {
+            try {
+                // Extract key from URL: https://bucket.s3.region.amazonaws.com/KEY
+                const urlParts = finalCoverImage.split('.com/');
+                if (urlParts.length > 1) {
+                    const s3Key = decodeURIComponent(urlParts[1]);
+                    finalCoverImage = await S3Service.getDownloadUrl(s3Key, process.env.AWS_S3_BUCKET_RAW!);
+                }
+            } catch (e) {
+                console.error("Failed to sign cover image URL", e);
+            }
+        }
+
         return {
             id: track.id,
             title: track.title,
@@ -131,7 +146,7 @@ export async function getVenueTracks_Action(options?: {
             theme_tags: track.theme_tags || [],
             venue_tags: track.venue_tags || [],
             vocal_type: track.vocal_type || undefined,
-            coverImage: track.cover_image_url || undefined,
+            coverImage: finalCoverImage || undefined,
             lyrics: track.lyrics || undefined,
             lyrics_synced: track.lyrics_synced || undefined,
             src: defaultSrc,

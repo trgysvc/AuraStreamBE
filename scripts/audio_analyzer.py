@@ -45,6 +45,7 @@ def analyze_audio(file_path, watermark_uuid=None):
     try:
         # Load audio file
         y, sr = librosa.load(file_path)
+        duration = librosa.get_duration(y=y, sr=sr)
         
         # 1. Extract BPM
         tempo, _ = librosa.beat.beat_track(y=y, sr=sr)
@@ -83,6 +84,7 @@ def analyze_audio(file_path, watermark_uuid=None):
             sf.write(file_path, y, sr)
 
         result = {
+            "duration": round(duration, 2),
             "bpm": int(float(tempo)),
             "key": key,
             "energy": round(energy, 2),

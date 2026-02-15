@@ -57,37 +57,10 @@ SONARAURA goes beyond traditional streaming. It leverages **Frequency Engineerin
 
 ---
 
-## 🛠️ Automation & Scripts
-
-The `scripts/` directory contains various automation tools for data processing, database maintenance, and system synchronization.
-
-### Execution
-Most scripts require environment variables from `.env.local`. Run them via terminal:
-```bash
-node --env-file=.env.local scripts/[filename].mjs
-```
-
-### Script Categories
-- **Data Ingestion:**
-  - `process-tracks.mjs`: Core engine for uploading and extracting metadata from music.
-  - `aura-autotag.mjs`: AI-assisted tagging for genre and mood.
-- **Database & Sync:**
-  - `meili-sync.mjs`: Synchronizes Supabase data with Meilisearch.
-  - `migrate.js` / `run-scheduling-migration.js`: Handles database schema structural changes.
-  - `check-db.js`: Connection and table health diagnostic tool.
-- **Maintenance:**
-  - `db-surgeon.mjs`: Precision cleanup of corrupted or duplicated records.
-  - `fix-cors.mjs`: Automated fix for S3/Storage access permission issues.
-  - `rename-brand.mjs`: Bulk branding updates across the entire codebase.
-- **Analysis:**
-  - `audio_analyzer.py`: Technical signal level analysis (BPM, Frequency).
-
----
-
 ## 📖 Internal Documentation
 
 1.  **[Project Vision](./docs/1_PROJECT_VISION.md):** The "Digital Twin" strategy.
-2.  **[Technical Specs](./docs/2_TECH_SPEC.md):** Database normalization and RLS.
+2.  **[Technical Specs](./docs/2_TECH_SPEC.md):** Database normalization, RLS, and **Automation Scripts Reference**.
 3.  **[Design System](./docs/3_DESIGN_SYSTEM.md):** Sonaraura Premium Dark UI principles.
 4.  **[Progress Tracker](./PROGRESS.md):** Live feature roadmap status.
 5.  **[Ad Copy](./ADVERT.md):** Marketing USPs and technical advantages.

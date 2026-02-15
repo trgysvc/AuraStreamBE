@@ -1,15 +1,29 @@
 import { S3Client, PutBucketCorsCommand } from '@aws-sdk/client-s3';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-// Load env vars manually or assume they are set in the shell when running
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const envPath = path.join(__dirname, '../.env.local');
+
+const env = {};
+if (fs.existsSync(envPath)) {
+    const file = fs.readFileSync(envPath, 'utf-8');
+    file.split('\n').forEach(line => {
+        const [key, ...val] = line.split('=');
+        if (key && val) env[key.trim()] = val.join('=').trim();
+    });
+}
+
 const client = new S3Client({
-    region: process.env.AWS_REGION || 'us-east-1',
+    region: env.AWS_REGION || 'us-east-1',
     credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        accessKeyId: env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
     }
 });
 
-const BUCKET_NAME = process.env.AWS_S3_BUCKET_RAW || 'aurastream-raw-storage-v1';
+const BUCKET_NAME = env.AWS_S3_BUCKET_RAW || 'aurastream-raw-storage-v1';
 
 async function updateCors() {
     console.log(`Updating CORS for bucket: ${BUCKET_NAME}`);
@@ -21,8 +35,14 @@ async function updateCors() {
                 {
                     AllowedHeaders: ['*'],
                     AllowedMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'],
-                    AllowedOrigins: ['*'], // For dev simplicity. In prod, list specific domains.
-                    ExposeHeaders: ['ETag'],
+                    AllowedOrigins: ['*'], 
+                    ExposeHeaders: [
+                        'ETag', 
+                        'Content-Range', 
+                        'Accept-Ranges', 
+                        'Content-Length', 
+                        'Range'
+                    ],
                     MaxAgeSeconds: 3600
                 }
             ]
@@ -31,7 +51,7 @@ async function updateCors() {
 
     try {
         await client.send(command);
-        console.log('✅ CORS configuration updated successfully!');
+        console.log('✅ CORS configuration updated for Safari/Apple standards!');
     } catch (err) {
         console.error('❌ Failed to update CORS:', err);
     }

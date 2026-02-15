@@ -48,6 +48,15 @@ export function CatalogTrackRow({ track }: { track: any }) {
     const [showTagEditor, setShowTagEditor] = useState(false);
     const [showLyricsEditor, setShowLyricsEditor] = useState(false);
     const [genreSearch, setGenreSearch] = useState('');
+
+    const formatDuration = (seconds: number | undefined) => {
+        if (!seconds || isNaN(seconds)) return '--:--';
+        // If the number is huge (e.g. > 10000), it's likely milliseconds
+        const totalSeconds = seconds > 10000 ? seconds / 1000 : seconds;
+        const m = Math.floor(totalSeconds / 60);
+        const s = Math.round(totalSeconds % 60);
+        return `${m}:${s.toString().padStart(2, '0')}`;
+    };
     
     // Core Edit State
     const [editData, setEditData] = useState({
@@ -166,6 +175,16 @@ export function CatalogTrackRow({ track }: { track: any }) {
                         )}
                         <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-tighter">{track.artist}</p>
                     </div>
+                </div>
+            </td>
+
+            {/* Duration */}
+            <td className="p-6">
+                <div className="text-[11px] font-black text-white/70 font-mono">
+                    {formatDuration(track.duration_sec)}
+                </div>
+                <div className="text-[8px] font-bold text-zinc-600 uppercase mt-1 tracking-widest">
+                    Seconds: {Math.round(track.duration_sec || 0)}
                 </div>
             </td>
 

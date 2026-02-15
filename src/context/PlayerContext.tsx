@@ -77,13 +77,12 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         if (!audioRef.current) {
             const audio = new Audio();
             audio.crossOrigin = "anonymous";
+            audio.preload = "auto";
             audioRef.current = audio;
 
             audio.addEventListener('timeupdate', () => setCurrentTime(audio.currentTime));
             audio.addEventListener('loadedmetadata', () => setDuration(audio.duration));
             audio.addEventListener('ended', () => {
-                // When audio ends, trigger next
-                // Note: using direct function call to avoid closure issues
                 handleTrackEnd();
             });
         }
@@ -104,6 +103,31 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         } catch (e) {
             console.warn("Web Audio setup failed");
         }
+
+        // --- Safari Unlocking Hack ---
+        const unlock = () => {
+            if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+                audioContextRef.current.resume().catch(() => {});
+            }
+            // Safari also needs a "dummy" play on a user gesture to unlock the element
+            if (audioRef.current && audioRef.current.paused) {
+                const p = audioRef.current.play();
+                if (p !== undefined) {
+                    p.then(() => {
+                        audioRef.current?.pause();
+                    }).catch(() => {});
+                }
+            }
+            window.removeEventListener('click', unlock);
+            window.removeEventListener('touchstart', unlock);
+        };
+        window.addEventListener('click', unlock);
+        window.addEventListener('touchstart', unlock);
+
+        return () => {
+            window.removeEventListener('click', unlock);
+            window.removeEventListener('touchstart', unlock);
+        };
     }, []);
 
     // Fetch User Data & Heartbeat (Feature 4: Churn Prediction)
@@ -175,7 +199,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
         try {
             if (audioContextRef.current?.state === 'suspended') {
-                await audioContextRef.current.resume();
+                audioContextRef.current.resume().catch(() => {});
             }
 
             audioRef.current.src = playUrl;
@@ -183,14 +207,18 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             // Apply DSP (Simplified for reliability)
             if (!track.availableTunings?.[targetTuning]) {
                 if (targetTuning === '432hz') audioRef.current.playbackRate = 0.9818;
-                else if (targetTuning === '528hz') audioRef.current.playbackRate = 1.05; // Safer multiplier
+                else if (targetTuning === '528hz') audioRef.current.playbackRate = 1.05; 
                 else audioRef.current.playbackRate = 1.0;
             } else {
                 audioRef.current.playbackRate = 1.0;
             }
 
             audioRef.current.load();
-            await audioRef.current.play();
+            const playPromise = audioRef.current.play();
+            
+            if (playPromise !== undefined) {
+                await playPromise;
+            }
 
             setIsPlaying(true);
             setCurrentTrack(track);

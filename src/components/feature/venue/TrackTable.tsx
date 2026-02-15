@@ -15,8 +15,10 @@ export function TrackTable({ tracks }: TrackTableProps) {
 
     const formatDuration = (seconds: number | undefined) => {
         if (!seconds || isNaN(seconds)) return '--:--';
-        const m = Math.floor(seconds / 60);
-        const s = Math.floor(seconds % 60);
+        // If the number is huge (e.g. > 10000), it's likely milliseconds
+        const totalSeconds = seconds > 10000 ? seconds / 1000 : seconds;
+        const m = Math.floor(totalSeconds / 60);
+        const s = Math.round(totalSeconds % 60);
         return `${m}:${s.toString().padStart(2, '0')}`;
     };
 

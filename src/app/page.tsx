@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Search, ArrowRight, Menu, X } from 'lucide-react';
+import { Search, ArrowRight, Menu, X, Play } from 'lucide-react';
 import { Footer } from '@/components/layout/Footer';
 import { MainHeader } from '@/components/layout/MainHeader';
 import { createClient } from '@/lib/db/server';
@@ -19,21 +19,21 @@ export default async function LandingPage() {
             <MainHeader initialUser={user} />
 
             {/* Hero Section */}
-            <section className="relative h-[85vh] flex flex-col items-center justify-center px-4 overflow-hidden pt-20">
+            <section className="relative h-[80vh] md:h-[85vh] flex flex-col items-center justify-center px-6 overflow-hidden pt-20">
                 {/* Background Image */}
                 <div className="absolute inset-0 z-0">
-                    <div className="absolute inset-0 bg-black/50 z-10" />
+                    <div className="absolute inset-0 bg-black/60 z-10" />
                     <div
                         className="absolute inset-0 bg-cover bg-center"
                         style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?q=80&w=2600&auto=format&fit=crop)' }}
                     />
                 </div>
 
-                <div className="relative z-20 max-w-4xl w-full text-center space-y-8">
-                    <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]">
+                <div className="relative z-20 max-w-4xl w-full text-center space-y-6 md:space-y-8">
+                    <h1 className="text-4xl md:text-7xl font-bold tracking-tight leading-[1.1]">
                         Soundtrack your content
                     </h1>
-                    <p className="text-xl md:text-2xl text-gray-200 font-light max-w-2xl mx-auto">
+                    <p className="text-lg md:text-2xl text-gray-200 font-light max-w-2xl mx-auto">
                         Royalty-free music and sound effects for every story.
                     </p>
 
@@ -44,49 +44,67 @@ export default async function LandingPage() {
                         </div>
                         <input
                             type="text"
-                            className="block w-full pl-14 pr-32 py-5 rounded-full bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0 text-lg shadow-2xl"
-                            placeholder="Try 'Cinematic', 'Vlog', or 'Happy'..."
+                            className="block w-full pl-14 pr-12 md:pr-32 py-4 md:py-5 rounded-full bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-0 text-base md:text-lg shadow-2xl"
+                            placeholder="Try 'Cinematic', 'Vlog'..."
                         />
-                        <button className="absolute right-2 top-2 bottom-2 bg-black text-white px-8 rounded-full font-bold hover:bg-zinc-800 transition-colors">
+                        <button className="hidden md:block absolute right-2 top-2 bottom-2 bg-black text-white px-8 rounded-full font-bold hover:bg-zinc-800 transition-colors">
                             Search
                         </button>
                     </div>
                 </div>
             </section>
 
-            {/* "Music for every story" Section - Redesigned for Premium Look */}
-            <section className="py-32 px-6 md:px-12 bg-[#111111]">
-                <div className="max-w-[1400px] mx-auto">
-                    <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-6">
-                        <div className="space-y-4">
-                            <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white uppercase italic">
-                                Music for <br />every story.
+            {/* "Music for every story" Section */}
+            <section className="py-20 md:py-32 px-6 md:px-12 bg-[#1a1a1a] overflow-hidden">
+                <div className="max-w-[1400px] mx-auto space-y-10 md:space-y-14">
+                    {/* Header Row */}
+                    <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+                        <div className="space-y-3">
+                            <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white uppercase italic leading-[0.95]">
+                                Music for<br />every story.
                             </h2>
-                            <p className="text-xl text-zinc-500 font-medium">Find the perfect track for any platform.</p>
+                            <p className="text-sm md:text-base text-zinc-400">Find the perfect track for any platform.</p>
                         </div>
-                        <Link href="/dashboard" className="flex items-center gap-3 font-black text-xs uppercase tracking-[0.2em] hover:opacity-70 transition-all text-white border-b-2 border-white pb-1">
-                            Browse catalog <ArrowRight size={16} />
+                        <Link href="/music" className="flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-[0.15em] text-white border border-white/20 px-5 py-2.5 rounded-full hover:bg-white/10 transition-colors whitespace-nowrap self-start md:self-auto">
+                            Browse Catalog <ArrowRight size={16} />
                         </Link>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {/* Cards Grid */}
+                    <div className="flex overflow-x-auto lg:grid lg:grid-cols-4 gap-4 md:gap-5 pb-4 no-scrollbar -mx-6 px-6 md:mx-0 md:px-0">
                         {[
-                            { title: 'YouTube', subtitle: 'vlogs & features', img: 'https://images.unsplash.com/photo-1492724441997-5dc865305da7?q=80&w=1600' },
-                            { title: 'Twitch', subtitle: 'live & gaming', img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1600' },
-                            { title: 'Social', subtitle: 'reels & stories', img: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=1600' },
-                            { title: 'Brand', subtitle: 'commercials & ads', img: 'https://images.unsplash.com/photo-1559136555-9303dff16302?q=80&w=1600' }
+                            {
+                                title: 'YouTube',
+                                subtitle: 'Vlogs & Features',
+                                img: 'https://images.unsplash.com/photo-1492724441997-5dc865305da7?q=80&w=1600',
+                            },
+                            {
+                                title: 'Twitch',
+                                subtitle: 'Live & Gaming',
+                                img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1600',
+                            },
+                            {
+                                title: 'Social',
+                                subtitle: 'Reels & Stories',
+                                img: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=1600',
+                            },
+                            {
+                                title: 'Brand',
+                                subtitle: 'Commercials & Ads',
+                                img: 'https://images.unsplash.com/photo-1559136555-9303dff16302?q=80&w=1600',
+                            }
                         ].map((item, i) => (
-                            <div key={i} className="group relative aspect-[3/4] overflow-hidden rounded-sm cursor-pointer">
-                                <div
-                                    className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
-                                    style={{ backgroundImage: `url(${item.img})` }}
-                                />
-                                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors duration-500" />
-                                <div className="absolute inset-0 border border-white/5 group-hover:border-white/20 transition-colors" />
-
-                                <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/80 via-black/40 to-transparent translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-2">{item.subtitle}</p>
-                                    <h3 className="text-3xl font-black text-white italic uppercase leading-none">{item.title}</h3>
+                            <div key={i} className={`min-w-[220px] lg:min-w-0 flex-shrink-0 group cursor-pointer ${i % 2 !== 0 ? 'mt-8 lg:mt-0' : ''}`}>
+                                <div className="relative aspect-[3/4] overflow-hidden rounded-lg">
+                                    <div
+                                        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                                        style={{ backgroundImage: `url(${item.img})` }}
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                                    <div className="absolute bottom-5 left-5 right-5">
+                                        <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.15em] text-white/70 mb-1">{item.subtitle}</p>
+                                        <h3 className="text-xl md:text-2xl font-black uppercase text-white tracking-tight leading-none">{item.title}</h3>
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -95,18 +113,20 @@ export default async function LandingPage() {
             </section>
 
             {/* 1. Find Similar Section (Yellow) */}
-            <section className="py-32 px-6 bg-[#F7D348] text-black overflow-hidden">
-                <div className="max-w-[1400px] mx-auto text-center">
-                    <p className="text-xs font-bold uppercase tracking-[0.3em] mb-4">Find Similar</p>
-                    <h2 className="text-4xl md:text-7xl font-bold tracking-tight leading-none mb-6">
-                        Use music to find music.
-                    </h2>
-                    <p className="text-lg md:text-xl max-w-2xl mx-auto mb-16 opacity-80">
-                        Search for tracks with a similar tone and sound, using your favorite riff, hook, drop, or bridge.
-                    </p>
+            <section className="py-20 md:py-32 px-6 bg-[#F7D348] text-black overflow-hidden">
+                <div className="max-w-[1400px] mx-auto text-center space-y-8 md:space-y-12">
+                    <div>
+                        <p className="text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] mb-4">Find Similar</p>
+                        <h2 className="text-4xl md:text-7xl font-bold tracking-tight leading-[1.1] md:leading-none mb-6">
+                            Use music to <br className="md:hidden" />find music.
+                        </h2>
+                        <p className="text-base md:text-xl max-w-2xl mx-auto opacity-80">
+                            Search for tracks with a similar tone and sound, using your favorite riff, hook, drop, or bridge.
+                        </p>
+                    </div>
 
                     {/* Mock UI Element */}
-                    <div className="max-w-4xl mx-auto bg-[#18181b] rounded-xl shadow-2xl overflow-hidden text-left transform rotate-1 hover:rotate-0 transition-transform duration-500">
+                    <div className="max-w-4xl mx-auto bg-[#18181b] rounded-2xl md:rounded-xl shadow-2xl overflow-hidden text-left transform md:rotate-1 hover:rotate-0 transition-transform duration-500 scale-95 md:scale-100">
                         <div className="p-6 border-b border-white/5 flex items-center justify-between">
                             <span className="font-bold text-white text-sm">Find similar tracks</span>
                             <X size={18} className="text-zinc-500" />
@@ -143,27 +163,27 @@ export default async function LandingPage() {
                 </div>
             </section>
 
-            {/* 2. Sonaraura Venue / Business Section (Light Grey/Blue) */}
-            <section className="py-32 px-6 bg-[#E8EDF2] text-black overflow-hidden border-b border-black/5">
-                <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-center gap-16">
-                    <div className="flex-1 text-center md:text-left space-y-10">
-                        <p className="text-xs font-black uppercase tracking-[0.4em] text-zinc-500">Sonaraura Venue</p>
+            {/* 2. Sonaraura Venue / Business Section */}
+            <section className="py-20 md:py-32 px-6 bg-[#E8EDF2] text-black overflow-hidden border-b border-black/5">
+                <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row items-center gap-12 md:gap-16">
+                    <div className="flex-1 text-center md:text-left space-y-8 md:space-y-10">
+                        <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-zinc-500">Sonaraura Venue</p>
                         <h2 className="text-4xl md:text-[5rem] font-black tracking-tight leading-[0.9]">
                             Define the <br />spirit of your <br />venue with Aura.
                         </h2>
-                        <p className="text-xl md:text-2xl font-medium opacity-70 leading-relaxed max-w-xl">
+                        <p className="text-base md:text-2xl font-medium opacity-70 leading-relaxed max-w-xl">
                             Seamless, high-fidelity, and fully licensed music for your business. Sonaraura Venue doesn&apos;t just play music; it scientifically optimizes your atmosphere with frequency tuning.
                         </p>
-                        <div className="flex flex-wrap justify-center md:justify-start gap-6 pt-4">
-                            <Link href="/pricing" className="px-10 py-5 bg-black text-white rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-2xl uppercase tracking-wider">
-                                Start for your business
+                        <div className="flex flex-col sm:flex-row justify-center md:justify-start gap-4 md:gap-6 pt-4">
+                            <Link href="/pricing" className="w-full sm:w-auto px-10 py-5 bg-black text-white rounded-full font-bold text-base md:text-lg hover:scale-105 transition-transform shadow-2xl uppercase tracking-wider">
+                                Start for business
                             </Link>
-                            <button className="flex items-center gap-3 font-bold border-b-2 border-black/20 pb-1 hover:border-black transition-all uppercase text-sm tracking-widest">
-                                Explore enterprise solutions <ArrowRight size={20} />
+                            <button className="flex items-center justify-center gap-3 font-bold border-b-2 border-black/20 pb-1 hover:border-black transition-all uppercase text-xs tracking-widest">
+                                enterprise solutions <ArrowRight size={18} />
                             </button>
                         </div>
                     </div>
-                    <div className="flex-1 relative group w-full">
+                    <div className="flex-1 relative group w-full scale-90 md:scale-100">
                         {/* Soft Glow Background */}
                         <div className="w-full aspect-video bg-blue-400/20 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 blur-[120px] opacity-60" />
 
@@ -223,12 +243,12 @@ export default async function LandingPage() {
             </section>
 
             {/* 3. Categories Grid (Dark) */}
-            <section className="py-32 px-6 bg-[#111] text-white">
-                <div className="max-w-[1400px] mx-auto space-y-16">
-                    <h2 className="text-4xl md:text-7xl font-bold tracking-tight text-center md:text-left">
-                        A sound for everything.
+            <section className="py-20 md:py-32 px-6 bg-[#111] text-white">
+                <div className="max-w-[1400px] mx-auto space-y-12 md:space-y-16">
+                    <h2 className="text-4xl md:text-7xl font-bold tracking-tight text-center md:text-left leading-tight">
+                        A sound for <br className="md:hidden" />everything.
                     </h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                         {[
                             { name: 'Ads, Promos & Trailers', img: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800' },
                             { name: 'Vlogs', img: 'https://images.unsplash.com/photo-1533750516457-a7f992034fec?w=800' },
@@ -282,26 +302,26 @@ export default async function LandingPage() {
             </section>
 
             {/* 5. Value Highlight (Pink) */}
-            <section className="py-32 px-6 bg-[#E996B8] text-black">
-                <div className="max-w-[1400px] mx-auto text-center space-y-12">
-                    <h2 className="text-5xl md:text-[8rem] font-bold tracking-tight leading-[0.9] mb-12">
+            <section className="py-20 md:py-32 px-6 bg-[#E996B8] text-black">
+                <div className="max-w-[1400px] mx-auto text-center space-y-10 md:space-y-12">
+                    <h2 className="text-5xl md:text-[8rem] font-bold tracking-tight leading-[0.9] mb-8 md:mb-12">
                         Discover what <br />sound can do.
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-left max-w-5xl mx-auto pt-12 border-t border-black/10">
-                        <div className="space-y-4">
-                            <h3 className="text-2xl font-bold italic">Frequency Tuning</h3>
-                            <p className="opacity-70">Experience your favorite tracks in 432Hz or 528Hz for deeper connection and focus.</p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12 text-left max-w-5xl mx-auto pt-10 md:pt-12 border-t border-black/10">
+                        <div className="space-y-3">
+                            <h3 className="text-xl md:text-2xl font-bold italic">Frequency Tuning</h3>
+                            <p className="text-sm md:text-base opacity-70">Experience your favorite tracks in 432Hz or 528Hz for deeper connection and focus.</p>
                         </div>
-                        <div className="space-y-4">
-                            <h3 className="text-2xl font-bold italic">Sonic Fingerprint</h3>
-                            <p className="opacity-70">Every track is uniquely watermarked to ensure 100% safety for your social channels.</p>
+                        <div className="space-y-3">
+                            <h3 className="text-xl md:text-2xl font-bold italic">Sonic Fingerprint</h3>
+                            <p className="text-sm md:text-base opacity-70">Every track is uniquely watermarked to ensure 100% safety for your social channels.</p>
                         </div>
-                        <div className="space-y-4">
-                            <h3 className="text-2xl font-bold italic">Universal License</h3>
-                            <p className="opacity-70">One simple license that covers all your creative needs, across any platform worldwide.</p>
+                        <div className="space-y-3">
+                            <h3 className="text-xl md:text-2xl font-bold italic">Universal License</h3>
+                            <p className="text-sm md:text-base opacity-70">One simple license that covers all your creative needs, across any platform worldwide.</p>
                         </div>
                     </div>
-                    <Link href="/signup" className="inline-block mt-12 px-12 py-5 bg-black text-white rounded-full font-bold text-xl hover:scale-105 transition-transform shadow-xl">
+                    <Link href="/signup" className="inline-block w-full sm:w-auto mt-8 md:mt-12 px-12 py-5 bg-black text-white rounded-full font-bold text-lg md:text-xl hover:scale-105 transition-transform shadow-xl uppercase tracking-widest">
                         Create free account
                     </Link>
                 </div>

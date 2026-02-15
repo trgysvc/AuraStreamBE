@@ -55,6 +55,20 @@ const HELP_SECTIONS = [
             { id: 'karaoke-engine', title: 'Karaoke & Word Sync', icon: Music },
             { id: 'weather-ai', title: 'Atmospheric AI', icon: CloudLightning },
             { id: 'watermarking', title: 'Signal Protection', icon: Shield },
+            { id: 'interactive-waveforms', title: 'Sonic Discovery', icon: Music },
+        ]
+    },
+    {
+        id: 'intelligence',
+        title: 'The Intelligence Layer',
+        icon: Cpu,
+        pages: [
+            { id: 'sync-precision', title: 'Frame-Perfect Sync', icon: Clock },
+            { id: 'biorhythm-ml', title: 'Biorhythm Training', icon: Zap },
+            { id: 'edge-roi', title: 'Global Infrastructure', icon: Layers },
+            { id: 'revenue-intel', title: 'Revenue Intelligence', icon: DollarSign },
+            { id: 'churn-heartbeat', title: 'Churn Prediction', icon: BarChart3 },
+            { id: 'ui-evolution', title: 'UI Data Evolution', icon: Layout },
         ]
     },
     {
@@ -742,6 +756,176 @@ function renderContent(id: string) {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </article>
+            );
+
+        case 'interactive-waveforms':
+            return (
+                <article className="space-y-10">
+                    <header className="space-y-4">
+                        <div className="h-16 w-16 bg-yellow-500/10 rounded-2xl flex items-center justify-center text-yellow-500">
+                            <Music size={32} />
+                        </div>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Interactive <br /> Waveforms</h1>
+                        <p className="text-xl text-zinc-400 font-medium">Sonic discovery through visual texture.</p>
+                    </header>
+
+                    <div className="prose prose-invert max-w-none space-y-8">
+                        <p className="text-zinc-300 leading-relaxed text-lg">
+                            Don't just listen to the music—see its anatomy. Every track in our ecosystem is pre-analyzed to generate a high-fidelity <strong>Dynamic Waveform</strong>.
+                        </p>
+                        <div className="p-8 bg-[#111] border border-white/5 rounded-3xl space-y-4">
+                            <h4 className="text-white font-black italic uppercase">Precision Seeking</h4>
+                            <p className="text-xs text-zinc-400 leading-relaxed">The waveform acts as a navigation tool. Users can click any part of the sonic map to jump instantly to that energy level, drop, or bridge.</p>
+                        </div>
+                    </div>
+                </article>
+            );
+
+        case 'sync-precision':
+            return (
+                <article className="space-y-10">
+                    <header className="space-y-4">
+                        <div className="h-16 w-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-500">
+                            <Clock size={32} />
+                        </div>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Frame-Perfect <br /> Sync</h1>
+                        <p className="text-xl text-zinc-400 font-medium">Broadcast-grade timing for zero-drift scheduling.</p>
+                    </header>
+
+                    <div className="prose prose-invert max-w-none space-y-8">
+                        <p className="text-zinc-300 leading-relaxed text-lg">
+                            Traditional streaming services often estimate track length. Sonaraura synchronizes every asset with its <strong>physical file frame-count</strong>.
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="p-6 bg-white/[0.02] border border-white/5 rounded-2xl">
+                                <h5 className="text-white font-bold italic uppercase text-xs">Zero Drift</h5>
+                                <p className="text-xs text-zinc-500 mt-2">Ensures that a 24-hour schedule ends exactly when planned, vital for retail and broadcast clients.</p>
+                            </div>
+                            <div className="p-6 bg-white/[0.02] border border-white/5 rounded-2xl">
+                                <h5 className="text-white font-bold italic uppercase text-xs">JIT Alignment</h5>
+                                <p className="text-xs text-zinc-500 mt-2">Just-In-Time rendering keeps the audio stream perfectly aligned with visual lyrics and waveforms.</p>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            );
+
+        case 'biorhythm-ml':
+            return (
+                <article className="space-y-10">
+                    <header className="space-y-4">
+                        <div className="h-16 w-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500">
+                            <Zap size={32} />
+                        </div>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Biorhythm <br /> Training</h1>
+                        <p className="text-xl text-zinc-400 font-medium">Machine learning that follows your venue's pulse.</p>
+                    </header>
+
+                    <div className="prose prose-invert max-w-none space-y-8">
+                        <p className="text-zinc-300 leading-relaxed">
+                            Aura AI observes how you and your customers interact with the music. If certain tracks are consistently skipped at 4 PM, the system learns the <strong>Energy Delta</strong> of your specific location.
+                        </p>
+                        <div className="p-8 bg-emerald-500/5 border border-emerald-500/10 rounded-[3rem]">
+                            <h4 className="text-[10px] font-black uppercase tracking-widest text-emerald-400 mb-4">Autonomous Learning</h4>
+                            <p className="text-sm text-zinc-300">The ML model adjusts the Smart Flow weights over time, creating a bespoke sonic identity that improves daily without manual input.</p>
+                        </div>
+                    </div>
+                </article>
+            );
+
+        case 'edge-roi':
+            return (
+                <article className="space-y-10">
+                    <header className="space-y-4">
+                        <div className="h-16 w-16 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500">
+                            <Layers size={32} />
+                        </div>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Global <br /> Infrastructure</h1>
+                        <p className="text-xl text-zinc-400 font-medium">Regional latency mapping and Edge ROI.</p>
+                    </header>
+
+                    <div className="prose prose-invert max-w-none space-y-8">
+                        <p className="text-zinc-300 leading-relaxed">
+                            We monitor search and playback latency across global coordinates. Our <strong>Elite Analytics</strong> layer identifies regional performance bottlenecks before they affect the user experience.
+                        </p>
+                        <div className="bg-blue-500/5 border border-blue-500/10 p-8 rounded-2xl flex gap-6 items-center">
+                            <BarChart3 className="text-blue-500 shrink-0" size={40} />
+                            <p className="text-xs text-zinc-400">If a cluster of venues in Berlin experiences >200ms latency, our infrastructure automatically triggers S3 replication and Edge Worker deployment to that region.</p>
+                        </div>
+                    </div>
+                </article>
+            );
+
+        case 'revenue-intel':
+            return (
+                <article className="space-y-10">
+                    <header className="space-y-4">
+                        <div className="h-16 w-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-500">
+                            <DollarSign size={32} />
+                        </div>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Revenue <br /> Intelligence</h1>
+                        <p className="text-xl text-zinc-400 font-medium">Turning content gaps into production assets.</p>
+                    </header>
+
+                    <div className="prose prose-invert max-w-none space-y-8">
+                        <p className="text-zinc-300 leading-relaxed">
+                            We don't guess what to produce next. Aura Tailor identifies <strong>Content Gaps</strong> by analyzing failed search queries and high skip rates in specific genres.
+                        </p>
+                        <div className="p-8 bg-[#111] border border-white/5 rounded-3xl">
+                            <h4 className="text-white font-black italic uppercase text-xs mb-4">Strategic Production</h4>
+                            <p className="text-sm text-zinc-400 leading-relaxed">If 'Dark Nordic Ambient' is being searched 500x a day but our library only has 10 tracks, the system flags this as a primary production target for the internal factory.</p>
+                        </div>
+                    </div>
+                </article>
+            );
+
+        case 'churn-heartbeat':
+            return (
+                <article className="space-y-10">
+                    <header className="space-y-4">
+                        <div className="h-16 w-16 bg-rose-500/10 rounded-2xl flex items-center justify-center text-rose-500">
+                            <BarChart3 size={32} />
+                        </div>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Churn <br /> Prediction</h1>
+                        <p className="text-xl text-zinc-400 font-medium">Heartbeat telemetry for user health.</p>
+                    </header>
+
+                    <div className="prose prose-invert max-w-none space-y-8">
+                        <p className="text-zinc-300 leading-relaxed">
+                            The <strong>Churn Heartbeat</strong> monitors engagement patterns. Sudden drops in session duration or a decrease in interaction frequency are flagged in real-time.
+                        </p>
+                        <div className="p-6 bg-rose-500/5 border border-rose-500/10 rounded-2xl">
+                            <p className="text-xs text-zinc-400 leading-relaxed">The system proactively triggers retention automation—such as personalized curators reaching out or custom discount offers—before the user decides to leave.</p>
+                        </div>
+                    </div>
+                </article>
+            );
+
+        case 'ui-evolution':
+            return (
+                <article className="space-y-10">
+                    <header className="space-y-4">
+                        <div className="h-16 w-16 bg-zinc-500/10 rounded-2xl flex items-center justify-center text-zinc-400">
+                            <Layout size={32} />
+                        </div>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Architectural <br /> UI Evolution</h1>
+                        <p className="text-xl text-zinc-400 font-medium">Data-driven design integrity.</p>
+                    </header>
+
+                    <div className="prose prose-invert max-w-none space-y-8">
+                        <p className="text-zinc-300 leading-relaxed text-lg">
+                            Interface decisions are driven by technical telemetry. We don't just design for aesthetics; we design for <strong>Flow Efficiency</strong>.
+                        </p>
+                        <ul className="space-y-4">
+                            <li className="p-6 bg-white/[0.02] border border-white/5 rounded-xl text-xs text-zinc-500">
+                                If a specific UI module has zero interaction over 30 days, it is flagged for removal.
+                            </li>
+                            <li className="p-6 bg-white/[0.02] border border-white/5 rounded-xl text-xs text-zinc-500">
+                                High-interaction zones are automatically prioritized in future layout updates.
+                            </li>
+                        </ul>
                     </div>
                 </article>
             );

@@ -172,64 +172,64 @@ export default function BulkUploadPage() {
     };
 
     return (
-        <div className="max-w-6xl mx-auto space-y-10 pb-20 animate-in fade-in duration-700">
+        <div className="max-w-6xl mx-auto space-y-8 md:space-y-10 pb-24 md:pb-20 animate-in fade-in duration-700 px-4 md:px-0">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-8">
-                <div>
-                    <h1 className="text-5xl font-black italic uppercase tracking-tighter text-white text-glow">Ingest Engine</h1>
-                    <p className="text-zinc-500 font-medium mt-2 text-lg uppercase tracking-tight">Autonomous Cataloging & Metadata Extraction</p>
+                <div className="space-y-1">
+                    <h1 className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter text-white text-glow">Ingest Engine</h1>
+                    <p className="text-zinc-500 font-medium text-sm md:text-lg uppercase tracking-tight">Autonomous Cataloging & Metadata</p>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
                     <input type="file" multiple accept="audio/*" className="hidden" ref={fileInputRef} onChange={handleFileChange} />
-                    <button onClick={() => fileInputRef.current?.click()} className="px-8 py-4 bg-white/5 border border-white/10 rounded-full text-xs font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-white hover:bg-white/10 transition-all">Select Audio</button>
-                    <button onClick={processUploads} disabled={isGlobalUploading || files.length === 0} className="px-10 py-4 bg-indigo-600 text-white rounded-full text-xs font-black uppercase tracking-[0.2em] hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-500/20 disabled:opacity-50 flex items-center gap-3">
-                        {isGlobalUploading ? <Loader2 className="animate-spin" size={16} /> : <UploadCloud size={16} />} Start Ingest
+                    <button onClick={() => fileInputRef.current?.click()} className="w-full sm:w-auto px-8 py-3 md:py-4 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-white transition-all">Select Audio</button>
+                    <button onClick={processUploads} disabled={isGlobalUploading || files.length === 0} className="w-full sm:w-auto px-8 py-3 md:px-10 md:py-4 bg-indigo-600 text-white rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-indigo-500 transition-all shadow-xl flex items-center justify-center gap-3 disabled:opacity-50">
+                        {isGlobalUploading ? <Loader2 className="animate-spin" size={14} /> : <UploadCloud size={14} />} Start Ingest
                     </button>
                 </div>
             </div>
 
             {files.length === 0 ? (
-                <div onClick={() => fileInputRef.current?.click()} className="py-40 border-2 border-dashed border-white/5 bg-[#1E1E22]/30 rounded-[4rem] text-center space-y-8 cursor-pointer hover:bg-[#1E1E22]/50 hover:border-white/10 transition-all group">
-                    <div className="h-24 w-24 bg-white/5 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
-                        <UploadCloud size={48} className="text-zinc-600 group-hover:text-indigo-400 transition-colors" />
+                <div onClick={() => fileInputRef.current?.click()} className="py-24 md:py-40 border-2 border-dashed border-white/5 bg-[#1E1E22]/30 rounded-3xl md:rounded-[4rem] text-center space-y-6 md:space-y-8 cursor-pointer hover:bg-[#1E1E22]/50 transition-all group">
+                    <div className="h-16 w-16 md:h-24 md:w-24 bg-white/5 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform">
+                        <UploadCloud size={32} className="md:w-12 md:h-12 text-zinc-600 group-hover:text-indigo-400 transition-colors" />
                     </div>
-                    <div className="space-y-3">
-                        <p className="text-white font-black uppercase italic tracking-[0.2em] text-xl">Awaiting Assets</p>
-                        <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.4em]">Audio files will be auto-analyzed upon ingest</p>
+                    <div className="space-y-2 md:space-y-3 px-6">
+                        <p className="text-white font-black uppercase italic tracking-[0.2em] text-lg md:text-xl">Awaiting Assets</p>
+                        <p className="text-zinc-600 text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em]">Audio files will be analyzed upon ingest</p>
                     </div>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-4">
                     {files.map((fileObj) => (
-                        <div key={fileObj.id} className={`bg-[#1E1E22] p-8 rounded-[2rem] border border-white/5 flex flex-col md:flex-row items-center gap-10 group relative transition-all ${fileObj.status === 'duplicate' ? 'opacity-40 grayscale' : ''}`}>
-                            <div className="flex items-center gap-8 flex-1 min-w-0">
-                                <div className="h-20 w-20 bg-zinc-800 rounded-2xl flex items-center justify-center flex-shrink-0 relative overflow-hidden shadow-2xl border border-white/5">
+                        <div key={fileObj.id} className={`bg-[#1E1E22] p-5 md:p-8 rounded-2xl md:rounded-[2rem] border border-white/5 flex flex-col md:flex-row items-center gap-6 md:gap-10 group relative transition-all ${fileObj.status === 'duplicate' ? 'opacity-40 grayscale' : ''}`}>
+                            <div className="flex items-center gap-5 md:gap-8 w-full md:flex-1 min-w-0">
+                                <div className="h-14 w-14 md:h-20 md:w-20 bg-zinc-800 rounded-xl md:rounded-2xl flex items-center justify-center flex-shrink-0 relative overflow-hidden shadow-2xl border border-white/5">
                                     {fileObj.coverUrl ? (
                                         <img src={fileObj.coverUrl} className="w-full h-full object-cover" alt="" />
                                     ) : (
-                                        <Music className="text-zinc-700" size={32} />
+                                        <Music className="text-zinc-700" size={24} className="md:w-8 md:h-8" />
                                     )}
                                     {fileObj.status === 'analyzing' && (
                                         <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                                            <Loader2 className="animate-spin text-white" size={24} />
+                                            <Loader2 className="animate-spin text-white" size={18} />
                                         </div>
                                     )}
                                 </div>
-                                <div className="min-w-0 flex-1 space-y-4">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div className="space-y-1">
-                                            <p className="text-[9px] font-black uppercase text-zinc-600 tracking-widest ml-1 italic">Identity</p>
-                                            <h4 className="text-lg font-black text-white uppercase truncate tracking-tight">{fileObj.title}</h4>
-                                            <p className="text-xs font-bold text-indigo-500 uppercase tracking-widest">{fileObj.artist}</p>
+                                <div className="min-w-0 flex-1 space-y-3 md:space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                                        <div className="space-y-0.5">
+                                            <p className="text-[7px] md:text-[9px] font-black uppercase text-zinc-600 tracking-widest italic leading-none">Identity</p>
+                                            <h4 className="text-sm md:text-lg font-black text-white uppercase truncate tracking-tight">{fileObj.title}</h4>
+                                            <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest truncate">{fileObj.artist}</p>
                                         </div>
-                                        <div className="flex gap-10">
-                                            <div className="space-y-1">
-                                                <p className="text-[9px] font-black uppercase text-zinc-600 tracking-widest italic">Specs</p>
-                                                <p className="text-sm font-black text-white">{fileObj.bpm} <span className="text-[9px] text-zinc-600">BPM</span></p>
-                                                <p className="text-sm font-black text-white uppercase italic">{fileObj.genre}</p>
+                                        <div className="flex gap-6 md:gap-10">
+                                            <div className="space-y-0.5">
+                                                <p className="text-[7px] md:text-[9px] font-black uppercase text-zinc-600 tracking-widest italic leading-none">Specs</p>
+                                                <p className="text-xs md:text-sm font-black text-white leading-tight">{fileObj.bpm} <span className="text-[8px] text-zinc-600">BPM</span></p>
+                                                <p className="text-[10px] md:text-sm font-black text-zinc-400 uppercase italic truncate">{fileObj.genre}</p>
                                             </div>
-                                            <div className="space-y-1 flex-1">
-                                                <p className="text-[9px] font-black uppercase text-zinc-600 tracking-widest italic">Health</p>
-                                                <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden mt-2">
+                                            <div className="space-y-2 flex-1">
+                                                <p className="text-[7px] md:text-[9px] font-black uppercase text-zinc-600 tracking-widest italic leading-none">Health</p>
+                                                <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden mt-1">
                                                     <div className={`h-full transition-all duration-700 ${fileObj.status === 'success' ? 'bg-green-500' : fileObj.status === 'error' ? 'bg-rose-500' : 'bg-indigo-500'}`} style={{ width: `${fileObj.progress}%` }} />
                                                 </div>
                                             </div>
@@ -237,24 +237,22 @@ export default function BulkUploadPage() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-8 pr-4">
+                            <div className="flex items-center justify-end w-full md:w-auto gap-6 md:gap-8 md:pr-4">
                                 {fileObj.status === 'duplicate' ? (
-                                    <div className="flex flex-col items-center gap-1">
-                                        <AlertCircle className="text-yellow-500/50" size={28} />
+                                    <div className="flex items-center gap-2">
+                                        <AlertCircle className="text-yellow-500/50" size={20} />
                                         <span className="text-[8px] font-black text-yellow-500/50 uppercase tracking-widest">Exists</span>
                                     </div>
                                 ) : fileObj.status === 'success' ? (
-                                    <CheckCircle2 className="text-green-500 shadow-[0_0_20px_rgba(34,197,94,0.3)]" size={32} />
+                                    <CheckCircle2 className="text-green-500" size={28} />
                                 ) : fileObj.status === 'error' ? (
-                                    <div className="group/err relative flex items-center justify-center">
-                                        <AlertCircle className="text-rose-500" size={32} />
-                                        <div className="absolute right-full mr-4 bg-rose-600 text-white text-[9px] font-black px-3 py-1.5 rounded-lg whitespace-nowrap shadow-2xl">
-                                            {fileObj.error}
-                                        </div>
+                                    <div className="flex items-center gap-3">
+                                        <span className="bg-rose-600 text-white text-[8px] font-black px-2 py-1 rounded italic uppercase">{fileObj.error}</span>
+                                        <AlertCircle className="text-rose-500" size={24} />
                                     </div>
                                 ) : (
-                                    <button onClick={() => removeFile(fileObj.id)} className="p-4 text-zinc-700 hover:text-white hover:bg-white/5 rounded-2xl transition-all border border-transparent hover:border-white/5">
-                                        <X size={24} />
+                                    <button onClick={() => removeFile(fileObj.id)} className="p-3 text-zinc-700 hover:text-white bg-white/5 rounded-xl transition-all">
+                                        <X size={20} />
                                     </button>
                                 )}
                             </div>

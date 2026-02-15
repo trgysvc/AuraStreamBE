@@ -22,7 +22,7 @@ async function uploadTrack() {
         title: 'Midnight in Marrakesh',
         artist: 'Sonaraura AI',
         bpm: 122,
-        duration_sec: 215,
+        duration_sec: 367, // Updated from 180 to real length
         genre: 'Afro House / Nu-Jazz',
         key: 'Eb Minor',
         mood_tags: ['Sophisticated', 'Warm', 'Groovy', 'Uplifting', 'Elegant'],

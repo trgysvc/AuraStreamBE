@@ -109,3 +109,50 @@
 ### 5.2 Deployment
 *   **Staging:** Vercel (Feature branches).
 *   **Production:** Vercel (Main branch), AWS Infra via Terraform.
+
+## 6. Data Ingestion Pipeline
+**Goal:** Autonomous metadata extraction and signal-level processing.
+
+### 6.1 Ingestion Flow
+1.  **Frontend (Client-Side):**
+    *   **Duplicate Check:** Title-based search in `tracks` table.
+    *   **Metadata Extraction:** `jsmediatags` extracts ID3 title, artist, genre, BPM, and lyrics.
+    *   **Cover Art:** Extract embedded APIC frames to Blobs.
+2.  **Storage Transition:**
+    *   **Signed URLs:** `getSignedUploadUrl_Action` generates short-lived S3 PUT URLs.
+    *   **S3 Ingest:** Files uploaded to `raw/{track_id}/` prefix.
+3.  **Database Initialization:**
+    *   `createTrackRecord_Action` creates a `pending_qc` record.
+    *   **Initial Defaults:** Duration is temporarily set to `180` (overridden by processor).
+4.  **Asynchronous Processing (Worker):**
+    *   **Trigger:** AWS SQS message sent post-upload.
+    *   **Signal Analysis:** Python (librosa) extracts real `duration`, `bpm`, `key`, and `waveform`.
+    *   **Steganography:** UUID embedded into signal using Least Significant Bit (LSB) V1.
+    *   **Transcoding:** High-fidelity master generated and moved to `processed/` bucket.
+    *   **Final Sync:** DB record updated with real analytical data.
+
+## 7. Scripts Reference
+Located in `/scripts`, these tools manage the factory's lifecycle.
+
+### 7.1 Core Processing
+*   `process-tracks.mjs`: The primary worker. Downloads raw files, runs Python analyzer, uploads watermarked masters, and updates DB.
+*   `audio_analyzer.py`: Technical signal analyzer (BPM, Key, Energy, Duration, Waveform, LSB Watermark).
+*   `refresh-durations.mjs`: Maintenance tool to synchronize database `duration_sec` with real S3 file lengths.
+
+### 7.2 Synchronization & Search
+*   `meili-sync.mjs`: Pushes Supabase track data to Meilisearch for ultra-fast filtering.
+*   `check-sync.mjs`: Verifies data consistency between DB and Search Engine.
+
+### 7.3 Data Maintenance
+*   `db-surgeon.mjs`: Sells-service precision tool for fixing data drift or corrupt records.
+*   `check-db-files.mjs`: Audits S3 to ensure all DB records have physical files.
+*   `fix-cors.mjs`: Configures AWS S3 CORS policies for browser-based uploads/playback.
+
+### 7.4 Metadata & AI
+*   `aura-autotag.mjs`: AI-driven mood and genre tagging.
+*   `metadata-factory.mjs`: Batch metadata generation and normalization.
+*   `karaoke-test.mjs`: Injects word-level timestamp data for testing the Sync Lyrics engine.
+
+### 7.5 Migrations
+*   `migrate.js`: Legacy migration handler.
+*   `run-scheduling-migration.js`: Implements Smart Flow scheduling schema updates.

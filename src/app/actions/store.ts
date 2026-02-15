@@ -95,6 +95,20 @@ export async function getStoreTracks_Action(options?: {
             }
         }
 
+        // 3. Handle Cover Image Signing
+        let finalCoverImage = track.cover_image_url;
+        if (finalCoverImage && finalCoverImage.includes('amazonaws.com')) {
+            try {
+                const urlParts = finalCoverImage.split('.com/');
+                if (urlParts.length > 1) {
+                    const s3Key = decodeURIComponent(urlParts[1]);
+                    finalCoverImage = await S3Service.getDownloadUrl(s3Key, process.env.AWS_S3_BUCKET_RAW!);
+                }
+            } catch (e) {
+                console.error("Failed to sign cover image URL", e);
+            }
+        }
+
         return {
             id: track.id,
             title: track.title,
@@ -102,7 +116,7 @@ export async function getStoreTracks_Action(options?: {
             bpm: track.bpm || 0,
             duration: track.duration_sec || 0,
             genre: track.genre || 'Ambient',
-            coverImage: track.cover_image_url || undefined,
+            coverImage: finalCoverImage || undefined,
             lyrics: track.lyrics || undefined,
             src: defaultSrc,
             availableTunings

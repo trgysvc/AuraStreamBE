@@ -21,7 +21,7 @@ async function uploadTrack() {
         title: 'The Sweat The Brass',
         artist: 'Sonaraura AI',
         bpm: 115,
-        duration_sec: 245, // Estimated for a jam session
+        duration_sec: 224, // Updated from hardcoded estimate to real length
         genre: 'Afro-Funk / Afrobeat',
         key: 'A Minor',
         mood_tags: ['Raw', 'Energetic', 'Groovy', 'Gritty', 'Rebellious'],

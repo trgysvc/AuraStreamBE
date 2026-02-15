@@ -95,6 +95,7 @@ async function processAllTracks() {
             await supabase.from('tracks').update({
                 bpm: analysis.bpm,
                 key: analysis.key,
+                duration_sec: analysis.duration,
                 metadata: {
                     technical: { bpm: analysis.bpm, key: analysis.key },
                     vibe: { energy_level: analysis.energy },

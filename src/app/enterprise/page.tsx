@@ -122,34 +122,73 @@ export default async function EnterprisePage() {
                 </div>
             </section>
 
-            {/* Value Props Grid - Yellow Section */}
-            <section className="py-24 px-6 bg-[#F7D348] text-black">
-                <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-left">
-                    <div className="space-y-6">
-                        <h3 className="text-3xl md:text-5xl font-black tracking-tight leading-[0.9]">
-                            Get unlimited <br /> access to world-<br />class music
-                        </h3>
-                        <p className="text-lg font-medium leading-relaxed opacity-90">
-                            Discover exclusive tracks by award-winning composers and up-and-coming artists, tailored for premium venues.
-                        </p>
+            {/* Value Props Grid - Compact Zig-Zag Horizontal Scroll Style */}
+            <section className="py-20 md:py-24 px-6 md:px-12 bg-[#F7D348] text-black overflow-hidden">
+                <div className="max-w-[1400px] mx-auto space-y-8 md:space-y-12">
+                    <div className="space-y-3">
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-black/40 leading-none">Technical Edge</p>
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tight uppercase italic leading-[0.9]">
+                            Unmatched <br />Infrastructure.
+                        </h2>
                     </div>
 
-                    <div className="space-y-6 md:border-l md:border-black/10 md:pl-12">
-                        <h3 className="text-3xl md:text-5xl font-black tracking-tight leading-[0.9]">
-                            Supercharge your <br /> teams with next-<br />gen tools
-                        </h3>
-                        <p className="text-lg font-medium leading-relaxed opacity-90">
-                            Spend less time searching. Use &apos;Aura Tailor&apos; for smart discovery and centralized playlist management.
-                        </p>
-                    </div>
-
-                    <div className="space-y-6 md:border-l md:border-black/10 md:pl-12">
-                        <h3 className="text-3xl md:text-5xl font-black tracking-tight leading-[0.9]">
-                            Publish worry-<br />free, worldwide
-                        </h3>
-                        <p className="text-lg font-medium leading-relaxed opacity-90">
-                            Soundtrack your physical and digital spaces without restrictions. One simple license covers it all.
-                        </p>
+                    <div className="flex md:grid md:grid-cols-3 overflow-x-auto md:overflow-x-visible gap-4 md:gap-12 pb-8 no-scrollbar -mx-6 px-6 md:mx-0 md:px-0 items-stretch">
+                        {[
+                            { 
+                                title: 'Unlimited Access', 
+                                subtitle: 'World-Class Music', 
+                                description: 'Discover exclusive tracks by award-winning composers and up-and-coming artists, tailored for premium venues.',
+                                img: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=1600',
+                                badge: 'Catalog'
+                            },
+                            { 
+                                title: 'Next-Gen Tools', 
+                                subtitle: 'Supercharge Teams', 
+                                description: "Spend less time searching. Use 'Aura Tailor' for smart discovery and centralized playlist management.",
+                                img: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1600',
+                                badge: 'Intelligence'
+                            },
+                            { 
+                                title: 'Publish Worry-Free', 
+                                subtitle: 'Worldwide Coverage', 
+                                description: 'Soundtrack your physical and digital spaces without restrictions. One simple license covers it all.',
+                                img: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1600',
+                                badge: 'Legal'
+                            }
+                        ].map((item, i) => (
+                            <div key={i} className={`min-w-[280px] md:min-w-0 flex-shrink-0 group cursor-pointer ${i % 2 === 0 ? 'mt-0' : 'mt-8 md:mt-0'}`}>
+                                {/* Image Box (Hidden on Desktop to maintain original look) */}
+                                <div className="md:hidden relative aspect-[3/2] overflow-hidden rounded-t-xl bg-black/10">
+                                    <div
+                                        className="absolute inset-0 bg-cover bg-center transition-transform duration-[3s] group-hover:scale-110"
+                                        style={{ backgroundImage: `url(${item.img})` }}
+                                    />
+                                    <div className="absolute bottom-3 left-3 bg-black px-2 py-0.5 text-[8px] font-black uppercase tracking-widest text-white italic">
+                                        {item.badge}
+                                    </div>
+                                </div>
+                                {/* Content Box */}
+                                <div className={`h-full flex flex-col justify-between ${
+                                    i === 0 ? '' : 'md:border-l md:border-black/10 md:pl-12'
+                                } ${
+                                    /* Mobile styling only */
+                                    'bg-black text-white p-6 rounded-b-xl md:bg-transparent md:text-black md:p-0 md:rounded-none'
+                                }`}>
+                                    <div className="space-y-4 md:space-y-6">
+                                        <h3 className="text-xl md:text-5xl font-black italic md:not-italic md:uppercase md:tracking-tight leading-tight md:leading-[0.9]">
+                                            {item.title}
+                                        </h3>
+                                        <p className="md:hidden text-[9px] font-bold uppercase tracking-widest text-indigo-400 italic leading-none">{item.subtitle}</p>
+                                        <p className="text-[10px] md:text-lg font-medium leading-relaxed opacity-60 md:opacity-90">
+                                            {item.description}
+                                        </p>
+                                    </div>
+                                    <Link href="/about/howitworks" className="flex items-center gap-2 font-black text-[8px] md:text-sm uppercase tracking-widest text-white/40 md:text-black/40 border-b border-white/10 md:border-black/10 w-fit pb-0.5 mt-4 hover:text-indigo-500 hover:border-indigo-500 transition-all">
+                                        Learn more <ArrowRight size={14} />
+                                    </Link>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </section>
@@ -248,8 +287,8 @@ export default async function EnterprisePage() {
                             {/* Right Column */}
                             <div className="space-y-4">
                                 <div>
-                                    <select className="w-full bg-zinc-100 border-none rounded-lg px-4 py-3 font-medium focus:ring-2 focus:ring-black appearance-none text-zinc-400 text-sm">
-                                        <option value="" disabled selected>Industry</option>
+                                    <select defaultValue="" className="w-full bg-zinc-100 border-none rounded-lg px-4 py-3 font-medium focus:ring-2 focus:ring-black appearance-none text-zinc-400 text-sm">
+                                        <option value="" disabled>Industry</option>
                                         <option value="coffee">Coffee</option>
                                         <option value="restaurant">Restaurant</option>
                                         <option value="hospitality">Hospitality</option>
@@ -263,8 +302,8 @@ export default async function EnterprisePage() {
                                     <input type="text" placeholder="Country" className="w-full bg-zinc-100 border-none rounded-lg px-4 py-3 font-medium focus:ring-2 focus:ring-black placeholder:text-zinc-400 text-sm" />
                                 </div>
                                 <div>
-                                    <select className="w-full bg-zinc-100 border-none rounded-lg px-4 py-3 font-medium focus:ring-2 focus:ring-black appearance-none text-zinc-400 text-sm">
-                                        <option value="" disabled selected>How did you hear about us?</option>
+                                    <select defaultValue="" className="w-full bg-zinc-100 border-none rounded-lg px-4 py-3 font-medium focus:ring-2 focus:ring-black appearance-none text-zinc-400 text-sm">
+                                        <option value="" disabled>How did you hear about us?</option>
                                         <option value="search">Search Engine</option>
                                         <option value="social">Social Media</option>
                                         <option value="referral">Referral</option>
