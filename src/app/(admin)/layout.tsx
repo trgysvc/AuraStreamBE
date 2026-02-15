@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
     LayoutDashboard,
     UploadCloud,
@@ -46,8 +47,14 @@ export default async function AdminLayout({ children }: { children: ReactNode })
             <aside className="w-72 bg-[#0A0A0A] border-r border-white/5 hidden md:flex flex-col sticky top-0 h-screen">
                 <div className="p-10">
                     <Link href="/admin" className="flex items-center gap-3 group">
-                        <div className="h-10 w-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(79,70,229,0.4)] group-hover:scale-110 transition-transform">
-                            <ShieldCheck size={22} className="text-white" />
+                        <div className="relative h-10 w-10">
+                            <Image
+                                src="/brand-icon.png"
+                                alt="SonarAura"
+                                fill
+                                className="object-contain mix-blend-screen"
+                                priority
+                            />
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xl font-black italic tracking-widest text-white leading-none">

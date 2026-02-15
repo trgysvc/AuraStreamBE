@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
@@ -26,9 +27,18 @@ export function MainHeader({ initialUser }: { initialUser?: any }) {
             <header className="fixed top-0 left-0 right-0 z-[200] flex items-center justify-between px-6 bg-black/90 backdrop-blur-sm transition-all duration-300 border-b border-white/10 h-20">
                 <div className="flex items-center gap-12 h-full">
                     {/* Logo Area */}
-                    <Link href="/" className="flex items-center gap-2 group leading-none z-[210]">
-                        <div className="h-8 w-8 bg-white text-black rounded flex items-center justify-center font-bold transition-transform group-hover:scale-110">S</div>
-                        <span className="text-xl font-black italic tracking-widest text-white leading-none">
+                    {/* Logo Area */}
+                    <Link href="/" className="flex items-center gap-3 group leading-none z-[210]">
+                        <div className="relative h-8 w-8">
+                            <Image
+                                src="/images/Logo.png"
+                                alt="SonarAura"
+                                fill
+                                className="object-contain"
+                                priority
+                            />
+                        </div>
+                        <span className="text-xl font-black italic tracking-widest text-white select-none">
                             SONAR<span className="font-light text-zinc-300">AURA</span>
                         </span>
                     </Link>
@@ -75,9 +85,9 @@ export function MainHeader({ initialUser }: { initialUser?: any }) {
                             </>
                         )}
                     </div>
-                    
+
                     {/* Hamburger Toggle */}
-                    <button 
+                    <button
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         className="lg:hidden text-white z-[210] p-2"
                         aria-label="Toggle Menu"
@@ -95,9 +105,9 @@ export function MainHeader({ initialUser }: { initialUser?: any }) {
                     <Link href="/pricing" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black italic uppercase tracking-tighter text-white">Pricing</Link>
                     <Link href="/enterprise" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black italic uppercase tracking-tighter text-white">Enterprise</Link>
                     <Link href="/about/ad" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black italic uppercase tracking-tighter text-indigo-400">Features</Link>
-                    
+
                     <div className="w-full h-px bg-white/10 my-4" />
-                    
+
                     {!user ? (
                         <div className="flex flex-col gap-6 w-full max-w-xs mx-auto">
                             <Link href="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold text-zinc-400 uppercase tracking-widest">Log In</Link>

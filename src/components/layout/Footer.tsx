@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface FooterProps {
     variant?: 'light' | 'dark';
@@ -16,10 +17,17 @@ export function Footer({ variant = 'light' }: FooterProps) {
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-24">
                     {/* Logo & Lang */}
                     <div className="lg:col-span-4 space-y-8">
-                        <div className="flex items-center gap-2 mb-4">
-                            <div className="h-10 w-10 bg-white/10 rounded items-center justify-center flex font-bold text-lg">S</div>
-                            <span className="text-xl font-black italic tracking-widest select-none">
-                                SONAR<span className={`font-light ${isDark ? 'text-zinc-400' : 'text-zinc-600'}`}>AURA</span>
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="relative h-8 w-8">
+                                <Image
+                                    src="/images/Logo.png"
+                                    alt="SonarAura"
+                                    fill
+                                    className={`object-contain ${isDark ? '' : 'invert'}`}
+                                />
+                            </div>
+                            <span className={`text-xl font-black italic tracking-widest select-none ${isDark ? 'text-white' : 'text-black'}`}>
+                                SONAR<span className={`font-light ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}>AURA</span>
                             </span>
                         </div>
                         <div className={`inline-flex items-center gap-2 px-4 py-2 border rounded text-sm font-medium cursor-pointer transition-colors ${isDark
@@ -47,8 +55,8 @@ export function Footer({ variant = 'light' }: FooterProps) {
                             <ul className={`space-y-4 text-sm font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-800'}`}>
                                 <li><Link href="/about/howitworks" className="hover:text-white transition-opacity">How it works</Link></li>
                                 <li><Link href="#" className="hover:text-white transition-opacity">Use cases</Link></li>
-                                <li><Link href="#" className="hover:text-white transition-opacity">For businesses</Link></li>
-                                <li><Link href="#" className="hover:text-white transition-opacity">Enterprise</Link></li>
+                                <li><Link href="/enterprise#contact-section" className="hover:text-white transition-opacity">For businesses</Link></li>
+                                <li><Link href="/enterprise" className="hover:text-white transition-opacity">Enterprise</Link></li>
                                 <li><Link href="#" className="hover:text-white transition-opacity">Blog</Link></li>
                             </ul>
                         </div>
@@ -72,10 +80,24 @@ export function Footer({ variant = 'light' }: FooterProps) {
                         <Link href="/privacy" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Privacy</Link>
                         <Link href="/cookies" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Cookie</Link>
                     </div>
-                    <div className={`flex gap-8 ${isDark ? 'text-white/40' : 'text-black opacity-40'}`}>
-                        <span>Instagram</span>
+                    <div className={`flex gap-8 ${isDark ? 'text-white/40' : 'text-black/40'}`}>
+                        <Link
+                            href="https://www.instagram.com/sonaraura"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}
+                        >
+                            Instagram
+                        </Link>
                         <span>YouTube</span>
-                        <span>Twitter</span>
+                        <Link
+                            href="https://x.com/sonaraura"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}
+                        >
+                            Twitter
+                        </Link>
                         <span>Facebook</span>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { submitReferral } from '@/app/actions/referral';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
@@ -77,6 +78,15 @@ export default function DashboardHeader() {
                 {/* Left: Logo & Nav */}
                 <div className="flex items-center gap-12">
                     <Link href="/" className="flex items-center gap-2 group">
+                        <div className="relative h-8 w-8">
+                            <Image
+                                src="/images/Logo.png"
+                                alt="SonarAura"
+                                fill
+                                className="object-contain"
+                                priority
+                            />
+                        </div>
                         <span className="text-xl font-black italic tracking-widest text-white select-none">
                             SONAR<span className="font-light text-zinc-300">AURA</span>
                         </span>
