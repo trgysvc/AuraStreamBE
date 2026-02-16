@@ -90,15 +90,22 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         // Web Audio API for visualizer
         try {
             const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-            if (AudioCtx && !audioContextRef.current) {
+            if (AudioCtx && !audioContextRef.current && audioRef.current) {
                 const ctx = new AudioCtx();
                 const node = ctx.createAnalyser();
                 node.fftSize = 256;
-                const source = ctx.createMediaElementSource(audioRef.current);
-                source.connect(node);
-                node.connect(ctx.destination);
-                audioContextRef.current = ctx;
-                setAnalyser(node);
+                
+                // Safari CORS Check: MediaElementSource requires proper CORS headers
+                // If it fails, we fall back to normal audio without visualizer
+                try {
+                    const source = ctx.createMediaElementSource(audioRef.current);
+                    source.connect(node);
+                    node.connect(ctx.destination);
+                    audioContextRef.current = ctx;
+                    setAnalyser(node);
+                } catch (sourceErr) {
+                    console.warn("MediaElementSource failed (likely CORS), visualizer disabled.");
+                }
             }
         } catch (e) {
             console.warn("Web Audio setup failed");
@@ -109,24 +116,29 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
                 audioContextRef.current.resume().catch(() => {});
             }
+            
             // Safari also needs a "dummy" play on a user gesture to unlock the element
-            if (audioRef.current && audioRef.current.paused) {
+            if (audioRef.current) {
                 const p = audioRef.current.play();
                 if (p !== undefined) {
                     p.then(() => {
+                        // Pause immediately after unlocking
                         audioRef.current?.pause();
                     }).catch(() => {});
                 }
             }
             window.removeEventListener('click', unlock);
             window.removeEventListener('touchstart', unlock);
+            window.removeEventListener('mousedown', unlock);
         };
         window.addEventListener('click', unlock);
         window.addEventListener('touchstart', unlock);
+        window.addEventListener('mousedown', unlock);
 
         return () => {
             window.removeEventListener('click', unlock);
             window.removeEventListener('touchstart', unlock);
+            window.removeEventListener('mousedown', unlock);
         };
     }, []);
 
@@ -168,15 +180,23 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const playTrack = async (track: Track, list?: Track[]) => {
         if (!track || !audioRef.current) return;
 
-        // Log telemetry for the PREVIOUS track before switching
+        // 1. IMMEDIATE PLAY (Safari Fix)
+        // We trigger a play on the current audio element immediately to keep the user gesture active.
+        // Even if the src isn't set yet, this "primes" the element.
+        const silentPlay = audioRef.current.play();
+        if (silentPlay !== undefined) {
+            silentPlay.then(() => {}).catch(() => {});
+        }
+
+        // Log telemetry for the PREVIOUS track
         if (currentTrack && currentTrack.id !== track.id) {
             const durationPlayed = Math.floor(audioRef.current.currentTime);
             logPlaybackEvent_Action({
                 trackId: currentTrack.id,
                 durationListened: durationPlayed,
-                skipped: durationPlayed < (audioRef.current.duration * 0.8), // Considered skipped if < 80%
+                skipped: durationPlayed < (audioRef.current.duration * 0.8),
                 tuningUsed: tuning,
-                venueId: '00000000-0000-0000-0000-000000000000' // Placeholder UUID for development
+                venueId: '00000000-0000-0000-0000-000000000000'
             });
         }
 
@@ -191,20 +211,20 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         const targetTuning = isAutoTuning ? EnergyCurve.getCurrentTuning() : tuning;
         let playUrl = track.availableTunings?.[targetTuning] || track.src;
 
-
         if (!playUrl) {
             console.error("No valid source found for track:", track.title);
             return;
         }
 
         try {
-            if (audioContextRef.current?.state === 'suspended') {
+            // Ensure AudioContext is resumed on Safari
+            if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
                 audioContextRef.current.resume().catch(() => {});
             }
 
+            // Set source and properties
             audioRef.current.src = playUrl;
 
-            // Apply DSP (Simplified for reliability)
             if (!track.availableTunings?.[targetTuning]) {
                 if (targetTuning === '432hz') audioRef.current.playbackRate = 0.9818;
                 else if (targetTuning === '528hz') audioRef.current.playbackRate = 1.05; 
@@ -213,7 +233,8 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                 audioRef.current.playbackRate = 1.0;
             }
 
-            audioRef.current.load();
+            // Safari specific: Don't call .load() if not necessary, or call it before setting src.
+            // Using .play() directly after setting .src is generally safer on Safari.
             const playPromise = audioRef.current.play();
             
             if (playPromise !== undefined) {
