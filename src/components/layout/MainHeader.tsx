@@ -29,7 +29,7 @@ export function MainHeader({ initialUser }: { initialUser?: any }) {
                     {/* Logo Area */}
                     {/* Logo Area */}
                     <Link href="/" className="flex items-center gap-3 group leading-none z-[210]">
-                        <div className="relative h-8 w-8">
+                        <div className="relative h-10 w-10">
                             <Image
                                 src="/images/Logo.png"
                                 alt="SonarAura"

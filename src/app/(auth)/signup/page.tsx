@@ -162,6 +162,30 @@ export default function SignupPage() {
                             </div>
                         </div>
 
+                        <div className="flex items-start space-x-3">
+                            <div className="flex items-center h-5">
+                                <input
+                                    id="terms"
+                                    name="terms"
+                                    type="checkbox"
+                                    required
+                                    className="h-4 w-4 text-black border-gray-300 rounded focus:ring-black transition-colors"
+                                />
+                            </div>
+                            <div className="text-xs">
+                                <label htmlFor="terms" className="text-gray-500">
+                                    By registering, you agree to our{' '}
+                                    <Link href="/terms" className="text-gray-900 font-semibold hover:underline">
+                                        Terms of Service
+                                    </Link>{' '}
+                                    and{' '}
+                                    <Link href="/privacy" className="text-gray-900 font-semibold hover:underline">
+                                        Privacy Policy
+                                    </Link>.
+                                </label>
+                            </div>
+                        </div>
+
                         {error && (
                             <div className="text-red-500 text-sm bg-red-50 p-3 rounded-md border border-red-100 flex items-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">

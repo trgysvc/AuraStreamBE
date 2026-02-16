@@ -18,12 +18,12 @@ export function Footer({ variant = 'light' }: FooterProps) {
                     {/* Logo & Lang */}
                     <div className="lg:col-span-4 space-y-8">
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="relative h-8 w-8">
+                            <div className="relative h-10 w-10">
                                 <Image
                                     src="/images/Logo.png"
                                     alt="SonarAura"
                                     fill
-                                    className={`object-contain ${isDark ? '' : 'invert'}`}
+                                    className="object-contain"
                                 />
                             </div>
                             <span className={`text-xl font-black italic tracking-widest select-none ${isDark ? 'text-white' : 'text-black'}`}>
@@ -54,7 +54,7 @@ export function Footer({ variant = 'light' }: FooterProps) {
                             <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Learn More</h4>
                             <ul className={`space-y-4 text-sm font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-800'}`}>
                                 <li><Link href="/about/howitworks" className="hover:text-white transition-opacity">How it works</Link></li>
-                                <li><Link href="#" className="hover:text-white transition-opacity">Use cases</Link></li>
+                                <li><Link href="/about/ad" className="hover:text-white transition-opacity">Features</Link></li>
                                 <li><Link href="/enterprise#contact-section" className="hover:text-white transition-opacity">For businesses</Link></li>
                                 <li><Link href="/enterprise" className="hover:text-white transition-opacity">Enterprise</Link></li>
                                 <li><Link href="#" className="hover:text-white transition-opacity">Blog</Link></li>

@@ -65,9 +65,6 @@ export default async function LandingPage() {
                             </h2>
                             <p className="text-sm md:text-base text-zinc-400">Find the perfect track for any platform.</p>
                         </div>
-                        <Link href="/music" className="flex items-center gap-2 text-xs md:text-sm font-bold uppercase tracking-[0.15em] text-white border border-white/20 px-5 py-2.5 rounded-full hover:bg-white/10 transition-colors whitespace-nowrap self-start md:self-auto">
-                            Browse Catalog <ArrowRight size={16} />
-                        </Link>
                     </div>
 
                     {/* Cards Grid */}

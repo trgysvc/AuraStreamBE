@@ -8,12 +8,13 @@ interface LocationState {
     city: string | null;
     loading: boolean;
     error: string | null;
+    requestLocationPermission: () => Promise<void>;
 }
 
 const LocationContext = createContext<LocationState | undefined>(undefined);
 
 export function LocationProvider({ children }: { children: React.ReactNode }) {
-    const [state, setState] = useState<LocationState>({
+    const [state, setState] = useState<Omit<LocationState, 'requestLocationPermission'>>({
         lat: null,
         lon: null,
         city: null,
@@ -21,41 +22,46 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
         error: null
     });
 
+    const requestLocationPermission = async () => {
+        if (typeof window === 'undefined' || !navigator.geolocation) {
+            await fetchIPLocation();
+            return;
+        }
+
+        setState(s => ({ ...s, loading: true }));
+
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const { latitude, longitude } = position.coords;
+                let city = 'Your Location';
+                try {
+                    const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
+                    const data = await res.json();
+                    city = data.city || data.locality || 'Your Location';
+                } catch (e) {
+                    console.error('Reverse Geocode failed');
+                }
+
+                setState({
+                    lat: latitude,
+                    lon: longitude,
+                    city: city,
+                    loading: false,
+                    error: null
+                });
+            },
+            async (error) => {
+                console.warn('Geolocation denied or failed, using IP-based fallback.');
+                await fetchIPLocation();
+            }
+        );
+    };
+
     useEffect(() => {
         if (typeof window === 'undefined') return;
-
-        // 1. Try to get precise coordinates from Browser API
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                async (position) => {
-                    const { latitude, longitude } = position.coords;
-                    
-                    // Optional: Reverse Geocode to get City Name
-                    let city = 'Your Location';
-                    try {
-                        const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
-                        const data = await res.json();
-                        city = data.city || data.locality || 'Your Location';
-                    } catch (e) {
-                        console.error('Reverse Geocode failed');
-                    }
-
-                    setState({
-                        lat: latitude,
-                        lon: longitude,
-                        city: city,
-                        loading: false,
-                        error: null
-                    });
-                },
-                (error) => {
-                    console.warn('Geolocation denied or failed, using IP-based fallback.');
-                    fetchIPLocation();
-                }
-            );
-        } else {
-            fetchIPLocation();
-        }
+        // Automatically fetch IP-based location on mount (no permission needed)
+        // Precise location will be requested manually later
+        fetchIPLocation();
     }, []);
 
     const fetchIPLocation = async () => {
@@ -76,7 +82,7 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
     };
 
     return (
-        <LocationContext.Provider value={state}>
+        <LocationContext.Provider value={{ ...state, requestLocationPermission }}>
             {children}
         </LocationContext.Provider>
     );
