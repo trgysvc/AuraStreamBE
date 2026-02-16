@@ -7,6 +7,7 @@ import { S3Service } from '@/lib/services/s3';
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
+import { execSync } from 'child_process';
 
 const QUEUE_URL = process.env.AWS_SQS_QUEUE_URL!;
 
@@ -70,6 +71,15 @@ async function processTrackJob(trackId: string) {
         console.log(`-> Downloading raw file from S3: ${rawFile.s3_key}`);
         await S3Service.downloadToTemp(rawFile.s3_key, S3Service.buckets.raw!, rawLocalPath);
 
+        // --- NEW: ANALYZE WITH PYTHON ---
+        console.log(`-> Running Python Signal Analysis & Watermarking...`);
+        const analyzerPath = path.join(process.cwd(), 'scripts', 'audio_analyzer.py');
+        const analysisRaw = execSync(`python3 "${analyzerPath}" "${rawLocalPath}" "${trackId}"`).toString();
+        const analysis = JSON.parse(analysisRaw);
+
+        if (analysis.error) throw new Error(`Python Analysis Error: ${analysis.error}`);
+        console.log(`-> Real Duration detected: ${analysis.duration}s, BPM: ${analysis.bpm}`);
+
         // 3. Process High-Fidelity Versions
         const tunings = [
             { id: '440hz', ratio: 1.0 },
@@ -94,22 +104,31 @@ async function processTrackJob(trackId: string) {
             await S3Service.uploadFromPath(localPath, s3Key, S3Service.buckets.processed!, 'audio/mp4');
 
             // 4. Record in Database
-            await supabase.from('track_files').insert({
+            await supabase.from('track_files').upsert({
                 track_id: trackId,
                 file_type: 'stream_aac',
                 tuning: tuning.id,
                 s3_key: s3Key,
                 bitrate: 256
-            });
+            }, { onConflict: 'track_id,file_type,tuning' });
         }
 
-        // 5. Finalize Track
+        // 5. Finalize Track with REAL data from Python
         await supabase.from('tracks').update({
             status: 'active',
+            duration_sec: Math.round(analysis.duration), // Overwrite the 180s placeholder
+            bpm: analysis.bpm,
+            key: analysis.key,
+            metadata: {
+                technical: { bpm: analysis.bpm, key: analysis.key },
+                vibe: { energy_level: analysis.energy },
+                waveform: analysis.waveform,
+                steganography: "LSB_V1"
+            },
             updated_at: new Date().toISOString()
         }).eq('id', trackId);
 
-        console.log(`[SUCCESS] Track ${trackId} is now active in all frequencies.`);
+        console.log(`[SUCCESS] Track ${trackId} is now active with real duration: ${analysis.duration}s`);
 
     } catch (error) {
         console.error(`[FAILURE] Job processing failed for ${trackId}:`, error);

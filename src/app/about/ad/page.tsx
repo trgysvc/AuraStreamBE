@@ -121,7 +121,7 @@ export default function AdPage() {
                         Molecular Frequency Engineering & Atmospheric Intelligence.
                     </p>
                     <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 pt-6 md:pt-8">
-                        <Link href="/dashboard" className="w-full md:w-auto px-10 py-4 md:px-12 md:py-5 bg-white text-black rounded-full font-black text-xs uppercase tracking-[0.3em] hover:scale-105 transition-all shadow-2xl">
+                        <Link href="/dashboard/venue" className="w-full md:w-auto px-10 py-4 md:px-12 md:py-5 bg-white text-black rounded-full font-black text-xs uppercase tracking-[0.3em] hover:scale-105 transition-all shadow-2xl">
                             Explore Catalog
                         </Link>
                         <Link href="/account" className="w-full md:w-auto px-10 py-4 md:px-12 md:py-5 bg-transparent border border-white/10 text-white rounded-full font-black text-xs uppercase tracking-[0.3em] hover:bg-white/5 transition-all">

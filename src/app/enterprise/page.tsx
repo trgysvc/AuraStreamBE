@@ -5,6 +5,7 @@ import { Footer } from '@/components/layout/Footer';
 import { MainHeader } from '@/components/layout/MainHeader';
 import { createClient } from '@/lib/db/server';
 import { BUSINESS_SECTORS } from './data';
+import TallyForm from '@/components/shared/TallyForm';
 
 export default async function EnterprisePage() {
     const supabase = createClient();
@@ -258,72 +259,21 @@ export default async function EnterprisePage() {
             </section>
 
             {/* Contact / CTA Section */}
-            <section id="contact-section" className="py-32 px-6 bg-[#D9E1EB] text-black">
-                <div className="max-w-4xl mx-auto bg-white p-12 md:p-16 rounded-3xl shadow-2xl text-center space-y-8">
-                    <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none uppercase italic">
-                        Ready to scale your sound?
-                    </h2>
-                    <p className="text-xl text-black/60 max-w-2xl mx-auto">
-                        Get a custom quote tailored to your number of locations and specific needs.
-                    </p>
-                    <form className="max-w-5xl mx-auto space-y-8 text-left">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {/* Left Column */}
-                            <div className="space-y-4">
-                                <div>
-                                    <input type="text" placeholder="Name surname" className="w-full bg-zinc-100 border-none rounded-lg px-4 py-3 font-medium focus:ring-2 focus:ring-black placeholder:text-zinc-400 text-sm" />
-                                </div>
-                                <div>
-                                    <input type="text" placeholder="Company name" className="w-full bg-zinc-100 border-none rounded-lg px-4 py-3 font-medium focus:ring-2 focus:ring-black placeholder:text-zinc-400 text-sm" />
-                                </div>
-                                <div>
-                                    <input type="email" placeholder="Work email" className="w-full bg-zinc-100 border-none rounded-lg px-4 py-3 font-medium focus:ring-2 focus:ring-black placeholder:text-zinc-400 text-sm" />
-                                </div>
-                                <div>
-                                    <input type="tel" placeholder="Work phone" className="w-full bg-zinc-100 border-none rounded-lg px-4 py-3 font-medium focus:ring-2 focus:ring-black placeholder:text-zinc-400 text-sm" />
-                                </div>
-                            </div>
+            <section id="contact-section" className="py-12 md:py-20 px-6 bg-[#D9E1EB] text-black">
+                <div className="max-w-4xl mx-auto bg-white p-6 md:p-12 rounded-3xl shadow-2xl text-center space-y-4 md:space-y-6">
+                    <div className="space-y-2 md:space-y-4">
+                        <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none uppercase italic">
+                            Ready to scale your sound?
+                        </h2>
+                        <p className="text-lg text-black/60 max-w-2xl mx-auto">
+                            Get a custom quote tailored to your number of locations and specific needs.
+                        </p>
+                    </div>
+                    
+                    {/* Tally Form Integration - Seamless & Auto-resizing */}
+                    <TallyForm formId="zxqExR" />
 
-                            {/* Right Column */}
-                            <div className="space-y-4">
-                                <div>
-                                    <select defaultValue="" className="w-full bg-zinc-100 border-none rounded-lg px-4 py-3 font-medium focus:ring-2 focus:ring-black appearance-none text-zinc-400 text-sm">
-                                        <option value="" disabled>Industry</option>
-                                        <option value="coffee">Coffee</option>
-                                        <option value="restaurant">Restaurant</option>
-                                        <option value="hospitality">Hospitality</option>
-                                        <option value="retail">Retail</option>
-                                        <option value="fitness">Fitness & Wellness</option>
-                                        <option value="corporate">Corporate</option>
-                                        <option value="other">Other</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <input type="text" placeholder="Country" className="w-full bg-zinc-100 border-none rounded-lg px-4 py-3 font-medium focus:ring-2 focus:ring-black placeholder:text-zinc-400 text-sm" />
-                                </div>
-                                <div>
-                                    <select defaultValue="" className="w-full bg-zinc-100 border-none rounded-lg px-4 py-3 font-medium focus:ring-2 focus:ring-black appearance-none text-zinc-400 text-sm">
-                                        <option value="" disabled>How did you hear about us?</option>
-                                        <option value="search">Search Engine</option>
-                                        <option value="social">Social Media</option>
-                                        <option value="referral">Referral</option>
-                                        <option value="blog">Blog / Article</option>
-                                        <option value="other">Other</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <textarea rows={4} className="w-full bg-zinc-100 border-none rounded-lg px-4 py-3 font-medium focus:ring-2 focus:ring-black resize-none placeholder:text-zinc-400 text-sm" placeholder="What are the primary strategic objectives you aim to achieve with Sonura?"></textarea>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="pt-4">
-                            <button className="w-full py-4 bg-black text-white rounded-lg font-bold text-lg uppercase tracking-widest hover:bg-zinc-800 transition-colors">
-                                Request Enterprise Quote
-                            </button>
-                        </div>
-                    </form>
-                    <p className="text-xs text-zinc-400 font-medium">
+                    <p className="text-[10px] text-zinc-400 font-medium -mt-4">
                         By requesting a quote, you agree to our <Link href="/legal" className="underline hover:text-zinc-600 transition-colors">Terms of Service</Link>.
                     </p>
                 </div>
@@ -336,7 +286,6 @@ export default async function EnterprisePage() {
 
 function BusinessGrid() {
     // Randomly select 8 unique items
-    // Fisher-Yates shuffle approximation for simplicity in server component
     const shuffled = [...BUSINESS_SECTORS].sort(() => 0.5 - Math.random());
     const selected = shuffled.slice(0, 8);
 

@@ -23,6 +23,7 @@ export function Footer({ variant = 'light' }: FooterProps) {
                                     src="/images/Logo.png"
                                     alt="SonarAura"
                                     fill
+                                    sizes="(max-w-768px) 40px, 40px"
                                     className="object-contain"
                                 />
                             </div>
@@ -67,7 +68,7 @@ export function Footer({ variant = 'light' }: FooterProps) {
                                 <li><Link href="/about/us" className="hover:text-white transition-opacity">About us</Link></li>
                                 <li><Link href="#" className="hover:text-white transition-opacity">Press</Link></li>
                                 <li><Link href="#" className="hover:text-white transition-opacity">Careers</Link></li>
-                                <li><Link href="#" className="hover:text-white transition-opacity">Contact</Link></li>
+                                <li><Link href="/contact" className="hover:text-white transition-opacity">Contact</Link></li>
                             </ul>
                         </div>
                     </div>

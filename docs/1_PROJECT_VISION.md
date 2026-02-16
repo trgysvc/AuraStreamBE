@@ -36,7 +36,8 @@
 - Hızlı arama ve bulma (2 dakika hedefi)
 
 **Teknik İnovasyonlar:**
-- Gerçek zamanlı 432Hz transpozisyon
+- **High-Fidelity Frequency Engineering:** Rubber Band Library kullanarak hızı bozmadan profesyonel 432Hz/528Hz üretimi.
+- **Transient-Aware Pitch Shifting:** Davul vuruşlarını ve vokal netliğini koruyan gelişmiş DSP algoritmaları.
 - Akıllı offline cache yönetimi
 - Ses kalite garantisi (-14 LUFS standardı)
 

@@ -87,8 +87,16 @@
 *   **Processed Bucket:** Transcoded assets, private.
 *   **Public/CDN:** CloudFront protected access (Signed URLs).
 
-### 3.3 Audio Processing (AWS Lambda/FFmpeg)
+### 3.3 Audio Processing (AWS Lambda/FFmpeg/Python)
 *   **Pipeline:** Norm (-14 LUFS) -> Transcode (AAC/FLAC) -> Freq Shift (432Hz) -> Watermark.
+*   **High-Fidelity Tuning (Rubber Band Library):**
+    *   **Algorithm:** Professional-grade "Time-Stretching/Pitch-Shifting" using the Rubber Band Library.
+    *   **Key Feature:** **Transient-Aware Processing.** Unlike standard Phase Vocoders, this preserves the sharp attacks of percussion (drums) and the natural phase of vocals while shifting the frequency.
+    *   **BPM Integrity:** Tuning changes (432Hz/528Hz) are performed with 0% change in tempo or duration, ensuring the venue's Energy Curve remains mathematically consistent across all frequencies.
+    *   **Targets:** 
+        - 432Hz: -31.76 cents (Peace/Bio-sync)
+        - 528Hz: +4 cents (Vitality/Regeneration)
+    *   **Storage:** Processed masters are stored as separate assets in S3 (`processed/{id}/432hz.wav`, `processed/{id}/528hz.wav`) to avoid real-time CPU overhead in the browser.
 
 ## 4. Environment Variables
 (See Implementation Plan PDF for full list)

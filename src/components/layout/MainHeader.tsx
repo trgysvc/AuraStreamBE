@@ -34,6 +34,7 @@ export function MainHeader({ initialUser }: { initialUser?: any }) {
                                 src="/images/Logo.png"
                                 alt="SonarAura"
                                 fill
+                                sizes="(max-w-768px) 40px, 40px"
                                 className="object-contain"
                                 priority
                             />
@@ -45,8 +46,8 @@ export function MainHeader({ initialUser }: { initialUser?: any }) {
 
                     {/* Desktop Navigation */}
                     <nav className="hidden lg:flex items-center gap-8 text-[15px] font-medium text-gray-400">
-                        <span className="cursor-default hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300">Music</span>
-                        <span className="cursor-default hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300">Sound Effects</span>
+                        <span className="cursor-default hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300">Venue</span>
+                        <span className="cursor-default hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300">Creators</span>
                         <Link
                             href="/pricing"
                             className={`transition-colors ${pathname === '/pricing' ? 'text-white' : 'hover:text-white'}`}
@@ -100,8 +101,8 @@ export function MainHeader({ initialUser }: { initialUser?: any }) {
             {/* Mobile Drawer Overlay (Epidemic Style) */}
             <div className={`fixed inset-0 bg-black z-[190] transition-all duration-500 ease-in-out lg:hidden overflow-y-auto ${isMobileMenuOpen ? 'translate-y-0 opacity-100 pointer-events-auto' : '-translate-y-full opacity-0 pointer-events-none'}`}>
                 <nav className="flex flex-col items-center pt-32 pb-12 space-y-8 px-10 text-center min-h-full">
-                    <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black italic uppercase tracking-tighter text-white">Music</Link>
-                    <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black italic uppercase tracking-tighter text-white">Sound Effects</Link>
+                    <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black italic uppercase tracking-tighter text-white">Venue</Link>
+                    <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black italic uppercase tracking-tighter text-white">Creators</Link>
                     <Link href="/pricing" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black italic uppercase tracking-tighter text-white">Pricing</Link>
                     <Link href="/enterprise" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black italic uppercase tracking-tighter text-white">Enterprise</Link>
                     <Link href="/about/ad" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black italic uppercase tracking-tighter text-indigo-400">Features</Link>

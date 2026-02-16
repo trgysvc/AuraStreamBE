@@ -45,6 +45,10 @@
     - [x] **Aura Karaoke Engine:** Word-level lyric synchronization and highlighting.
     - [x] **JIT (Just-In-Time) Cloud Rendering infrastructure**
     - [x] **Elite ROI Analytics & Churn Telemetry**
+- [ ] **Advanced Audio Engineering (Next Up)**
+    - [ ] **Rubber Band Library Integration:** Professional-grade pitch shifting without tempo change.
+    - [ ] **Transient-Aware 432Hz/528Hz Generation:** Implement high-fidelity frequency re-tuning that preserves drum sharpness and vocal naturalness.
+    - [ ] **Multi-Frequency Master Pipeline:** Update `process-tracks.mjs` to automatically generate and store 432Hz/528Hz masters in S3.
 
 ## Phase 3: Applications (Weeks 5-8)
 - [x] **Creator Store (B2C)**
