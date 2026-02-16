@@ -162,28 +162,17 @@ export default function SignupPage() {
                             </div>
                         </div>
 
-                        <div className="flex items-start space-x-3">
-                            <div className="flex items-center h-5">
-                                <input
-                                    id="terms"
-                                    name="terms"
-                                    type="checkbox"
-                                    required
-                                    className="h-4 w-4 text-black border-gray-300 rounded focus:ring-black transition-colors"
-                                />
-                            </div>
-                            <div className="text-xs">
-                                <label htmlFor="terms" className="text-gray-500">
-                                    By registering, you agree to our{' '}
-                                    <Link href="/terms" className="text-gray-900 font-semibold hover:underline">
-                                        Terms of Service
-                                    </Link>{' '}
-                                    and{' '}
-                                    <Link href="/privacy" className="text-gray-900 font-semibold hover:underline">
-                                        Privacy Policy
-                                    </Link>.
-                                </label>
-                            </div>
+                        <div className="text-[10px] text-gray-500 text-center">
+                            By becoming a member, you agree to our{' '}
+                            <Link href="/terms" className="text-gray-900 font-semibold hover:underline">
+                                Terms
+                            </Link>,{' '}
+                            <Link href="/cookies" className="text-gray-900 font-semibold hover:underline">
+                                Cookie
+                            </Link>,{' '}
+                            <Link href="/privacy" className="text-gray-900 font-semibold hover:underline">
+                                Privacy policy
+                            </Link>.
                         </div>
 
                         {error && (
