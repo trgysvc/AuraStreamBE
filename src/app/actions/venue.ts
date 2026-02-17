@@ -134,6 +134,18 @@ export async function getVenueTracks_Action(options?: {
             }
         }
 
+        if (track.title === 'A Veiled Spotlight') {
+            try {
+                const fs = require('fs');
+                const path = require('path');
+                const logPath = path.join(process.cwd(), 'debug-venue.log');
+                const logData = `[${new Date().toISOString()}] Track: ${track.title} (${track.id})\nFiles: ${JSON.stringify(files)}\nDefault Src: ${defaultSrc}\n\n`;
+                fs.appendFileSync(logPath, logData);
+            } catch (e) {
+                console.error('Failed to log to file', e);
+            }
+        }
+
         return {
             id: track.id,
             title: track.title,

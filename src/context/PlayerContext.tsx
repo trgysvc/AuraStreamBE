@@ -94,7 +94,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                 const ctx = new AudioCtx();
                 const node = ctx.createAnalyser();
                 node.fftSize = 256;
-                
+
                 // Safari CORS Check: MediaElementSource requires proper CORS headers
                 // If it fails, we fall back to normal audio without visualizer
                 try {
@@ -114,9 +114,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         // --- Safari Unlocking Hack ---
         const unlock = () => {
             if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
-                audioContextRef.current.resume().catch(() => {});
+                audioContextRef.current.resume().catch(() => { });
             }
-            
+
             // Safari also needs a "dummy" play on a user gesture to unlock the element
             if (audioRef.current) {
                 const p = audioRef.current.play();
@@ -124,7 +124,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                     p.then(() => {
                         // Pause immediately after unlocking
                         audioRef.current?.pause();
-                    }).catch(() => {});
+                    }).catch(() => { });
                 }
             }
             window.removeEventListener('click', unlock);
@@ -185,7 +185,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         // Even if the src isn't set yet, this "primes" the element.
         const silentPlay = audioRef.current.play();
         if (silentPlay !== undefined) {
-            silentPlay.then(() => {}).catch(() => {});
+            silentPlay.then(() => { }).catch(() => { });
         }
 
         // Log telemetry for the PREVIOUS track
@@ -196,7 +196,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                 durationListened: durationPlayed,
                 skipped: durationPlayed < (audioRef.current.duration * 0.8),
                 tuningUsed: tuning,
-                venueId: '00000000-0000-0000-0000-000000000000'
+                venueId: undefined
             });
         }
 
@@ -219,7 +219,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         try {
             // Ensure AudioContext is resumed on Safari
             if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
-                audioContextRef.current.resume().catch(() => {});
+                audioContextRef.current.resume().catch(() => { });
             }
 
             // Set source and properties
@@ -227,7 +227,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
             if (!track.availableTunings?.[targetTuning]) {
                 if (targetTuning === '432hz') audioRef.current.playbackRate = 0.9818;
-                else if (targetTuning === '528hz') audioRef.current.playbackRate = 1.05; 
+                else if (targetTuning === '528hz') audioRef.current.playbackRate = 1.05;
                 else audioRef.current.playbackRate = 1.0;
             } else {
                 audioRef.current.playbackRate = 1.0;
@@ -236,7 +236,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             // Safari specific: Don't call .load() if not necessary, or call it before setting src.
             // Using .play() directly after setting .src is generally safer on Safari.
             const playPromise = audioRef.current.play();
-            
+
             if (playPromise !== undefined) {
                 await playPromise;
             }

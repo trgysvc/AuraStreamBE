@@ -80,8 +80,9 @@ def analyze_audio(file_path, watermark_uuid=None):
         # 5. WATERMARKING (If UUID provided)
         if watermark_uuid:
             y = embed_watermark(y, watermark_uuid)
-            # Save the watermarked file back to the same path
-            sf.write(file_path, y, sr)
+            # Save the watermarked file back to the same path, strictly as WAV
+            # subtype='PCM_16' ensures standard 16-bit WAV compatible with ffmpeg
+            sf.write(file_path, y, sr, format='WAV', subtype='PCM_16')
 
         result = {
             "duration": round(duration, 2),

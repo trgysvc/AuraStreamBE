@@ -29,14 +29,14 @@ export default function BulkUploadPage() {
     const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             const selectedFiles = Array.from(e.target.files);
-            
+
             // Dynamic import to avoid SSR issues
             const jsmediatags = (await import('jsmediatags')).default;
 
             for (const f of selectedFiles) {
                 const id = Math.random().toString(36).substr(2, 9);
                 const baseTitle = f.name.replace(/\.[^/.]+$/, "");
-                
+
                 setFiles(prev => [...prev, {
                     id,
                     file: f,
@@ -128,7 +128,7 @@ export default function BulkUploadPage() {
                     // Construct public URL or S3 path (depends on CDN config)
                     // For now, let's use a simple pattern or the signed URL (temporary)
                     // Ideally, this should be the CloudFront URL.
-                    finalCoverUrl = imgUrl.split('?')[0]; 
+                    finalCoverUrl = imgUrl.split('?')[0];
                 }
 
                 updateFileData(fileObj.id, { progress: 20 });
@@ -153,7 +153,15 @@ export default function BulkUploadPage() {
                 formData.set('bpm', fileObj.bpm);
                 formData.set('genre', fileObj.genre);
                 formData.set('lyrics', fileObj.lyrics);
-                formData.set('duration', '180'); 
+                formData.set('lyrics', fileObj.lyrics);
+
+                // Calculate Duration
+                const audio = new Audio(URL.createObjectURL(fileObj.file));
+                await new Promise((resolve) => {
+                    audio.onloadedmetadata = () => resolve(true);
+                });
+                const duration = Math.round(audio.duration).toString();
+                formData.set('duration', duration);
                 if (finalCoverUrl) formData.set('cover_url', finalCoverUrl);
 
                 const result = await createTrackRecord_Action(formData, audioKey);

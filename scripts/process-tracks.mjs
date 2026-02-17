@@ -44,7 +44,6 @@ async function processAllTracks() {
         const { data: files } = await supabase.from('track_files').select('s3_key, file_type').eq('track_id', track.id).eq('file_type', 'raw').limit(1);
         if (!files?.length) continue;
 
-
         const s3Key = files[0].s3_key;
 
         // SKIP if already processed
@@ -53,44 +52,65 @@ async function processAllTracks() {
             continue;
         }
 
-        const tempPath = path.join(__dirname, `tmp_${track.id}${path.extname(s3Key)}`);
+        const tempFiles = [];
 
         try {
-            // 1. Download from S3 (Raw)
-            const response = await s3Client.send(new GetObjectCommand({ Bucket: env.AWS_S3_BUCKET_RAW, Key: s3Key }));
-            const writer = fs.createWriteStream(tempPath);
+            // 1. Download from S3 (Raw) - Save as input file preserving extension
+            // We need to know the extension to help ffmpeg/librosa if needed, but we'll convert to WAV anyway.
+            const rawExt = path.extname(s3Key);
+            const inputPath = path.join(__dirname, `temp_input_${track.id}${rawExt}`);
+            const pcmPath = path.join(__dirname, `temp_pcm_${track.id}.wav`);
+            const outputPath = path.join(__dirname, `temp_output_${track.id}.mp3`);
 
-            // Wait for pipe to complete
+            tempFiles.push(inputPath, pcmPath, outputPath);
+
+            // Clean up any previous run leftovers
+            tempFiles.forEach(p => { if (fs.existsSync(p)) fs.unlinkSync(p) });
+
+            const response = await s3Client.send(new GetObjectCommand({ Bucket: env.AWS_S3_BUCKET_RAW, Key: s3Key }));
+            const writer = fs.createWriteStream(inputPath);
+
             await new Promise((res, rej) => {
                 response.Body.pipe(writer);
                 response.Body.on('finish', res);
                 response.Body.on('error', rej);
             });
 
-            // 2. Analyze & Watermark with Python
-            // We use the Track ID as the UUID to embed in the signal
-            console.log(` Analyzing features & Embedding Steganographic Watermark...`);
-            const analysisRaw = execSync(`python3 "${path.join(__dirname, 'audio_analyzer.py')}" "${tempPath}" "${track.id}"`).toString();
+            // 2. Decode to PCM WAV (16-bit, 44.1kHz) for predictable Steganography
+            // -y: Overwrite output
+            // -ar 44100: Set sample rate to 44.1kHz
+            // -ac 2: Set channels to 2 (Stereo)
+            console.log(` Decoding to PCM WAV...`);
+            execSync(`ffmpeg -y -i "${inputPath}" -ar 44100 -ac 2 "${pcmPath}"`, { stdio: 'ignore' });
+
+            // 3. Analyze & Watermark (Python overwrites pcmPath with watermarked WAV)
+            console.log(` Analyzing & Embedding Watermark...`);
+            const analysisRaw = execSync(`python3 "${path.join(__dirname, 'audio_analyzer.py')}" "${pcmPath}" "${track.id}"`).toString();
             const analysis = JSON.parse(analysisRaw);
 
             if (analysis.error) throw new Error(analysis.error);
 
-            // 3. Upload Watermarked File to S3
-            const processedKey = `processed/${track.id}/master.wav`;
-            console.log(` Uploading Watermarked Master...`);
+            // 4. Encode to High-Quality MP3 (CBR 320kbps)
+            console.log(` Transcoding to 320kbps MP3...`);
+            // -b:a 320k : Constant Bit Rate 320kbps
+            // -codec:a libmp3lame : Use LAME encoder
+            execSync(`ffmpeg -y -i "${pcmPath}" -codec:a libmp3lame -b:a 320k "${outputPath}"`, { stdio: 'ignore' });
 
-            // Use Buffer for smaller files to avoid streaming header issues in some environments
-            const fileBuffer = fs.readFileSync(tempPath);
+            // 5. Upload Master MP3 to S3
+            const processedKey = `processed/${track.id}/master.mp3`;
+            console.log(` Uploading Master MP3...`);
+
+            const fileBuffer = fs.readFileSync(outputPath);
 
             await s3Client.send(new PutObjectCommand({
                 Bucket: env.AWS_S3_BUCKET_PROCESSED || env.AWS_S3_BUCKET_RAW,
                 Key: processedKey,
                 Body: fileBuffer,
-                ContentType: 'audio/wav',
+                ContentType: 'audio/mpeg', // Correct MIME type for MP3
                 ContentLength: fileBuffer.length
             }));
 
-            // 4. Update Supabase FIRST (Safety)
+            // 6. Update Database
             console.log(` Updating Database...`);
             await supabase.from('tracks').update({
                 bpm: analysis.bpm,
@@ -100,18 +120,18 @@ async function processAllTracks() {
                     technical: { bpm: analysis.bpm, key: analysis.key },
                     vibe: { energy_level: analysis.energy },
                     waveform: analysis.waveform,
-                    steganography: "LSB_V1"
+                    steganography: "LSB_V1_MP3_320K"
                 }
             }).eq('id', track.id);
 
             await supabase.from('track_files').upsert({
                 track_id: track.id,
-                file_type: 'raw',
+                file_type: 'raw', // Keeping 'raw' as the type for the "main playable" file for now
                 s3_key: processedKey,
                 tuning: '440hz'
             }, { onConflict: 'track_id,file_type,tuning' });
 
-            // 5. DELETE ORIGINAL RAW FILE ONLY IF DB IS UPDATED
+            // 7. Cleanup Original S3 File
             if (processedKey !== s3Key) {
                 console.log(` Purging original raw file: ${s3Key}`);
                 await s3Client.send(new DeleteObjectCommand({
@@ -121,10 +141,12 @@ async function processAllTracks() {
             }
 
             console.log(` Done.`);
+
         } catch (err) {
-            console.error(` Error:`, err.message);
+            console.error(` Error processing track ${track.id} (${track.title}):`, err.message);
         } finally {
-            if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+            // Temp Cleanup
+            tempFiles.forEach(p => { if (fs.existsSync(p)) fs.unlinkSync(p) });
         }
     }
 }
