@@ -35,15 +35,18 @@ async function updateCors() {
                 {
                     AllowedHeaders: ['*'],
                     AllowedMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE'],
-                    AllowedOrigins: ['*'], 
+                    AllowedOrigins: ['*'],
                     ExposeHeaders: [
-                        'ETag', 
-                        'Content-Range', 
-                        'Accept-Ranges', 
-                        'Content-Length', 
-                        'Range'
+                        'ETag',
+                        'Content-Range',
+                        'Accept-Ranges',
+                        'Content-Length',
+                        'Range',
+                        'Access-Control-Allow-Origin',
+                        'Access-Control-Allow-Methods',
+                        'Access-Control-Allow-Headers'
                     ],
-                    MaxAgeSeconds: 3600
+                    MaxAgeSeconds: 3000
                 }
             ]
         }

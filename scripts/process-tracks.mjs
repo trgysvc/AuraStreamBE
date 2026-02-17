@@ -126,7 +126,7 @@ async function processAllTracks() {
 
             await supabase.from('track_files').upsert({
                 track_id: track.id,
-                file_type: 'raw', // Keeping 'raw' as the type for the "main playable" file for now
+                file_type: 'stream_mp3', // Tag as streamable MP3 for the player
                 s3_key: processedKey,
                 tuning: '440hz'
             }, { onConflict: 'track_id,file_type,tuning' });
