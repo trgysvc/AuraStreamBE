@@ -1,8 +1,8 @@
 import { createClient } from '@/lib/db/server';
-import { 
-    Sparkles, 
-    Music, 
-    Zap, 
+import {
+    Sparkles,
+    Music,
+    Zap,
     ShieldCheck,
     Download,
     ArrowRight,
@@ -15,13 +15,15 @@ import { EnergyCurve } from '@/lib/logic/EnergyCurve';
 import { SmartWeatherCard } from '@/components/feature/venue/SmartWeatherCard';
 import { WeatherService } from '@/lib/services/weather';
 
+import { headers } from 'next/headers';
+
 async function getAuraHomeData() {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    
+
     if (!user) return null;
 
-    // Parallel fetching for speed
+    // Parallel fetching for initial data
     const [profileRes, venueRes, licenseRes, trackRes, requestRes] = await Promise.all([
         supabase.from('profiles').select('*, tenants(*)').eq('id', user.id).single(),
         supabase.from('venues').select('*').eq('owner_id', user.id).limit(1),
@@ -30,16 +32,41 @@ async function getAuraHomeData() {
         supabase.from('custom_requests').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(2)
     ]);
 
-    const weather = await WeatherService.getCurrentWeather();
+    const venue = venueRes.data?.[0];
+    let lat = 41.0082; // Safe defaults but we try to override
+    let lon = 28.9784;
+    let resolvedCity = 'Istanbul';
+
+    // 1. Resolution Logic: Priority to Venue
+    if (venue?.city) {
+        const coords = await WeatherService.getCoordsFromCity(venue.city);
+        if (coords) {
+            lat = coords.lat;
+            lon = coords.lon;
+            resolvedCity = venue.city;
+        }
+    } else {
+        // 2. IP-based Resolution
+        const headerList = headers();
+        const ip = headerList.get('x-forwarded-for')?.split(',')[0] || '127.0.0.1';
+        const geo = await WeatherService.getCoordsFromIP(ip);
+        if (geo) {
+            lat = geo.lat;
+            lon = geo.lon;
+            resolvedCity = geo.city;
+        }
+    }
+
+    const weather = await WeatherService.getCurrentWeather(lat, lon);
     const currentTuning = EnergyCurve.getCurrentTuning();
 
     return {
         profile: profileRes.data,
-        venue: venueRes.data?.[0],
+        venue,
         latestLicenses: licenseRes.data || [],
         topTracks: trackRes.data || [],
         myRequests: requestRes.data || [],
-        weather,
+        weather: weather ? { ...weather, city: resolvedCity } : null,
         currentTuning,
         time: new Date().getHours()
     };
@@ -50,7 +77,7 @@ export default async function AuraHomePage() {
     if (!data) return null;
 
     const { profile, venue, latestLicenses, topTracks, myRequests, currentTuning, time } = data;
-    
+
     const greeting = time < 12 ? 'Good Morning' : time < 18 ? 'Good Afternoon' : 'Good Evening';
 
     return (
@@ -70,7 +97,7 @@ export default async function AuraHomePage() {
                     </div>
                     <p className="text-zinc-500 font-medium text-sm md:text-xl">The Sonaraura ecosystem is fully operational.</p>
                 </div>
-                
+
                 <div className="flex items-center gap-4">
                     <div className="flex-1 md:flex-none px-4 md:px-6 py-2 md:py-3 bg-white/5 border border-white/10 rounded-xl md:rounded-2xl flex items-center justify-between md:justify-start gap-4 shadow-2xl backdrop-blur-xl">
                         <div className="flex flex-col items-start md:items-end">
@@ -96,7 +123,10 @@ export default async function AuraHomePage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                         {/* Weather & Vibe Card - NOW DYNAMIC */}
-                        <SmartWeatherCard />
+                        <SmartWeatherCard
+                            initialWeather={data.weather}
+                            initialCity={data.weather?.city}
+                        />
 
                         {/* Active Rule Card */}
                         <div className="bg-[#1E1E22] p-6 md:p-8 rounded-2xl md:rounded-[3rem] border border-white/5 shadow-2xl relative overflow-hidden group">
@@ -205,22 +235,21 @@ export default async function AuraHomePage() {
                     {/* Custom Order Status */}
                     {myRequests.length > 0 && (
                         <div className="space-y-4 md:space-y-6 px-2 md:px-0">
-                             <h3 className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.4em] text-zinc-600">Active Requests</h3>
-                             <div className="bg-[#1E1E22] rounded-2xl md:rounded-[3rem] border border-white/5 p-6 md:p-8 space-y-4 md:space-y-6 shadow-2xl">
+                            <h3 className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.4em] text-zinc-600">Active Requests</h3>
+                            <div className="bg-[#1E1E22] rounded-2xl md:rounded-[3rem] border border-white/5 p-6 md:p-8 space-y-4 md:space-y-6 shadow-2xl">
                                 {myRequests.map((req: any) => (
                                     <div key={req.id} className="flex items-center justify-between group">
                                         <div className="space-y-0.5">
                                             <p className="text-[10px] md:text-[11px] font-black text-white uppercase italic truncate max-w-[120px] md:max-w-[150px]">{req.specs?.project_name || 'Custom Track'}</p>
                                             <p className="text-[8px] md:text-[9px] font-bold text-zinc-600 uppercase">{req.status}</p>
                                         </div>
-                                        <div className={`px-2 md:px-3 py-1 rounded-full text-[7px] md:text-[8px] font-black uppercase tracking-widest ${
-                                            req.status === 'completed' ? 'bg-green-500/10 text-green-500' : 'bg-indigo-500/10 text-indigo-400'
-                                        }`}>
+                                        <div className={`px-2 md:px-3 py-1 rounded-full text-[7px] md:text-[8px] font-black uppercase tracking-widest ${req.status === 'completed' ? 'bg-green-500/10 text-green-500' : 'bg-indigo-500/10 text-indigo-400'
+                                            }`}>
                                             {req.status === 'review' ? 'Action Required' : req.status}
                                         </div>
                                     </div>
                                 ))}
-                             </div>
+                            </div>
                         </div>
                     )}
 
@@ -229,7 +258,7 @@ export default async function AuraHomePage() {
                         <div className="absolute -right-8 -bottom-8 opacity-20 group-hover:scale-110 transition-transform duration-700">
                             <Sparkles size={120} className="md:w-40 md:h-40" />
                         </div>
-                        <h4 className="text-xl md:text-2xl font-black text-white italic uppercase tracking-tighter leading-none">Need <br/> Something <br/> Unique?</h4>
+                        <h4 className="text-xl md:text-2xl font-black text-white italic uppercase tracking-tighter leading-none">Need <br /> Something <br /> Unique?</h4>
                         <p className="text-[11px] md:text-xs text-white/70 font-medium leading-relaxed max-w-[200px]">Commission a custom AI track tailored for your brand.</p>
                         <Link href="/dashboard/request" className="inline-flex items-center gap-2 text-[8px] md:text-[10px] font-black text-white uppercase tracking-widest bg-black/20 hover:bg-black/40 px-3 md:px-4 py-1.5 md:py-2 rounded-full transition-all">
                             Music on Request <ArrowRight size={10} className="md:w-3 md:h-3" />

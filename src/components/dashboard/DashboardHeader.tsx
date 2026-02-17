@@ -83,6 +83,7 @@ export default function DashboardHeader() {
                                 src="/images/Logo.png"
                                 alt="SonarAura"
                                 fill
+                                sizes="32px"
                                 className="object-contain"
                                 priority
                             />

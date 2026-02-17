@@ -89,6 +89,7 @@ export default function Sidebar() {
                         src="/images/Logo.png"
                         alt="SonarAura"
                         fill
+                        sizes="32px"
                         className="object-contain"
                     />
                 </div>

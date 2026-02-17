@@ -2,18 +2,60 @@ export interface WeatherData {
     temp: number;
     condition: 'clear' | 'clouds' | 'rain' | 'snow' | 'thunderstorm';
     isDay: boolean;
+    city?: string;
 }
 
 export const WeatherService = {
     /**
-     * Fetches current weather for a location. 
-     * Defaulting to Istanbul coordinates for testing.
+     * Resolves coordinates from a city name using Open-Meteo Geocoding API
      */
-    async getCurrentWeather(lat: number = 41.0082, lon: number = 28.9784): Promise<WeatherData | null> {
+    async getCoordsFromCity(city: string): Promise<{ lat: number; lon: number } | null> {
+        try {
+            const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`);
+            const data = await res.json();
+            if (data.results && data.results.length > 0) {
+                return {
+                    lat: data.results[0].latitude,
+                    lon: data.results[0].longitude
+                };
+            }
+            return null;
+        } catch (e) {
+            console.error('Geocoding Error:', e);
+            return null;
+        }
+    },
+
+    /**
+     * Resolves coordinates from an IP address
+     */
+    async getCoordsFromIP(ip: string): Promise<{ lat: number; lon: number; city: string } | null> {
+        try {
+            const res = await fetch(`https://freeipapi.com/api/json/${ip === '::1' || ip === '127.0.0.1' ? '' : ip}`);
+            if (!res.ok) return null;
+            const data = await res.json();
+            if (data.latitude && data.longitude) {
+                return {
+                    lat: data.latitude,
+                    lon: data.longitude,
+                    city: data.cityName || 'Unknown'
+                };
+            }
+            return null;
+        } catch (e) {
+            console.error('IP Geolocation Error:', e);
+            return null;
+        }
+    },
+
+    /**
+     * Fetches current weather for a location. 
+     */
+    async getCurrentWeather(lat: number, lon: number): Promise<WeatherData | null> {
         try {
             const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
             const data = await res.json();
-            
+
             if (!data.current_weather) return null;
 
             const code = data.current_weather.weathercode;

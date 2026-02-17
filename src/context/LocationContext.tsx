@@ -58,35 +58,13 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
     };
 
     useEffect(() => {
-        if (typeof window === 'undefined') return;
-        // Automatically fetch IP-based location on mount (no permission needed)
-        // Precise location will be requested manually later
-        fetchIPLocation();
+        // Redundant client-side fetching removed as dashboard now uses server-side location resolution
+        setState(s => ({ ...s, loading: false }));
     }, []);
 
     const fetchIPLocation = async () => {
-        // Skip IP fetch on localhost to avoid CORS/Rate-limit console clutter during development
-        if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
-            setState(s => ({ ...s, loading: false, city: 'Local Development' }));
-            return;
-        }
-
-        try {
-            // Using freeipapi.com as it's more permissive for production
-            const res = await fetch('https://freeipapi.com/api/json');
-            if (!res.ok) throw new Error('Fetch failed');
-            const data = await res.json();
-            setState({
-                lat: data.latitude || null,
-                lon: data.longitude || null,
-                city: data.cityName || 'Your Location',
-                loading: false,
-                error: null
-            });
-        } catch (e) {
-            // Silently fail to avoid console clutter. 
-            setState(s => ({ ...s, loading: false }));
-        }
+        // No-op: server now handles location resolution for institutions
+        setState(s => ({ ...s, loading: false }));
     };
 
     return (

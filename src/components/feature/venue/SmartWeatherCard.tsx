@@ -5,16 +5,25 @@ import { useLocation } from '@/context/LocationContext';
 import { getWeather_Action, WeatherData } from '@/app/actions/weather';
 import { Sun, CloudRain, MapPin, Loader2 } from 'lucide-react';
 
-export function SmartWeatherCard() {
+interface SmartWeatherCardProps {
+    initialWeather?: WeatherData | null;
+    initialCity?: string | null;
+}
+
+export function SmartWeatherCard({ initialWeather, initialCity }: SmartWeatherCardProps) {
     const location = useLocation();
-    const [weather, setWeather] = useState<WeatherData | null>(null);
-    const [loading, setLoading] = useState(true);
+    const [weather, setWeather] = useState<WeatherData | null>(initialWeather || null);
+    const [loading, setLoading] = useState(!initialWeather);
+    const [displayCity, setDisplayCity] = useState<string>(initialCity || location.city || 'Your Location');
 
     useEffect(() => {
         const fetchWeather = async () => {
-            if (location.lat && location.lon) {
+            // Only fetch if we don't have weather or if coordinates changed significanly (optional)
+            if (!weather && location.lat && location.lon) {
                 const data = await getWeather_Action(location.lat, location.lon);
                 setWeather(data);
+                setLoading(false);
+            } else if (!location.loading && !weather) {
                 setLoading(false);
             }
         };
@@ -22,9 +31,15 @@ export function SmartWeatherCard() {
         if (!location.loading) {
             fetchWeather();
         }
-    }, [location]);
+    }, [location.loading, location.lat, location.lon, weather]);
 
-    if (loading || location.loading) {
+    useEffect(() => {
+        if (!initialCity && location.city) {
+            setDisplayCity(location.city);
+        }
+    }, [location.city, initialCity]);
+
+    if (loading || (location.loading && !weather)) {
         return (
             <div className="bg-[#1E1E22] p-8 rounded-[3rem] border border-white/5 flex items-center justify-center min-h-[200px]">
                 <Loader2 className="text-indigo-500 animate-spin" size={24} />
@@ -42,7 +57,7 @@ export function SmartWeatherCard() {
                     <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest italic">Atmospheric Context</p>
                     <div className="flex items-center gap-1.5 text-indigo-400">
                         <MapPin size={10} />
-                        <span className="text-[9px] font-black uppercase tracking-widest">{location.city}</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest">{displayCity}</span>
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -55,7 +70,7 @@ export function SmartWeatherCard() {
                     </div>
                 </div>
                 <p className="text-xs text-zinc-400 font-medium leading-relaxed">
-                    Aura is optimizing the acoustic frequency for <span className="text-indigo-400 font-bold">{location.city}</span>. Current setting: <span className="text-white font-bold">{weather?.condition === 'clear' ? 'Vibrant (528Hz)' : 'Calm (432Hz)'}</span>.
+                    Aura is optimizing the acoustic frequency for <span className="text-indigo-400 font-bold">{displayCity}</span>. Current setting: <span className="text-white font-bold">{weather?.condition === 'clear' ? 'Vibrant (528Hz)' : 'Calm (432Hz)'}</span>.
                 </p>
             </div>
         </div>
