@@ -24,7 +24,7 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
 
     const requestLocationPermission = async () => {
         if (typeof window === 'undefined' || !navigator.geolocation) {
-            await fetchIPLocation();
+            setState(s => ({ ...s, loading: false }));
             return;
         }
 
@@ -33,37 +33,30 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
         navigator.geolocation.getCurrentPosition(
             async (position) => {
                 const { latitude, longitude } = position.coords;
-                let city = 'Your Location';
-                try {
-                    const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`);
-                    const data = await res.json();
-                    city = data.city || data.locality || 'Your Location';
-                } catch (e) {
-                    console.error('Reverse Geocode failed');
-                }
-
                 setState({
                     lat: latitude,
                     lon: longitude,
-                    city: city,
+                    city: 'Detecting...',
                     loading: false,
                     error: null
                 });
             },
-            async (error) => {
-                console.warn('Geolocation denied or failed, using IP-based fallback.');
-                await fetchIPLocation();
-            }
+            () => {
+                console.warn('Geolocation denied or failed, using account fallback.');
+                setState(s => ({ ...s, loading: false }));
+            },
+            { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
         );
     };
 
     useEffect(() => {
-        // Redundant client-side fetching removed as dashboard now uses server-side location resolution
+        // We no longer automatically trigger geolocation on mount to respect UX
+        // The SmartWeatherCard can trigger it if needed, or it defaults to account data
         setState(s => ({ ...s, loading: false }));
     }, []);
 
     const fetchIPLocation = async () => {
-        // No-op: server now handles location resolution for institutions
+        // Deprecated: removing IP-based guessing to avoid inaccuracy
         setState(s => ({ ...s, loading: false }));
     };
 

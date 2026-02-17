@@ -37,7 +37,7 @@ async function getAuraHomeData() {
     let lon = 28.9784;
     let resolvedCity = 'Istanbul';
 
-    // 1. Resolution Logic: Priority to Venue
+    // 1. Resolution Logic: Priority to Venue City (Saved Truth)
     if (venue?.city) {
         const coords = await WeatherService.getCoordsFromCity(venue.city);
         if (coords) {
@@ -45,17 +45,8 @@ async function getAuraHomeData() {
             lon = coords.lon;
             resolvedCity = venue.city;
         }
-    } else {
-        // 2. IP-based Resolution
-        const headerList = headers();
-        const ip = headerList.get('x-forwarded-for')?.split(',')[0] || '127.0.0.1';
-        const geo = await WeatherService.getCoordsFromIP(ip);
-        if (geo) {
-            lat = geo.lat;
-            lon = geo.lon;
-            resolvedCity = geo.city;
-        }
     }
+    // We removed IP-based resolution to avoid inaccuracy (Ankara incorrectly showing as Milan)
 
     const weather = await WeatherService.getCurrentWeather(lat, lon);
     const currentTuning = EnergyCurve.getCurrentTuning();

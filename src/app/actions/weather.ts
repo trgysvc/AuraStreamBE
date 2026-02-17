@@ -11,7 +11,7 @@ export const getWeather_Action = async (lat: number, lon: number): Promise<Weath
     try {
         const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
         const data = await res.json();
-        
+
         if (!data.current_weather) return null;
 
         const code = data.current_weather.weathercode;
@@ -31,4 +31,16 @@ export const getWeather_Action = async (lat: number, lon: number): Promise<Weath
         console.error('Weather Action Error:', e);
         return null;
     }
-}
+};
+
+export const getCityFromCoords_Action = async (lat: number, lon: number): Promise<string | null> => {
+    try {
+        const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+        if (!res.ok) return null;
+        const data = await res.json();
+        return data.city || data.locality || data.principalSubdivision || null;
+    } catch (e) {
+        console.error('Reverse Geocode Action Error:', e);
+        return null;
+    }
+};

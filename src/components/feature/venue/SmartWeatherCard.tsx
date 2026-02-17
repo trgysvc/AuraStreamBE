@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useLocation } from '@/context/LocationContext';
-import { getWeather_Action, WeatherData } from '@/app/actions/weather';
+import { getWeather_Action, getCityFromCoords_Action, WeatherData } from '@/app/actions/weather';
 import { Sun, CloudRain, MapPin, Loader2 } from 'lucide-react';
 
 interface SmartWeatherCardProps {
@@ -17,21 +17,37 @@ export function SmartWeatherCard({ initialWeather, initialCity }: SmartWeatherCa
     const [displayCity, setDisplayCity] = useState<string>(initialCity || location.city || 'Your Location');
 
     useEffect(() => {
-        const fetchWeather = async () => {
-            // Only fetch if we don't have weather or if coordinates changed significanly (optional)
-            if (!weather && location.lat && location.lon) {
-                const data = await getWeather_Action(location.lat, location.lon);
-                setWeather(data);
-                setLoading(false);
+        const fetchPreciseData = async () => {
+            // Priority 1: High-precision location from browser sensors
+            if (location.lat && location.lon) {
+                setLoading(true);
+                try {
+                    // Resolve city name from coordinates
+                    const [city, weatherData] = await Promise.all([
+                        getCityFromCoords_Action(location.lat, location.lon),
+                        getWeather_Action(location.lat, location.lon)
+                    ]);
+
+                    if (city) setDisplayCity(city);
+                    if (weatherData) setWeather(weatherData);
+                } catch (e) {
+                    console.error('Failed to resolve high-precision data:', e);
+                } finally {
+                    setLoading(false);
+                }
             } else if (!location.loading && !weather) {
+                // Priority 2: Fallback to initial data (already handled by useState)
                 setLoading(false);
             }
         };
 
-        if (!location.loading) {
-            fetchWeather();
+        // Trigger detection on mount if not already precise
+        if (!location.lat && !location.lon && !location.loading) {
+            location.requestLocationPermission();
         }
-    }, [location.loading, location.lat, location.lon, weather]);
+
+        fetchPreciseData();
+    }, [location.lat, location.lon, location.loading]);
 
     useEffect(() => {
         if (!initialCity && location.city) {
