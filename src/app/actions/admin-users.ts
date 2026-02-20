@@ -1,17 +1,17 @@
 'use server'
 
-import { createAdminClient } from '@/lib/db/admin-client';
+import { createClient } from '@/lib/db/server';
 import { revalidatePath } from 'next/cache';
 
 /**
  * Verifies a commercial venue.
  */
 export async function verifyVenue_Action(venueId: string) {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     const { error } = await supabase
         .from('venues')
-        .update({ verification_status: 'verified', updated_at: new Date().toISOString() })
+        .update({ verification_status: 'verified', updated_at: new Date().toISOString() } as any)
         .eq('id', venueId);
 
     if (error) throw error;
@@ -25,7 +25,7 @@ export async function verifyVenue_Action(venueId: string) {
  * Manually updates a user's subscription tier.
  */
 export async function updateUserTier_Action(userId: string, tier: 'free' | 'pro' | 'business' | 'enterprise') {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     const { error } = await supabase
         .from('profiles')
@@ -44,7 +44,7 @@ export async function updateUserTier_Action(userId: string, tier: 'free' | 'pro'
 export async function toggleUserStatus_Action(userId: string, isBanned: boolean) {
     // This could involve setting a 'is_banned' flag or similar in profiles.
     // For now, let's assume we update a role or specific status field.
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     const { error } = await supabase
         .from('profiles')

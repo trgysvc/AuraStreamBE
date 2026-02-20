@@ -1,6 +1,6 @@
 'use server'
 
-import { createAdminClient } from '@/lib/db/admin-client';
+import { createClient } from '@/lib/db/server';
 import { S3Service } from '@/lib/services/s3';
 
 export interface VenueTrack {
@@ -28,7 +28,7 @@ export async function getVenueTracks_Action(options?: {
     moods?: string[];
     query?: string;
 }): Promise<VenueTrack[]> {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     // 1. Build Query
     let queryBuilder = supabase

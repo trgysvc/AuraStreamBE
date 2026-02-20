@@ -1,7 +1,6 @@
 'use server'
 
 import { S3Service } from '@/lib/services/s3';
-import { createAdminClient } from '@/lib/db/admin-client';
 import { createClient as createServerClient } from '@/lib/db/server';
 import { SendMessageCommand } from '@aws-sdk/client-sqs';
 import { sqsClient } from '@/lib/queue/client';
@@ -54,12 +53,10 @@ export async function getSignedUploadUrl_Action(contentType: string, fileName: s
  * 2. Create Track Record in Database & Trigger Processing
  */
 export async function createTrackRecord_Action(formData: FormData, s3Key: string): Promise<UploadState> {
-    const supabaseServer = createServerClient();
-    const { data: { user } } = await supabaseServer.auth.getUser();
+    const supabase = createServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return { message: 'Unauthorized', error: 'Auth Error' };
-
-    const supabase = createAdminClient();
 
     const title = formData.get('title') as string;
     const artist = formData.get('artist') as string;
@@ -83,11 +80,11 @@ export async function createTrackRecord_Action(formData: FormData, s3Key: string
         cover_image_url: coverUrl,
         lyrics: lyrics || null,
         status: 'pending_qc',
-        ai_metadata: { 
+        ai_metadata: {
             source: 'manual_upload',
             uploader_id: user.id
         }
-    }).select().single();
+    } as any).select().single() as any;
 
     if (trackError) {
         console.error('DB Insert Error (Track):', trackError);
@@ -100,7 +97,7 @@ export async function createTrackRecord_Action(formData: FormData, s3Key: string
         file_type: 'raw',
         s3_key: s3Key,
         tuning: '440hz'
-    });
+    } as any);
 
     // 3. Trigger Worker via SQS
     try {

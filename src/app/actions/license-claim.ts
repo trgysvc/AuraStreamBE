@@ -1,7 +1,6 @@
 'use server';
 
 import { createClient } from '@/lib/db/server';
-import { createAdminClient } from '@/lib/db/admin-client';
 import crypto from 'crypto';
 
 /**
@@ -15,17 +14,15 @@ export async function claimLicense_Action(trackId: string, projectName: string, 
 
     // 1. Check Subscription Tier & Role
     const { data: profile } = await supabase.from('profiles').select('subscription_tier, role').eq('id', user.id).single();
-    
+
     if (!profile || (profile.subscription_tier === 'free' && profile.role !== 'admin')) {
         throw new Error('Active subscription required to claim licenses.');
     }
 
-    const adminClient = createAdminClient();
-
     // 2. Generate Unique License
     const licenseKey = `AS-SUBS-${crypto.randomUUID().split('-')[0].toUpperCase()}`;
 
-    const { data, error } = await adminClient
+    const { data, error } = await supabase
         .from('licenses')
         .insert({
             track_id: trackId,

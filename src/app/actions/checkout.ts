@@ -1,11 +1,10 @@
 'use server';
 
 import Stripe from 'stripe';
-import { createAdminClient } from '@/lib/db/admin-client';
 import { createClient } from '@/lib/db/server';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2026-01-28.clover', // Use latest or matching version as per TS
+    apiVersion: '2026-01-28.clover' as any, // Use latest or matching version as per TS
 });
 
 interface CheckoutParams {
@@ -29,10 +28,8 @@ export async function createCheckoutSession({ trackId, licenseType, projectName 
         throw new Error('Missing required params');
     }
 
-    const supabaseAdmin = createAdminClient();
-
     // 1. Fetch Track Details
-    const { data: track, error } = await supabaseAdmin
+    const { data: track, error } = await supabaseUser
         .from('tracks')
         .select('*')
         .eq('id', trackId)

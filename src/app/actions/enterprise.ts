@@ -1,6 +1,6 @@
 'use server'
 
-import { createAdminClient } from '@/lib/db/admin-client';
+import { createClient } from '@/lib/db/server';
 import { revalidatePath } from 'next/cache';
 
 export async function createVenue_Action(data: {
@@ -10,16 +10,20 @@ export async function createVenue_Action(data: {
     description?: string;
     mood_tags?: string[];
 }) {
-    const supabase = createAdminClient();
+    const supabase = createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
 
     const { data: venue, error } = await supabase
         .from('venues')
         .insert({
             tenant_id: data.tenant_id,
+            owner_id: user.id,
             business_name: data.business_name,
             name: data.business_name, // Sync name and business_name
             city: data.city || 'Standard',
-            verification_status: 'verified', // Auto-verify for enterprise-added venues
+            verification_status: 'verified' as any, // Auto-verify for enterprise-added venues
             mood_tags: data.mood_tags || [],
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
@@ -37,45 +41,13 @@ export async function createVenue_Action(data: {
     return { success: true, venue };
 }
 
-export async function updateVenue_Action(venueId: string, data: any) {
-    const supabase = createAdminClient();
-
-    const { error } = await supabase
-        .from('venues')
-        .update({
-            ...data,
-            updated_at: new Date().toISOString()
-        })
-        .eq('id', venueId);
-
-    if (error) throw error;
-
-    revalidatePath('/dashboard/enterprise/venues');
-    return { success: true };
-}
-
-export async function deleteVenue_Action(venueId: string) {
-    const supabase = createAdminClient();
-
-    // Note: This might need cascading delete for schedules/devices
-    const { error } = await supabase
-        .from('venues')
-        .delete()
-        .eq('id', venueId);
-
-    if (error) throw error;
-
-    revalidatePath('/dashboard/enterprise/venues');
-    return { success: true };
-}
-
 export async function updateStaffRole_Action(userId: string, role: string, locationId?: string | null) {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     const { error } = await supabase
         .from('profiles')
         .update({
-            role,
+            role: role as any,
             location_id: locationId,
             updated_at: new Date().toISOString()
         })

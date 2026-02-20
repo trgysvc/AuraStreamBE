@@ -1,7 +1,6 @@
-
 'use server'
 
-import { createAdminClient } from '@/lib/db/admin-client';
+import { createClient } from '@/lib/db/server';
 import { revalidatePath } from 'next/cache';
 
 export interface Playlist {
@@ -29,7 +28,7 @@ export interface PlaylistItem {
 }
 
 export async function getPlaylists_Action(tenantId: string) {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     const { data, error } = await supabase
         .from('playlists')
@@ -57,7 +56,7 @@ export async function createPlaylist_Action(data: {
     description?: string;
     userId: string;
 }) {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     const { data: newPlaylist, error } = await supabase
         .from('playlists')
@@ -77,7 +76,7 @@ export async function createPlaylist_Action(data: {
 }
 
 export async function getPlaylistDetails_Action(playlistId: string) {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     // Fetch Playlist Info
     const { data: playlist, error: playlistError } = await supabase
@@ -110,7 +109,7 @@ export async function getPlaylistDetails_Action(playlistId: string) {
 }
 
 export async function addTrackToPlaylist_Action(playlistId: string, trackId: string) {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     // Get current max position
     const { data: maxPosData } = await supabase
@@ -119,7 +118,7 @@ export async function addTrackToPlaylist_Action(playlistId: string, trackId: str
         .eq('playlist_id', playlistId)
         .order('position', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
     const nextPosition = (maxPosData?.position || 0) + 1;
 
@@ -136,7 +135,7 @@ export async function addTrackToPlaylist_Action(playlistId: string, trackId: str
 }
 
 export async function removeTrackFromPlaylist_Action(itemId: string, playlistId: string) {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     const { error } = await supabase
         .from('playlist_items')
@@ -147,7 +146,7 @@ export async function removeTrackFromPlaylist_Action(itemId: string, playlistId:
     revalidatePath(`/dashboard/playlists/${playlistId}`);
 }
 export async function reorderPlaylistTracks_Action(playlistId: string, orderedItemIds: string[]) {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     // Perform updates sequentially to ensure correctness and avoid constraint issues with bulk upsert
     for (let i = 0; i < orderedItemIds.length; i++) {
@@ -168,7 +167,7 @@ export async function reorderPlaylistTracks_Action(playlistId: string, orderedIt
 }
 
 export async function addTracksToPlaylist_Action(playlistId: string, trackIds: string[]) {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     // Get current max position
     const { data: maxPosData } = await supabase
@@ -177,7 +176,7 @@ export async function addTracksToPlaylist_Action(playlistId: string, trackIds: s
         .eq('playlist_id', playlistId)
         .order('position', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
     let nextPosition = (maxPosData?.position || 0) + 1;
 

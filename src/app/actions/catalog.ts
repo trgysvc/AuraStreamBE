@@ -1,6 +1,6 @@
 'use server'
 
-import { createAdminClient } from '@/lib/db/admin-client';
+import { createClient } from '@/lib/db/server';
 import { revalidatePath } from 'next/cache';
 
 /**
@@ -22,7 +22,7 @@ export async function updateTrackMetadata_Action(trackId: string, data: {
     popularity_score?: number;
     lyrics?: string;
 }) {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     const { error } = await supabase
         .from('tracks')
@@ -42,7 +42,7 @@ export async function updateTrackMetadata_Action(trackId: string, data: {
  * Permanently deletes a track and its associated file records.
  */
 export async function deleteTrack_Action(trackId: string) {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     const { error } = await supabase
         .from('tracks')

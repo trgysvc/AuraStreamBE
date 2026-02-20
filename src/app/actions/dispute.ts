@@ -1,6 +1,7 @@
 'use server'
 
-import { createAdminClient } from '@/lib/db/admin-client';
+import { createClient } from '@/lib/db/server';
+import { revalidatePath } from 'next/cache';
 
 export interface Dispute {
     id: string;
@@ -16,8 +17,8 @@ export async function createDispute_Action(data: {
     licenseId: string;
     videoUrl: string;
 }) {
-    const supabase = createAdminClient();
-    
+    const supabase = createClient();
+
     // 1. Fetch license and track details to generate text
     const { data: license, error: lError } = await supabase
         .from('licenses')
@@ -28,7 +29,7 @@ export async function createDispute_Action(data: {
     if (lError) throw lError;
 
     const disputeText = `
-        I have a valid commercial license for the track "${license.tracks.title}" by "${license.tracks.artist}".
+        I have a valid commercial license for the track "${(license.tracks as any).title}" by "${(license.tracks as any).artist}".
         License Key: ${license.license_key}
         Project Name: ${license.project_name}
         This video is covered under the Sonaraura Commercial License. Please release the claim.
@@ -55,7 +56,7 @@ export async function createDispute_Action(data: {
  * Resolves a dispute, marking it as cleared.
  */
 export async function resolveDispute_Action(disputeId: string) {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     const { error } = await supabase
         .from('disputes')
@@ -72,7 +73,7 @@ export async function resolveDispute_Action(disputeId: string) {
  * Rejects a dispute.
  */
 export async function rejectDispute_Action(disputeId: string) {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     const { error } = await supabase
         .from('disputes')
@@ -86,8 +87,7 @@ export async function rejectDispute_Action(disputeId: string) {
 }
 
 export async function getMyDisputes_Action() {
-    const supabase = createAdminClient();
-    // Assuming auth context is available or passing userId
+    const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return [];
 

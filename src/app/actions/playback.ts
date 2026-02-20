@@ -1,6 +1,6 @@
 'use server'
 
-import { createAdminClient } from '@/lib/db/admin-client';
+import { createClient } from '@/lib/db/server';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 
@@ -14,8 +14,8 @@ export async function logPlaybackEvent_Action(data: {
     skipped: boolean;
     tuningUsed: '440hz' | '432hz' | '528hz';
 }) {
-    const supabase = createAdminClient();
-    
+    const supabase = createClient();
+
     // Extract region for Infrastructure ROI tracking
     const headerList = headers();
     const region = headerList.get('x-vercel-ip-country') || headerList.get('cf-ipcountry') || 'Unknown';
@@ -29,7 +29,7 @@ export async function logPlaybackEvent_Action(data: {
         tuning_used: data.tuningUsed,
         played_at: new Date().toISOString()
     });
-    
+
     // Feature 2: Infrastructure ROI - Log playback stats with region
     await supabase.from('search_logs').insert({
         query_text: `PLAYBACK_TELEMETRY: ${data.trackId}`,
@@ -47,7 +47,7 @@ export async function logPlaybackEvent_Action(data: {
     // If a track is skipped within the first 10 seconds, it signals a "Mood Mismatch" for the current hour.
     if (data.skipped && data.durationListened < 10 && data.venueId) {
         console.log(`[Aura AI] Mood Mismatch detected at venue ${data.venueId}. Adjusting biorhythm weights...`);
-        
+
         // This is where we would call an internal AI service or update a weighting table
         // For now, we log the insight that will be used by the scheduler.
         await supabase.from('search_logs').insert({

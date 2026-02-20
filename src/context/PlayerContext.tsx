@@ -13,6 +13,8 @@ interface Track {
     artist: string;
     duration: string;
     bpm: number;
+    tags?: string[];
+    image?: string;
     src?: string;
     lyrics?: string;
     lyrics_synced?: any;

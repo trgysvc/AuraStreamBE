@@ -1,6 +1,6 @@
 'use server'
 
-import { createAdminClient } from '@/lib/db/admin-client';
+import { createClient } from '@/lib/db/server';
 
 export interface VenueSchedule {
     id: string;
@@ -17,7 +17,7 @@ export interface VenueSchedule {
 }
 
 export async function getActiveScheduleRule_Action(venueId: string) {
-    const supabase = createAdminClient();
+    const supabase = createClient();
     const now = new Date();
     const currentTime = now.toTimeString().split(' ')[0]; // 'HH:MM:SS'
     const currentDay = now.getDay();
@@ -39,15 +39,15 @@ export async function getActiveScheduleRule_Action(venueId: string) {
         return null;
     }
 
-    return data as VenueSchedule;
+    return data as any as VenueSchedule;
 }
 
 export async function saveScheduleRule_Action(rule: Partial<VenueSchedule>) {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     const { data, error } = await supabase
         .from('venue_schedules')
-        .upsert(rule)
+        .upsert(rule as any)
         .select()
         .single();
 
@@ -56,7 +56,7 @@ export async function saveScheduleRule_Action(rule: Partial<VenueSchedule>) {
 }
 
 export async function getVenueSchedules_Action(venueId: string) {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     const { data, error } = await supabase
         .from('venue_schedules')
@@ -65,5 +65,5 @@ export async function getVenueSchedules_Action(venueId: string) {
         .order('start_time', { ascending: true });
 
     if (error) throw error;
-    return data as VenueSchedule[];
+    return data as any[] as VenueSchedule[];
 }

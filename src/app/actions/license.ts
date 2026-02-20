@@ -1,7 +1,6 @@
 'use server';
 
 import { createClient } from '@/lib/db/server';
-import { createAdminClient } from '@/lib/db/admin-client';
 import { PDFService } from '@/lib/services/license/pdf';
 
 export async function generateLicensePDF_Action(licenseId: string) {
@@ -10,8 +9,7 @@ export async function generateLicensePDF_Action(licenseId: string) {
 
     if (!user) throw new Error('Unauthorized');
 
-    const adminClient = createAdminClient();
-    const { data: license, error } = await adminClient
+    const { data: license, error } = await supabase
         .from('licenses')
         .select(`
             *,

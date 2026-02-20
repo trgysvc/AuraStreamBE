@@ -1,6 +1,6 @@
 'use server'
 
-import { createAdminClient } from '@/lib/db/admin-client';
+import { createClient } from '@/lib/db/server';
 import { S3Service } from '@/lib/services/s3';
 
 export interface StoreTrack {
@@ -21,7 +21,7 @@ export async function getStoreTracks_Action(options?: {
     moods?: string[];
     query?: string;
 }): Promise<StoreTrack[]> {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     // 1. Fetch Active Tracks with their Files
     const queryBuilder = supabase
@@ -71,7 +71,7 @@ export async function getStoreTracks_Action(options?: {
         // Generate signed URLs for all streamable files
         const files = (track.track_files as unknown as { file_type: string, s3_key: string, tuning: string }[]) || [];
         const streamFiles = files.filter((f) => f.file_type === 'stream_aac');
-        
+
         for (const file of streamFiles) {
             try {
                 const url = await S3Service.getDownloadUrl(file.s3_key);

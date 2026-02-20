@@ -14,12 +14,27 @@ export function MainHeader({ initialUser }: { initialUser?: any }) {
     const pathname = usePathname();
 
     useEffect(() => {
-        if (initialUser) return;
         const fetchUser = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             setUser(user);
         };
-        fetchUser();
+
+        if (!initialUser) {
+            fetchUser();
+        }
+
+        // Keep state in sync with actual session changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                setUser(session.user);
+            } else if (event === 'SIGNED_OUT') {
+                setUser(null);
+            }
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
     }, [supabase, initialUser]);
 
     return (

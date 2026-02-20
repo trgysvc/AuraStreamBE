@@ -1,6 +1,5 @@
 'use server'
 
-import { createAdminClient } from '@/lib/db/admin-client';
 import { createClient } from '@/lib/db/server';
 import { revalidatePath } from 'next/cache';
 
@@ -23,7 +22,7 @@ export interface TenantIdentity {
  */
 export async function getMyProfileWithTenant_Action() {
     const supabase = createClient();
-    
+
     // 1. Get Session User
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) return null;
@@ -48,11 +47,11 @@ export async function getMyProfileWithTenant_Action() {
 
 /**
  * Updates the current user's tenant identity.
- * Restricted by RLS, but we use admin client for certain cross-table logic if needed.
+ * Restricted by RLS.
  */
 export async function updateTenantIdentity_Action(tenantId: string, formData: TenantIdentity) {
     const supabase = createClient();
-    
+
     const { data, error } = await supabase
         .from('tenants')
         .update({
@@ -80,20 +79,21 @@ export async function updateTenantIdentity_Action(tenantId: string, formData: Te
 
 /**
  * Admin Only: Verifies a venue's commercial status.
+ * Now using the authenticated client; RLS allows this for 'admin' or 'enterprise_admin' roles.
  */
 export async function adminVerifyVenue_Action(venueId: string) {
-    const supabase = createAdminClient();
-    
+    const supabase = createClient();
+
     const { error } = await supabase
         .from('venues')
-        .update({ 
-            verification_status: 'verified',
+        .update({
+            verification_status: 'verified' as any,
             updated_at: new Date().toISOString()
         })
         .eq('id', venueId);
 
     if (error) throw error;
-    
+
     revalidatePath('/admin');
     return { success: true };
 }
@@ -117,7 +117,7 @@ export async function createVenue_Action(venueData: {
         .insert({
             ...venueData,
             owner_id: user.id,
-            verification_status: 'pending'
+            verification_status: 'pending' as any
         })
         .select()
         .single();

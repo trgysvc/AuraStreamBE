@@ -1,8 +1,12 @@
 'use client';
 
-import { Play, Download, Plus, Heart, MoreHorizontal, Wand2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Play, Download, Plus, Heart, MoreHorizontal, Wand2, ListPlus } from 'lucide-react';
 import { Waveform } from '@/components/shared/Waveform';
 import { usePlayer } from '@/context/PlayerContext';
+import { toggleLikeTrack_Action, isTrackLiked_Action } from '@/app/actions/music';
+import AddToPlaylistPopover from './AddToPlaylistPopover';
+import { createClient } from '@/lib/db/client';
 
 interface Track {
     id: string;
@@ -26,15 +30,62 @@ interface TrackProps extends Track {
 
 export default function TrackRow({ id, title, artist, duration, bpm, tags, image, lyrics, audioSrc, onSimilar, metadata, allTracks }: TrackProps) {
     const { playTrack, currentTrack, isPlaying: globalIsPlaying, currentTime, duration: totalDuration } = usePlayer();
+
+    // Multi-tenant state
+    const [isLiked, setIsLiked] = useState<boolean>(false);
+    const [showPlaylistPopover, setShowPlaylistPopover] = useState(false);
+    const [userId, setUserId] = useState<string | null>(null);
+    const [tenantId, setTenantId] = useState<string | null>(null);
+
     const isCurrentTrack = currentTrack?.id === id;
     const isPlaying = isCurrentTrack && globalIsPlaying;
 
     // Calculate progress for this track if it's playing
     const progress = isCurrentTrack && totalDuration > 0 ? currentTime / totalDuration : 0;
 
+    // Simplified multi-tenant session hook
+    useEffect(() => {
+        const fetchSession = async () => {
+            const supabase = createClient();
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session?.user) {
+                setUserId(session.user.id);
+                // Also fetch tenant_id from profile
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('tenant_id')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (profile?.tenant_id) {
+                    setTenantId(profile.tenant_id);
+                }
+            }
+        };
+        fetchSession();
+    }, []);
+
+    useEffect(() => {
+        if (userId) {
+            isTrackLiked_Action(id, userId).then(setIsLiked);
+        }
+    }, [id, userId]);
+
+    const handleLike = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!userId) return;
+        const result = await toggleLikeTrack_Action(id, userId, tenantId || undefined);
+        setIsLiked(result.liked);
+    };
+
     const handlePlay = (e: React.MouseEvent) => {
         e.stopPropagation();
-        playTrack({ id, title, artist, duration, bpm, tags, lyrics, src: audioSrc || image }, allTracks);
+        if (!audioSrc) {
+            console.warn("No audio source available for this track.");
+            // Optionally show a toast here if available
+            return;
+        }
+        playTrack({ id, title, artist, duration, bpm, tags, lyrics, src: audioSrc }, allTracks);
     };
 
     return (
@@ -108,7 +159,7 @@ export default function TrackRow({ id, title, artist, duration, bpm, tags, image
             </div>
 
             {/* Actions (Far Right - Simplified on Mobile) */}
-            <div className="flex items-center gap-1 md:gap-4 pr-1 md:pr-2 opacity-40 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-1 md:gap-4 pr-1 md:pr-2 opacity-40 group-hover:opacity-100 transition-opacity relative">
                 <button
                     onClick={(e) => { e.stopPropagation(); onSimilar?.(id); }}
                     className="hidden md:block p-2 text-zinc-400 hover:text-pink-500 transition-colors"
@@ -116,9 +167,31 @@ export default function TrackRow({ id, title, artist, duration, bpm, tags, image
                 >
                     <Wand2 size={18} />
                 </button>
-                <button className="hidden sm:block p-2 text-zinc-400 hover:text-white transition-colors">
-                    <Heart size={18} />
+                <button
+                    onClick={handleLike}
+                    className={`p-2 transition-all hover:scale-110 ${isLiked ? 'text-pink-500' : 'text-zinc-400 hover:text-white'}`}
+                    title={isLiked ? "Unlike" : "Like"}
+                >
+                    <Heart size={18} fill={isLiked ? "currentColor" : "none"} strokeWidth={isLiked ? 2 : 2.5} />
                 </button>
+
+                <div className="relative">
+                    <button
+                        onClick={(e) => { e.stopPropagation(); setShowPlaylistPopover(!showPlaylistPopover); }}
+                        className={`p-2 transition-all hover:scale-110 ${showPlaylistPopover ? 'text-indigo-400' : 'text-zinc-400 hover:text-white'}`}
+                        title="Add to Playlist"
+                    >
+                        <ListPlus size={18} />
+                    </button>
+                    {showPlaylistPopover && (
+                        <AddToPlaylistPopover
+                            trackId={id}
+                            tenantId={tenantId}
+                            onClose={() => setShowPlaylistPopover(false)}
+                        />
+                    )}
+                </div>
+
                 <button className="p-2 text-zinc-400 hover:text-white transition-colors">
                     <MoreHorizontal size={18} />
                 </button>

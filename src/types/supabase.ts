@@ -134,6 +134,54 @@ export type Database = {
           },
         ]
       }
+      disputes: {
+        Row: {
+          created_at: string | null
+          dispute_text: string
+          id: string
+          license_id: string
+          status: Database["public"]["Enums"]["request_status"]
+          updated_at: string | null
+          user_id: string
+          video_url: string
+        }
+        Insert: {
+          created_at?: string | null
+          dispute_text: string
+          id?: string
+          license_id: string
+          status?: Database["public"]["Enums"]["request_status"]
+          updated_at?: string | null
+          user_id: string
+          video_url: string
+        }
+        Update: {
+          created_at?: string | null
+          dispute_text?: string
+          id?: string
+          license_id?: string
+          status?: Database["public"]["Enums"]["request_status"]
+          updated_at?: string | null
+          user_id?: string
+          video_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "disputes_license_id_fkey"
+            columns: ["license_id"]
+            isOneToOne: false
+            referencedRelation: "licenses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "disputes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       playback_sessions: {
         Row: {
           duration_listened: number
@@ -289,6 +337,7 @@ export type Database = {
           subscription_tier: Database["public"]["Enums"]["subscription_tier"]
           tenant_id: string | null
           updated_at: string | null
+          youtube_channel_id: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -301,6 +350,7 @@ export type Database = {
           subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
           tenant_id?: string | null
           updated_at?: string | null
+          youtube_channel_id?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -313,6 +363,7 @@ export type Database = {
           subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
           tenant_id?: string | null
           updated_at?: string | null
+          youtube_channel_id?: string | null
         }
         Relationships: []
       }
@@ -491,6 +542,19 @@ export type Database = {
           status: Database["public"]["Enums"]["track_status"] | null
           title: string
           updated_at: string | null
+          metadata: Json | null
+          embedding: number[] | null
+          lyrics: string | null
+          theme: string | null
+          character: string | null
+          vibe_tags: string[] | null
+          venue_tags: string[] | null
+          sfx_tags: string[] | null
+          lyrics_synced: Json | null
+          sub_genres: string[] | null
+          character_tags: string[] | null
+          vocal_type: string | null
+          theme_tags: string[] | null
         }
         Insert: {
           ai_metadata?: Json
@@ -510,6 +574,19 @@ export type Database = {
           status?: Database["public"]["Enums"]["track_status"] | null
           title: string
           updated_at?: string | null
+          metadata?: Json | null
+          embedding?: number[] | null
+          lyrics?: string | null
+          theme?: string | null
+          character?: string | null
+          vibe_tags?: string[] | null
+          venue_tags?: string[] | null
+          sfx_tags?: string[] | null
+          lyrics_synced?: Json | null
+          sub_genres?: string[] | null
+          character_tags?: string[] | null
+          vocal_type?: string | null
+          theme_tags?: string[] | null
         }
         Update: {
           ai_metadata?: Json
@@ -529,8 +606,198 @@ export type Database = {
           status?: Database["public"]["Enums"]["track_status"] | null
           title?: string
           updated_at?: string | null
+          metadata?: Json | null
+          embedding?: number[] | null
+          lyrics?: string | null
+          theme?: string | null
+          character?: string | null
+          vibe_tags?: string[] | null
+          venue_tags?: string[] | null
+          sfx_tags?: string[] | null
+          lyrics_synced?: Json | null
+          sub_genres?: string[] | null
+          character_tags?: string[] | null
+          vocal_type?: string | null
+          theme_tags?: string[] | null
         }
         Relationships: []
+      }
+      likes: {
+        Row: {
+          id: string
+          user_id: string
+          track_id: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          track_id: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          track_id?: string
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "likes_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "tracks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      playlists: {
+        Row: {
+          id: string
+          tenant_id: string | null
+          name: string
+          description: string | null
+          created_by: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          tenant_id?: string | null
+          name: string
+          description?: string | null
+          created_by?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          tenant_id?: string | null
+          name?: string
+          description?: string | null
+          created_by?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "playlists_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "playlists_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      playlist_items: {
+        Row: {
+          id: string
+          playlist_id: string
+          track_id: string
+          position: number
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          playlist_id: string
+          track_id: string
+          position: number
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          playlist_id?: string
+          track_id?: string
+          position?: number
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "playlist_items_playlist_id_fkey"
+            columns: ["playlist_id"]
+            isOneToOne: false
+            referencedRelation: "playlists"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "playlist_items_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "tracks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      devices: {
+        Row: {
+          id: string
+          tenant_id: string
+          venue_id: string | null
+          name: string
+          hardware_id: string
+          auth_token: string
+          ip_address: string | null
+          app_version: string | null
+          sync_status: "synced" | "downloading" | "error"
+          last_heartbeat: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          tenant_id: string
+          venue_id?: string | null
+          name: string
+          hardware_id: string
+          auth_token: string
+          ip_address?: string | null
+          app_version?: string | null
+          sync_status?: "synced" | "downloading" | "error"
+          last_heartbeat?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          tenant_id?: string
+          venue_id?: string | null
+          name?: string
+          hardware_id?: string
+          auth_token?: string
+          ip_address?: string | null
+          app_version?: string | null
+          sync_status?: "synced" | "downloading" | "error"
+          last_heartbeat?: string | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "devices_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "devices_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       venues: {
         Row: {
@@ -542,11 +809,15 @@ export type Database = {
           created_at: string | null
           id: string
           owner_id: string
+          tenant_id: string | null
           settings: Json | null
           updated_at: string | null
           verification_status:
           | Database["public"]["Enums"]["verification_status"]
           | null
+          mood_tags: string[] | null
+          description: string | null
+          name: string | null
         }
         Insert: {
           address_line1?: string | null
@@ -556,12 +827,16 @@ export type Database = {
           country?: string | null
           created_at?: string | null
           id?: string
-          owner_id: string
+          owner_id?: string
+          tenant_id?: string | null
           settings?: Json | null
           updated_at?: string | null
           verification_status?:
           | Database["public"]["Enums"]["verification_status"]
           | null
+          mood_tags?: string[] | null
+          description?: string | null
+          name?: string | null
         }
         Update: {
           address_line1?: string | null
@@ -572,11 +847,15 @@ export type Database = {
           created_at?: string | null
           id?: string
           owner_id?: string
+          tenant_id?: string | null
           settings?: Json | null
           updated_at?: string | null
           verification_status?:
           | Database["public"]["Enums"]["verification_status"]
           | null
+          mood_tags?: string[] | null
+          description?: string | null
+          name?: string | null
         }
         Relationships: [
           {
@@ -584,6 +863,62 @@ export type Database = {
             columns: ["owner_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venue_schedules: {
+        Row: {
+          id: string
+          venue_id: string
+          name: string
+          start_time: string
+          end_time: string
+          day_of_week: number[]
+          moods: string[]
+          genres: string[]
+          target_energy: number
+          target_tuning: Database["public"]["Enums"]["tuning_f"]
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          venue_id: string
+          name: string
+          start_time: string
+          end_time: string
+          day_of_week: number[]
+          moods: string[]
+          genres: string[]
+          target_energy: number
+          target_tuning: Database["public"]["Enums"]["tuning_f"]
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          venue_id?: string
+          name?: string
+          start_time?: string
+          end_time?: string
+          day_of_week?: number[]
+          moods?: string[]
+          genres?: string[]
+          target_energy?: number
+          target_tuning?: Database["public"]["Enums"]["tuning_f"]
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_schedules_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
             referencedColumns: ["id"]
           },
         ]
@@ -754,7 +1089,7 @@ export type Database = {
       subscription_tier: "free" | "pro" | "business" | "enterprise"
       track_status: "pending_qc" | "processing" | "active" | "rejected"
       tuning_f: "440hz" | "432hz" | "528hz"
-      user_role: "venue" | "creator" | "admin"
+      user_role: "venue" | "creator" | "admin" | "enterprise_admin" | "staff"
       verification_status: "pending" | "verified" | "rejected"
     }
     CompositeTypes: {

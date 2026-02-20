@@ -1,7 +1,6 @@
-
 'use server'
 
-import { createAdminClient } from '@/lib/db/admin-client';
+import { createClient } from '@/lib/db/server';
 import { revalidatePath } from 'next/cache';
 
 export interface Device {
@@ -19,7 +18,7 @@ export interface Device {
 }
 
 export async function getDevices_Action(tenantId: string) {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     const { data, error } = await supabase
         .from('devices')
@@ -44,7 +43,7 @@ export async function registerDevice_Action(data: {
     name: string;
     hardwareId: string;
 }) {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     // Generate a secure token (random string for now)
     const authToken = require('crypto').randomBytes(32).toString('hex');
@@ -57,7 +56,7 @@ export async function registerDevice_Action(data: {
             name: data.name,
             hardware_id: data.hardwareId,
             auth_token: authToken,
-            sync_status: 'synced' // Default
+            sync_status: 'synced' as any // Default
         })
         .select()
         .single();
@@ -72,7 +71,7 @@ export async function registerDevice_Action(data: {
 }
 
 export async function deleteDevice_Action(deviceId: string) {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     const { error } = await supabase
         .from('devices')

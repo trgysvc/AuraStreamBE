@@ -36,8 +36,7 @@ export default function DashboardHeader() {
     const [referralStatus, setReferralStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
 
     useEffect(() => {
-        const fetchRole = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
+        const fetchRole = async (user: any) => {
             if (user) {
                 const { data } = await supabase
                     .from('profiles')
@@ -45,9 +44,28 @@ export default function DashboardHeader() {
                     .eq('id', user.id)
                     .single();
                 setRole(data?.role || 'creator');
+            } else {
+                setRole(null);
             }
         };
-        fetchRole();
+
+        const initAuth = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            fetchRole(user);
+        };
+        initAuth();
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' && session) {
+                fetchRole(session.user);
+            } else if (event === 'SIGNED_OUT') {
+                setRole(null);
+            }
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
     }, [supabase]);
 
     const handleLogout = async () => {

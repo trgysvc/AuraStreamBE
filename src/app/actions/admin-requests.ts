@@ -1,17 +1,17 @@
 'use server'
 
-import { createAdminClient } from '@/lib/db/admin-client';
+import { createClient } from '@/lib/db/server';
 import { revalidatePath } from 'next/cache';
 
 /**
  * Updates a custom music request status and sets final pricing.
  */
 export async function updateRequestStatus_Action(
-    requestId: string, 
-    status: 'pending' | 'processing' | 'review' | 'completed' | 'rejected', 
+    requestId: string,
+    status: 'pending' | 'processing' | 'review' | 'completed' | 'rejected',
     price?: number
 ): Promise<{ success: boolean }> {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     interface UpdatePayload {
         status: string;
@@ -37,7 +37,7 @@ export async function updateRequestStatus_Action(
  * Adds admin notes to a custom request.
  */
 export async function updateRequestNotes_Action(requestId: string, notes: string): Promise<{ success: boolean }> {
-    const supabase = createAdminClient();
+    const supabase = createClient();
 
     const { error } = await supabase
         .from('custom_requests')
