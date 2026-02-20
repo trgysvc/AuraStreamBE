@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Check, X, Shield, Activity, Cloud, Mic, Play, Lock, BarChart3, Clock, Zap } from 'lucide-react';
+import { ArrowRight, Check, X, Shield, Activity, Cloud, Mic, Play, Lock, BarChart3, Clock, Zap, Layers, Layout } from 'lucide-react';
 import { MainHeader } from '@/components/layout/MainHeader';
 import { Footer } from '@/components/layout/Footer';
 import { createClient } from '@/lib/db/server';
@@ -113,6 +113,36 @@ export default async function AdvertPage() {
                                 <Zap className="text-yellow-400 mb-4" size={32} />
                                 <h3 className="text-xl font-bold mb-2">Smart Flow</h3>
                                 <p className="text-gray-400 text-sm">Otonom Müzik Direktörü. Sabah sakin, akşam sofistike geçişleri Aura yapar.</p>
+                            </div>
+                        </div>
+
+                        {/* Feature 5: Enterprise HQ */}
+                        <div className="group relative aspect-[4/5] overflow-hidden rounded-2xl bg-zinc-900 border border-white/5 hover:border-purple-500/50 transition-colors">
+                            <Image
+                                src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=2000"
+                                alt="Enterprise HQ"
+                                fill
+                                className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent p-8 flex flex-col justify-end">
+                                <Layers className="text-indigo-400 mb-4" size={32} />
+                                <h3 className="text-xl font-bold mb-2">Enterprise HQ</h3>
+                                <p className="text-gray-400 text-sm">Binlerce şubeyi tek merkezden kontrol edin. Cihaz sağlığı ve anlık senkronizasyon.</p>
+                            </div>
+                        </div>
+
+                        {/* Feature 6: Playlist Studio */}
+                        <div className="group relative aspect-[4/5] overflow-hidden rounded-2xl bg-zinc-900 border border-white/5 hover:border-purple-500/50 transition-colors">
+                            <Image
+                                src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2000"
+                                alt="Playlist Studio"
+                                fill
+                                className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent p-8 flex flex-col justify-end">
+                                <Layout className="text-pink-400 mb-4" size={32} />
+                                <h3 className="text-xl font-bold mb-2">High-Fidelity Editor</h3>
+                                <p className="text-gray-400 text-sm">Sürükle-bırak hassasiyetiyle kusursuz çalma listeleri oluşturun ve anında yayınlayın.</p>
                             </div>
                         </div>
                     </div>

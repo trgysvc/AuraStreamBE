@@ -1,14 +1,15 @@
 import React from 'react';
-import { 
-    Zap, 
-    Wind, 
-    CloudRain, 
-    ShieldCheck, 
-    BarChart3, 
-    Clock, 
-    Play, 
-    Music, 
+import {
+    Zap,
+    Wind,
+    CloudRain,
+    ShieldCheck,
+    BarChart3,
+    Clock,
+    Play,
+    Music,
     Layers,
+    Layout,
     Sparkles,
     Search,
     Fingerprint,
@@ -18,24 +19,24 @@ import {
 import Link from 'next/link';
 import { Footer } from '@/components/layout/Footer';
 
-const FeatureSection = ({ 
-    title, 
-    subtitle, 
-    description, 
-    image, 
-    reverse = false, 
+const FeatureSection = ({
+    title,
+    subtitle,
+    description,
+    image,
+    reverse = false,
     icon: Icon,
     bgColor = "bg-black",
     textColor = "text-white",
     accentColor = "text-indigo-500",
     descriptionColor = "text-zinc-400",
     link = "/about/howitworks"
-}: { 
-    title: string, 
-    subtitle: string, 
-    description: string, 
-    image: string, 
-    reverse?: boolean, 
+}: {
+    title: string,
+    subtitle: string,
+    description: string,
+    image: string,
+    reverse?: boolean,
     icon: any,
     bgColor?: string,
     textColor?: string,
@@ -59,7 +60,7 @@ const FeatureSection = ({
                 </div>
             </div>
             <div className="flex-1 w-full aspect-square md:aspect-square rounded-2xl md:rounded-3xl overflow-hidden border border-white/5 shadow-2xl relative group order-1 md:order-none">
-                <div 
+                <div
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-[4s] group-hover:scale-110"
                     style={{ backgroundImage: `url(${image})` }}
                 />
@@ -102,12 +103,12 @@ export default function AdPage() {
         <div className="min-h-screen bg-black text-white selection:bg-white selection:text-black font-sans overflow-x-hidden">
             {/* Hero Section */}
             <header className="relative h-screen flex items-center justify-center overflow-hidden">
-                <div 
+                <div
                     className="absolute inset-0 bg-cover bg-center opacity-40 scale-105"
                     style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2000)' }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
-                
+
                 <div className="relative z-10 text-center space-y-8 md:space-y-10 px-6">
                     <div className="inline-flex items-center gap-3 px-5 py-1.5 md:px-6 md:py-2 bg-white/5 border border-white/10 rounded-full">
                         <Sparkles size={14} className="text-indigo-400 md:w-4 md:h-4" />
@@ -136,7 +137,7 @@ export default function AdPage() {
             </header>
 
             {/* Feature 1: Molecular Sound (Deep Purple/Indigo) */}
-            <FeatureSection 
+            <FeatureSection
                 icon={Zap}
                 subtitle="Frequency Engineering"
                 title="Molecular Sound Tech"
@@ -148,7 +149,7 @@ export default function AdPage() {
             />
 
             {/* Feature 2: Aura Karaoke (Black) */}
-            <FeatureSection 
+            <FeatureSection
                 icon={Layers}
                 subtitle="Word-Level Precision"
                 title="Aura Karaoke Engine"
@@ -161,7 +162,7 @@ export default function AdPage() {
             />
 
             {/* Feature 3: Weather AI (Light Grey/Blue) */}
-            <FeatureSection 
+            <FeatureSection
                 icon={CloudRain}
                 subtitle="Atmospheric Zeka"
                 title="Weather-Aware Intelligence"
@@ -175,7 +176,7 @@ export default function AdPage() {
             />
 
             {/* Feature 4: Smart Flow (Dark) */}
-            <FeatureSection 
+            <FeatureSection
                 icon={Clock}
                 subtitle="Autonomous Director"
                 title="Smart Flow Scheduling"
@@ -187,6 +188,31 @@ export default function AdPage() {
                 link="/about/howitworks?page=smart-flow"
             />
 
+            {/* Feature 5: Enterprise HQ (Purple/Black) */}
+            <FeatureSection
+                icon={Layers}
+                subtitle="Fleet Dominance"
+                title="Enterprise Hub HQ"
+                description="Control thousands of venues from a single tactical interface. Monitor device health, sync status, and global scheduling with broadcast-grade precision across your entire enterprise."
+                image="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2000"
+                bgColor="bg-[#050505]"
+                accentColor="text-purple-500"
+                link="/about/howitworks?page=enterprise-hq"
+            />
+
+            {/* Feature 6: Playlist Studio (Pink/Dark) */}
+            <FeatureSection
+                icon={Layout}
+                subtitle="Curation Mastery"
+                title="High-Fidelity Studio"
+                description="The ultimate curation weapon. Use drag-and-drop precision and instant catalog discovery to design the perfect sonic narrative for your brand. Real-time sync ensures no venue is left behind."
+                image="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2000"
+                reverse
+                bgColor="bg-[#0A0A0A]"
+                accentColor="text-pink-400"
+                link="/about/howitworks?page=playlist-editor"
+            />
+
             {/* Stats / Matrix Section (Deep Purple Gradient) */}
             <section className="bg-gradient-to-b from-[#111] to-indigo-950/30 py-24 md:py-40 border-y border-white/5">
                 <div className="max-w-7xl mx-auto px-6 md:px-16 space-y-16 md:space-y-24">
@@ -196,48 +222,48 @@ export default function AdPage() {
                     </div>
 
                     <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
-                        <AdvantageCard 
+                        <AdvantageCard
                             icon={Fingerprint}
                             title="LSB Watermarking"
                             description="Signal-level UUID embedding for bulletproof copyright protection. Inaudible, unremovable, and legally absolute."
                             link="/about/howitworks?page=watermarking"
                         />
-                        <AdvantageCard 
+                        <AdvantageCard
                             icon={BarChart3}
                             title="Elite Analytics"
                             description="Infrastructure ROI tracking that analyzes content gaps, search latency, and listener engagement in real-time."
                             link="/about/howitworks?page=strategic-intel"
                         />
-                        <AdvantageCard 
+                        <AdvantageCard
                             icon={Cpu}
                             title="JIT Rendering"
                             description="Just-In-Time high-fidelity rendering that optimizes cloud storage while delivering bespoke frequencies on demand."
                             link="/about/howitworks?page=core-stack"
                         />
-                        <AdvantageCard 
+                        <AdvantageCard
                             icon={Wind}
                             title="BPM Preservation"
                             description="Change the fundamental frequency of any track without altering its tempo or rhythmic integrity."
                             link="/about/howitworks?page=frequency-eng"
                         />
-                        <AdvantageCard 
+                        <AdvantageCard
                             icon={ShieldCheck}
                             title="Legal Shield"
                             description="Automated YouTube dispute resolution and license-backed evidence generation for creators."
                             link="/about/howitworks?page=b2b-licensing"
                         />
-                        <AdvantageCard 
-                            icon={Search}
-                            title="Hybrid Search"
-                            description="Deep taxonomy filtering combined with AI-assisted mood and energy tagging for instant asset discovery."
-                            link="/about/howitworks?page=ai-engine"
+                        <AdvantageCard
+                            icon={Layers}
+                            title="Fleet Control"
+                            description="Monitor and manage unlimited venues from one central dashboard. Real-time telemetry for every device in your network."
+                            link="/about/howitworks?page=enterprise-hq"
                         />
                     </div>
                 </div>
             </section>
 
             {/* Feature 5: Interactive Waveforms (Yellow Contrast) */}
-            <FeatureSection 
+            <FeatureSection
                 icon={Music}
                 subtitle="Sonic Discovery"
                 title="Interactive Waveforms"
@@ -264,37 +290,37 @@ export default function AdPage() {
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 md:gap-4">
-                        <IntelligenceCard 
+                        <IntelligenceCard
                             title="Frame-Perfect Sync"
                             description="Broadcast-grade timing precision. Every track is millisecond-synchronized with its physical file length for zero-drift scheduling."
                             tag="Broadcasting"
                             link="/about/howitworks?page=sync-precision"
                         />
-                        <IntelligenceCard 
+                        <IntelligenceCard
                             title="Regional ROI"
                             description="Our AI identifies latency in specific cities and automatically triggers Edge replication to ensure zero-lag performance globally."
                             tag="Infrastructure"
                             link="/about/howitworks?page=strategic-intel"
                         />
-                        <IntelligenceCard 
+                        <IntelligenceCard
                             title="Revenue Intelligence"
                             description="Aura Tailor identifies 'Content Gaps' by analyzing what your users search for but can't find, directing our production team."
                             tag="Sales Conversion"
                             link="/about/howitworks?page=revenue-intel"
                         />
-                        <IntelligenceCard 
+                        <IntelligenceCard
                             title="Churn Heartbeat"
                             description="Intelligent monitoring of session health. We detect risky user behavior patterns before they leave, triggering proactive retention."
                             tag="Retention AI"
                             link="/about/howitworks?page=churn-heartbeat"
                         />
-                        <IntelligenceCard 
+                        <IntelligenceCard
                             title="Architectural UI Evolution"
                             description="Interface decisions driven by technical telemetry. We evolve our UI based on what works fastest, not just what looks good."
                             tag="Core Integrity"
                             link="/about/howitworks?page=vision"
                         />
-                        <IntelligenceCard 
+                        <IntelligenceCard
                             title="Biorhythm Training"
                             description="The system learns when your venue skips tracks, automatically adjusting JIT rendering to optimize storage by 70%."
                             tag="ML Training"

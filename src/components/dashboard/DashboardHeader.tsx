@@ -118,6 +118,14 @@ export default function DashboardHeader() {
                             <span className="bg-indigo-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded italic uppercase leading-none">Soon</span>
                         </div>
 
+                        {/* Playlists */}
+                        <Link
+                            href="/dashboard/playlists"
+                            className={`text-[13px] font-bold transition-colors ${pathname.startsWith('/dashboard/playlists') ? 'text-white' : 'text-zinc-500 hover:text-white'}`}
+                        >
+                            Playlists
+                        </Link>
+
                         {/* Music on Request (Active) */}
                         <Link
                             href="/dashboard/request"
@@ -165,6 +173,17 @@ export default function DashboardHeader() {
                                         >
                                             <ShieldCheck size={16} />
                                             Admin Factory
+                                        </Link>
+                                    )}
+
+                                    {(role === 'admin' || role === 'enterprise_admin') && (
+                                        <Link
+                                            href="/dashboard/enterprise"
+                                            onClick={() => setIsMenuOpen(false)}
+                                            className="flex items-center gap-3 px-4 py-3 text-sm font-black text-pink-500 hover:text-pink-400 hover:bg-white/5 transition-colors border-l-2 border-transparent hover:border-pink-500 italic uppercase"
+                                        >
+                                            <ShieldCheck size={16} />
+                                            Enterprise HQ
                                         </Link>
                                     )}
                                     <button

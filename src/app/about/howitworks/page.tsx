@@ -76,6 +76,8 @@ const HELP_SECTIONS = [
         title: 'For Venues & Businesses',
         icon: Building2,
         pages: [
+            { id: 'enterprise-hq', title: 'Enterprise Hub', icon: Layers },
+            { id: 'playlist-editor', title: 'Playlist Curation', icon: Layout },
             { id: 'smart-flow', title: 'Mastering Smart Flow', icon: Zap },
             { id: 'scheduling', title: 'Dynamic Scheduling', icon: Clock },
             { id: 'b2b-licensing', title: 'Commercial Licensing', icon: Shield },
@@ -422,6 +424,70 @@ function renderContent(id: string) {
                             tech="JIT Cloud Renderer"
                             desc="Just-In-Time high-fidelity audio rendering to optimize cloud storage and delivery costs."
                         />
+                    </div>
+                </article>
+            );
+
+        case 'enterprise-hq':
+            return (
+                <article className="space-y-10">
+                    <header className="space-y-4">
+                        <div className="h-16 w-16 bg-indigo-600/10 rounded-2xl flex items-center justify-center text-indigo-500">
+                            <Layers size={32} />
+                        </div>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Enterprise <br /> HQ</h1>
+                        <p className="text-xl text-zinc-400 font-medium">Fleet-wide control for multi-location enterprises.</p>
+                    </header>
+
+                    <div className="prose prose-invert max-w-none space-y-8">
+                        <p className="text-zinc-300 leading-relaxed text-lg">
+                            The Enterprise Management Hub is designed for organizations managing 10 to 10,000+ devices. It provides a "High-Altitude" view of your entire sonic fleet.
+                        </p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="p-8 bg-[#111] border border-white/5 rounded-3xl space-y-4">
+                                <h4 className="text-white font-black italic uppercase">Fleet Telemetry</h4>
+                                <p className="text-xs text-zinc-400 leading-relaxed">Monitor real-time sync status, device health, and network connectivity across every venue globally.</p>
+                            </div>
+                            <div className="p-8 bg-[#111] border border-white/5 rounded-3xl space-y-4">
+                                <h4 className="text-white font-black italic uppercase">Global Override</h4>
+                                <p className="text-xs text-zinc-400 leading-relaxed">Instantly update schedules or emergency announcements across all nodes with a single command.</p>
+                            </div>
+                        </div>
+
+                        <div className="p-6 bg-indigo-500/5 border border-indigo-500/10 rounded-2xl">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-indigo-400 mb-2">Centralized Intelligence</p>
+                            <p className="text-sm text-zinc-300">Access aggregated analytics on listener engagement and operational efficiency from a single dashboard.</p>
+                        </div>
+                    </div>
+                </article>
+            );
+
+        case 'playlist-editor':
+            return (
+                <article className="space-y-10">
+                    <header className="space-y-4">
+                        <div className="h-16 w-16 bg-pink-600/10 rounded-2xl flex items-center justify-center text-pink-500">
+                            <Layout size={32} />
+                        </div>
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">Playlist <br /> Curation</h1>
+                        <p className="text-xl text-zinc-400 font-medium">Professional-grade tools for high-fidelity atmosphere design.</p>
+                    </header>
+
+                    <div className="prose prose-invert max-w-none space-y-8">
+                        <p className="text-zinc-300 leading-relaxed text-lg">
+                            Our High-Fidelity Playlist Editor combines fluid interactivity with lightning-fast organization capability.
+                        </p>
+
+                        <div className="space-y-4">
+                            <h3 className="text-xl font-bold text-white uppercase italic">Key Studio Features:</h3>
+                            <div className="space-y-6">
+                                <Step number={1} title="Direct Drag & Drop" desc="Reorder your sonic narrative with zero lag. Our engine ensures real-time sync across your entire fleet." />
+                                <Step number={2} title="Music Supply Engine" desc="Search the entire Aura catalog and add tracks instantly with a side-panel discovery interface." />
+                                <Step number={3} title="Real-time Synchronization" desc="Every change is instantly propagated to the database, ensuring your venues are always in sync." />
+                                <Step number={4} title="Visual Feedback" desc="Interactive visual cues for syncing transitions and status updates." />
+                            </div>
+                        </div>
                     </div>
                 </article>
             );
@@ -852,7 +918,7 @@ function renderContent(id: string) {
                         </p>
                         <div className="bg-blue-500/5 border border-blue-500/10 p-8 rounded-2xl flex gap-6 items-center">
                             <BarChart3 className="text-blue-500 shrink-0" size={40} />
-                            <p className="text-xs text-zinc-400">If a cluster of venues in Berlin experiences >200ms latency, our infrastructure automatically triggers S3 replication and Edge Worker deployment to that region.</p>
+                            <p className="text-xs text-zinc-400">If a cluster of venues in Berlin experiences &gt;200ms latency, our infrastructure automatically triggers S3 replication and Edge Worker deployment to that region.</p>
                         </div>
                     </div>
                 </article>

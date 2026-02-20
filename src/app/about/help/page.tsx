@@ -78,8 +78,8 @@ export default function HelpCenterPage() {
                         <ArticleLink title="Can I use this music on YouTube?" />
                         <ArticleLink title="How do I cancel my subscription?" />
                         <ArticleLink title="What is 432Hz tuning?" />
-                        <ArticleLink title="Do you offer enterprise plans?" />
-                        <ArticleLink title="How to create a custom playlist?" />
+                        <ArticleLink title="How to manage multi-location venues?" />
+                        <ArticleLink title="Using the High-Fidelity Playlist Editor" />
                         <ArticleLink title="Billing cycle and invoices" />
                     </div>
                 </section>

@@ -328,7 +328,7 @@ function VenueDashboardContent() {
                                         <div className="h-10 w-10 border-4 border-white/10 border-t-white rounded-full animate-spin" />
                                     </div>
                                 ) : tracks.length > 0 ? (
-                                    tracks.slice(0, 5).map((track) => (
+                                    tracks.slice(0, 10).map((track) => (
                                         <TrackRow key={track.id} {...track} lyrics={track.lyrics} allTracks={tracks} />
                                     ))
                                 ) : (

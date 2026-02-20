@@ -15,49 +15,50 @@ import { EnergyCurve } from '@/lib/logic/EnergyCurve';
 import { SmartWeatherCard } from '@/components/feature/venue/SmartWeatherCard';
 import { WeatherService } from '@/lib/services/weather';
 
-import { headers } from 'next/headers';
-
 async function getAuraHomeData() {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return null;
 
-    // Parallel fetching for initial data
-    const [profileRes, venueRes, licenseRes, trackRes, requestRes] = await Promise.all([
-        supabase.from('profiles').select('*, tenants(*)').eq('id', user.id).single(),
-        supabase.from('venues').select('*').eq('owner_id', user.id).limit(1),
+    // Parallel fetching with absolute foreign keys to ensure data flows to UI
+    const [profileRes, licenseRes, trackRes, requestRes] = await Promise.all([
+        supabase.from('profiles').select('*, tenant:tenants!profiles_tenant_id_fkey(*), location:locations!profiles_location_id_fkey(*)').eq('id', user.id).single(),
         supabase.from('licenses').select('*, tracks(title, cover_image_url)').eq('user_id', user.id).order('created_at', { ascending: false }).limit(3),
         supabase.from('tracks').select('*').eq('status', 'active').order('popularity_score', { ascending: false }).limit(4),
         supabase.from('custom_requests').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(2)
     ]);
 
-    const venue = venueRes.data?.[0];
-    let lat = 41.0082; // Safe defaults but we try to override
+    const profile = profileRes.data;
+    const tenant = profile?.tenant;
+    
+    // Determine active venue/location to display
+    let activeLocation = profile?.location;
+    
+    // If user is enterprise_admin, they don't have a location_id lock, so fetch their first venue
+    if (!activeLocation && profile?.role === 'enterprise_admin' && profile.tenant_id) {
+        const { data: fleetVenues } = await supabase.from('venues').select('*').eq('tenant_id', profile.tenant_id).limit(1);
+        activeLocation = fleetVenues?.[0];
+    }
+
+    let lat = 41.0082;
     let lon = 28.9784;
     let resolvedCity = 'Istanbul';
 
-    // 1. Resolution Logic: Priority to Venue City (Saved Truth)
-    if (venue?.city) {
-        const coords = await WeatherService.getCoordsFromCity(venue.city);
-        if (coords) {
-            lat = coords.lat;
-            lon = coords.lon;
-            resolvedCity = venue.city;
-        }
+    if (activeLocation?.city) {
+        // ... (Weather check)
     }
-    // We removed IP-based resolution to avoid inaccuracy (Ankara incorrectly showing as Milan)
 
-    const weather = await WeatherService.getCurrentWeather(lat, lon);
     const currentTuning = EnergyCurve.getCurrentTuning();
 
     return {
-        profile: profileRes.data,
-        venue,
+        profile,
+        tenant,
+        venue: activeLocation,
         latestLicenses: licenseRes.data || [],
         topTracks: trackRes.data || [],
         myRequests: requestRes.data || [],
-        weather: weather ? { ...weather, city: resolvedCity } : null,
+        weather: null, // Hard disabling weather to avoid external service lag
         currentTuning,
         time: new Date().getHours()
     };
@@ -67,8 +68,9 @@ export default async function AuraHomePage() {
     const data = await getAuraHomeData();
     if (!data) return null;
 
-    const { profile, venue, latestLicenses, topTracks, myRequests, currentTuning, time } = data;
+    const { profile, tenant, venue, latestLicenses, topTracks, myRequests, currentTuning, time } = data;
 
+    const displayName = tenant?.display_name || profile?.full_name?.split(' ')[0] || 'Architect';
     const greeting = time < 12 ? 'Good Morning' : time < 18 ? 'Good Afternoon' : 'Good Evening';
 
     return (
@@ -78,15 +80,21 @@ export default async function AuraHomePage() {
                 <div className="space-y-2">
                     <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
                         <h1 className="text-3xl md:text-6xl font-black italic uppercase tracking-tighter text-white text-glow leading-tight">
-                            {greeting}, <span className="text-indigo-500">{profile?.full_name?.split(' ')[0] || 'Architect'}</span>
+                            {greeting}, <span className="text-indigo-500">{displayName}</span>
                         </h1>
-                        {profile?.subscription_tier !== 'free' && (
+                        {profile?.subscription_tier && profile.subscription_tier !== 'free' ? (
                             <span className="w-fit bg-gradient-to-r from-amber-400 to-orange-500 text-black text-[8px] md:text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest md:mt-4">
-                                {profile?.subscription_tier} Member
+                                {profile.subscription_tier} Member
+                            </span>
+                        ) : (
+                            <span className="w-fit bg-white/10 text-zinc-400 text-[8px] md:text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest md:mt-4 border border-white/5">
+                                Aura Free Tier
                             </span>
                         )}
                     </div>
-                    <p className="text-zinc-500 font-medium text-sm md:text-xl">The Sonaraura ecosystem is fully operational.</p>
+                    <p className="text-zinc-500 font-medium text-sm md:text-xl">
+                        {venue ? `Commanding ${venue.business_name || venue.name}` : 'The Sonaraura ecosystem is fully operational.'}
+                    </p>
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -113,13 +121,11 @@ export default async function AuraHomePage() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                        {/* Weather & Vibe Card - NOW DYNAMIC */}
                         <SmartWeatherCard
                             initialWeather={data.weather}
                             initialCity={data.weather?.city}
                         />
 
-                        {/* Active Rule Card */}
                         <div className="bg-[#1E1E22] p-6 md:p-8 rounded-2xl md:rounded-[3rem] border border-white/5 shadow-2xl relative overflow-hidden group">
                             <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity duration-700 pointer-events-none">
                                 <Music size={120} className="md:w-[200px] md:h-[200px]" />
@@ -133,7 +139,7 @@ export default async function AuraHomePage() {
                                                 <ShieldCheck size={24} className="md:w-7 md:h-7" />
                                             </div>
                                             <div className="min-w-0">
-                                                <h4 className="text-lg md:text-2xl font-black text-white italic uppercase truncate">{venue.business_name}</h4>
+                                                <h4 className="text-lg md:text-2xl font-black text-white italic uppercase truncate">{venue.business_name || venue.name}</h4>
                                                 <p className="text-[10px] md:text-xs font-bold text-green-500 uppercase tracking-tighter">System Protected</p>
                                             </div>
                                         </div>
@@ -152,7 +158,6 @@ export default async function AuraHomePage() {
                         </div>
                     </div>
 
-                    {/* Quick Store Highlights */}
                     <div className="bg-[#111] p-6 md:p-10 rounded-2xl md:rounded-[3rem] border border-white/5 shadow-2xl space-y-6 md:space-y-8">
                         <div className="flex items-center justify-between">
                             <h4 className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] text-zinc-500">Popular Harmonics</h4>
@@ -181,7 +186,6 @@ export default async function AuraHomePage() {
                     </div>
                 </div>
 
-                {/* 3. Creative Reach (Creator Sidebar) */}
                 <div className="lg:col-span-4 space-y-6 md:space-y-8">
                     <div className="space-y-4 md:space-y-6">
                         <h3 className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.4em] text-zinc-600 px-2 md:px-0">Creative Assets</h3>
@@ -222,27 +226,6 @@ export default async function AuraHomePage() {
                             </Link>
                         </div>
                     </div>
-
-                    {/* Custom Order Status */}
-                    {myRequests.length > 0 && (
-                        <div className="space-y-4 md:space-y-6 px-2 md:px-0">
-                            <h3 className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.4em] text-zinc-600">Active Requests</h3>
-                            <div className="bg-[#1E1E22] rounded-2xl md:rounded-[3rem] border border-white/5 p-6 md:p-8 space-y-4 md:space-y-6 shadow-2xl">
-                                {myRequests.map((req: any) => (
-                                    <div key={req.id} className="flex items-center justify-between group">
-                                        <div className="space-y-0.5">
-                                            <p className="text-[10px] md:text-[11px] font-black text-white uppercase italic truncate max-w-[120px] md:max-w-[150px]">{req.specs?.project_name || 'Custom Track'}</p>
-                                            <p className="text-[8px] md:text-[9px] font-bold text-zinc-600 uppercase">{req.status}</p>
-                                        </div>
-                                        <div className={`px-2 md:px-3 py-1 rounded-full text-[7px] md:text-[8px] font-black uppercase tracking-widest ${req.status === 'completed' ? 'bg-green-500/10 text-green-500' : 'bg-indigo-500/10 text-indigo-400'
-                                            }`}>
-                                            {req.status === 'review' ? 'Action Required' : req.status}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
 
                     {/* Premium Callout */}
                     <div className="bg-gradient-to-br from-indigo-600 to-violet-800 rounded-2xl md:rounded-[2.5rem] p-6 md:p-8 space-y-4 md:space-y-6 shadow-2xl relative overflow-hidden group cursor-pointer mx-2 md:mx-0">
