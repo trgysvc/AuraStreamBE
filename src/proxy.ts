@@ -2,6 +2,17 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function proxy(request: NextRequest) {
+    // Redirect http to https in production
+    const proto = request.headers.get('x-forwarded-proto');
+    const host = request.headers.get('host');
+
+    if (proto === 'http' && process.env.NODE_ENV === 'production') {
+        const url = request.nextUrl.clone();
+        url.protocol = 'https:';
+        if (host) url.host = host;
+        return NextResponse.redirect(url, 301);
+    }
+
     let supabaseResponse = NextResponse.next({
         request,
     })
