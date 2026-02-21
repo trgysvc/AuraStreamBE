@@ -3,7 +3,7 @@ import { CheckCircle2 } from 'lucide-react';
 import { QCAssetCard } from '@/components/dashboard/QCAssetCard';
 
 async function getPendingTracks() {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from('tracks')
         .select(`

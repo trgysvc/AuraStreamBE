@@ -5,7 +5,7 @@ import { MainHeader } from '@/components/layout/MainHeader';
 import { createClient } from '@/lib/db/server';
 
 export default async function PricingPage() {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     const plans = [

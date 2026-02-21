@@ -13,7 +13,7 @@ import {
 import Link from 'next/link';
 
 async function getStaffData() {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return null;
@@ -104,8 +104,8 @@ export default async function StaffManagementPage() {
                                 <td className="p-8">
                                     <div className="flex items-center gap-3">
                                         <div className={`px-4 py-1.5 rounded-full border text-[9px] font-black uppercase tracking-widest flex items-center gap-2 ${(member.role as string) === 'enterprise_admin'
-                                                ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400'
-                                                : 'bg-zinc-500/10 border-white/5 text-zinc-400'
+                                            ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400'
+                                            : 'bg-zinc-500/10 border-white/5 text-zinc-400'
                                             }`}>
                                             <Shield size={10} />
                                             {member.role || 'Staff'}

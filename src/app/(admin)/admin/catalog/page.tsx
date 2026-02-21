@@ -4,7 +4,7 @@ import { CatalogTrackRow } from '@/components/dashboard/CatalogTrackRow';
 import { S3Service } from '@/lib/services/s3';
 
 async function getCatalogTracks() {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: tracks, error } = await supabase
         .from('tracks')
         .select('*')
@@ -49,12 +49,12 @@ export default async function CatalogMgmtPage() {
                     <h1 className="text-3xl md:text-4xl font-black italic uppercase tracking-tighter text-white leading-none">Catalog Management</h1>
                     <p className="text-zinc-500 font-medium text-sm md:text-[15px]">The Master Repository: Controlling the global flow.</p>
                 </div>
-                
+
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                     <div className="relative group flex-1 sm:flex-none">
                         <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-indigo-500 transition-colors" />
-                        <input 
-                            type="text" 
+                        <input
+                            type="text"
                             placeholder="Search catalog..."
                             className="bg-[#1E1E22] border border-white/5 rounded-full pl-12 pr-6 py-3 text-xs font-bold focus:outline-none focus:border-indigo-500 transition-all w-full sm:w-64 placeholder:text-zinc-700"
                         />
@@ -74,7 +74,7 @@ export default async function CatalogMgmtPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
                 <StatCard icon={ListMusic} label="Total Assets" value={tracks.length} color="text-indigo-500" />
                 <StatCard icon={Layers} label="Genres" value={new Set(tracks.map(t => t.genre)).size} color="text-pink-500" />
-                <StatCard icon={Plus} label="New This Week" value={tracks.filter(t => new Date(t.created_at) > new Date(Date.now() - 7*24*60*60*1000)).length} color="text-green-500" />
+                <StatCard icon={Plus} label="New This Week" value={tracks.filter(t => new Date(t.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length} color="text-green-500" />
             </div>
 
             {/* Main Data Table */}
@@ -99,7 +99,7 @@ export default async function CatalogMgmtPage() {
                     </table>
                 </div>
             </div>
-            
+
             {/* Mobile Helper Note */}
             <p className="md:hidden text-center text-[9px] font-bold text-zinc-700 uppercase tracking-widest">
                 Scroll horizontally to view technical data

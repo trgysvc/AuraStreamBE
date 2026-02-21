@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/db/server';
-import { 
-    Activity, 
-    Users, 
+import {
+    Activity,
+    Users,
     Zap,
     Clock,
     ArrowUpRight,
@@ -13,7 +13,7 @@ import {
 import Link from 'next/link';
 
 async function getAdminData() {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     try {
         // 1. Fetch Counts with error handling
@@ -81,7 +81,7 @@ export default async function AdminDashboard() {
                     </div>
                     <p className="text-zinc-500 font-medium text-lg">Central nervous system for the Sonaraura ecosystem.</p>
                 </div>
-                
+
                 <div className="flex items-center gap-4">
                     <div className={`px-5 py-2.5 ${error ? 'bg-rose-500/5 border-rose-500/10 text-rose-500' : 'bg-green-500/5 border-green-500/10 text-green-500'} border rounded-2xl flex items-center gap-3`}>
                         <div className={`h-2 w-2 rounded-full ${error ? 'bg-rose-500' : 'bg-green-500 animate-pulse shadow-[0_0_12px_rgba(34,197,94,0.6)]'}`} />
@@ -96,37 +96,37 @@ export default async function AdminDashboard() {
 
             {/* 2. Critical Operation Centers */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <MetricCard 
-                    title="QC Station" 
-                    value={stats.pendingTracks.toString()} 
-                    sub="Authorization Queue" 
+                <MetricCard
+                    title="QC Station"
+                    value={stats.pendingTracks.toString()}
+                    sub="Authorization Queue"
                     icon={Clock}
                     color="text-yellow-500"
                     href="/admin/qc"
                     glow="shadow-yellow-500/5"
                 />
-                <MetricCard 
-                    title="Revenue Hub" 
-                    value={stats.openDisputes.toString()} 
-                    sub="Custom Requests" 
+                <MetricCard
+                    title="Revenue Hub"
+                    value={stats.openDisputes.toString()}
+                    sub="Custom Requests"
                     icon={Zap}
                     color="text-pink-500"
                     href="/admin/requests"
                     glow="shadow-pink-500/5"
                 />
-                <MetricCard 
-                    title="Business Growth" 
-                    value={stats.activeVenues.toString()} 
-                    sub="Verified Venues" 
+                <MetricCard
+                    title="Business Growth"
+                    value={stats.activeVenues.toString()}
+                    sub="Verified Venues"
                     icon={Activity}
                     color="text-indigo-500"
                     href="/admin/users"
                     glow="shadow-indigo-500/5"
                 />
-                <MetricCard 
-                    title="Global Reach" 
-                    value={stats.totalUsers.toString()} 
-                    sub="Total Ecosystem" 
+                <MetricCard
+                    title="Global Reach"
+                    value={stats.totalUsers.toString()}
+                    sub="Total Ecosystem"
                     icon={Users}
                     color="text-zinc-400"
                     href="/admin/users"
@@ -142,18 +142,18 @@ export default async function AdminDashboard() {
                         <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-zinc-600 ml-2">Production Velocity</h3>
                         <div className="bg-[#111] p-10 rounded-[3rem] border border-white/5 shadow-2xl relative overflow-hidden group">
                             <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                            
+
                             <div className="relative flex items-end justify-between gap-1 h-32 mb-8">
                                 {[40, 60, 45, 90, 65, 80, 50, 70, 95, 85, 60, 40].map((h, i) => (
                                     <div key={i} className="flex-1 bg-white/5 rounded-t-sm group/bar relative">
-                                        <div 
+                                        <div
                                             className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-indigo-600/20 to-indigo-400/40 rounded-t-sm transition-all duration-1000 ease-out delay-150"
                                             style={{ height: `${h}%` }}
                                         />
                                     </div>
                                 ))}
                             </div>
-                            
+
                             <div className="flex items-center justify-between pt-8 border-t border-white/5">
                                 <div className="flex gap-12">
                                     <div className="space-y-1">
@@ -171,28 +171,28 @@ export default async function AdminDashboard() {
                     <div className="space-y-6">
                         <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-zinc-600 ml-2">Operational Hubs</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <HubLink 
-                                title="Ingest Engine" 
-                                desc="Bulk upload and auto-tag assets." 
-                                icon={HardDrive} 
+                            <HubLink
+                                title="Ingest Engine"
+                                desc="Bulk upload and auto-tag assets."
+                                icon={HardDrive}
                                 href="/admin/upload"
                             />
-                            <HubLink 
-                                title="QC Station" 
-                                desc="Final authorization pipeline." 
-                                icon={Music} 
+                            <HubLink
+                                title="QC Station"
+                                desc="Final authorization pipeline."
+                                icon={Music}
                                 href="/admin/qc"
                             />
-                            <HubLink 
-                                title="User Intelligence" 
-                                desc="Manage creators & venues." 
-                                icon={Users} 
+                            <HubLink
+                                title="User Intelligence"
+                                desc="Manage creators & venues."
+                                icon={Users}
                                 href="/admin/users"
                             />
-                            <HubLink 
-                                title="Dispute Center" 
-                                desc="Clear copyright claims." 
-                                icon={ShieldAlert} 
+                            <HubLink
+                                title="Dispute Center"
+                                desc="Clear copyright claims."
+                                icon={ShieldAlert}
                                 href="/admin/disputes"
                             />
                         </div>
@@ -205,12 +205,12 @@ export default async function AdminDashboard() {
                     <div className="bg-[#1E1E22] rounded-[3rem] border border-white/5 p-8 space-y-8 shadow-2xl h-[600px] overflow-hidden flex flex-col">
                         <div className="space-y-6 flex-1">
                             {recentLogs && recentLogs.length > 0 ? recentLogs.map((log: any) => (
-                                <LogItem 
+                                <LogItem
                                     key={log.id}
-                                    type={log.latency_ms > 500 ? 'warning' : 'success'} 
-                                    msg={`Query: "${log.query_text || 'empty'}"`} 
+                                    type={log.latency_ms > 500 ? 'warning' : 'success'}
+                                    msg={`Query: "${log.query_text || 'empty'}"`}
                                     sub={`Latency: ${log.latency_ms}ms • Found ${log.result_count}`}
-                                    time={new Date(log.created_at).toLocaleTimeString()} 
+                                    time={new Date(log.created_at).toLocaleTimeString()}
                                 />
                             )) : (
                                 <>
@@ -221,7 +221,7 @@ export default async function AdminDashboard() {
                                 </>
                             )}
                         </div>
-                        
+
                         <Link href="/admin/settings" className="w-full py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-[9px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:text-white transition-all text-center">
                             System Settings
                         </Link>

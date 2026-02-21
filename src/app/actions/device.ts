@@ -18,7 +18,7 @@ export interface Device {
 }
 
 export async function getDevices_Action(tenantId: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { data, error } = await supabase
         .from('devices')
@@ -43,7 +43,7 @@ export async function registerDevice_Action(data: {
     name: string;
     hardwareId: string;
 }) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Generate a secure token (random string for now)
     const authToken = require('crypto').randomBytes(32).toString('hex');
@@ -71,7 +71,7 @@ export async function registerDevice_Action(data: {
 }
 
 export async function deleteDevice_Action(deviceId: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { error } = await supabase
         .from('devices')

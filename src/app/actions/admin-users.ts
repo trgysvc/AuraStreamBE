@@ -7,7 +7,7 @@ import { revalidatePath } from 'next/cache';
  * Verifies a commercial venue.
  */
 export async function verifyVenue_Action(venueId: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { error } = await supabase
         .from('venues')
@@ -25,7 +25,7 @@ export async function verifyVenue_Action(venueId: string) {
  * Manually updates a user's subscription tier.
  */
 export async function updateUserTier_Action(userId: string, tier: 'free' | 'pro' | 'business' | 'enterprise') {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { error } = await supabase
         .from('profiles')
@@ -44,7 +44,7 @@ export async function updateUserTier_Action(userId: string, tier: 'free' | 'pro'
 export async function toggleUserStatus_Action(userId: string, isBanned: boolean) {
     // This could involve setting a 'is_banned' flag or similar in profiles.
     // For now, let's assume we update a role or specific status field.
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { error } = await supabase
         .from('profiles')

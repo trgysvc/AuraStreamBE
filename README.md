@@ -27,14 +27,14 @@ SONARAURA goes beyond traditional streaming. It leverages **Frequency Engineerin
 ## 🛠️ Technical Stack & Frameworks
 
 ### Core Architecture
-- **Framework:** [Next.js 14](https://nextjs.org/) (App Router, Server Actions, RSC)
+- **Framework:** [Next.js 16](https://nextjs.org/) (App Router, Server Actions, RSC, Async Cookies API)
 - **Language:** TypeScript (Strict Mode)
 - **Styling:** Vanilla Tailwind CSS 3.4
-- **State Management:** Zustand & React Context API
+- **Security:** RLS (Row Level Security) Hardened, Authenticated Client-First Architecture
 
 ### Backend & Cloud Infrastructure
 - **Database & Auth:** [Supabase](https://supabase.com/) (PostgreSQL, RLS, Edge Functions, pgvector)
-- **Storage:** [AWS S3](https://aws.amazon.com/s3/) (Automated post-process purge to optimize storage costs)
+- **Storage:** [AWS S3](https://aws.amazon.com/s3/) (Signed URL access via RLS-verified server actions)
 - **Compute:** AWS Lambda & **JIT Cloud Renderer** (Just-In-Time high-fidelity audio rendering on demand)
 - **Queue System:** AWS SQS (Job orchestration for sonic analysis and JIT triggers)
 - **CDN:** AWS CloudFront (Secure delivery with 3600s Signed URLs)

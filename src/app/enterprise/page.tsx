@@ -8,7 +8,7 @@ import { BUSINESS_SECTORS } from './data';
 import TallyForm from '@/components/shared/TallyForm';
 
 export default async function EnterprisePage() {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     return (
@@ -135,23 +135,23 @@ export default async function EnterprisePage() {
 
                     <div className="flex md:grid md:grid-cols-3 overflow-x-auto md:overflow-x-visible gap-4 md:gap-12 pb-8 no-scrollbar -mx-6 px-6 md:mx-0 md:px-0 items-stretch">
                         {[
-                            { 
-                                title: 'Unlimited Access', 
-                                subtitle: 'World-Class Music', 
+                            {
+                                title: 'Unlimited Access',
+                                subtitle: 'World-Class Music',
                                 description: 'Discover exclusive tracks by award-winning composers and up-and-coming artists, tailored for premium venues.',
                                 img: 'https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=1600',
                                 badge: 'Catalog'
                             },
-                            { 
-                                title: 'Next-Gen Tools', 
-                                subtitle: 'Supercharge Teams', 
+                            {
+                                title: 'Next-Gen Tools',
+                                subtitle: 'Supercharge Teams',
                                 description: "Spend less time searching. Use 'Aura Tailor' for smart discovery and centralized playlist management.",
                                 img: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1600',
                                 badge: 'Intelligence'
                             },
-                            { 
-                                title: 'Publish Worry-Free', 
-                                subtitle: 'Worldwide Coverage', 
+                            {
+                                title: 'Publish Worry-Free',
+                                subtitle: 'Worldwide Coverage',
                                 description: 'Soundtrack your physical and digital spaces without restrictions. One simple license covers it all.',
                                 img: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1600',
                                 badge: 'Legal'
@@ -169,12 +169,11 @@ export default async function EnterprisePage() {
                                     </div>
                                 </div>
                                 {/* Content Box */}
-                                <div className={`h-full flex flex-col justify-between ${
-                                    i === 0 ? '' : 'md:border-l md:border-black/10 md:pl-12'
-                                } ${
+                                <div className={`h-full flex flex-col justify-between ${i === 0 ? '' : 'md:border-l md:border-black/10 md:pl-12'
+                                    } ${
                                     /* Mobile styling only */
                                     'bg-black text-white p-6 rounded-b-xl md:bg-transparent md:text-black md:p-0 md:rounded-none'
-                                }`}>
+                                    }`}>
                                     <div className="space-y-4 md:space-y-6">
                                         <h3 className="text-xl md:text-5xl font-black italic md:not-italic md:uppercase md:tracking-tight leading-tight md:leading-[0.9]">
                                             {item.title}
@@ -269,7 +268,7 @@ export default async function EnterprisePage() {
                             Get a custom quote tailored to your number of locations and specific needs.
                         </p>
                     </div>
-                    
+
                     {/* Tally Form Integration - Seamless & Auto-resizing */}
                     <TallyForm formId="zxqExR" />
 

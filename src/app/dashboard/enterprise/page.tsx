@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { VenueActionRow } from '@/components/dashboard/VenueActionRow';
 
 async function getEnterpriseData() {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return null;

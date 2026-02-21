@@ -17,7 +17,7 @@ export async function createDispute_Action(data: {
     licenseId: string;
     videoUrl: string;
 }) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // 1. Fetch license and track details to generate text
     const { data: license, error: lError } = await supabase
@@ -56,7 +56,7 @@ export async function createDispute_Action(data: {
  * Resolves a dispute, marking it as cleared.
  */
 export async function resolveDispute_Action(disputeId: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { error } = await supabase
         .from('disputes')
@@ -73,7 +73,7 @@ export async function resolveDispute_Action(disputeId: string) {
  * Rejects a dispute.
  */
 export async function rejectDispute_Action(disputeId: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { error } = await supabase
         .from('disputes')
@@ -87,7 +87,7 @@ export async function rejectDispute_Action(disputeId: string) {
 }
 
 export async function getMyDisputes_Action() {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return [];
 

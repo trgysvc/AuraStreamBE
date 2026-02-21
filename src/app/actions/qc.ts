@@ -9,7 +9,7 @@ import { S3Service } from '@/lib/services/s3';
  * Approves a track, makes it live in the catalog and syncs to Meilisearch.
  */
 export async function approveTrack_Action(trackId: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // 1. Update status in DB
     const { data: track, error } = await supabase
@@ -49,7 +49,7 @@ export async function approveTrack_Action(trackId: string) {
  * Rejects and Purges a track (Deletes from DB and S3)
  */
 export async function rejectTrack_Action(trackId: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // 1. Get associated files from S3 before deleting records
     const { data: files } = await supabase
@@ -91,7 +91,7 @@ export async function updateTrackQC_Action(trackId: string, data: {
     mood_tags?: string[];
     lyrics?: string;
 }) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { error } = await supabase
         .from('tracks')

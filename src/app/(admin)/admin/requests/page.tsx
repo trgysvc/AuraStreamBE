@@ -3,7 +3,7 @@ import { Sparkles } from 'lucide-react';
 import { RequestActionCard } from '@/components/dashboard/RequestActionCard';
 
 async function getCustomRequests() {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from('custom_requests')
         .select('*, profiles(email, full_name)')

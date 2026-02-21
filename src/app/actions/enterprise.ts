@@ -10,7 +10,7 @@ export async function createVenue_Action(data: {
     description?: string;
     mood_tags?: string[];
 }) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
@@ -42,7 +42,7 @@ export async function createVenue_Action(data: {
 }
 
 export async function updateStaffRole_Action(userId: string, role: string, locationId?: string | null) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { error } = await supabase
         .from('profiles')

@@ -17,7 +17,7 @@ export interface DownloadBundle {
  * Orchestrates the download process
  */
 export async function getDownloadBundle_Action(trackId: string, licenseId: string): Promise<DownloadBundle | null> {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return null;
 
@@ -45,7 +45,7 @@ export async function getDownloadBundle_Action(trackId: string, licenseId: strin
         .from('track_files')
         .select('s3_key')
         .eq('track_id', trackId)
-        .eq('file_type', 'raw') 
+        .eq('file_type', 'raw')
         .single();
 
     if (!file) return null;
@@ -66,7 +66,7 @@ export async function getDownloadBundle_Action(trackId: string, licenseId: strin
 
     return {
         audioUrl,
-        licensePdfUrl: audioUrl, 
+        licensePdfUrl: audioUrl,
         trackTitle: track.title
     };
 }

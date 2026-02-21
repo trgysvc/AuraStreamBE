@@ -28,7 +28,7 @@ export async function getVenueTracks_Action(options?: {
     moods?: string[];
     query?: string;
 }): Promise<VenueTrack[]> {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // 1. Build Query
     let queryBuilder = supabase

@@ -4,7 +4,7 @@ import { getPlaylistDetails_Action } from '@/app/actions/playlist';
 import { PlaylistEditorClient } from '@/components/dashboard/PlaylistEditorClient';
 
 export default async function PlaylistEditPage({ params }: { params: { id: string } }) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) redirect('/login');

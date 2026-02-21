@@ -11,7 +11,7 @@ export async function updateRequestStatus_Action(
     status: 'pending' | 'processing' | 'review' | 'completed' | 'rejected',
     price?: number
 ): Promise<{ success: boolean }> {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     interface UpdatePayload {
         status: string;
@@ -37,7 +37,7 @@ export async function updateRequestStatus_Action(
  * Adds admin notes to a custom request.
  */
 export async function updateRequestNotes_Action(requestId: string, notes: string): Promise<{ success: boolean }> {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { error } = await supabase
         .from('custom_requests')

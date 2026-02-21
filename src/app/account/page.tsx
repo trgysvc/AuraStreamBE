@@ -3,11 +3,11 @@
 import { createClient } from '@/lib/db/client';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-    User, 
-    Shield, 
-    CreditCard, 
-    Bell, 
+import {
+    User,
+    Shield,
+    CreditCard,
+    Bell,
     LogOut,
     Save,
     Loader2
@@ -86,7 +86,7 @@ export default function AccountPage() {
                         .select('*')
                         .eq('id', user.id)
                         .single();
-                    
+
                     if (simpleProfile) {
                         currentProfile = simpleProfile;
                         if (simpleProfile.tenant_id) {
@@ -102,7 +102,7 @@ export default function AccountPage() {
 
                 if (currentProfile) {
                     setProfile(currentProfile);
-                    
+
                     if (currentProfile.billing_details) {
                         setBillingData(currentProfile.billing_details);
                     } else {
@@ -156,12 +156,12 @@ export default function AccountPage() {
             // Update Profile
             const { error: profileError } = await supabase
                 .from('profiles')
-                .update({ 
+                .update({
                     full_name: formData.full_name,
                     billing_details: billingData
                 })
                 .eq('id', user.id);
-            
+
             if (profileError) throw profileError;
 
             const tenantFields = {
@@ -186,7 +186,7 @@ export default function AccountPage() {
                     .from('tenants')
                     .update(tenantFields)
                     .eq('id', targetTenantId);
-                
+
                 if (tenantError) throw tenantError;
             } else {
                 const { data: newTenant, error: createError } = await supabase
@@ -198,13 +198,13 @@ export default function AccountPage() {
                     })
                     .select()
                     .single();
-                
+
                 if (createError) throw createError;
-                
+
                 await supabase.from('profiles').update({ tenant_id: newTenant.id }).eq('id', user.id);
                 setTenant(newTenant);
             }
-            
+
             alert('Settings saved successfully!');
             router.refresh();
         } catch (e) {
@@ -235,12 +235,12 @@ export default function AccountPage() {
                         </div>
                     </div>
                 </div>
-                <button 
+                <button
                     onClick={handleSave}
                     disabled={saving}
                     className="w-full md:w-auto px-10 py-4 md:py-5 bg-white text-black rounded-full font-black text-xs uppercase tracking-[0.3em] hover:bg-indigo-500 hover:text-white transition-all shadow-2xl flex items-center justify-center gap-3"
                 >
-                    {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} 
+                    {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
                     Save Changes
                 </button>
             </div>
@@ -261,7 +261,7 @@ export default function AccountPage() {
                     <section ref={personalRef} className="space-y-6 md:space-y-8 scroll-mt-32 pt-4">
                         <h3 className="text-xl md:text-2xl font-black uppercase italic text-white tracking-tight">Personal Identity</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                            <InputField label="Full Name" value={formData.full_name} onChange={val => setFormData({...formData, full_name: val})} placeholder="Your Name" />
+                            <InputField label="Full Name" value={formData.full_name} onChange={val => setFormData({ ...formData, full_name: val })} placeholder="Your Name" />
                             <InputField label="Email Address" value={profile?.email || ''} readOnly />
                         </div>
                     </section>
@@ -269,46 +269,46 @@ export default function AccountPage() {
                     <section ref={businessRef} className="space-y-6 md:space-y-8 scroll-mt-32 pt-4">
                         <h3 className="text-xl md:text-2xl font-black uppercase italic text-white tracking-tight">Corporate & Billing Info</h3>
                         <div className="flex bg-white/5 p-1 rounded-xl md:rounded-2xl w-full sm:w-fit">
-                            <button onClick={() => setBillingData({...billingData, type: 'individual'})} className={`px-6 py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${billingData.type === 'individual' ? 'bg-white text-black shadow-xl' : 'text-zinc-500'}`}>Individual</button>
-                            <button onClick={() => setBillingData({...billingData, type: 'corporate'})} className={`px-6 py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${billingData.type === 'corporate' ? 'bg-white text-black shadow-xl' : 'text-zinc-500'}`}>Corporate</button>
+                            <button onClick={() => setBillingData({ ...billingData, type: 'individual' })} className={`px-6 py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${billingData.type === 'individual' ? 'bg-white text-black shadow-xl' : 'text-zinc-500'}`}>Individual</button>
+                            <button onClick={() => setBillingData({ ...billingData, type: 'corporate' })} className={`px-6 py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${billingData.type === 'corporate' ? 'bg-white text-black shadow-xl' : 'text-zinc-500'}`}>Corporate</button>
                         </div>
 
                         <div className="space-y-4 md:space-y-6">
                             {billingData.type === 'individual' ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                                    <InputField label="Full Name" value={billingData.full_name || ''} onChange={val => setBillingData({...billingData, full_name: val})} placeholder="Legal name" />
-                                    <InputField label="TCKN" value={billingData.tckn || ''} onChange={val => setBillingData({...billingData, tckn: val})} placeholder="11-digit ID" />
+                                    <InputField label="Full Name" value={billingData.full_name || ''} onChange={val => setBillingData({ ...billingData, full_name: val })} placeholder="Legal name" />
+                                    <InputField label="TCKN" value={billingData.tckn || ''} onChange={val => setBillingData({ ...billingData, tckn: val })} placeholder="11-digit ID" />
                                 </div>
                             ) : (
                                 <>
-                                    <InputField label="Corporate Display Name" value={formData.display_name || ''} onChange={val => setFormData({...formData, display_name: val})} placeholder="e.g. Aracafé Co." />
-                                    <InputField label="Official Company Title" value={formData.legal_name || ''} onChange={val => setFormData({...formData, legal_name: val})} placeholder="Full legal name" />
+                                    <InputField label="Corporate Display Name" value={formData.display_name || ''} onChange={val => setFormData({ ...formData, display_name: val })} placeholder="e.g. Aracafé Co." />
+                                    <InputField label="Official Company Title" value={formData.legal_name || ''} onChange={val => setFormData({ ...formData, legal_name: val })} placeholder="Full legal name" />
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                                        <InputField label="Authorized Person" value={formData.authorized_person_name || ''} onChange={val => setFormData({...formData, authorized_person_name: val})} placeholder="Representative" />
-                                        <InputField label="Authorized Phone" value={formData.authorized_person_phone || ''} onChange={val => setFormData({...formData, authorized_person_phone: val})} placeholder="+90 ..." />
+                                        <InputField label="Authorized Person" value={formData.authorized_person_name || ''} onChange={val => setFormData({ ...formData, authorized_person_name: val })} placeholder="Representative" />
+                                        <InputField label="Authorized Phone" value={formData.authorized_person_phone || ''} onChange={val => setFormData({ ...formData, authorized_person_phone: val })} placeholder="+90 ..." />
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                                        <InputField label="Tax Office" value={billingData.tax_office || ''} onChange={val => setBillingData({...billingData, tax_office: val})} placeholder="Tax Office" />
-                                        <InputField label="Tax ID / VKN" value={billingData.tax_id || ''} onChange={val => setBillingData({...billingData, tax_id: val})} placeholder="VKN" />
+                                        <InputField label="Tax Office" value={billingData.tax_office || ''} onChange={val => setBillingData({ ...billingData, tax_office: val })} placeholder="Tax Office" />
+                                        <InputField label="Tax ID / VKN" value={billingData.tax_id || ''} onChange={val => setBillingData({ ...billingData, tax_id: val })} placeholder="VKN" />
                                     </div>
                                 </>
                             )}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                                <InputField label="Billing Email" value={billingData.billing_email} onChange={val => setBillingData({...billingData, billing_email: val})} placeholder="invoice@..." />
-                                <InputField label="General Phone" value={billingData.phone || ''} onChange={val => setBillingData({...billingData, phone: val})} placeholder="+90 ..." />
+                                <InputField label="Billing Email" value={billingData.billing_email} onChange={val => setBillingData({ ...billingData, billing_email: val })} placeholder="invoice@..." />
+                                <InputField label="General Phone" value={billingData.phone || ''} onChange={val => setBillingData({ ...billingData, phone: val })} placeholder="+90 ..." />
                             </div>
-                            <InputField label="Billing Address" value={billingData.address.line1} onChange={val => setBillingData({...billingData, address: {...billingData.address, line1: val}})} placeholder="Address" />
+                            <InputField label="Billing Address" value={billingData.address.line1} onChange={val => setBillingData({ ...billingData, address: { ...billingData.address, line1: val } })} placeholder="Address" />
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-                                <InputField label="City" value={billingData.address.city} onChange={val => setBillingData({...billingData, address: {...billingData.address, city: val}})} placeholder="City" />
-                                <InputField label="Zip" value={billingData.address.zip || ''} onChange={val => setBillingData({...billingData, address: {...billingData.address, zip: val}})} placeholder="Zip" />
-                                <InputField label="Country" value={billingData.address.country} onChange={val => setBillingData({...billingData, address: {...billingData.address, country: val}})} placeholder="Country" />
+                                <InputField label="City" value={billingData.address.city} onChange={val => setBillingData({ ...billingData, address: { ...billingData.address, city: val } })} placeholder="City" />
+                                <InputField label="Zip" value={billingData.address.zip || ''} onChange={val => setBillingData({ ...billingData, address: { ...billingData.address, zip: val } })} placeholder="Zip" />
+                                <InputField label="Country" value={billingData.address.country} onChange={val => setBillingData({ ...billingData, address: { ...billingData.address, country: val } })} placeholder="Country" />
                             </div>
                             <div className="pt-8 border-t border-white/5 space-y-6">
                                 <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600 ml-1">Brand Assets</p>
-                                <InputField label="Logo URL" value={formData.logo_url || ''} onChange={val => setFormData({...formData, logo_url: val})} placeholder="https://..." />
+                                <InputField label="Logo URL" value={formData.logo_url || ''} onChange={val => setFormData({ ...formData, logo_url: val })} placeholder="https://..." />
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                                    <InputField label="Website" value={formData.website || ''} onChange={val => setFormData({...formData, website: val})} placeholder="https://..." />
-                                    <InputField label="Industry" value={formData.industry || ''} onChange={val => setFormData({...formData, industry: val})} placeholder="e.g. Retail" />
+                                    <InputField label="Website" value={formData.website || ''} onChange={val => setFormData({ ...formData, website: val })} placeholder="https://..." />
+                                    <InputField label="Industry" value={formData.industry || ''} onChange={val => setFormData({ ...formData, industry: val })} placeholder="e.g. Retail" />
                                 </div>
                             </div>
                         </div>

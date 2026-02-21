@@ -4,7 +4,7 @@ import { VenueActionRow } from '@/components/dashboard/VenueActionRow';
 import { CreatorActionCard } from '@/components/dashboard/CreatorActionCard';
 
 async function getUsersAndVenues() {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Fetch data with direct fallback to ensure list is never empty if DB exists
     try {
@@ -12,9 +12,9 @@ async function getUsersAndVenues() {
             supabase.from('profiles').select('*').order('created_at', { ascending: false }).limit(100),
             supabase.from('venues').select('*').order('created_at', { ascending: false }).limit(100)
         ]);
-        
-        return { 
-            profiles: profilesRes.data || [], 
+
+        return {
+            profiles: profilesRes.data || [],
             venues: venuesRes.data || [],
             error: profilesRes.error?.message || venuesRes.error?.message || null
         };

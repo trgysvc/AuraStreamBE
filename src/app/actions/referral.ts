@@ -4,7 +4,7 @@ import { createClient } from '@/lib/db/server';
 import { revalidatePath } from 'next/cache';
 
 export async function submitReferral(formData: FormData) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Get current user
     const { data: { user } } = await supabase.auth.getUser();

@@ -19,7 +19,7 @@ import { createClient } from '@/lib/db/server';
 import { redirect } from 'next/navigation';
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // 1. Check Authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser();

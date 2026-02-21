@@ -28,7 +28,7 @@ export interface PlaylistItem {
 }
 
 export async function getPlaylists_Action(tenantId: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { data, error } = await supabase
         .from('playlists')
@@ -56,7 +56,7 @@ export async function createPlaylist_Action(data: {
     description?: string;
     userId: string;
 }) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { data: newPlaylist, error } = await supabase
         .from('playlists')
@@ -76,7 +76,7 @@ export async function createPlaylist_Action(data: {
 }
 
 export async function getPlaylistDetails_Action(playlistId: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Fetch Playlist Info
     const { data: playlist, error: playlistError } = await supabase

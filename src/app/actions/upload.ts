@@ -53,7 +53,7 @@ export async function getSignedUploadUrl_Action(contentType: string, fileName: s
  * 2. Create Track Record in Database & Trigger Processing
  */
 export async function createTrackRecord_Action(formData: FormData, s3Key: string): Promise<UploadState> {
-    const supabase = createServerClient();
+    const supabase = await createServerClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return { message: 'Unauthorized', error: 'Auth Error' };

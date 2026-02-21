@@ -9,7 +9,7 @@ type FeedbackCategory = Database['public']['Enums']['feedback_category'];
 type FeedbackSeverity = Database['public']['Enums']['feedback_severity'];
 
 export async function submitFeedback(formData: FormData) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // 1. Get current session/user
     const { data: { user }, error: authError } = await supabase.auth.getUser();

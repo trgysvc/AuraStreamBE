@@ -16,7 +16,7 @@ import { SmartWeatherCard } from '@/components/feature/venue/SmartWeatherCard';
 import { WeatherService } from '@/lib/services/weather';
 
 async function getAuraHomeData() {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) return null;
@@ -31,10 +31,10 @@ async function getAuraHomeData() {
 
     const profile = profileRes.data;
     const tenant = profile?.tenant;
-    
+
     // Determine active venue/location to display
     let activeLocation = profile?.location;
-    
+
     // If user is enterprise_admin, they don't have a location_id lock, so fetch their first venue
     if (!activeLocation && profile?.role === 'enterprise_admin' && profile.tenant_id) {
         const { data: fleetVenues } = await supabase.from('venues').select('*').eq('tenant_id', profile.tenant_id).limit(1);

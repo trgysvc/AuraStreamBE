@@ -44,7 +44,7 @@ export default function SignupPage() {
         console.log(`Social signup trigger: ${provider}`);
         setLoading(true);
         setError(null);
-        
+
         try {
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider,
@@ -54,7 +54,7 @@ export default function SignupPage() {
             });
 
             if (error) throw error;
-            
+
             if (data?.url) {
                 console.log('Redirecting to provider...');
                 window.location.href = data.url;

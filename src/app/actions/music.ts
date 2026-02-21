@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/db/server';
 
 export async function searchTracks_Action(query: string, limit: number = 20) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { data, error } = await supabase
         .from('tracks')
@@ -22,7 +22,7 @@ export async function searchTracks_Action(query: string, limit: number = 20) {
 }
 
 export async function toggleLikeTrack_Action(trackId: string, userId: string, tenantId?: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
     console.log(`[toggleLikeTrack] trackId: ${trackId}, userId: ${userId}, tenantId: ${tenantId}`);
 
     try {
@@ -144,7 +144,7 @@ export async function toggleLikeTrack_Action(trackId: string, userId: string, te
 }
 
 export async function isTrackLiked_Action(trackId: string, userId: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { data, error } = await supabase
         .from('likes')
@@ -162,7 +162,7 @@ export async function isTrackLiked_Action(trackId: string, userId: string) {
 }
 
 export async function getUserLikedTracks_Action(userId: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { data, error } = await supabase
         .from('likes')

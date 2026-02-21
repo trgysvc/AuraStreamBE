@@ -6,7 +6,7 @@ import { Footer } from '@/components/layout/Footer';
 import { createClient } from '@/lib/db/server';
 
 export default async function AdvertPage() {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     return (

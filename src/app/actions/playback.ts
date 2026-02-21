@@ -14,10 +14,10 @@ export async function logPlaybackEvent_Action(data: {
     skipped: boolean;
     tuningUsed: '440hz' | '432hz' | '528hz';
 }) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Extract region for Infrastructure ROI tracking
-    const headerList = headers();
+    const headerList = await headers();
     const region = headerList.get('x-vercel-ip-country') || headerList.get('cf-ipcountry') || 'Unknown';
 
     // 1. Insert into raw telemetry logs

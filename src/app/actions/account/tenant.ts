@@ -21,7 +21,7 @@ export interface TenantIdentity {
  * Uses the server client for secure server-side fetching.
  */
 export async function getMyProfileWithTenant_Action() {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // 1. Get Session User
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -50,7 +50,7 @@ export async function getMyProfileWithTenant_Action() {
  * Restricted by RLS.
  */
 export async function updateTenantIdentity_Action(tenantId: string, formData: TenantIdentity) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { data, error } = await supabase
         .from('tenants')
@@ -82,7 +82,7 @@ export async function updateTenantIdentity_Action(tenantId: string, formData: Te
  * Now using the authenticated client; RLS allows this for 'admin' or 'enterprise_admin' roles.
  */
 export async function adminVerifyVenue_Action(venueId: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { error } = await supabase
         .from('venues')
@@ -108,7 +108,7 @@ export async function createVenue_Action(venueData: {
     country?: string;
     tenant_id: string;
 }) {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 

@@ -15,7 +15,7 @@ interface CheckoutParams {
 
 export async function createCheckoutSession({ trackId, licenseType, projectName }: CheckoutParams) {
     // 0. Authenticate User
-    const supabaseUser = createClient();
+    const supabaseUser = await createClient();
     const { data: { user }, error: authError } = await supabaseUser.auth.getUser();
 
     if (authError || !user) {

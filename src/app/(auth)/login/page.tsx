@@ -38,7 +38,7 @@ export default function LoginPage() {
         console.log(`Social login trigger: ${provider}`);
         setLoading(true);
         setError(null);
-        
+
         try {
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider,
@@ -48,7 +48,7 @@ export default function LoginPage() {
             });
 
             if (error) throw error;
-            
+
             if (data?.url) {
                 console.log('Redirecting to provider...');
                 window.location.href = data.url;

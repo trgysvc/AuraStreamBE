@@ -6,7 +6,7 @@ import { getPlaylists_Action } from '@/app/actions/playlist';
 import { Plus, ListMusic, Music } from 'lucide-react';
 
 export default async function PlaylistsPage() {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) redirect('/login');

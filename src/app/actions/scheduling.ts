@@ -17,7 +17,7 @@ export interface VenueSchedule {
 }
 
 export async function getActiveScheduleRule_Action(venueId: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
     const now = new Date();
     const currentTime = now.toTimeString().split(' ')[0]; // 'HH:MM:SS'
     const currentDay = now.getDay();
@@ -43,7 +43,7 @@ export async function getActiveScheduleRule_Action(venueId: string) {
 }
 
 export async function saveScheduleRule_Action(rule: Partial<VenueSchedule>) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { data, error } = await supabase
         .from('venue_schedules')
@@ -56,7 +56,7 @@ export async function saveScheduleRule_Action(rule: Partial<VenueSchedule>) {
 }
 
 export async function getVenueSchedules_Action(venueId: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { data, error } = await supabase
         .from('venue_schedules')

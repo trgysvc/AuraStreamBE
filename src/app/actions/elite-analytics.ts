@@ -7,11 +7,11 @@ import { headers } from 'next/headers';
  * Logs a search query for analytics and latency tracking
  */
 export async function logSearchQuery_Action(query: string, filters: Record<string, unknown>, resultCount: number, latencyMs: number) {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     // Extract region from headers (Cloudflare/Vercel standard headers)
-    const headerList = headers();
+    const headerList = await headers();
     const region = headerList.get('x-vercel-ip-country') || headerList.get('cf-ipcountry') || 'Unknown';
 
     await supabase.from('search_logs').insert({
@@ -27,7 +27,7 @@ export async function logSearchQuery_Action(query: string, filters: Record<strin
  * Logs UI interactions for A/B testing and UI evolution
  */
 export async function logUIInteraction_Action(elementId: string, actionType: string, metadata: Record<string, unknown> = {}) {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     // Using search_logs with a specific prefix for UI interactions to keep schema clean
@@ -45,7 +45,7 @@ export async function logUIInteraction_Action(elementId: string, actionType: str
  * Updates the user's YouTube Channel ID for whitelisting
  */
 export async function updateYoutubeChannel_Action(channelId: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) throw new Error('Unauthorized');

@@ -22,7 +22,7 @@ export async function updateTrackMetadata_Action(trackId: string, data: {
     popularity_score?: number;
     lyrics?: string;
 }) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { error } = await supabase
         .from('tracks')
@@ -42,7 +42,7 @@ export async function updateTrackMetadata_Action(trackId: string, data: {
  * Permanently deletes a track and its associated file records.
  */
 export async function deleteTrack_Action(trackId: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { error } = await supabase
         .from('tracks')

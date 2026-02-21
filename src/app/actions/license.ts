@@ -4,7 +4,7 @@ import { createClient } from '@/lib/db/server';
 import { PDFService } from '@/lib/services/license/pdf';
 
 export async function generateLicensePDF_Action(licenseId: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) throw new Error('Unauthorized');

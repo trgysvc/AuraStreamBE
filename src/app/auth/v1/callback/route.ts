@@ -12,7 +12,7 @@ export async function GET(request: Request) {
   const origin = host ? `${protocol}://${host}` : new URL(request.url).origin
 
   if (code) {
-    const supabase = createClient()
+    const supabase = await createClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
       return NextResponse.redirect(`${origin}${next}`)

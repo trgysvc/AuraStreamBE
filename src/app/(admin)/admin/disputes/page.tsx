@@ -4,7 +4,7 @@ import { DisputeActionCard } from '@/components/dashboard/DisputeActionCard';
 import { DisputeAsset } from '@/types/admin';
 
 async function getDisputes(): Promise<DisputeAsset[]> {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from('disputes')
         .select('*, profiles(email, full_name), licenses(license_key, project_name, tracks(title))')

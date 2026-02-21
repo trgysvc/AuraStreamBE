@@ -21,7 +21,7 @@ export async function getStoreTracks_Action(options?: {
     moods?: string[];
     query?: string;
 }): Promise<StoreTrack[]> {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // 1. Fetch Active Tracks with their Files
     const queryBuilder = supabase

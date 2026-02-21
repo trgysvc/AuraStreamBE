@@ -7,7 +7,7 @@ import { createClient } from '@/lib/db/server';
 import { BUSINESS_SECTORS } from '../data';
 
 export default async function SpacesPage() {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     // Grouping sectors by category for better organization
