@@ -154,7 +154,6 @@ function VenueDashboardContent() {
         { title: "Championships", tracks: "35 tracks", color: "bg-[#FFCC44]", image: "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=800" },
         { title: "Sports & Action", tracks: "8 playlists", color: "bg-[#9966FF]", image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=800" },
         { title: "Valentine's Day", tracks: "35 tracks", color: "bg-[#FF99CC]", image: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800" },
-        { title: "Anti-Valentine's", tracks: "35 tracks", color: "bg-[#4466FF]", image: "https://images.unsplash.com/photo-1501901664533-51633cfbcab4?q=80&w=800" },
         { title: "Morning Coffee", tracks: "Aura Chill", color: "bg-[#D2B48C]", image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=800" },
         { title: "Deep Focus", tracks: "Workspace", color: "bg-[#2F4F4F]", image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=800" },
         { title: "Late Night Jazz", tracks: "Lounge", color: "bg-[#4B0082]", image: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=800" },
