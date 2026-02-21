@@ -9,6 +9,7 @@ import { logSearchQuery_Action } from '@/app/actions/elite-analytics';
 import { ScheduleManager } from '@/components/feature/venue/ScheduleManager';
 import { SmartFlowProvider, useSmartFlow } from '@/context/SmartFlowContext';
 import { usePlayer } from '@/context/PlayerContext';
+import { createClient } from '@/lib/db/client';
 
 const PlaylistCard = ({ title, tracks, color, image, onClick }: { title: string, tracks: string, color: string, image?: string, onClick?: () => void }) => (
     <div className="group cursor-pointer" onClick={onClick}>
@@ -43,6 +44,16 @@ function VenueDashboardContent() {
     const [tracks, setTracks] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedPlaylist, setSelectedPlaylist] = useState<string | null>(null);
+    const [userId, setUserId] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) setUserId(user.id);
+        };
+        fetchUser();
+    }, []);
 
     // Taxonomy Filters State
     const [selectedVenues, setSelectedVenues] = useState<string[]>([]);
@@ -68,9 +79,10 @@ function VenueDashboardContent() {
             }
 
             const data = await getVenueTracks_Action({
-                query: searchQuery,
+                query: searchQuery === "Liked Songs" ? undefined : searchQuery,
                 bpmRange: activeRule ? undefined : bpm,
-                moods: combinedMoods.length > 0 ? combinedMoods : undefined
+                moods: combinedMoods.length > 0 ? combinedMoods : undefined,
+                onlyLikedBy: searchQuery === "Liked Songs" ? (userId || undefined) : undefined
             });
 
             // Log search for analytics (Aura Tailor & Infrastructure ROI)
@@ -85,7 +97,7 @@ function VenueDashboardContent() {
 
             setTracks(data.map(t => {
                 const totalSeconds = (t.duration && t.duration > 10000) ? t.duration / 1000 : (t.duration || 0);
-                const displayDuration = totalSeconds > 0 
+                const displayDuration = totalSeconds > 0
                     ? `${Math.floor(totalSeconds / 60)}:${Math.round(totalSeconds % 60).toString().padStart(2, '0')}`
                     : "0:00";
 
@@ -109,13 +121,20 @@ function VenueDashboardContent() {
         } finally {
             setLoading(false);
         }
-    }, [activeRule]);
+    }, [activeRule, userId]);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            performSearch(query, selectedVenues, selectedVibes, selectedGenres, bpmRange);
-        }, 400);
-        return () => clearTimeout(timer);
+        // Initial immediate fetch
+        performSearch('', [], [], [], [60, 180]);
+    }, [performSearch]);
+
+    useEffect(() => {
+        if (query || selectedVenues.length > 0 || selectedVibes.length > 0 || selectedGenres.length > 0) {
+            const timer = setTimeout(() => {
+                performSearch(query, selectedVenues, selectedVibes, selectedGenres, bpmRange);
+            }, 400);
+            return () => clearTimeout(timer);
+        }
     }, [query, selectedVenues, selectedVibes, selectedGenres, bpmRange, performSearch]);
 
     const handleTrackPlay = (track: any) => {
@@ -131,6 +150,7 @@ function VenueDashboardContent() {
         { title: "Trending in Venues", tracks: "Popular", color: "bg-[#FF77AA]", image: "https://images.unsplash.com/photo-1514525253344-f856335d7d67?q=80&w=800" },
         { title: "Can's Essentials", tracks: "24 playlists", color: "bg-[#AAAAAA]", image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=800" },
         { title: "Creator's Picks", tracks: "117 playlists", color: "bg-[#4499FF]", image: "https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?q=80&w=800" },
+        { title: "Liked Songs", tracks: "Your favorites", color: "bg-pink-600", image: "https://images.unsplash.com/photo-1544690411-b752fa399f9c?q=80&w=800" },
         { title: "Championships", tracks: "35 tracks", color: "bg-[#FFCC44]", image: "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=800" },
         { title: "Sports & Action", tracks: "8 playlists", color: "bg-[#9966FF]", image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=800" },
         { title: "Valentine's Day", tracks: "35 tracks", color: "bg-[#FF99CC]", image: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800" },

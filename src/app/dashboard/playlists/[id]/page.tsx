@@ -6,13 +6,14 @@ import { Play, Clock, MoreVertical, Trash2, Plus, Sparkles } from 'lucide-react'
 import Link from 'next/link';
 import Image from 'next/image';
 
-export default async function PlaylistDetailPage({ params }: { params: { id: string } }) {
+export default async function PlaylistDetailPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     const supabase = await createClient();
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) redirect('/login');
 
-    const { playlist, items } = await getPlaylistDetails_Action(params.id);
+    const { playlist, items } = await getPlaylistDetails_Action(id);
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
@@ -38,7 +39,7 @@ export default async function PlaylistDetailPage({ params }: { params: { id: str
                             <Play fill="currentColor" className="ml-1" />
                         </button>
                         <Link
-                            href={`/dashboard/playlists/${params.id}/edit`}
+                            href={`/dashboard/playlists/${id}/edit`}
                             className="px-6 py-4 rounded-full border border-indigo-500/30 bg-indigo-500/5 hover:bg-indigo-500/10 font-bold text-xs uppercase tracking-widest transition-colors flex items-center gap-2 text-indigo-400"
                         >
                             <Sparkles size={14} />

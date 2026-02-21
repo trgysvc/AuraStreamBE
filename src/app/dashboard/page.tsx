@@ -11,6 +11,8 @@ import {
     Crown
 } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { S3Service } from '@/lib/services/s3';
 import { EnergyCurve } from '@/lib/logic/EnergyCurve';
 import { SmartWeatherCard } from '@/components/feature/venue/SmartWeatherCard';
 import { WeatherService } from '@/lib/services/weather';
@@ -29,8 +31,8 @@ async function getAuraHomeData() {
         supabase.from('custom_requests').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(2)
     ]);
 
-    const profile = profileRes.data;
-    const tenant = profile?.tenant;
+    const profile = profileRes.data as any; // Temporary cast to bypass complex relation types
+    const tenant = Array.isArray(profile?.tenant) ? profile.tenant[0] : profile?.tenant;
 
     // Determine active venue/location to display
     let activeLocation = profile?.location;
@@ -38,7 +40,7 @@ async function getAuraHomeData() {
     // If user is enterprise_admin, they don't have a location_id lock, so fetch their first venue
     if (!activeLocation && profile?.role === 'enterprise_admin' && profile.tenant_id) {
         const { data: fleetVenues } = await supabase.from('venues').select('*').eq('tenant_id', profile.tenant_id).limit(1);
-        activeLocation = fleetVenues?.[0];
+        activeLocation = (fleetVenues?.[0] as any);
     }
 
     let lat = 41.0082;
@@ -51,12 +53,46 @@ async function getAuraHomeData() {
 
     const currentTuning = EnergyCurve.getCurrentTuning();
 
+    // 4. Generate Signed URLs for tracks and images
+    const topTracks = await Promise.all((trackRes.data || []).map(async (track: any) => {
+        let signedCover = track.cover_image_url;
+        if (signedCover && signedCover.includes('amazonaws.com')) {
+            try {
+                const urlParts = signedCover.split('.com/');
+                if (urlParts.length > 1) {
+                    const s3Key = decodeURIComponent(urlParts[1]);
+                    signedCover = await S3Service.getDownloadUrl(s3Key, process.env.AWS_S3_BUCKET_RAW!);
+                }
+            } catch (e) {
+                console.error("Failed to sign cover image URL", e);
+            }
+        }
+        return { ...track, cover_image_url: signedCover };
+    }));
+
+    const latestLicenses = await Promise.all((licenseRes.data || []).map(async (license: any) => {
+        let signedCover = license.tracks?.cover_image_url;
+        if (signedCover && signedCover.includes('amazonaws.com')) {
+            try {
+                const urlParts = signedCover.split('.com/');
+                if (urlParts.length > 1) {
+                    const s3Key = decodeURIComponent(urlParts[1]);
+                    signedCover = await S3Service.getDownloadUrl(s3Key, process.env.AWS_S3_BUCKET_RAW!);
+                }
+            } catch (e) { }
+        }
+        return {
+            ...license,
+            tracks: license.tracks ? { ...license.tracks, cover_image_url: signedCover } : null
+        };
+    }));
+
     return {
         profile,
         tenant,
         venue: activeLocation,
-        latestLicenses: licenseRes.data || [],
-        topTracks: trackRes.data || [],
+        latestLicenses,
+        topTracks,
         myRequests: requestRes.data || [],
         weather: null, // Hard disabling weather to avoid external service lag
         currentTuning,
@@ -122,8 +158,8 @@ export default async function AuraHomePage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                         <SmartWeatherCard
-                            initialWeather={data.weather}
-                            initialCity={data.weather?.city}
+                            initialWeather={data.weather as any}
+                            initialCity={undefined}
                         />
 
                         <div className="bg-[#1E1E22] p-6 md:p-8 rounded-2xl md:rounded-[3rem] border border-white/5 shadow-2xl relative overflow-hidden group">
@@ -168,7 +204,13 @@ export default async function AuraHomePage() {
                                 <div key={track.id} className="space-y-3 md:space-y-4 group cursor-pointer">
                                     <div className="relative aspect-square rounded-xl md:rounded-2xl overflow-hidden shadow-2xl border border-white/5 bg-zinc-800">
                                         {track.cover_image_url ? (
-                                            <img src={track.cover_image_url} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                            <Image
+                                                src={track.cover_image_url}
+                                                alt={track.title || "Track Cover"}
+                                                fill
+                                                className="object-cover transition-transform duration-700 group-hover:scale-110"
+                                                sizes="(max-width: 768px) 50vw, 25vw"
+                                            />
                                         ) : (
                                             <div className="w-full h-full flex items-center justify-center text-xl md:text-2xl">🎵</div>
                                         )}
@@ -194,8 +236,17 @@ export default async function AuraHomePage() {
                                 <p className="text-[8px] md:text-[10px] font-black text-zinc-500 uppercase tracking-widest border-l-2 border-indigo-500 pl-3 md:pl-4">Recently Licensed</p>
                                 {latestLicenses.length > 0 ? latestLicenses.map((license: any) => (
                                     <div key={license.id} className="flex items-center gap-3 md:gap-4 group cursor-default">
-                                        <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg md:rounded-xl bg-zinc-800 border border-white/5 overflow-hidden flex-shrink-0">
-                                            {license.tracks?.cover_image_url && <img src={license.tracks.cover_image_url} alt="" className="w-full h-full object-cover" />}
+                                        <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg md:rounded-xl bg-zinc-800 border border-white/5 overflow-hidden flex-shrink-0 relative">
+                                            {license.tracks?.cover_image_url ? (
+                                                <Image
+                                                    src={license.tracks.cover_image_url}
+                                                    alt={license.tracks.title || "License Cover"}
+                                                    fill
+                                                    className="object-cover"
+                                                />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center text-xs">🎵</div>
+                                            )}
                                         </div>
                                         <div className="min-w-0 flex-1">
                                             <h5 className="text-[10px] md:text-[11px] font-black text-white uppercase italic truncate">{license.tracks?.title}</h5>

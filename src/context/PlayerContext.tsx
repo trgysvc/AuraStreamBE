@@ -114,21 +114,30 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         }
 
         // --- Safari Unlocking Hack ---
-        const unlock = () => {
-            if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
-                audioContextRef.current.resume().catch(() => { });
-            }
+        const unlock = async () => {
+            console.log("[Player] Unlocking Safari Audio...");
 
-            // Safari also needs a "dummy" play on a user gesture to unlock the element
-            if (audioRef.current) {
-                const p = audioRef.current.play();
-                if (p !== undefined) {
-                    p.then(() => {
-                        // Pause immediately after unlocking
-                        audioRef.current?.pause();
-                    }).catch(() => { });
+            // 1. Resume AudioContext
+            if (audioContextRef.current) {
+                if (audioContextRef.current.state === 'suspended') {
+                    await audioContextRef.current.resume().catch(e => console.warn("Context resume failed:", e));
                 }
             }
+
+            // 2. Prime Audio Element
+            if (audioRef.current) {
+                try {
+                    // Playing and immediately pausing a tiny silent buffer is the gold standard for Safari
+                    const p = audioRef.current.play();
+                    if (p !== undefined) {
+                        p.then(() => {
+                            audioRef.current?.pause();
+                            console.log("[Player] Audio Element Primed");
+                        }).catch(() => { });
+                    }
+                } catch (e) { }
+            }
+
             window.removeEventListener('click', unlock);
             window.removeEventListener('touchstart', unlock);
             window.removeEventListener('mousedown', unlock);
@@ -237,10 +246,11 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
             // Safari specific: Don't call .load() if not necessary, or call it before setting src.
             // Using .play() directly after setting .src is generally safer on Safari.
-            const playPromise = audioRef.current.play();
-
-            if (playPromise !== undefined) {
-                await playPromise;
+            if (audioRef.current.paused) {
+                const playPromise = audioRef.current.play();
+                if (playPromise !== undefined) {
+                    await playPromise;
+                }
             }
 
             setIsPlaying(true);

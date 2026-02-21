@@ -76,6 +76,9 @@ export async function createPlaylist_Action(data: {
 }
 
 export async function getPlaylistDetails_Action(playlistId: string) {
+    if (!playlistId || playlistId === 'undefined') {
+        throw new Error('Playlist ID is required');
+    }
     const supabase = await createClient();
 
     // Fetch Playlist Info
@@ -109,7 +112,7 @@ export async function getPlaylistDetails_Action(playlistId: string) {
 }
 
 export async function addTrackToPlaylist_Action(playlistId: string, trackId: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Get current max position
     const { data: maxPosData } = await supabase
@@ -135,7 +138,7 @@ export async function addTrackToPlaylist_Action(playlistId: string, trackId: str
 }
 
 export async function removeTrackFromPlaylist_Action(itemId: string, playlistId: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     const { error } = await supabase
         .from('playlist_items')
@@ -146,7 +149,7 @@ export async function removeTrackFromPlaylist_Action(itemId: string, playlistId:
     revalidatePath(`/dashboard/playlists/${playlistId}`);
 }
 export async function reorderPlaylistTracks_Action(playlistId: string, orderedItemIds: string[]) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Perform updates sequentially to ensure correctness and avoid constraint issues with bulk upsert
     for (let i = 0; i < orderedItemIds.length; i++) {
@@ -167,7 +170,7 @@ export async function reorderPlaylistTracks_Action(playlistId: string, orderedIt
 }
 
 export async function addTracksToPlaylist_Action(playlistId: string, trackIds: string[]) {
-    const supabase = createClient();
+    const supabase = await createClient();
 
     // Get current max position
     const { data: maxPosData } = await supabase

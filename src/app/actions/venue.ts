@@ -27,6 +27,7 @@ export async function getVenueTracks_Action(options?: {
     bpmRange?: [number, number];
     moods?: string[];
     query?: string;
+    onlyLikedBy?: string;
 }): Promise<VenueTrack[]> {
     const supabase = await createClient();
 
@@ -70,6 +71,21 @@ export async function getVenueTracks_Action(options?: {
 
     if (options?.moods && options.moods.length > 0) {
         queryBuilder = queryBuilder.overlaps('mood_tags', options.moods);
+    }
+
+    if (options?.onlyLikedBy) {
+        const { data: likedData } = await supabase
+            .from('likes')
+            .select('track_id')
+            .eq('user_id', options.onlyLikedBy);
+
+        const trackIds = likedData?.map(l => l.track_id) || [];
+        if (trackIds.length > 0) {
+            queryBuilder = queryBuilder.in('id', trackIds);
+        } else {
+            // If user has no likes, return empty
+            return [];
+        }
     }
 
     const { data: tracks, error } = await queryBuilder.limit(50); // Limit for performance
