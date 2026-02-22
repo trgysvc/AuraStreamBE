@@ -3,22 +3,22 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
     // Determine host and protocol
-    const proto = request.headers.get('x-forwarded-proto') || 'http';
+    // Note: We avoid protocol-based redirects (HTTP -> HTTPS) here because Coolify/Traefik handles it.
+    // Doing it here can cause infinite redirect loops in some proxy configurations.
     let host = request.headers.get('host');
 
     // Sanitize host: Strip internal port 3000 if present in production/staging
     // This prevents redirects from leaking the internal container port
     // But keep it for local development on localhost
-    if (host && host.includes(':3000') && !host.includes('localhost') && !host.includes('127.0.0.1')) {
-        host = host.split(':')[0];
-    }
+    const isLocal = host?.includes('localhost') || host?.includes('127.0.0.1');
 
-    // Redirect http to https in production
-    if (proto === 'http' && process.env.NODE_ENV === 'production') {
+    if (host && host.includes(':3000') && !isLocal) {
         const url = request.nextUrl.clone();
-        url.protocol = 'https:';
-        if (host) url.host = host;
-        return NextResponse.redirect(url, 301);
+        url.host = host.split(':')[0];
+        // Only redirect if the host actually changed to avoid loops
+        if (url.host !== host) {
+            return NextResponse.redirect(url, 301);
+        }
     }
 
     let supabaseResponse = NextResponse.next({
