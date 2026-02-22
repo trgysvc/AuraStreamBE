@@ -7,7 +7,14 @@ export async function GET(request: Request) {
   const next = searchParams.get('next') ?? '/dashboard'
 
   // Determine the correct origin based on request headers (especially when behind a proxy)
-  const host = request.headers.get('host')
+  let host = request.headers.get('host')
+
+  // Sanitize host: Strip internal port 3000 if present
+  // But keep it for local development
+  if (host && host.includes(':3000') && !host.includes('localhost') && !host.includes('127.0.0.1')) {
+    host = host.split(':')[0]
+  }
+
   const protocol = request.headers.get('x-forwarded-proto') || 'http'
   const origin = host ? `${protocol}://${host}` : new URL(request.url).origin
 

@@ -1,11 +1,19 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export async function proxy(request: NextRequest) {
-    // Redirect http to https in production
-    const proto = request.headers.get('x-forwarded-proto');
-    const host = request.headers.get('host');
+export async function middleware(request: NextRequest) {
+    // Determine host and protocol
+    const proto = request.headers.get('x-forwarded-proto') || 'http';
+    let host = request.headers.get('host');
 
+    // Sanitize host: Strip internal port 3000 if present in production/staging
+    // This prevents redirects from leaking the internal container port
+    // But keep it for local development on localhost
+    if (host && host.includes(':3000') && !host.includes('localhost') && !host.includes('127.0.0.1')) {
+        host = host.split(':')[0];
+    }
+
+    // Redirect http to https in production
     if (proto === 'http' && process.env.NODE_ENV === 'production') {
         const url = request.nextUrl.clone();
         url.protocol = 'https:';
@@ -14,7 +22,9 @@ export async function proxy(request: NextRequest) {
     }
 
     let supabaseResponse = NextResponse.next({
-        request,
+        request: {
+            headers: request.headers,
+        },
     })
 
     const supabase = createServerClient(
@@ -26,7 +36,7 @@ export async function proxy(request: NextRequest) {
                     return request.cookies.getAll()
                 },
                 setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value, options))
+                    cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
                     supabaseResponse = NextResponse.next({
                         request,
                     })
@@ -38,8 +48,7 @@ export async function proxy(request: NextRequest) {
         }
     )
 
-    // Bu satır oturumun yenilenmesini sağlar.
-    // getUser() kullanmak daha güvenlidir.
+    // Refresh session if expired
     await supabase.auth.getUser()
 
     return supabaseResponse
@@ -52,7 +61,6 @@ export const config = {
          * - _next/static (static files)
          * - _next/image (image optimization files)
          * - favicon.ico (favicon file)
-         * Feel free to modify this pattern to include more paths.
          */
         '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
     ],
