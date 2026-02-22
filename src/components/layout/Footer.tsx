@@ -2,16 +2,18 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 interface FooterProps {
-    variant?: 'light' | 'dark';
+    variant?: 'light' | 'dark' | 'white';
 }
 
 export function Footer({ variant = 'light' }: FooterProps) {
     const isDark = variant === 'dark';
 
     return (
-        <footer className={`py-24 px-6 md:px-12 transition-colors duration-300 border-t ${isDark
+        <footer className={`py-24 px-6 md:px-12 transition-colors duration-300 border-t ${variant === 'dark'
             ? 'bg-[#111111] text-white border-white/10'
-            : 'bg-[#F5F5F0] text-black border-zinc-200'
+            : variant === 'white'
+                ? 'bg-white text-black border-zinc-100'
+                : 'bg-[#F5F5F0] text-black border-zinc-200'
             }`}>
             <div className="max-w-[1400px] mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 mb-24">
@@ -58,7 +60,7 @@ export function Footer({ variant = 'light' }: FooterProps) {
                                 <li><Link href="/about/ad" className="hover:text-white transition-opacity">Features</Link></li>
                                 <li><Link href="/enterprise#contact-section" className="hover:text-white transition-opacity">For businesses</Link></li>
                                 <li><Link href="/enterprise" className="hover:text-white transition-opacity">Enterprise</Link></li>
-                                <li><Link href="#" className="hover:text-white transition-opacity">Blog</Link></li>
+                                <li><Link href="/blog" className="hover:text-white transition-opacity">Blog</Link></li>
                             </ul>
                         </div>
                         <div className="space-y-6">

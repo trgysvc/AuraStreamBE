@@ -69,7 +69,12 @@ export function MainHeader({ initialUser }: { initialUser?: any }) {
                         >
                             Pricing
                         </Link>
-                        <span className="cursor-default hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300">Blog</span>
+                        <Link
+                            href="/blog"
+                            className={`transition-colors ${pathname === '/blog' ? 'text-white' : 'hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]'}`}
+                        >
+                            Blog
+                        </Link>
                         <Link
                             href="/enterprise"
                             className={`transition-colors ${pathname === '/enterprise' ? 'text-white' : 'hover:text-white'}`}

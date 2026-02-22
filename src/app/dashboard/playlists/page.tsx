@@ -42,15 +42,24 @@ export default async function PlaylistsPage() {
 
             {/* Playlists Grid */}
             {playlists.length === 0 ? (
-                <div className="bg-[#111] border border-white/5 rounded-3xl p-16 text-center space-y-6">
-                    <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mx-auto">
-                        <ListMusic size={48} className="text-zinc-600" />
+                <div className="bg-[#111] border border-white/5 rounded-3xl p-20 text-center space-y-10">
+                    <div className="w-32 h-32 bg-white/5 rounded-full flex items-center justify-center mx-auto">
+                        <ListMusic size={64} className="text-zinc-600" />
                     </div>
-                    <div className="space-y-2">
-                        <h3 className="text-xl font-bold text-white">No Playlists Yet</h3>
-                        <p className="text-zinc-500 max-w-md mx-auto">
-                            Create your first playlist to start scheduling music.
+                    <div className="space-y-4">
+                        <h3 className="text-4xl font-black italic uppercase tracking-tighter text-white">Henüz Playlist'iniz Yok</h3>
+                        <p className="text-zinc-500 max-w-md mx-auto font-medium leading-relaxed">
+                            Kürasyonunuza başlamak için ilk playlist'inizi hemen oluşturun ve işletmenizin atmosferini şekillendirmeye başlayın.
                         </p>
+                    </div>
+                    <div className="pt-2">
+                        <Link
+                            href="/dashboard/playlists/new"
+                            className="inline-flex items-center gap-3 px-10 py-5 bg-white text-black rounded-full font-black text-xs uppercase tracking-[0.2em] hover:bg-indigo-500 hover:text-white transition-all shadow-2xl"
+                        >
+                            <Plus size={16} />
+                            Playlist Oluştur
+                        </Link>
                     </div>
                 </div>
             ) : (

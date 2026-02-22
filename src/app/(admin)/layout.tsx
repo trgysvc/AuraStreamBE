@@ -73,6 +73,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
                     <NavLink href="/admin/catalog" icon={<Library size={18} />}>Catalog Mgmt</NavLink>
                     <NavLink href="/admin/requests" icon={<Sparkles size={18} />}>Request Hub</NavLink>
                     <NavLink href="/admin/telemetry" icon={<Activity size={18} />}>System Telemetry</NavLink>
+                    <NavLink href="/admin/blog" icon={<MessageSquare size={18} />}>Blog Manager</NavLink>
 
                     <div className="pt-8">
                         <p className="px-4 text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-4">Ecosystem</p>
