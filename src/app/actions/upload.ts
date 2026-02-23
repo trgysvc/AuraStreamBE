@@ -16,7 +16,7 @@ export interface UploadState {
  * 1. Get Signed URL for S3 Upload (Works for Audio and Images)
  */
 export async function getSignedUploadUrl_Action(contentType: string, fileName: string, prefix: string = 'raw') {
-    const supabaseServer = createServerClient();
+    const supabaseServer = await createServerClient();
     const { data: { user } } = await supabaseServer.auth.getUser();
 
     if (!user) {
@@ -86,18 +86,25 @@ export async function createTrackRecord_Action(formData: FormData, s3Key: string
         }
     } as any).select().single() as any;
 
-    if (trackError) {
+    if (trackError || !trackData) {
         console.error('DB Insert Error (Track):', trackError);
-        return { message: 'Failed to save track record', error: trackError.message };
+        return { message: 'Failed to save track record', error: trackError?.message || 'Empty track data response' };
     }
 
     // 2. Link Raw File to Track
-    await supabase.from('track_files').insert({
+    const { error: fileError } = await supabase.from('track_files').insert({
         track_id: trackData.id,
         file_type: 'raw',
         s3_key: s3Key,
         tuning: '440hz'
     } as any);
+
+    if (fileError) {
+        console.error('DB Insert Error (File Association):', fileError);
+        // Atomic Cleanup: Delete the track record if file association fails
+        await supabase.from('tracks').delete().eq('id', trackData.id);
+        return { message: 'Failed to associate audio file', error: fileError.message };
+    }
 
     // 3. Trigger Worker via SQS
     try {
@@ -110,6 +117,7 @@ export async function createTrackRecord_Action(formData: FormData, s3Key: string
         }));
     } catch (sqsError) {
         console.error('SQS Queue Error:', sqsError);
+        // We don't return an error here as the DB records are already saved
     }
 
     return { message: 'Track uploaded successfully!', success: true };

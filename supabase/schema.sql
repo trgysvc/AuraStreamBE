@@ -26,8 +26,12 @@ drop type if exists verification_status cascade;
 drop type if exists request_status cascade;
 drop type if exists plan_type cascade;
 drop type if exists plan_status cascade;
+drop type if exists sync_status cascade;
 
 -- Drop tables if they exist to allow clean re-runs
+drop table if exists public.blog_posts cascade;
+drop table if exists public.devices cascade;
+drop table if exists public.locations cascade;
 drop table if exists public.track_reviews cascade;
 drop table if exists public.search_logs cascade;
 drop table if exists public.saved_searches cascade;
@@ -57,6 +61,7 @@ create type verification_status as enum ('pending', 'verified', 'rejected');
 create type request_status as enum ('pending', 'processing', 'review', 'completed', 'rejected');
 create type plan_type as enum ('free', 'pro', 'business', 'enterprise');
 create type plan_status as enum ('active', 'past_due', 'canceled', 'trialing');
+create type sync_status as enum ('synced', 'downloading', 'error');
 
 --------------------------------------------------------------------------------
 -- 1. PROFILES & USERS
@@ -80,6 +85,20 @@ create table public.profiles (
 alter table public.profiles enable row level security;
 
 -- Helper Function for Admin Check (Avoids Recursion)
+create or replace function public.is_staff()
+returns boolean
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  return exists (
+    select 1 from profiles
+    where id = auth.uid() and role in ('admin', 'creator', 'enterprise_admin')
+  );
+end;
+$$;
+
 create or replace function public.is_admin()
 returns boolean
 language plpgsql
@@ -189,6 +208,66 @@ create policy "Venue owners can update their venues"
   using ( auth.uid() = owner_id );
 
 --------------------------------------------------------------------------------
+-- 2.1 LOCATIONS (Physical Sites)
+--------------------------------------------------------------------------------
+
+create table public.locations (
+  id uuid default uuid_generate_v4() primary key,
+  tenant_id uuid references public.tenants(id) on delete cascade not null,
+  name text not null,
+  address text,
+  city text,
+  timezone text default 'UTC',
+  settings jsonb default '{}'::jsonb,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+-- RLS: Locations
+alter table public.locations enable row level security;
+
+create policy "Tenant owners can manage their locations"
+  on public.locations for all
+  using (
+    exists (
+      select 1 from public.tenants
+      where id = locations.tenant_id
+      and owner_id = auth.uid()
+    )
+  );
+
+--------------------------------------------------------------------------------
+-- 2.2 DEVICES (Hardware Players)
+--------------------------------------------------------------------------------
+
+create table public.devices (
+  id uuid default uuid_generate_v4() primary key,
+  tenant_id uuid references public.tenants(id) on delete cascade not null,
+  venue_id uuid references public.venues(id) on delete set null,
+  name text not null,
+  hardware_id text not null unique,
+  auth_token text not null,
+  ip_address text,
+  app_version text,
+  sync_status sync_status default 'synced',
+  last_heartbeat timestamptz,
+  created_at timestamptz default now()
+);
+
+-- RLS: Devices
+alter table public.devices enable row level security;
+
+create policy "Tenant owners can manage their devices"
+  on public.devices for all
+  using (
+    exists (
+      select 1 from public.tenants
+      where id = devices.tenant_id
+      and owner_id = auth.uid()
+    )
+  );
+
+--------------------------------------------------------------------------------
 -- 3. TRACKS (Core Asset)
 --------------------------------------------------------------------------------
 
@@ -242,7 +321,19 @@ create policy "Active tracks are viewable by everyone"
 
 create policy "Admins can view all tracks"
   on tracks for select
-  using ( is_admin() );
+  using ( is_staff() );
+
+create policy "Staff can insert tracks"
+  on tracks for insert
+  with check ( is_staff() );
+
+create policy "Staff can update tracks"
+  on tracks for update
+  using ( is_staff() );
+
+create policy "Staff can delete tracks"
+  on tracks for delete
+  using ( is_staff() );
 
 --------------------------------------------------------------------------------
 -- 4. TRACK FILES (Assets)
@@ -262,6 +353,11 @@ create table public.track_files (
 -- RLS: Track Files
 alter table public.track_files enable row level security;
 
+create policy "Staff can manage all track files"
+  on track_files for all
+  using ( is_staff() )
+  with check ( is_staff() );
+
 create policy "Public can view streamable files for active tracks"
   on track_files for select
   using (
@@ -271,6 +367,41 @@ create policy "Public can view streamable files for active tracks"
       where id = track_files.track_id and status = 'active'
     )
   );
+
+--------------------------------------------------------------------------------
+-- 4.1 BLOG POSTS
+--------------------------------------------------------------------------------
+
+create table if not exists public.blog_posts (
+  id uuid default uuid_generate_v4() primary key,
+  title text not null,
+  slug text not null unique,
+  content text,
+  excerpt text,
+  cover_image_url text,
+  author_id uuid references public.profiles(id),
+  is_published boolean default false,
+  published_at timestamptz,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+-- RLS: Blog Posts
+alter table public.blog_posts enable row level security;
+
+create policy "Published blog posts are viewable by everyone"
+  on blog_posts for select
+  using ( is_published = true );
+
+create policy "Admins can manage all blog posts"
+  on blog_posts for all
+  using ( is_admin() );
+
+create trigger update_blog_posts_modtime before update on blog_posts for each row execute procedure update_updated_at();
+
+create index if not exists idx_blog_posts_slug on blog_posts(slug);
+create index if not exists idx_blog_posts_published on blog_posts(is_published, published_at desc);
+
 
 --------------------------------------------------------------------------------
 -- 5. LICENSES (B2C)

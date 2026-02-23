@@ -14,7 +14,7 @@ export default function DashboardLayout({
             <div className="flex flex-1 overflow-hidden relative">
                 {/* <Sidebar /> - Removed per user request */}
 
-                <main className="flex-1 pb-24 min-h-screen overflow-y-auto">
+                <main className="flex-1 pb-8 min-h-screen overflow-y-auto">
                     <div className="p-8 max-w-[1600px] mx-auto min-h-[60vh]">
                         {children}
                     </div>

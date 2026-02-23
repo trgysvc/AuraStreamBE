@@ -49,7 +49,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
                     <Link href="/admin" className="flex items-center gap-3 group">
                         <div className="relative h-10 w-10">
                             <Image
-                                src="/brand-icon.png"
+                                src="/logos/Logo.png"
                                 alt="SonarAura"
                                 fill
                                 className="object-contain mix-blend-screen"

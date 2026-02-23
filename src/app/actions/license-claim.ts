@@ -7,7 +7,7 @@ import crypto from 'crypto';
  * Allows active subscribers to generate a license record for a specific project
  */
 export async function claimLicense_Action(trackId: string, projectName: string, usageType: string) {
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) throw new Error('Unauthorized');

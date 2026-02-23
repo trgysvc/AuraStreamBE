@@ -17,11 +17,7 @@ export default async function PlaylistsPage() {
         .eq('id', user.id)
         .single();
 
-    if (!profile?.tenant_id) {
-        return <div>No Tenant Found</div>;
-    }
-
-    const playlists = await getPlaylists_Action(profile.tenant_id);
+    const playlists = profile?.tenant_id ? await getPlaylists_Action(profile.tenant_id) : [];
 
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
@@ -47,9 +43,9 @@ export default async function PlaylistsPage() {
                         <ListMusic size={64} className="text-zinc-600" />
                     </div>
                     <div className="space-y-4">
-                        <h3 className="text-4xl font-black italic uppercase tracking-tighter text-white">Henüz Playlist'iniz Yok</h3>
+                        <h3 className="text-4xl font-black italic uppercase tracking-tighter text-white">No Playlists Yet</h3>
                         <p className="text-zinc-500 max-w-md mx-auto font-medium leading-relaxed">
-                            Kürasyonunuza başlamak için ilk playlist'inizi hemen oluşturun ve işletmenizin atmosferini şekillendirmeye başlayın.
+                            Please create your playlist to start shaping the sonic atmosphere of your business.
                         </p>
                     </div>
                     <div className="pt-2">
@@ -58,7 +54,7 @@ export default async function PlaylistsPage() {
                             className="inline-flex items-center gap-3 px-10 py-5 bg-white text-black rounded-full font-black text-xs uppercase tracking-[0.2em] hover:bg-indigo-500 hover:text-white transition-all shadow-2xl"
                         >
                             <Plus size={16} />
-                            Playlist Oluştur
+                            Create Playlist
                         </Link>
                     </div>
                 </div>

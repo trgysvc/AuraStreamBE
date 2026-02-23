@@ -9,7 +9,7 @@ export function Footer({ variant = 'light' }: FooterProps) {
     const isDark = variant === 'dark';
 
     return (
-        <footer className={`py-24 px-6 md:px-12 transition-colors duration-300 border-t ${variant === 'dark'
+        <footer className={`pt-24 pb-12 px-6 md:px-12 transition-colors duration-300 border-t ${variant === 'dark'
             ? 'bg-[#111111] text-white border-white/10'
             : variant === 'white'
                 ? 'bg-white text-black border-zinc-100'
