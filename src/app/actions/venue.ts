@@ -25,7 +25,10 @@ export interface VenueTrack {
 
 export async function getVenueTracks_Action(options?: {
     bpmRange?: [number, number];
-    moods?: string[];
+    venues?: string[];
+    vibes?: string[];
+    genres?: string[];
+    moods?: string[]; // Legacy fallback
     query?: string;
     onlyLikedBy?: string;
 }): Promise<VenueTrack[]> {
@@ -66,7 +69,25 @@ export async function getVenueTracks_Action(options?: {
     }
 
     if (options?.query) {
-        queryBuilder = queryBuilder.ilike('title', `%${options.query}%`);
+        // Search across title, artist, and genre
+        queryBuilder = queryBuilder.or(`title.ilike.%${options.query}%,artist.ilike.%${options.query}%,genre.ilike.%${options.query}%`);
+    }
+
+    if (options?.venues && options.venues.length > 0) {
+        queryBuilder = queryBuilder.overlaps('venue_tags', options.venues);
+    }
+
+    if (options?.vibes && options.vibes.length > 0) {
+        queryBuilder = queryBuilder.overlaps('vibe_tags', options.vibes);
+    }
+
+    if (options?.genres && options.genres.length > 0) {
+        // Genres is a bit complex since track has string `genre` and string[] `sub_genres`.
+        // A simple overlaps on sub_genres is easiest, or an 'in' for primary genre.
+        // We'll use 'overlaps' on sub_genres and 'in' for genre using an OR condition.
+        // Since Supabase RPC/Or is a bit complex to chain dynamically, we'll try IN on genre to start,
+        // or a raw textSearch if needed.
+        queryBuilder = queryBuilder.in('genre', options.genres);
     }
 
     if (options?.moods && options.moods.length > 0) {

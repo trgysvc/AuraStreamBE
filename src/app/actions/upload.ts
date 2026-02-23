@@ -2,8 +2,9 @@
 
 import { S3Service } from '@/lib/services/s3';
 import { createClient as createServerClient } from '@/lib/db/server';
-import { SendMessageCommand } from '@aws-sdk/client-sqs';
+import { SQSClient, SendMessageCommand } from '@aws-sdk/client-sqs';
 import { sqsClient } from '@/lib/queue/client';
+import { AITaxonomyService } from '@/lib/services/ai-taxonomy';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface UploadState {
@@ -70,6 +71,13 @@ export async function createTrackRecord_Action(formData: FormData, s3Key: string
         return { message: 'Missing required fields', error: 'Validation Error' };
     }
 
+    // AI Auto-Tagging Prediction
+    const aiTags = AITaxonomyService.predictTags({
+        title,
+        artist: artist || 'Sonaraura AI',
+        genre: genre || 'Ambient'
+    });
+
     // 1. Insert Track Record
     const { data: trackData, error: trackError } = await supabase.from('tracks').insert({
         title,
@@ -77,6 +85,11 @@ export async function createTrackRecord_Action(formData: FormData, s3Key: string
         bpm: bpm || 120,
         duration_sec: duration || 180,
         genre: genre || 'Ambient',
+        sub_genres: aiTags.sub_genres,
+        vibe_tags: aiTags.vibe_tags,
+        theme_tags: aiTags.theme_tags,
+        character_tags: aiTags.character_tags,
+        venue_tags: aiTags.venue_tags,
         cover_image_url: coverUrl,
         lyrics: lyrics || null,
         status: 'pending_qc',

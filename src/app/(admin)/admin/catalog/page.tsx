@@ -1,15 +1,23 @@
 import { createClient } from '@/lib/db/server';
-import { Search, Filter, Layers, ListMusic, Plus } from 'lucide-react';
+import { Filter, Layers, ListMusic, Plus } from 'lucide-react';
 import { CatalogTrackRow } from '@/components/dashboard/CatalogTrackRow';
+import { CatalogSearch } from '@/components/dashboard/CatalogSearch';
+import { CatalogBulkActions } from '@/components/dashboard/CatalogBulkActions';
 import { S3Service } from '@/lib/services/s3';
 
-async function getCatalogTracks() {
+async function getCatalogTracks(query?: string) {
     const supabase = await createClient();
-    const { data: tracks, error } = await supabase
+    let queryBuilder = supabase
         .from('tracks')
         .select('*')
         .eq('status', 'active')
         .order('created_at', { ascending: false });
+
+    if (query) {
+        queryBuilder = queryBuilder.or(`title.ilike.%${query}%,artist.ilike.%${query}%,genre.ilike.%${query}%`);
+    }
+
+    const { data: tracks, error } = await queryBuilder;
 
     if (error) {
         console.error('Fetch Catalog Error:', error);
@@ -38,8 +46,14 @@ async function getCatalogTracks() {
     return tracksWithSignedUrls;
 }
 
-export default async function CatalogMgmtPage() {
-    const tracks = await getCatalogTracks();
+export default async function CatalogMgmtPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ q?: string }>;
+}) {
+    const params = await searchParams;
+    const query = params.q || '';
+    const tracks = await getCatalogTracks(query);
 
     return (
         <div className="space-y-8 md:space-y-12 pb-24 md:pb-20">
@@ -51,15 +65,9 @@ export default async function CatalogMgmtPage() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-                    <div className="relative group flex-1 sm:flex-none">
-                        <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-indigo-500 transition-colors" />
-                        <input
-                            type="text"
-                            placeholder="Search catalog..."
-                            className="bg-[#1E1E22] border border-white/5 rounded-full pl-12 pr-6 py-3 text-xs font-bold focus:outline-none focus:border-indigo-500 transition-all w-full sm:w-64 placeholder:text-zinc-700"
-                        />
-                    </div>
+                    <CatalogSearch />
                     <div className="flex gap-4">
+                        <CatalogBulkActions />
                         <button className="h-10 w-10 md:h-12 md:w-12 flex items-center justify-center bg-white/5 border border-white/5 rounded-full text-zinc-400 hover:text-white transition-all">
                             <Filter size={18} />
                         </button>
@@ -74,7 +82,7 @@ export default async function CatalogMgmtPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">
                 <StatCard icon={ListMusic} label="Total Assets" value={tracks.length} color="text-indigo-500" />
                 <StatCard icon={Layers} label="Genres" value={new Set(tracks.map(t => t.genre)).size} color="text-pink-500" />
-                <StatCard icon={Plus} label="New This Week" value={tracks.filter(t => new Date(t.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length} color="text-green-500" />
+                <StatCard icon={Plus} label="New This Week" value={tracks.filter(t => new Date(t.created_at || 0) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length} color="text-green-500" />
             </div>
 
             {/* Main Data Table */}

@@ -18,7 +18,7 @@ import {
     Search,
     Wand2
 } from 'lucide-react';
-import { updateTrackMetadata_Action, deleteTrack_Action } from '@/app/actions/catalog';
+import { updateTrackMetadata_Action, deleteTrack_Action, autoTagTrack_Action } from '@/app/actions/catalog';
 
 // --- Taxonomy Constants ---
 const THEMES = ['Cinematic', 'Corporate', 'Vlog', 'Fashion', 'Sci-Fi', 'Travel'];
@@ -71,19 +71,32 @@ export function CatalogTrackRow({ track }: { track: any }) {
 
     // Taxonomy State
     const [localTags, setLocalTags] = useState({
-        theme: track.theme || [],
-        character: track.character || [],
+        theme_tags: track.theme_tags || [],
+        character_tags: track.character_tags || [],
         vibe_tags: track.vibe_tags || [],
         venue_tags: track.venue_tags || [],
-        genre: track.genre || 'Ambient'
+        sub_genres: Array.from(new Set([track.genre, ...(track.sub_genres || [])])).filter(Boolean) as string[]
     });
 
     const [localLyrics, setLocalLyrics] = useState(track.lyrics || '');
 
     const filteredGenres = useMemo(() => {
-        if (!genreSearch) return ALL_GENRES.slice(0, 20); // Show top 20 by default
-        return ALL_GENRES.filter(g => g.toLowerCase().includes(genreSearch.toLowerCase())).slice(0, 30);
-    }, [genreSearch]);
+        let list = ALL_GENRES;
+        if (genreSearch) {
+            list = ALL_GENRES.filter(g => g.toLowerCase().includes(genreSearch.toLowerCase()));
+        }
+
+        // Sort selected items to the front
+        return list
+            .sort((a, b) => {
+                const aSelected = localTags.sub_genres.includes(a);
+                const bSelected = localTags.sub_genres.includes(b);
+                if (aSelected && !bSelected) return -1;
+                if (!aSelected && bSelected) return 1;
+                return 0;
+            })
+            .slice(0, 30);
+    }, [genreSearch, localTags.sub_genres]);
 
     const handleSave = async () => {
         setLoading(true);
@@ -101,7 +114,11 @@ export function CatalogTrackRow({ track }: { track: any }) {
     const handleSaveTaxonomy = async () => {
         setLoading(true);
         try {
-            await updateTrackMetadata_Action(track.id, localTags);
+            const payload = {
+                ...localTags,
+                genre: localTags.sub_genres.length > 0 ? localTags.sub_genres[0] : 'Ambient',
+            };
+            await updateTrackMetadata_Action(track.id, payload);
             setShowTagEditor(false);
         } catch (e) {
             console.error(e);
@@ -125,11 +142,6 @@ export function CatalogTrackRow({ track }: { track: any }) {
     };
 
     const toggleTag = (category: keyof typeof localTags, tag: string) => {
-        if (category === 'genre') {
-            setLocalTags(prev => ({ ...prev, genre: tag }));
-            return;
-        }
-
         const currentArr = localTags[category] as string[];
         setLocalTags(prev => ({
             ...prev,
@@ -147,6 +159,28 @@ export function CatalogTrackRow({ track }: { track: any }) {
         } catch (e) {
             console.error(e);
             alert('Delete failed');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleAutoTag = async () => {
+        setLoading(true);
+        try {
+            const res = await autoTagTrack_Action(track.id);
+            if (res.success && res.predictions) {
+                setLocalTags({
+                    vibe_tags: res.predictions.vibe_tags,
+                    theme_tags: res.predictions.theme_tags,
+                    character_tags: res.predictions.character_tags,
+                    venue_tags: res.predictions.venue_tags,
+                    sub_genres: res.predictions.sub_genres
+                });
+                alert('Aura AI has updated this track\'s taxonomy.');
+            }
+        } catch (e) {
+            console.error(e);
+            alert('AI Tagging failed');
         } finally {
             setLoading(false);
         }
@@ -192,8 +226,8 @@ export function CatalogTrackRow({ track }: { track: any }) {
             {/* Attributes (Technical) */}
             <td className="p-6">
                 <div className="flex flex-col gap-1.5">
-                    <div className="flex gap-2 items-center">
-                        <span className="text-[9px] font-black text-zinc-600 uppercase">Genre:</span>
+                    <div className="flex flex-wrap gap-1 items-center max-w-[200px]">
+                        <span className="text-[8px] font-black text-zinc-600 uppercase">Genre:</span>
                         {isEditing ? (
                             <input
                                 value={editData.genre}
@@ -201,7 +235,18 @@ export function CatalogTrackRow({ track }: { track: any }) {
                                 className="bg-black border border-white/10 rounded px-2 py-0.5 text-[9px] text-white w-20"
                             />
                         ) : (
-                            <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 rounded text-[9px] font-black uppercase">{track.genre}</span>
+                            <>
+                                {track.sub_genres && track.sub_genres.length > 0 ? (
+                                    track.sub_genres.slice(0, 3).map((g: string) => (
+                                        <span key={g} className="px-1.5 py-0.5 bg-indigo-500/10 text-indigo-400 rounded-[4px] text-[7px] font-black uppercase tracking-wider">{g}</span>
+                                    ))
+                                ) : (
+                                    <span className="px-1.5 py-0.5 bg-indigo-500/10 text-indigo-400 rounded-[4px] text-[7px] font-black uppercase tracking-wider">{track.genre}</span>
+                                )}
+                                {track.sub_genres && track.sub_genres.length > 3 && (
+                                    <span className="text-[7px] font-bold text-zinc-500">+{track.sub_genres.length - 3}</span>
+                                )}
+                            </>
                         )}
                     </div>
                     <div className="flex gap-4">
@@ -219,17 +264,26 @@ export function CatalogTrackRow({ track }: { track: any }) {
 
             {/* Vibe & Taxonomy Summary */}
             <td className="p-6">
-                <div className="flex flex-wrap gap-1 max-w-[200px]">
-                    {track.venue_tags?.slice(0, 1).map((tag: string) => (
-                        <span key={tag} className="px-2 py-0.5 bg-green-500/10 text-green-400 rounded-[4px] text-[8px] font-black uppercase">
-                            {tag}
-                        </span>
+                <div className="flex flex-wrap gap-1 max-w-[240px] items-center">
+                    {track.venue_tags?.slice(0, 3).map((tag: string) => (
+                        <span key={tag} className="px-1.5 py-0.5 bg-green-500/10 text-green-400 rounded-[4px] text-[7px] font-black uppercase tracking-wider">{tag}</span>
                     ))}
-                    {track.vibe_tags?.slice(0, 2).map((tag: string) => (
-                        <span key={tag} className="px-2 py-0.5 bg-pink-500/10 text-pink-400 rounded-[4px] text-[8px] font-black uppercase italic">
-                            #{tag}
-                        </span>
+                    {track.venue_tags && track.venue_tags.length > 3 && <span className="text-[7px] font-bold text-zinc-500 mr-1">+{track.venue_tags.length - 3}</span>}
+
+                    {track.vibe_tags?.slice(0, 3).map((tag: string) => (
+                        <span key={tag} className="px-1.5 py-0.5 bg-pink-500/10 text-pink-400 rounded-[4px] text-[7px] font-black uppercase italic tracking-wider">#{tag}</span>
                     ))}
+                    {track.vibe_tags && track.vibe_tags.length > 3 && <span className="text-[7px] font-bold text-zinc-500 mr-1">+{track.vibe_tags.length - 3}</span>}
+
+                    {track.theme_tags?.slice(0, 3).map((tag: string) => (
+                        <span key={tag} className="px-1.5 py-0.5 bg-blue-500/10 text-blue-400 rounded-[4px] text-[7px] font-black uppercase tracking-wider">{tag}</span>
+                    ))}
+                    {track.theme_tags && track.theme_tags.length > 3 && <span className="text-[7px] font-bold text-zinc-500 mr-1">+{track.theme_tags.length - 3}</span>}
+
+                    {track.character_tags?.slice(0, 3).map((tag: string) => (
+                        <span key={tag} className="px-1.5 py-0.5 bg-purple-500/10 text-purple-400 rounded-[4px] text-[7px] font-black uppercase tracking-wider">{tag}</span>
+                    ))}
+                    {track.character_tags && track.character_tags.length > 3 && <span className="text-[7px] font-bold text-zinc-500">+{track.character_tags.length - 3}</span>}
                 </div>
             </td>
 
@@ -266,7 +320,16 @@ export function CatalogTrackRow({ track }: { track: any }) {
                             </SimpleTooltip>
                         </>
                     ) : (
-                        <>
+                        <div className="flex gap-2">
+                            <SimpleTooltip text="Aura AI Auto-Tag">
+                                <button
+                                    onClick={handleAutoTag}
+                                    disabled={loading}
+                                    className="p-2 text-indigo-400 hover:text-white transition-colors bg-indigo-500/10 rounded-lg"
+                                >
+                                    {loading ? <Loader2 size={16} className="animate-spin" /> : <Wand2 size={16} />}
+                                </button>
+                            </SimpleTooltip>
                             <SimpleTooltip text="Edit Core Meta">
                                 <button onClick={() => setIsEditing(true)} className="p-2 text-zinc-400 hover:text-white transition-colors">
                                     <Edit3 size={16} />
@@ -293,7 +356,7 @@ export function CatalogTrackRow({ track }: { track: any }) {
                                     <Trash2 size={16} />
                                 </button>
                             </SimpleTooltip>
-                        </>
+                        </div>
                     )}
                 </div>
 
@@ -345,8 +408,13 @@ export function CatalogTrackRow({ track }: { track: any }) {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4">
-                                    <button className="flex items-center gap-2 px-6 py-3 bg-indigo-500/20 text-indigo-400 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-indigo-500 hover:text-white transition-all">
-                                        <Wand2 size={14} /> Aura Suggest
+                                    <button
+                                        onClick={handleAutoTag}
+                                        disabled={loading}
+                                        className="flex items-center gap-2 px-6 py-3 bg-indigo-500/20 text-indigo-400 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-indigo-500 hover:text-white transition-all disabled:opacity-50"
+                                    >
+                                        {loading ? <Loader2 size={14} className="animate-spin" /> : <Wand2 size={14} />}
+                                        Aura Suggest
                                     </button>
                                     <button onClick={() => setShowTagEditor(false)} className="text-zinc-500 hover:text-white transition-colors">
                                         <X size={32} />
@@ -358,7 +426,7 @@ export function CatalogTrackRow({ track }: { track: any }) {
                                 {/* Genre Section (Searchable) */}
                                 <div className="space-y-6">
                                     <div className="flex items-center justify-between">
-                                        <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 ml-1 italic">Primary Genre</h4>
+                                        <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 ml-1 italic">Genre</h4>
                                         <div className="relative">
                                             <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
                                             <input
@@ -373,8 +441,8 @@ export function CatalogTrackRow({ track }: { track: any }) {
                                         {filteredGenres.map(g => (
                                             <button
                                                 key={g}
-                                                onClick={() => toggleTag('genre', g)}
-                                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all border ${localTags.genre === g ? 'bg-indigo-600 text-white border-indigo-500' : 'bg-black text-zinc-500 border-white/5 hover:border-white/10'}`}
+                                                onClick={() => toggleTag('sub_genres', g)}
+                                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all border ${localTags.sub_genres.includes(g) ? 'bg-indigo-600 text-white border-indigo-500 shadow-lg scale-105' : 'bg-black text-zinc-500 border-white/5 hover:border-white/10 hover:text-zinc-400'}`}
                                             >
                                                 {g}
                                             </button>
@@ -387,15 +455,15 @@ export function CatalogTrackRow({ track }: { track: any }) {
                                     <TagSection
                                         title="Theme / Context"
                                         tags={THEMES}
-                                        selected={localTags.theme}
-                                        onToggle={(t: string) => toggleTag('theme', t)}
+                                        selected={localTags.theme_tags}
+                                        onToggle={(t: string) => toggleTag('theme_tags', t)}
                                         colorClass="bg-blue-600 border-blue-500"
                                     />
                                     <TagSection
                                         title="Sonic Character"
                                         tags={CHARACTERS}
-                                        selected={localTags.character}
-                                        onToggle={(t: string) => toggleTag('character', t)}
+                                        selected={localTags.character_tags}
+                                        onToggle={(t: string) => toggleTag('character_tags', t)}
                                         colorClass="bg-purple-600 border-purple-500"
                                     />
                                 </div>
@@ -467,7 +535,7 @@ export function CatalogTrackRow({ track }: { track: any }) {
                     </div>
                 )}
             </td>
-        </tr>
+        </tr >
     );
 }
 

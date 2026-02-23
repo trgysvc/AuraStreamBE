@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { Search, ChevronDown, Sliders, Music, Sparkles as LucideSparkles, Play } from 'lucide-react';
 import TrackRow from '@/components/dashboard/TrackRow';
@@ -71,22 +71,25 @@ function VenueDashboardContent() {
         setLoading(true);
         const startTime = Date.now();
         try {
-            let combinedMoods = [...vibes, ...genres, ...venues];
+            let combinedMoods = activeRule?.moods || [];
+            let currentGenres = [...genres];
 
             if (activeRule) {
-                if (activeRule.moods) combinedMoods = [...new Set([...combinedMoods, ...activeRule.moods])];
-                if (activeRule.genres) combinedMoods = [...new Set([...combinedMoods, ...activeRule.genres])];
+                if (activeRule.genres) currentGenres = [...new Set([...currentGenres, ...activeRule.genres])];
             }
 
             const data = await getVenueTracks_Action({
                 query: searchQuery === "Liked Songs" ? undefined : searchQuery,
                 bpmRange: activeRule ? undefined : bpm,
+                venues: venues.length > 0 ? venues : undefined,
+                vibes: vibes.length > 0 ? vibes : undefined,
+                genres: currentGenres.length > 0 ? currentGenres : undefined,
                 moods: combinedMoods.length > 0 ? combinedMoods : undefined,
                 onlyLikedBy: searchQuery === "Liked Songs" ? (userId || undefined) : undefined
             });
 
             // Log search for analytics (Aura Tailor & Infrastructure ROI)
-            if (searchQuery || combinedMoods.length > 0) {
+            if (searchQuery || venues.length > 0 || vibes.length > 0 || currentGenres.length > 0) {
                 logSearchQuery_Action(
                     searchQuery,
                     { venues, vibes, genres, bpm, rule_active: !!activeRule },
@@ -123,13 +126,13 @@ function VenueDashboardContent() {
         }
     }, [activeRule, userId]);
 
-    useEffect(() => {
-        // Initial immediate fetch
-        performSearch('', [], [], [], [60, 180]);
-    }, [performSearch]);
+    const isFirstMount = useRef(true);
 
     useEffect(() => {
-        if (query || selectedVenues.length > 0 || selectedVibes.length > 0 || selectedGenres.length > 0) {
+        if (isFirstMount.current) {
+            performSearch('', [], [], [], [60, 180]);
+            isFirstMount.current = false;
+        } else {
             const timer = setTimeout(() => {
                 performSearch(query, selectedVenues, selectedVibes, selectedGenres, bpmRange);
             }, 400);
