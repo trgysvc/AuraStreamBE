@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Save, Image as ImageIcon, Globe, Lock } from 'lucide-react';
+import { ArrowLeft, Save, Image as ImageIcon, Globe, Lock, UploadCloud } from 'lucide-react';
 import Link from 'next/link';
 import { createBlogPost, BlogPost } from '@/app/actions/blog';
 import Image from 'next/image';
@@ -145,32 +145,63 @@ export default function NewBlogPostPage() {
                         </div>
 
                         <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 ml-1">Cover Image URL</label>
+                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 ml-1">Cover Image</label>
                             <div className="space-y-4">
-                                <input
-                                    type="text"
-                                    value={formData.cover_image_url}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, cover_image_url: e.target.value }))}
-                                    placeholder="https://..."
-                                    className="w-full bg-black border border-white/5 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500/50 transition-all text-xs"
-                                />
-                                <div className="aspect-video relative rounded-2xl overflow-hidden bg-black border border-white/5 flex items-center justify-center group">
-                                    {formData.cover_image_url ? (
-                                        <Image
-                                            src={formData.cover_image_url}
-                                            alt="Preview"
-                                            fill
-                                            className="object-cover"
+                                <label className="cursor-pointer block">
+                                    <div className="aspect-video relative rounded-2xl overflow-hidden bg-black border border-white/5 flex items-center justify-center group hover:border-indigo-500/50 transition-colors">
+                                        {formData.cover_image_url ? (
+                                            <>
+                                                <Image
+                                                    src={formData.cover_image_url}
+                                                    alt="Preview"
+                                                    fill
+                                                    className="object-cover group-hover:opacity-50 transition-opacity"
+                                                />
+                                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/50">
+                                                    <span className="text-white text-xs font-bold tracking-widest uppercase flex items-center gap-2">
+                                                        <UploadCloud size={16} /> Change Image
+                                                    </span>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="text-zinc-700 flex flex-col items-center gap-2 group-hover:text-indigo-400 transition-colors">
+                                                <ImageIcon size={32} />
+                                                <span className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                                                    <UploadCloud size={14} className="inline" /> Upload Image
+                                                </span>
+                                            </div>
+                                        )}
+                                        {/* Hidden file input */}
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={async (e) => {
+                                                const file = e.target.files?.[0];
+                                                if (!file) return;
+
+                                                try {
+                                                    setLoading(true);
+                                                    const formData = new FormData();
+                                                    formData.append('image', file);
+
+                                                    // Dynamic import of the upload action to deal with client/server boundary
+                                                    const { uploadBlogImage } = await import('@/app/actions/blog');
+                                                    const url = await uploadBlogImage(formData);
+
+                                                    setFormData(prev => ({ ...prev, cover_image_url: url }));
+                                                } catch (error) {
+                                                    console.error("Upload error:", error);
+                                                    alert("Failed to upload image. Please check console.");
+                                                } finally {
+                                                    setLoading(false);
+                                                }
+                                            }}
                                         />
-                                    ) : (
-                                        <div className="text-zinc-700 flex flex-col items-center gap-2">
-                                            <ImageIcon size={32} />
-                                            <span className="text-[10px] font-black uppercase tracking-widest">Image Preview</span>
-                                        </div>
-                                    )}
-                                </div>
+                                    </div>
+                                </label>
                                 <p className="text-[9px] text-zinc-600 leading-relaxed">
-                                    Use assets from <code className="text-indigo-400">/assets/blog/</code> for consistent claymorphism style.
+                                    Upload a high-quality image. It will be stored in your Supabase <code className="text-indigo-400">public-assets</code> bucket.
                                 </p>
                             </div>
                         </div>
@@ -179,8 +210,8 @@ export default function NewBlogPostPage() {
                             type="submit"
                             disabled={loading}
                             className={`w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-sm transition-all shadow-xl ${loading
-                                    ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
-                                    : 'bg-white text-black hover:bg-zinc-200'
+                                ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
+                                : 'bg-white text-black hover:bg-zinc-200'
                                 }`}
                         >
                             {loading ? (

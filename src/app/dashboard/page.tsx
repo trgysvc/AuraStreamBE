@@ -16,6 +16,7 @@ import { S3Service } from '@/lib/services/s3';
 import { EnergyCurve } from '@/lib/logic/EnergyCurve';
 import { SmartWeatherCard } from '@/components/feature/venue/SmartWeatherCard';
 import { WeatherService } from '@/lib/services/weather';
+import { DashboardPlayableTrack } from '@/components/dashboard/DashboardPlayableTrack';
 
 async function getAuraHomeData() {
     const supabase = await createClient();
@@ -24,15 +25,53 @@ async function getAuraHomeData() {
     if (!user) return null;
 
     // Parallel fetching with absolute foreign keys to ensure data flows to UI
-    const [profileRes, licenseRes, trackRes, requestRes] = await Promise.all([
+    const [profileRes, licenseRes, playbacksRes, requestRes] = await Promise.all([
         supabase.from('profiles').select('*, tenant:tenants!profiles_tenant_id_fkey(*), location:locations!profiles_location_id_fkey(*)').eq('id', user.id).single(),
         supabase.from('licenses').select('*, tracks(title, cover_image_url)').eq('user_id', user.id).order('created_at', { ascending: false }).limit(3),
-        supabase.from('tracks').select('*').eq('status', 'active').order('popularity_score', { ascending: false }).limit(4),
+        supabase.from('playback_sessions').select('track_id').eq('user_id', user.id).order('created_at', { ascending: false }).limit(200),
         supabase.from('custom_requests').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(2)
     ]);
 
     const profile = profileRes.data as any; // Temporary cast to bypass complex relation types
     const tenant = Array.isArray(profile?.tenant) ? profile.tenant[0] : profile?.tenant;
+
+    let trackRes: any;
+    let isPersonalized = false;
+
+    // Determine top tracks from user's history
+    const playbacks = playbacksRes.data || [];
+    if (playbacks.length > 0) {
+        const counts: Record<string, number> = {};
+        playbacks.forEach((p: any) => {
+            counts[p.track_id] = (counts[p.track_id] || 0) + 1;
+        });
+        const topTrackIds = Object.entries(counts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 4)
+            .map(entry => entry[0]);
+
+        if (topTrackIds.length > 0) {
+            trackRes = await supabase.from('tracks')
+                .select('*, track_files(s3_key, file_type, tuning)')
+                .in('id', topTrackIds)
+                .eq('status', 'active');
+
+            if (trackRes.data && trackRes.data.length > 0) {
+                // Maintain sorted order based on frequency (most listened first)
+                trackRes.data.sort((a: any, b: any) => topTrackIds.indexOf(a.id) - topTrackIds.indexOf(b.id));
+                isPersonalized = true;
+            }
+        }
+    }
+
+    // Fallback if no history or less than 1 active track found
+    if (!isPersonalized) {
+        trackRes = await supabase.from('tracks')
+            .select('*, track_files(s3_key, file_type, tuning)')
+            .eq('status', 'active')
+            .order('popularity_score', { ascending: false })
+            .limit(4);
+    }
 
     // Determine active venue/location to display
     let activeLocation = profile?.location;
@@ -56,18 +95,44 @@ async function getAuraHomeData() {
     // 4. Generate Signed URLs for tracks and images
     const topTracks = await Promise.all((trackRes.data || []).map(async (track: any) => {
         let signedCover = track.cover_image_url;
-        if (signedCover && signedCover.includes('amazonaws.com')) {
-            try {
+        let signedAudio = '';
+
+        try {
+            if (signedCover && signedCover.includes('amazonaws.com')) {
                 const urlParts = signedCover.split('.com/');
                 if (urlParts.length > 1) {
                     const s3Key = decodeURIComponent(urlParts[1]);
                     signedCover = await S3Service.getDownloadUrl(s3Key, process.env.AWS_S3_BUCKET_RAW!);
                 }
-            } catch (e) {
-                console.error("Failed to sign cover image URL", e);
             }
+
+            // Extract audio source from track_files
+            const files = track.track_files || [];
+            const streamFiles = files.filter((f: any) => f.file_type === 'stream_aac' || f.file_type === 'stream_mp3');
+
+            let defaultSrc = '';
+            for (const file of streamFiles) {
+                const url = await S3Service.getDownloadUrl(file.s3_key, process.env.AWS_S3_BUCKET_RAW!);
+                if (file.tuning === '440hz') {
+                    defaultSrc = url;
+                } else if (!defaultSrc) {
+                    defaultSrc = url;
+                }
+            }
+
+            if (!defaultSrc) {
+                const rawFile = files.find((f: any) => f.file_type === 'raw');
+                if (rawFile) {
+                    defaultSrc = await S3Service.getDownloadUrl(rawFile.s3_key, process.env.AWS_S3_BUCKET_RAW!);
+                }
+            }
+
+            signedAudio = defaultSrc;
+        } catch (e) {
+            console.error("Failed to sign track URLs", e);
         }
-        return { ...track, cover_image_url: signedCover };
+
+        return { ...track, cover_image_url: signedCover, src: signedAudio };
     }));
 
     const latestLicenses = await Promise.all((licenseRes.data || []).map(async (license: any) => {
@@ -96,7 +161,8 @@ async function getAuraHomeData() {
         myRequests: requestRes.data || [],
         weather: null, // Hard disabling weather to avoid external service lag
         currentTuning,
-        time: new Date().getHours()
+        time: new Date().getHours(),
+        isPersonalized
     };
 }
 
@@ -104,7 +170,7 @@ export default async function AuraHomePage() {
     const data = await getAuraHomeData();
     if (!data) return null;
 
-    const { profile, tenant, venue, latestLicenses, topTracks, myRequests, currentTuning, time } = data;
+    const { profile, tenant, venue, latestLicenses, topTracks, myRequests, currentTuning, time, isPersonalized } = data;
 
     const displayName = tenant?.display_name || profile?.full_name?.split(' ')[0] || 'Architect';
     const greeting = time < 12 ? 'Good Morning' : time < 18 ? 'Good Afternoon' : 'Good Evening';
@@ -118,7 +184,11 @@ export default async function AuraHomePage() {
                         <h1 className="text-3xl md:text-6xl font-black italic uppercase tracking-tighter text-white text-glow leading-tight">
                             {greeting}, <span className="text-indigo-500">{displayName}</span>
                         </h1>
-                        {profile?.subscription_tier && profile.subscription_tier !== 'free' ? (
+                        {['admin', 'system_admin', 'superadmin', 'enterprise_admin'].includes(profile?.role) ? (
+                            <span className="w-fit bg-gradient-to-r from-white to-zinc-400 text-black text-[8px] md:text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest md:mt-4 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                                Aura Admin User
+                            </span>
+                        ) : profile?.subscription_tier && profile.subscription_tier !== 'free' ? (
                             <span className="w-fit bg-gradient-to-r from-amber-400 to-orange-500 text-black text-[8px] md:text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest md:mt-4">
                                 {profile.subscription_tier} Member
                             </span>
@@ -196,33 +266,14 @@ export default async function AuraHomePage() {
 
                     <div className="bg-[#111] p-6 md:p-10 rounded-2xl md:rounded-[3rem] border border-white/5 shadow-2xl space-y-6 md:space-y-8">
                         <div className="flex items-center justify-between">
-                            <h4 className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] text-zinc-500">Popular Harmonics</h4>
-                            <Link href="/store" className="text-[8px] md:text-[9px] font-black text-zinc-600 hover:text-white transition-colors uppercase tracking-widest">Enter Store</Link>
+                            <h4 className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] text-zinc-500">
+                                {isPersonalized ? "Your Most Listened" : "Popular Harmonics"}
+                            </h4>
+                            <Link href="/store" className="text-[8px] md:text-[9px] font-black text-zinc-600 uppercase tracking-widest pointer-events-none opacity-50">Enter Store</Link>
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                             {topTracks.map((track) => (
-                                <div key={track.id} className="space-y-3 md:space-y-4 group cursor-pointer">
-                                    <div className="relative aspect-square rounded-xl md:rounded-2xl overflow-hidden shadow-2xl border border-white/5 bg-zinc-800">
-                                        {track.cover_image_url ? (
-                                            <Image
-                                                src={track.cover_image_url}
-                                                alt={track.title || "Track Cover"}
-                                                fill
-                                                className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                                sizes="(max-width: 768px) 50vw, 25vw"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-xl md:text-2xl">🎵</div>
-                                        )}
-                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                            <Play size={20} className="text-white fill-current md:w-6 md:h-6" />
-                                        </div>
-                                    </div>
-                                    <div className="space-y-0.5 px-0.5 md:px-1">
-                                        <p className="text-[10px] md:text-[11px] font-black text-white truncate uppercase italic">{track.title}</p>
-                                        <p className="text-[8px] md:text-[9px] font-bold text-zinc-600 uppercase truncate">{track.artist}</p>
-                                    </div>
-                                </div>
+                                <DashboardPlayableTrack key={track.id} track={track} allTracks={topTracks} />
                             ))}
                         </div>
                     </div>

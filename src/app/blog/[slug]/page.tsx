@@ -98,7 +98,7 @@ Choosing royalty-free music from a direct licensor is the smartest way to scale 
                                 <span className="h-px w-8 bg-indigo-600" />
                                 Deep Research
                             </div>
-                            <h1 className="text-5xl lg:text-8xl font-black italic tracking-tighter leading-[0.9] uppercase max-w-3xl mx-auto">
+                            <h1 className="text-4xl lg:text-6xl font-black italic tracking-tighter leading-[0.9] uppercase max-w-5xl mx-auto text-balance">
                                 {displayPost.title}
                             </h1>
                         </div>
@@ -178,7 +178,7 @@ Choosing royalty-free music from a direct licensor is the smartest way to scale 
                                     );
                                 }
                                 if (line.startsWith('![')) return null;
-                                return line.trim() ? <p key={i} className="text-lg lg:text-xl text-zinc-500 leading-relaxed first-letter:text-5xl first-letter:font-black first-letter:italic first-letter:mr-3 first-letter:float-left first-letter:leading-[0.8] first-letter:text-indigo-600">{line}</p> : null;
+                                return line.trim() ? <p key={i} className="text-lg lg:text-xl text-zinc-500 leading-relaxed">{line}</p> : null;
                             })}
                         </div>
                     </div>

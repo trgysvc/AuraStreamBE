@@ -3,6 +3,11 @@ const nextConfig = {
     typescript: {
         ignoreBuildErrors: true,
     },
+    experimental: {
+        serverActions: {
+            bodySizeLimit: '2mb',
+        },
+    },
     images: {
         remotePatterns: [
             {
@@ -17,6 +22,18 @@ const nextConfig = {
                 port: '',
                 pathname: '/**',
             },
+            {
+                protocol: 'https',
+                hostname: 'ifpbhptcnlndhwujprhn.supabase.co',
+                port: '',
+                pathname: '/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'gemini.google.com',
+                port: '',
+                pathname: '/**',
+            },
         ],
     },
     async headers() {
@@ -26,7 +43,7 @@ const nextConfig = {
                 headers: [
                     {
                         key: 'Content-Security-Policy',
-                        value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: images.unsplash.com aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com https:; font-src 'self' data: https:; connect-src 'self' https:; media-src 'self' blob: data: aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com https:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self' https://sonaraura.com https://www.sonaraura.com; frame-src 'self' https://sonaraura.com https://www.sonaraura.com; upgrade-insecure-requests;",
+                        value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: images.unsplash.com aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com ifpbhptcnlndhwujprhn.supabase.co gemini.google.com https:; font-src 'self' data: https:; connect-src 'self' https:; media-src 'self' blob: data: aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com https:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self' https://sonaraura.com https://www.sonaraura.com; frame-src 'self' https://sonaraura.com https://www.sonaraura.com; upgrade-insecure-requests;",
                     },
                     {
                         key: 'Strict-Transport-Security',
