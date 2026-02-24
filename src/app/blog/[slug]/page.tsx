@@ -1,6 +1,4 @@
-'use client';
-
-import { useEffect, useState, use } from 'react';
+import { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Clock, Calendar, User, Share2, ChevronLeft, ArrowRight } from 'lucide-react';
@@ -9,27 +7,42 @@ import { notFound } from 'next/navigation';
 import { MainHeader } from '@/components/layout/MainHeader';
 import { Footer } from '@/components/layout/Footer';
 
-export default function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
-    const { slug } = use(params);
-    const [post, setPost] = useState<BlogPost | null>(null);
-    const [loading, setLoading] = useState(true);
+interface Props {
+    params: Promise<{ slug: string }>;
+}
 
-    useEffect(() => {
-        async function load() {
-            const data = await getBlogPostBySlug(slug);
-            setPost(data);
-            setLoading(false);
-        }
-        load();
-    }, [slug]);
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { slug } = await params;
+    const post = await getBlogPostBySlug(slug);
 
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-white flex items-center justify-center">
-                <div className="h-8 w-8 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin" />
-            </div>
-        );
+    if (!post) {
+        return {
+            title: 'Post Not Found',
+        };
     }
+
+    return {
+        title: post.title,
+        description: post.excerpt,
+        openGraph: {
+            title: post.title,
+            description: post.excerpt,
+            images: [post.cover_image_url],
+            type: 'article',
+            publishedTime: post.published_at,
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: post.title,
+            description: post.excerpt,
+            images: [post.cover_image_url],
+        }
+    };
+}
+
+export default async function BlogPostPage({ params }: Props) {
+    const { slug } = await params;
+    const post = await getBlogPostBySlug(slug);
 
     const placeholders: Record<string, any> = {
         'what-is-royalty-free-music': {
@@ -141,6 +154,7 @@ Choosing royalty-free music from a direct licensor is the smartest way to scale 
                             src={displayPost.cover_image_url}
                             alt={displayPost.title}
                             fill
+                            sizes="(max-width: 1024px) 100vw, 80vw"
                             className="object-contain p-12 lg:p-24"
                             priority
                         />
@@ -201,7 +215,13 @@ Choosing royalty-free music from a direct licensor is the smartest way to scale 
                     <div className="grid md:grid-cols-2 gap-12 lg:gap-16">
                         <Link href="/blog/science-of-focus" className="group block">
                             <div className="relative aspect-[16/9] rounded-[2.5rem] overflow-hidden bg-white border border-zinc-100 mb-8 transition-all hover:shadow-2xl hover:shadow-zinc-200">
-                                <Image src="/assets/blog/science_of_focus.png" alt="Focus" fill className="object-contain p-8 transition-transform duration-700 group-hover:scale-110" />
+                                <Image
+                                    src="/assets/blog/science_of_focus.png"
+                                    alt="Focus"
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, 40vw"
+                                    className="object-contain p-8 transition-transform duration-700 group-hover:scale-110"
+                                />
                                 <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                             </div>
                             <div className="space-y-4">
@@ -213,7 +233,13 @@ Choosing royalty-free music from a direct licensor is the smartest way to scale 
 
                         <Link href="/blog/crafting-atmosphere" className="group block">
                             <div className="relative aspect-[16/9] rounded-[2.5rem] overflow-hidden bg-white border border-zinc-100 mb-8 transition-all hover:shadow-2xl hover:shadow-zinc-200">
-                                <Image src="/assets/blog/crafting_atmosphere.png" alt="Atmosphere" fill className="object-contain p-8 transition-transform duration-700 group-hover:scale-110" />
+                                <Image
+                                    src="/assets/blog/crafting_atmosphere.png"
+                                    alt="Atmosphere"
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, 40vw"
+                                    className="object-contain p-8 transition-transform duration-700 group-hover:scale-110"
+                                />
                                 <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                             </div>
                             <div className="space-y-4">

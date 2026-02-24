@@ -3,6 +3,12 @@ import { Check, X, ChevronDown } from 'lucide-react';
 import { Footer } from '@/components/layout/Footer';
 import { MainHeader } from '@/components/layout/MainHeader';
 import { createClient } from '@/lib/db/server';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Pricing',
+    description: 'Flexible, scientific pricing for creators and venues. From free browsing to elite enterprise audio ecosystems.',
+};
 
 export default async function PricingPage() {
     const supabase = await createClient();

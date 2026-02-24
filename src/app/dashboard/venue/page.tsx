@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
-import { Search, ChevronDown, Sliders, Music, Sparkles as LucideSparkles, Play } from 'lucide-react';
+import { Search, ChevronDown, Sliders, Music, Sparkles as LucideSparkles, Play, Plus, Filter, ListMusic, Layers, Check, X, Wand2, Activity, MapPin, Wind, Zap, RefreshCw } from 'lucide-react';
 import TrackRow from '@/components/dashboard/TrackRow';
 import { getVenueTracks_Action } from '@/app/actions/venue';
 import { logSearchQuery_Action } from '@/app/actions/elite-analytics';
@@ -228,47 +228,113 @@ function VenueDashboardContent() {
                 </div>
 
                 {activeSubTab !== 'flow' && (
-                    <div className="flex items-stretch bg-[#1E1E22] rounded-xl md:rounded-md overflow-visible relative z-30 h-12 md:h-14 border border-white/5 shadow-2xl animate-in fade-in duration-500">
-                        <div className="relative h-full flex items-center border-r border-white/5">
-                            <button
-                                type="button"
-                                onClick={() => setIsSearchDropdownOpen(!isSearchDropdownOpen)}
-                                className="px-4 md:px-8 h-full flex items-center gap-2 md:gap-3 hover:bg-white/5 transition-colors group min-w-[120px] md:min-w-[180px]"
-                            >
-                                <span className="text-[12px] md:text-[14px] font-bold text-white">{searchType}</span>
-                                <ChevronDown size={14} className={`text-zinc-500 group-hover:text-white transition-all ${isSearchDropdownOpen ? 'rotate-180' : ''}`} />
-                            </button>
-                            {isSearchDropdownOpen && (
-                                <>
-                                    <div className="fixed inset-0 z-40" onClick={() => setIsSearchDropdownOpen(false)} />
-                                    <div className="absolute top-full left-0 mt-2 w-48 md:w-56 bg-[#1E1E22] border border-white/10 rounded-xl shadow-2xl z-50 py-1 md:py-2 overflow-hidden">
-                                        {['Music', 'Sound Effects'].map((option) => (
-                                            <button
-                                                key={option}
-                                                onClick={() => { setSearchType(option); setIsSearchDropdownOpen(false); }}
-                                                className="w-full text-left px-4 py-2.5 md:px-5 md:py-3 text-[11px] md:text-[13px] font-bold text-zinc-300 hover:text-white hover:bg-white/5 transition-colors first:rounded-t-md last:rounded-b-md"
-                                            >
-                                                {option}
-                                            </button>
-                                        ))}
+                    <div className="flex flex-col gap-4">
+                        <div className="flex items-stretch bg-[#1E1E22] rounded-xl md:rounded-md overflow-visible relative z-30 h-12 md:h-14 border border-white/5 shadow-2xl animate-in fade-in duration-500">
+                            <div className="relative h-full flex items-center border-r border-white/5">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsSearchDropdownOpen(!isSearchDropdownOpen)}
+                                    className="px-4 md:px-8 h-full flex items-center gap-2 md:gap-3 hover:bg-white/5 transition-colors group min-w-[120px] md:min-w-[180px]"
+                                >
+                                    <span className="text-[12px] md:text-[14px] font-bold text-white">{searchType}</span>
+                                    <ChevronDown size={14} className={`text-zinc-500 group-hover:text-white transition-all ${isSearchDropdownOpen ? 'rotate-180' : ''}`} />
+                                </button>
+                                {isSearchDropdownOpen && (
+                                    <>
+                                        <div className="fixed inset-0 z-40" onClick={() => setIsSearchDropdownOpen(false)} />
+                                        <div className="absolute top-full left-0 mt-2 w-48 md:w-56 bg-[#1E1E22] border border-white/10 rounded-xl shadow-2xl z-50 py-1 md:py-2 overflow-hidden">
+                                            {['Music', 'Sound Effects'].map((option) => (
+                                                <button
+                                                    key={option}
+                                                    onClick={() => { setSearchType(option); setIsSearchDropdownOpen(false); }}
+                                                    className="w-full text-left px-4 py-2.5 md:px-5 md:py-3 text-[11px] md:text-[13px] font-bold text-zinc-300 hover:text-white hover:bg-white/5 transition-colors first:rounded-t-md last:rounded-b-md"
+                                                >
+                                                    {option}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+
+                            <div className="flex-1 flex items-center px-4 md:px-8 h-full relative">
+                                <Search size={16} className="absolute left-4 md:left-8 text-zinc-600" />
+                                <input
+                                    type="text"
+                                    value={query}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setQuery(val);
+
+                                        // Prefix parsing logic
+                                        if (val.toLowerCase().startsWith('v:') || val.toLowerCase().startsWith('vibe:')) {
+                                            const tag = val.split(':')[1]?.trim();
+                                            if (tag && VIBE_TAGS.includes(tag)) {
+                                                setSelectedVibes(prev => [...new Set([...prev, tag])]);
+                                                setQuery('');
+                                            }
+                                        } else if (val.toLowerCase().startsWith('g:') || val.toLowerCase().startsWith('genre:')) {
+                                            const tag = val.split(':')[1]?.trim();
+                                            if (tag && GENRE_TAGS.includes(tag)) {
+                                                setSelectedGenres(prev => [...new Set([...prev, tag])]);
+                                                setQuery('');
+                                            }
+                                        } else if (val.toLowerCase().startsWith('vn:') || val.toLowerCase().startsWith('venue:')) {
+                                            const tag = val.split(':')[1]?.trim();
+                                            const allVenueTags = VENUE_SECTORS.flatMap(s => s.tags);
+                                            if (tag && allVenueTags.includes(tag)) {
+                                                setSelectedVenues(prev => [...new Set([...prev, tag])]);
+                                                setQuery('');
+                                            }
+                                        }
+                                    }}
+                                    placeholder={activeSubTab === 'assistant' ? "Explain the vibe..." : "Search by character, vibe, genre, venue, theme…"}
+                                    className="w-full bg-transparent text-white focus:outline-none text-[13px] md:text-[16px] h-full pl-6 md:pl-10 placeholder-zinc-700 font-bold"
+                                />
+
+                                {/* Omnibar Suggestions */}
+                                {query.length > 0 && activeSubTab !== 'assistant' && (
+                                    <div className="absolute top-full left-0 right-0 mt-4 bg-[#1E1E22]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-4 z-50 flex flex-col gap-2">
+                                        <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-zinc-600 border-b border-white/5 mb-2">Suggestions</div>
+                                        <div className="flex flex-wrap gap-2">
+                                            {VIBE_TAGS.filter(v => v.toLowerCase().includes(query.toLowerCase())).slice(0, 3).map(v => (
+                                                <button key={v} onClick={() => { setSelectedVibes(prev => [...new Set([...prev, v])]); setQuery(''); }} className="px-3 py-1.5 rounded-lg bg-pink-600/10 border border-pink-500/20 text-pink-400 text-[11px] font-bold hover:bg-pink-600 hover:text-white transition-all">Vibe: {v}</button>
+                                            ))}
+                                            {GENRE_TAGS.filter(g => g.toLowerCase().includes(query.toLowerCase())).slice(0, 3).map(g => (
+                                                <button key={g} onClick={() => { setSelectedGenres(prev => [...new Set([...prev, g])]); setQuery(''); }} className="px-3 py-1.5 rounded-lg bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 text-[11px] font-bold hover:bg-indigo-600 hover:text-white transition-all">Genre: {g}</button>
+                                            ))}
+                                            {VENUE_SECTORS.flatMap(s => s.tags).filter(t => t.toLowerCase().includes(query.toLowerCase())).slice(0, 3).map(t => (
+                                                <button key={t} onClick={() => { setSelectedVenues(prev => [...new Set([...prev, t])]); setQuery(''); }} className="px-3 py-1.5 rounded-lg bg-emerald-600/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-bold hover:bg-emerald-600 hover:text-white transition-all">Venue: {t}</button>
+                                            ))}
+                                        </div>
                                     </div>
-                                </>
-                            )}
+                                )}
+                            </div>
+                            <div className="hidden sm:flex bg-white/5 text-zinc-600 px-6 md:px-10 items-center justify-center opacity-40 border-l border-white/5">
+                                <Music size={20} />
+                            </div>
                         </div>
 
-                        <div className="flex-1 flex items-center px-4 md:px-8 h-full relative">
-                            <Search size={16} className="absolute left-4 md:left-8 text-zinc-600" />
-                            <input
-                                type="text"
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
-                                placeholder={activeSubTab === 'assistant' ? "Explain the vibe..." : "Search vibes..."}
-                                className="w-full bg-transparent text-white focus:outline-none text-[13px] md:text-[16px] h-full pl-6 md:pl-10 placeholder-zinc-700 font-bold"
-                            />
-                        </div>
-                        <div className="hidden sm:flex bg-white/5 text-zinc-600 px-6 md:px-10 items-center justify-center opacity-40 border-l border-white/5">
-                            <Music size={20} />
-                        </div>
+                        {/* Active Pill Display */}
+                        {(selectedVibes.length > 0 || selectedGenres.length > 0 || selectedVenues.length > 0) && (
+                            <div className="flex flex-wrap gap-2 px-2">
+                                {selectedVenues.map(t => (
+                                    <button key={t} onClick={() => toggleTag(selectedVenues, setSelectedVenues, t)} className="px-3 py-1 rounded-full bg-white text-black text-[10px] font-black uppercase tracking-wider flex items-center gap-2 hover:bg-white/80 transition-all">
+                                        {t} <X size={10} />
+                                    </button>
+                                ))}
+                                {selectedVibes.map(v => (
+                                    <button key={v} onClick={() => toggleTag(selectedVibes, setSelectedVibes, v)} className="px-3 py-1 rounded-full bg-pink-600 text-white text-[10px] font-black uppercase tracking-wider flex items-center gap-2 hover:bg-pink-500 transition-all">
+                                        {v} <X size={10} />
+                                    </button>
+                                ))}
+                                {selectedGenres.map(g => (
+                                    <button key={g} onClick={() => toggleTag(selectedGenres, setSelectedGenres, g)} className="px-3 py-1 rounded-full bg-indigo-600 text-white text-[10px] font-black uppercase tracking-wider flex items-center gap-2 hover:bg-indigo-500 transition-all">
+                                        {g} <X size={10} />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
@@ -280,41 +346,94 @@ function VenueDashboardContent() {
                 <div className="flex flex-col lg:flex-row gap-8 md:gap-10 items-start">
                     {/* LEFT SIDEBAR: ADVANCED TAXONOMY */}
                     {showFilters && (
-                        <aside className="w-full lg:w-64 space-y-8 md:space-y-10 animate-in slide-in-from-left duration-500 lg:sticky lg:top-24 pb-10">
-                            <div className="space-y-6">
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 ml-1">Venue</h3>
+                        <aside className="w-full lg:w-72 space-y-8 md:space-y-12 animate-in slide-in-from-left duration-700 lg:sticky lg:top-24 pb-20 p-6 md:p-8 bg-white/[0.02] backdrop-blur-3xl border border-white/5 rounded-[2.5rem] shadow-2xl">
+                            <div className="space-y-8">
+                                <div className="flex items-center gap-3 ml-1 mb-2">
+                                    <MapPin size={12} className="text-zinc-500" />
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">Venue Segments</h3>
+                                </div>
                                 {VENUE_SECTORS.map(s => (
-                                    <div key={s.name} className="space-y-2">
-                                        <p className="text-[8px] font-bold text-zinc-600 uppercase ml-1">{s.name}</p>
-                                        <div className="flex flex-wrap gap-1.5">
+                                    <div key={s.name} className="space-y-3">
+                                        <p className="text-[8px] font-bold text-zinc-600 uppercase ml-1 tracking-widest">{s.name}</p>
+                                        <div className="flex flex-wrap gap-2">
                                             {s.tags.map(t => (
-                                                <button key={t} onClick={() => toggleTag(selectedVenues, setSelectedVenues, t)} className={`px-2 py-1 rounded-md text-[9px] font-bold transition-all border ${selectedVenues.includes(t) ? 'bg-white text-black border-white shadow-xl' : 'bg-black text-zinc-600 border-white/5 hover:border-white/10 hover:text-zinc-400'}`}>{t}</button>
+                                                <button
+                                                    key={t}
+                                                    onClick={() => toggleTag(selectedVenues, setSelectedVenues, t)}
+                                                    className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all border ${selectedVenues.includes(t)
+                                                        ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.2)] scale-105'
+                                                        : 'bg-black/40 text-zinc-500 border-white/5 hover:border-white/10 hover:text-white hover:bg-white/5'}`}
+                                                >
+                                                    {t}
+                                                </button>
                                             ))}
                                         </div>
                                     </div>
                                 ))}
                             </div>
-                            <div className="space-y-4">
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 ml-1">Vibe</h3>
-                                <div className="flex flex-wrap gap-1.5">
+
+                            <div className="space-y-6">
+                                <div className="flex items-center gap-3 ml-1 mb-2">
+                                    <Zap size={12} className="text-pink-500" />
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">Aura Vibes</h3>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
                                     {VIBE_TAGS.map(v => (
-                                        <button key={v} onClick={() => toggleTag(selectedVibes, setSelectedVibes, v)} className={`px-2 py-1 rounded-md text-[9px] font-bold transition-all border ${selectedVibes.includes(v) ? 'bg-pink-600 text-white border-pink-500 shadow-xl' : 'bg-white/5 text-zinc-500 border-white/5 hover:border-white/10'}`}>{v}</button>
+                                        <button
+                                            key={v}
+                                            onClick={() => toggleTag(selectedVibes, setSelectedVibes, v)}
+                                            className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all border ${selectedVibes.includes(v)
+                                                ? 'bg-pink-600 text-white border-pink-500 shadow-[0_0_20px_rgba(219,39,119,0.3)] scale-105'
+                                                : 'bg-black/40 text-zinc-500 border-white/5 hover:border-white/10 hover:text-white hover:bg-white/5'}`}
+                                        >
+                                            {v}
+                                        </button>
                                     ))}
                                 </div>
                             </div>
 
-                            <div className="space-y-4">
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 ml-1">Genre</h3>
-                                <div className="flex flex-wrap gap-1.5">
+                            <div className="space-y-6">
+                                <div className="flex items-center gap-3 ml-1 mb-2">
+                                    <Activity size={12} className="text-indigo-500" />
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">Sonic Genre</h3>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
                                     {GENRE_TAGS.map(g => (
-                                        <button key={g} onClick={() => toggleTag(selectedGenres, setSelectedGenres, g)} className={`px-2 py-1 rounded-md text-[9px] font-bold transition-all border ${selectedGenres.includes(g) ? 'bg-indigo-600 text-white border-indigo-500 shadow-xl' : 'bg-black text-zinc-600 border-white/5 hover:border-white/10'}`}>{g}</button>
+                                        <button
+                                            key={g}
+                                            onClick={() => toggleTag(selectedGenres, setSelectedGenres, g)}
+                                            className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all border ${selectedGenres.includes(g)
+                                                ? 'bg-indigo-600 text-white border-indigo-500 shadow-[0_0_20px_rgba(79,70,229,0.3)] scale-105'
+                                                : 'bg-black/40 text-zinc-500 border-white/5 hover:border-white/10 hover:text-white hover:bg-white/5'}`}
+                                        >
+                                            {g}
+                                        </button>
                                     ))}
                                 </div>
                             </div>
-                            <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 space-y-4">
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 ml-1">BPM</h3>
-                                <input type="range" min="60" max="180" value={bpmRange[1]} onChange={(e) => setBpmRange([bpmRange[0], parseInt(e.target.value)])} className="w-full h-1 accent-white opacity-40 hover:opacity-100 transition-opacity" />
-                                <button onClick={() => { setSelectedVenues([]); setSelectedVibes([]); setSelectedGenres([]); setBpmRange([60, 180]); setQuery(''); }} className="w-full py-2 rounded-lg bg-white/5 text-zinc-600 text-[9px] font-black uppercase tracking-[0.3em] border border-white/5">Reset</button>
+
+                            <div className="p-8 rounded-[2rem] bg-indigo-500/[0.03] border border-white/5 space-y-6 shadow-inner">
+                                <div className="flex items-center justify-between ml-1">
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600">Tempo / BPM</h3>
+                                    <span className="text-[10px] font-black text-indigo-400">{bpmRange[1]}</span>
+                                </div>
+                                <div className="px-1">
+                                    <input
+                                        type="range"
+                                        min="60"
+                                        max="180"
+                                        value={bpmRange[1]}
+                                        onChange={(e) => setBpmRange([bpmRange[0], parseInt(e.target.value)])}
+                                        className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-white hover:accent-indigo-400 transition-all [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+                                    />
+                                </div>
+                                <button
+                                    onClick={() => { setSelectedVenues([]); setSelectedVibes([]); setSelectedGenres([]); setBpmRange([60, 180]); setQuery(''); }}
+                                    className="w-full py-4 rounded-2xl bg-white/5 text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em] border border-white/5 hover:bg-white/10 hover:text-white transition-all flex items-center justify-center gap-3"
+                                >
+                                    <RefreshCw size={12} />
+                                    Reset Engine
+                                </button>
                             </div>
                         </aside>
                     )}
@@ -338,9 +457,10 @@ function VenueDashboardContent() {
                                 </div>
                                 <button
                                     onClick={() => setShowFilters(!showFilters)}
-                                    className={`flex items-center gap-3 px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all border ${showFilters ? 'bg-white text-black border-white' : 'bg-zinc-900/50 text-zinc-500 border-white/5 hover:text-white'}`}
+                                    disabled={true}
+                                    className={`flex items-center gap-3 px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all border opacity-20 cursor-not-allowed bg-zinc-900/50 text-zinc-500 border-white/5`}
                                 >
-                                    <Sliders size={14} /> {showFilters ? 'Hide Engine' : 'Advanced Filters'}
+                                    <Sliders size={14} /> Advanced Filters
                                 </button>
                             </div>
 

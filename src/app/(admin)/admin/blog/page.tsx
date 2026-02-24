@@ -65,6 +65,7 @@ export default function AdminBlogPage() {
                                         src={post.cover_image_url}
                                         alt={post.title}
                                         fill
+                                        sizes="128px"
                                         className="object-cover"
                                     />
                                 ) : (
@@ -77,8 +78,8 @@ export default function AdminBlogPage() {
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-3 mb-1">
                                     <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${post.is_published
-                                            ? 'bg-emerald-500/10 text-emerald-500'
-                                            : 'bg-amber-500/10 text-amber-500'
+                                        ? 'bg-emerald-500/10 text-emerald-500'
+                                        : 'bg-amber-500/10 text-amber-500'
                                         }`}>
                                         {post.is_published ? 'Published' : 'Draft'}
                                     </span>

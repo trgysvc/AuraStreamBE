@@ -176,6 +176,7 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ id: str
                                             src={formData.cover_image_url}
                                             alt="Preview"
                                             fill
+                                            sizes="(max-width: 1024px) 100vw, 50vw"
                                             className="object-cover"
                                         />
                                     ) : (
@@ -192,8 +193,8 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ id: str
                             type="submit"
                             disabled={saving}
                             className={`w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-sm transition-all shadow-xl ${saving
-                                    ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
-                                    : 'bg-white text-black hover:bg-zinc-200'
+                                ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed'
+                                : 'bg-white text-black hover:bg-zinc-200'
                                 }`}
                         >
                             {saving ? (

@@ -4,6 +4,12 @@ import { Footer } from '@/components/layout/Footer';
 import { MainHeader } from '@/components/layout/MainHeader';
 import { createClient } from '@/lib/db/server';
 import { redirect } from 'next/navigation';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Home',
+    description: 'Sonaraura provides intelligent background music solutions for venues, creators, and businesses with 432Hz and 528Hz frequency tuning.',
+};
 
 export default async function LandingPage() {
     const supabase = await createClient();

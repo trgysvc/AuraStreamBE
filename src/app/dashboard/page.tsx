@@ -293,6 +293,7 @@ export default async function AuraHomePage() {
                                                     src={license.tracks.cover_image_url}
                                                     alt={license.tracks.title || "License Cover"}
                                                     fill
+                                                    sizes="48px"
                                                     className="object-cover"
                                                 />
                                             ) : (

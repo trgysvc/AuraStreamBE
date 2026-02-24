@@ -121,7 +121,7 @@ export async function autoTagTrack_Action(trackId: string) {
     // 2. Predict Tags
     const predictions = AITaxonomyService.predictTags({
         title: track.title || 'Unknown Title',
-        artist: track.artist || 'Sonaraura AI',
+        artist: track.artist || 'Sonaraura Studio',
         genre: track.genre || 'Ambient',
         sub_genres: track.sub_genres || []
     });
@@ -179,7 +179,7 @@ export async function batchAutoTagTracks_Action() {
         try {
             const predictions = AITaxonomyService.predictTags({
                 title: track.title || 'Unknown',
-                artist: track.artist || 'Unknown',
+                artist: track.artist || 'Sonaraura Studio',
                 genre: track.genre || 'Ambient',
                 sub_genres: track.sub_genres || []
             });
@@ -206,4 +206,26 @@ export async function batchAutoTagTracks_Action() {
 
     revalidatePath('/admin/catalog');
     return { success: true, results };
+}
+
+/**
+ * One-time action to migrate existing tracks with 'turgaysavaci' artist
+ * to the new 'Sonaraura Studio' branding for corporate consistency.
+ */
+export async function fixBranding_Action() {
+    const supabase = await createClient();
+
+    const { error, count } = await supabase
+        .from('tracks')
+        .update({ artist: 'Sonaraura Studio' })
+        .eq('artist', 'turgaysavaci');
+
+    if (error) {
+        console.error('Branding Fix Error:', error);
+        throw error;
+    }
+
+    revalidatePath('/admin/catalog');
+    revalidatePath('/dashboard/venue');
+    return { success: true, count };
 }

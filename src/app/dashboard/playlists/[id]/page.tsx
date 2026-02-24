@@ -76,7 +76,13 @@ export default async function PlaylistDetailPage({ params }: { params: Promise<{
                                 <div className="flex items-center gap-4">
                                     <div className="w-10 h-10 bg-zinc-800 rounded mx-auto shrink-0 relative overflow-hidden">
                                         {item.track?.cover_image_url && (
-                                            <Image src={item.track.cover_image_url} alt={item.track.title} fill className="object-cover" />
+                                            <Image
+                                                src={item.track.cover_image_url}
+                                                alt={item.track.title}
+                                                fill
+                                                sizes="48px"
+                                                className="object-cover"
+                                            />
                                         )}
                                     </div>
                                     <div>

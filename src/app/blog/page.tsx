@@ -1,26 +1,17 @@
-'use client';
-
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Calendar, User, ChevronRight } from 'lucide-react';
+import { ArrowRight, Calendar, ArrowUpRight } from 'lucide-react';
 import { getBlogPosts, BlogPost } from '@/app/actions/blog';
 import { MainHeader } from '@/components/layout/MainHeader';
 import { Footer } from '@/components/layout/Footer';
-import { createClient } from '@/lib/db/client';
+import { createClient } from '@/lib/db/server';
 
-export default function BlogLandingPage() {
-    const [posts, setPosts] = useState<BlogPost[]>([]);
-    const [loading, setLoading] = useState(true);
+export default async function BlogLandingPage() {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    useEffect(() => {
-        async function load() {
-            const data = await getBlogPosts(true);
-            setPosts(data);
-            setLoading(false);
-        }
-        load();
-    }, []);
+    // Fetch posts on the server
+    const posts = await getBlogPosts(true);
 
     const placeholderPosts: BlogPost[] = [
         {
@@ -58,7 +49,7 @@ export default function BlogLandingPage() {
 
     return (
         <div className="min-h-screen bg-white text-zinc-900 selection:bg-indigo-100 selection:text-indigo-900">
-            <MainHeader />
+            <MainHeader initialUser={user} />
 
             <div className="max-w-7xl mx-auto px-6 py-12 lg:py-20 pt-32 lg:pt-40">
                 <div className="space-y-4 mb-16 lg:mb-24">
@@ -86,6 +77,7 @@ export default function BlogLandingPage() {
                                     src={featuredPost.cover_image_url}
                                     alt={featuredPost.title}
                                     fill
+                                    sizes="(max-width: 1024px) 100vw, 50vw"
                                     className="object-contain p-8 lg:p-16 transition-transform duration-700 group-hover:scale-105"
                                 />
                                 <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -100,7 +92,7 @@ export default function BlogLandingPage() {
                                         {new Date(featuredPost.published_at!).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                                     </span>
                                 </div>
-                                <h2 className="text-4xl lg:text-6xl font-black italic tracking-tight mb-8 leading-[1] group-hover:text-indigo-600 transition-colors uppercase">
+                                <h2 className="text-4xl lg:text-6xl font-black italic tracking-tight mb-8 leading-[1] group-hover:text-indigo-600 transition-colors uppercase text-balance">
                                     {featuredPost.title}
                                 </h2>
                                 <p className="text-zinc-500 text-lg lg:text-xl mb-12 leading-relaxed">
@@ -127,6 +119,7 @@ export default function BlogLandingPage() {
                                     src={post.cover_image_url}
                                     alt={post.title}
                                     fill
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                     className="object-contain p-6 lg:p-10 transition-transform duration-700 group-hover:scale-105"
                                 />
                                 <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-zinc-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -139,7 +132,7 @@ export default function BlogLandingPage() {
                                         {new Date(post.published_at!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                                     </span>
                                 </div>
-                                <h3 className="text-2xl lg:text-3xl font-black italic tracking-tight group-hover:text-indigo-600 transition-colors leading-[1.1] uppercase">
+                                <h3 className="text-2xl lg:text-3xl font-black italic tracking-tight group-hover:text-indigo-600 transition-colors leading-[1.1] uppercase text-balance">
                                     {post.title}
                                 </h3>
                                 <p className="text-zinc-500 text-sm lg:text-base leading-relaxed line-clamp-3">
@@ -158,7 +151,7 @@ export default function BlogLandingPage() {
                                 Subscribe to <br /><span className="text-indigo-600">Our Journal</span>
                             </h2>
                             <p className="text-zinc-500 text-lg lg:text-xl font-medium leading-relaxed">
-                                Join our community of 50,000+ creators and get the latest sonic trends, legal guides, and tech releases.
+                                Join our community and get the latest sonic trends, legal guides, and tech releases.
                             </p>
                             <form className="flex flex-col md:flex-row gap-4 max-w-md">
                                 <input
@@ -173,7 +166,13 @@ export default function BlogLandingPage() {
                         </div>
 
                         <div className="absolute top-1/2 right-[-10%] translate-y-[-50%] w-[50%] h-[80%] opacity-20 lg:opacity-100 hidden lg:block">
-                            <Image src="/assets/blog/royalty_free.png" alt="Newsletter" fill className="object-contain" />
+                            <Image
+                                src="/assets/blog/royalty_free.png"
+                                alt="Newsletter"
+                                fill
+                                sizes="50vw"
+                                className="object-contain"
+                            />
                         </div>
                     </div>
                 </div>

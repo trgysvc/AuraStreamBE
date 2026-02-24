@@ -4,6 +4,12 @@ import { ArrowRight, Check, X, Shield, Activity, Cloud, Mic, Play, Lock, BarChar
 import { MainHeader } from '@/components/layout/MainHeader';
 import { Footer } from '@/components/layout/Footer';
 import { createClient } from '@/lib/db/server';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+    title: 'Pulse Advertising',
+    description: 'Sonaraura Pulse is an AI-powered automated ingestion engine specifically designed for audio advertising. Deliver targeted, high-fidelity sonic experiences.',
+};
 
 export default async function AdvertPage() {
     const supabase = await createClient();
@@ -20,6 +26,7 @@ export default async function AdvertPage() {
                         src="/images/advert/advert_hero_background.png"
                         alt="The Future of Sound"
                         fill
+                        sizes="100vw"
                         className="object-cover opacity-60"
                         priority
                     />
@@ -62,6 +69,7 @@ export default async function AdvertPage() {
                                 src="/images/advert/molecular_sound_frequency.png"
                                 alt="Molecular Sound"
                                 fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                 className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent p-8 flex flex-col justify-end">
@@ -77,6 +85,7 @@ export default async function AdvertPage() {
                                 src="/images/advert/aura_karaoke_lyrics.png"
                                 alt="Aura Karaoke"
                                 fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                 className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent p-8 flex flex-col justify-end">
@@ -92,6 +101,7 @@ export default async function AdvertPage() {
                                 src="/images/advert/weather_aware_ai_sound.png"
                                 alt="Weather Aware AI"
                                 fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                 className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent p-8 flex flex-col justify-end">
@@ -107,6 +117,7 @@ export default async function AdvertPage() {
                                 src="/images/advert/smart_flow_schedule.png"
                                 alt="Smart Flow"
                                 fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                 className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent p-8 flex flex-col justify-end">
@@ -122,6 +133,7 @@ export default async function AdvertPage() {
                                 src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=2000"
                                 alt="Enterprise HQ"
                                 fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                 className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent p-8 flex flex-col justify-end">
@@ -137,6 +149,7 @@ export default async function AdvertPage() {
                                 src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2000"
                                 alt="Playlist Studio"
                                 fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                 className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent p-8 flex flex-col justify-end">
@@ -200,6 +213,7 @@ export default async function AdvertPage() {
                                     src="/images/advert/signal_protection_watermark.png"
                                     alt="Signal Protection"
                                     fill
+                                    sizes="(max-width: 768px) 100vw, 50vw"
                                     className="object-cover"
                                 />
                             </div>
@@ -238,6 +252,7 @@ export default async function AdvertPage() {
                                     src="/images/advert/interactive_waveforms_discovery.png"
                                     alt="Interactive Waveforms"
                                     fill
+                                    sizes="(max-width: 768px) 100vw, 50vw"
                                     className="object-cover"
                                 />
                             </div>
@@ -253,6 +268,7 @@ export default async function AdvertPage() {
                                     src="/images/advert/elite_ai_analytics_dashboard.png"
                                     alt="AI Analytics"
                                     fill
+                                    sizes="(max-width: 768px) 100vw, 50vw"
                                     className="object-cover"
                                 />
                             </div>

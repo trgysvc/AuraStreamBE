@@ -4,8 +4,14 @@ import { ArrowRight, Check, Globe, MapPin, Globe2, Zap, Shield, Menu } from 'luc
 import { Footer } from '@/components/layout/Footer';
 import { MainHeader } from '@/components/layout/MainHeader';
 import { createClient } from '@/lib/db/server';
+import { Metadata } from 'next';
 import { BUSINESS_SECTORS } from './data';
 import TallyForm from '@/components/shared/TallyForm';
+
+export const metadata: Metadata = {
+    title: 'Enterprise',
+    description: 'Scale your sonic identity across hundreds of locations. Centralized management, unified billing, and global licensing for large-scale operations.',
+};
 
 export default async function EnterprisePage() {
     const supabase = await createClient();

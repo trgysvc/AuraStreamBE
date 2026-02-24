@@ -74,14 +74,14 @@ export async function createTrackRecord_Action(formData: FormData, s3Key: string
     // AI Auto-Tagging Prediction
     const aiTags = AITaxonomyService.predictTags({
         title,
-        artist: artist || 'Sonaraura AI',
+        artist: artist || 'Sonaraura Studio',
         genre: genre || 'Ambient'
     });
 
     // 1. Insert Track Record
     const { data: trackData, error: trackError } = await supabase.from('tracks').insert({
         title,
-        artist: artist || 'Sonaraura AI',
+        artist: artist || 'Sonaraura Studio',
         bpm: bpm || 120,
         duration_sec: duration || 180,
         genre: genre || 'Ambient',
