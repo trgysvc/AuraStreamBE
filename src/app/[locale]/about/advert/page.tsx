@@ -5,6 +5,7 @@ import { MainHeader } from '@/components/layout/MainHeader';
 import { Footer } from '@/components/layout/Footer';
 import { createClient } from '@/lib/db/server';
 import { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 
 export const metadata: Metadata = {
     title: 'Pulse Advertising',
@@ -14,6 +15,35 @@ export const metadata: Metadata = {
 export default async function AdvertPage() {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
+    const t = await getTranslations('About.Advert');
+
+    const comparisonRows = [
+        t.raw('comparison.rows.hz'),
+        t.raw('comparison.rows.karaoke'),
+        t.raw('comparison.rows.weather'),
+        t.raw('comparison.rows.scheduling'),
+        t.raw('comparison.rows.watermarking'),
+        t.raw('comparison.rows.dispute'),
+        t.raw('comparison.rows.metadata'),
+        t.raw('precision' in t.raw('comparison.rows') ? t.raw('comparison.rows.precision') : { f: 'Duration Precision', t: '⚠️ Estimated', a: '✅ Real-time File Sync' }),
+        t.raw('comparison.rows.roi'),
+        t.raw('comparison.rows.production'),
+    ];
+
+    // Wait, getTranslations().raw() might be tricky if keys are slightly different or if I use index.
+    // I'll manually map them for safety.
+    const rows = [
+        { f: t('comparison.rows.hz.f'), t: t('comparison.rows.hz.t'), a: t('comparison.rows.hz.a') },
+        { f: t('comparison.rows.karaoke.f'), t: t('comparison.rows.karaoke.t'), a: t('comparison.rows.karaoke.a') },
+        { f: t('comparison.rows.weather.f'), t: t('comparison.rows.weather.t'), a: t('comparison.rows.weather.a') },
+        { f: t('comparison.rows.scheduling.f'), t: t('comparison.rows.scheduling.t'), a: t('comparison.rows.scheduling.a') },
+        { f: t('comparison.rows.watermarking.f'), t: t('comparison.rows.watermarking.t'), a: t('comparison.rows.watermarking.a') },
+        { f: t('comparison.rows.dispute.f'), t: t('comparison.rows.dispute.t'), a: t('comparison.rows.dispute.a') },
+        { f: t('comparison.rows.metadata.f'), t: t('comparison.rows.metadata.t'), a: t('comparison.rows.metadata.a') },
+        { f: t('comparison.rows.precision.f'), t: t('comparison.rows.precision.t'), a: t('comparison.rows.precision.a') },
+        { f: t('comparison.rows.roi.f'), t: t('comparison.rows.roi.t'), a: t('comparison.rows.roi.a') },
+        { f: t('comparison.rows.production.f'), t: t('comparison.rows.production.t'), a: t('comparison.rows.production.a') },
+    ];
 
     return (
         <div className="min-h-screen bg-[#111111] text-white font-sans selection:bg-purple-500 selection:text-white">
@@ -24,7 +54,7 @@ export default async function AdvertPage() {
                 <div className="absolute inset-0 z-0">
                     <Image
                         src="/images/advert/advert_hero_background.png"
-                        alt="The Future of Sound"
+                        alt={t('hero.title')}
                         fill
                         sizes="100vw"
                         className="object-cover opacity-60"
@@ -35,20 +65,20 @@ export default async function AdvertPage() {
 
                 <div className="relative z-20 max-w-5xl w-full text-center space-y-8 animate-fade-in-up">
                     <p className="text-sm md:text-base font-bold uppercase tracking-[0.3em] text-purple-400">
-                        The Future of Sound
+                        {t('hero.tag')}
                     </p>
                     <h1 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.9] bg-clip-text text-transparent bg-gradient-to-b from-white to-white/50">
-                        SONARAURA
+                        {t('hero.title')}
                     </h1>
                     <p className="text-xl md:text-3xl text-gray-300 font-light max-w-3xl mx-auto italic">
-                        "Sesin Mimarisi, Zekanın Frekansı."
+                        {t('hero.desc')}
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
                         <Link href="/signup" className="px-8 py-4 bg-white text-black font-bold rounded-full hover:bg-gray-200 transition-colors flex items-center gap-2 justify-center">
-                            Start Creating <ArrowRight size={20} />
+                            {t('hero.start')} <ArrowRight size={20} />
                         </Link>
                         <Link href="#features" className="px-8 py-4 bg-white/10 backdrop-blur-md text-white font-bold rounded-full hover:bg-white/20 transition-colors border border-white/10">
-                            Explore Technology
+                            {t('hero.explore')}
                         </Link>
                     </div>
                 </div>
@@ -58,8 +88,8 @@ export default async function AdvertPage() {
             <section id="features" className="py-24 px-6 md:px-12 bg-[#111111]">
                 <div className="max-w-[1400px] mx-auto">
                     <div className="text-center mb-20 space-y-4">
-                        <h2 className="text-3xl md:text-5xl font-bold tracking-tight">Sektörde İlk ve Tek</h2>
-                        <p className="text-gray-400 max-w-2xl mx-auto">Sonaraura, dinleyiciyi biyolojik düzeyde etkileyen bir deneyim ve işletmeler için eşsiz bir zeka sunar.</p>
+                        <h2 className="text-3xl md:text-5xl font-bold tracking-tight">{t('features.title')}</h2>
+                        <p className="text-gray-400 max-w-2xl mx-auto">{t('features.desc')}</p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -67,15 +97,15 @@ export default async function AdvertPage() {
                         <div className="group relative aspect-[4/5] overflow-hidden rounded-2xl bg-zinc-900 border border-white/5 hover:border-purple-500/50 transition-colors">
                             <Image
                                 src="/images/advert/molecular_sound_frequency.png"
-                                alt="Molecular Sound"
+                                alt={t('features.frequency.title')}
                                 fill
                                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                 className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent p-8 flex flex-col justify-end">
                                 <Activity className="text-purple-400 mb-4" size={32} />
-                                <h3 className="text-xl font-bold mb-2">Frekans Mühendisliği</h3>
-                                <p className="text-gray-400 text-sm">432Hz (Huzur) ve 528Hz (Odak) modlarına saniyeler içinde, BPM bozulmadan geçiş.</p>
+                                <h3 className="text-xl font-bold mb-2">{t('features.frequency.title')}</h3>
+                                <p className="text-gray-400 text-sm">{t('features.frequency.desc')}</p>
                             </div>
                         </div>
 
@@ -83,15 +113,15 @@ export default async function AdvertPage() {
                         <div className="group relative aspect-[4/5] overflow-hidden rounded-2xl bg-zinc-900 border border-white/5 hover:border-purple-500/50 transition-colors">
                             <Image
                                 src="/images/advert/aura_karaoke_lyrics.png"
-                                alt="Aura Karaoke"
+                                alt={t('features.karaoke.title')}
                                 fill
                                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                 className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent p-8 flex flex-col justify-end">
                                 <Mic className="text-pink-400 mb-4" size={32} />
-                                <h3 className="text-xl font-bold mb-2">Aura Karaoke Engine</h3>
-                                <p className="text-gray-400 text-sm">Kelime kelime senkronize sözler. Müzikle birlikte parlayan ve canlanan kelimeler.</p>
+                                <h3 className="text-xl font-bold mb-2">{t('features.karaoke.title')}</h3>
+                                <p className="text-gray-400 text-sm">{t('features.karaoke.desc')}</p>
                             </div>
                         </div>
 
@@ -99,15 +129,15 @@ export default async function AdvertPage() {
                         <div className="group relative aspect-[4/5] overflow-hidden rounded-2xl bg-zinc-900 border border-white/5 hover:border-purple-500/50 transition-colors">
                             <Image
                                 src="/images/advert/weather_aware_ai_sound.png"
-                                alt="Weather Aware AI"
+                                alt={t('features.weather.title')}
                                 fill
                                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                 className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent p-8 flex flex-col justify-end">
                                 <Cloud className="text-blue-400 mb-4" size={32} />
-                                <h3 className="text-xl font-bold mb-2">Weather-Aware AI</h3>
-                                <p className="text-gray-400 text-sm">Mekanınızın zekası dış dünyayla senkronize. Hava durumuna göre otomatik optimizasyon.</p>
+                                <h3 className="text-xl font-bold mb-2">{t('features.weather.title')}</h3>
+                                <p className="text-gray-400 text-sm">{t('features.weather.desc')}</p>
                             </div>
                         </div>
 
@@ -115,15 +145,15 @@ export default async function AdvertPage() {
                         <div className="group relative aspect-[4/5] overflow-hidden rounded-2xl bg-zinc-900 border border-white/5 hover:border-purple-500/50 transition-colors">
                             <Image
                                 src="/images/advert/smart_flow_schedule.png"
-                                alt="Smart Flow"
+                                alt={t('features.smartFlow.title')}
                                 fill
                                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                 className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent p-8 flex flex-col justify-end">
                                 <Zap className="text-yellow-400 mb-4" size={32} />
-                                <h3 className="text-xl font-bold mb-2">Smart Flow</h3>
-                                <p className="text-gray-400 text-sm">Otonom Müzik Direktörü. Sabah sakin, akşam sofistike geçişleri Aura yapar.</p>
+                                <h3 className="text-xl font-bold mb-2">{t('features.smartFlow.title')}</h3>
+                                <p className="text-gray-400 text-sm">{t('features.smartFlow.desc')}</p>
                             </div>
                         </div>
 
@@ -131,15 +161,15 @@ export default async function AdvertPage() {
                         <div className="group relative aspect-[4/5] overflow-hidden rounded-2xl bg-zinc-900 border border-white/5 hover:border-purple-500/50 transition-colors">
                             <Image
                                 src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=2000"
-                                alt="Enterprise HQ"
+                                alt={t('features.enterprise.title')}
                                 fill
                                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                 className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent p-8 flex flex-col justify-end">
                                 <Layers className="text-indigo-400 mb-4" size={32} />
-                                <h3 className="text-xl font-bold mb-2">Enterprise HQ</h3>
-                                <p className="text-gray-400 text-sm">Binlerce şubeyi tek merkezden kontrol edin. Cihaz sağlığı ve anlık senkronizasyon.</p>
+                                <h3 className="text-xl font-bold mb-2">{t('features.enterprise.title')}</h3>
+                                <p className="text-gray-400 text-sm">{t('features.enterprise.desc')}</p>
                             </div>
                         </div>
 
@@ -147,15 +177,15 @@ export default async function AdvertPage() {
                         <div className="group relative aspect-[4/5] overflow-hidden rounded-2xl bg-zinc-900 border border-white/5 hover:border-purple-500/50 transition-colors">
                             <Image
                                 src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2000"
-                                alt="Playlist Studio"
+                                alt={t('features.studio.title')}
                                 fill
                                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
                                 className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent p-8 flex flex-col justify-end">
                                 <Layout className="text-pink-400 mb-4" size={32} />
-                                <h3 className="text-xl font-bold mb-2">High-Fidelity Editor</h3>
-                                <p className="text-gray-400 text-sm">Sürükle-bırak hassasiyetiyle kusursuz çalma listeleri oluşturun ve anında yayınlayın.</p>
+                                <h3 className="text-xl font-bold mb-2">{t('features.studio.title')}</h3>
+                                <p className="text-gray-400 text-sm">{t('features.studio.desc')}</p>
                             </div>
                         </div>
                     </div>
@@ -165,34 +195,23 @@ export default async function AdvertPage() {
             {/* Comparison Table Section */}
             <section className="py-24 px-6 md:px-12 bg-zinc-900/30">
                 <div className="max-w-6xl mx-auto">
-                    <h2 className="text-3xl md:text-5xl font-bold text-center mb-16">Karşılaştırmalı Avantajlar</h2>
+                    <h2 className="text-3xl md:text-5xl font-bold text-center mb-16">{t('comparison.title')}</h2>
 
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="border-b border-white/10">
-                                    <th className="py-6 px-4 text-gray-400 font-medium">Özellik</th>
-                                    <th className="py-6 px-4 text-gray-400 font-medium">Geleneksel Streaming</th>
-                                    <th className="py-6 px-4 text-white font-bold text-xl">Sonaraura</th>
+                                    <th className="py-6 px-4 text-gray-400 font-medium">{t('comparison.head.feature')}</th>
+                                    <th className="py-6 px-4 text-gray-400 font-medium">{t('comparison.head.traditional')}</th>
+                                    <th className="py-6 px-4 text-white font-bold text-xl">{t('comparison.head.aura')}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
-                                {[
-                                    { feature: 'Real-time Hz Tuning', traditional: '❌ Yok', aura: '✅ 432Hz / 528Hz (BPM Korumalı)' },
-                                    { feature: 'Word-Level Sync (Karaoke)', traditional: '⚠️ Sınırlı', aura: '✅ Canlı Kelime Parlatma (Glow)' },
-                                    { feature: 'Hava Durumu Awareness', traditional: '❌ Yok', aura: '✅ Canlı Lokasyon Senkronlu' },
-                                    { feature: 'Otonom Flow Scheduling', traditional: '⚠️ Sınırlı', aura: '✅ 24h Görsel Editör & Otomatik Geçiş' },
-                                    { feature: 'Digital Watermarking', traditional: '❌ Yok (Sadece ID3)', aura: '✅ Sinyal Seviyesinde (LSB v1)' },
-                                    { feature: 'YouTube Dispute Center', traditional: '❌ Yok', aura: '✅ Otomatik Hak İtirazı (Pro)' },
-                                    { feature: 'Metadata Extraction', traditional: '❌ Manuel', aura: '✅ Otonom Bulk Ingest (BPM, Key)' },
-                                    { feature: 'Duration Precision', traditional: '⚠️ Tahmini / Hatalı', aura: '✅ Real-time File Sync (Frame-Perfect)' },
-                                    { feature: 'Infrastructure ROI', traditional: '❌ Yok', aura: '✅ JIT Rendering & Content Gap Analysis' },
-                                    { feature: 'Special Production', traditional: '❌ Yok', aura: '✅ Aura Tailor (Music on Request) Hub' },
-                                ].map((row, i) => (
+                                {rows.map((row, i) => (
                                     <tr key={i} className="hover:bg-white/5 transition-colors">
-                                        <td className="py-4 px-4 font-medium">{row.feature}</td>
-                                        <td className="py-4 px-4 text-gray-500">{row.traditional}</td>
-                                        <td className="py-4 px-4 text-purple-300 font-semibold shadow-[0_0_15px_rgba(168,85,247,0.15)] bg-purple-500/5 rounded-lg">{row.aura}</td>
+                                        <td className="py-4 px-4 font-medium">{row.f}</td>
+                                        <td className="py-4 px-4 text-gray-500">{row.t}</td>
+                                        <td className="py-4 px-4 text-purple-300 font-semibold shadow-[0_0_15px_rgba(168,85,247,0.15)] bg-purple-500/5 rounded-lg">{row.a}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -211,7 +230,7 @@ export default async function AdvertPage() {
                             <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl shadow-purple-900/20 border border-white/10">
                                 <Image
                                     src="/images/advert/signal_protection_watermark.png"
-                                    alt="Signal Protection"
+                                    alt={t('deepDive.signal.title')}
                                     fill
                                     sizes="(max-width: 768px) 100vw, 50vw"
                                     className="object-cover"
@@ -222,9 +241,9 @@ export default async function AdvertPage() {
                         </div>
                         <div className="flex-1 space-y-6 order-1 md:order-2">
                             <div className="p-3 bg-blue-500/10 rounded-lg inline-block text-blue-400"><Shield size={24} /></div>
-                            <h3 className="text-3xl md:text-5xl font-bold">Sinyal Seviyesinde Koruma</h3>
+                            <h3 className="text-3xl md:text-5xl font-bold">{t('deepDive.signal.title')}</h3>
                             <p className="text-gray-400 text-lg leading-relaxed">
-                                Ses dosyasının içine, duyulmayan dijital bir UUID mühürlüyoruz (Steganography). Dosya ismi veya formatı değişse bile (WAV → MP3), parçanın mülkiyeti teknik olarak ispatlanabilir.
+                                {t('deepDive.signal.desc')}
                             </p>
                             <ul className="space-y-3">
                                 <li className="flex items-center gap-3"><Check className="text-green-400" size={18} /> <span>LSB Watermarking</span></li>
@@ -237,9 +256,9 @@ export default async function AdvertPage() {
                     <div className="flex flex-col md:flex-row items-center gap-12 md:gap-24">
                         <div className="flex-1 space-y-6 md:order-2">
                             <div className="p-3 bg-pink-500/10 rounded-lg inline-block text-pink-400"><Activity size={24} /></div>
-                            <h3 className="text-3xl md:text-5xl font-bold">Interactive Discovery Waveforms</h3>
+                            <h3 className="text-3xl md:text-5xl font-bold">{t('deepDive.waveforms.title')}</h3>
                             <p className="text-gray-400 text-lg leading-relaxed">
-                                Liste içindeki her parça kendi canlı "Zaman Dalgası"na sahiptir. Sadece dinlemez, sesin dokusunu listede gezerken görür ve istediğiniz saniyeye dalga üzerinden atlayabilirsiniz.
+                                {t('deepDive.waveforms.desc')}
                             </p>
                             <ul className="space-y-3">
                                 <li className="flex items-center gap-3"><Check className="text-green-400" size={18} /> <span>Canlı Visualizer</span></li>
@@ -250,7 +269,7 @@ export default async function AdvertPage() {
                             <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl shadow-pink-900/20 border border-white/10">
                                 <Image
                                     src="/images/advert/interactive_waveforms_discovery.png"
-                                    alt="Interactive Waveforms"
+                                    alt={t('deepDive.waveforms.title')}
                                     fill
                                     sizes="(max-width: 768px) 100vw, 50vw"
                                     className="object-cover"
@@ -266,7 +285,7 @@ export default async function AdvertPage() {
                             <div className="relative aspect-video rounded-xl overflow-hidden shadow-2xl shadow-green-900/20 border border-white/10">
                                 <Image
                                     src="/images/advert/elite_ai_analytics_dashboard.png"
-                                    alt="AI Analytics"
+                                    alt={t('deepDive.analytics.title')}
                                     fill
                                     sizes="(max-width: 768px) 100vw, 50vw"
                                     className="object-cover"
@@ -276,9 +295,9 @@ export default async function AdvertPage() {
                         </div>
                         <div className="flex-1 space-y-6 order-1 md:order-2">
                             <div className="p-3 bg-green-500/10 rounded-lg inline-block text-green-400"><BarChart3 size={24} /></div>
-                            <h3 className="text-3xl md:text-5xl font-bold">Elite AI Analytics</h3>
+                            <h3 className="text-3xl md:text-5xl font-bold">{t('deepDive.analytics.title')}</h3>
                             <p className="text-gray-400 text-lg leading-relaxed">
-                                Sadece dinleme sayılarını değil; arama terimlerini, sistem gecikmelerini ve üretim boşluklarını analiz eder. Veriyi "Nereye yatırım yapmalıyım?" sorusuna yanıta dönüştürür.
+                                {t('deepDive.analytics.desc')}
                             </p>
                             <ul className="space-y-3">
                                 <li className="flex items-center gap-3"><Check className="text-green-400" size={18} /> <span>JIT Rendering & ROI</span></li>
@@ -293,12 +312,12 @@ export default async function AdvertPage() {
             {/* CTA Section */}
             <section className="py-32 px-6 text-center bg-gradient-to-t from-purple-900/20 to-transparent border-t border-white/5">
                 <div className="max-w-4xl mx-auto space-y-8">
-                    <h2 className="text-4xl md:text-7xl font-bold tracking-tight">Mekanınızın Ruhu, Sizin Sesiniz.</h2>
+                    <h2 className="text-4xl md:text-7xl font-bold tracking-tight">{t('cta.title')}</h2>
                     <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                        Milisaniye hassasiyetinde otonom bir ses fabrikası ile tanışın.
+                        {t('cta.desc')}
                     </p>
                     <Link href="/signup" className="inline-block px-12 py-5 bg-white text-black rounded-full font-bold text-xl hover:scale-105 transition-transform shadow-[0_0_30px_rgba(255,255,255,0.2)]">
-                        Hemen Başlayın
+                        {t('cta.button')}
                     </Link>
                 </div>
             </section>

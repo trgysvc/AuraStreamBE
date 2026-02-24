@@ -51,7 +51,8 @@ export const WeatherService = {
     /**
      * Fetches current weather for a location. 
      */
-    async getCurrentWeather(lat: number, lon: number): Promise<WeatherData | null> {
+    async getCurrentWeather(lat: number | undefined, lon: number | undefined): Promise<WeatherData | null> {
+        if (lat === undefined || lon === undefined) return null;
         try {
             const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
             const data = await res.json();

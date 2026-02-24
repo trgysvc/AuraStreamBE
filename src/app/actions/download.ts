@@ -58,7 +58,7 @@ export async function getDownloadBundle_Action(trackId: string, licenseId: strin
         trackTitle: track.title,
         artistName: track.artist,
         usageType: license.usage_type,
-        createdAt: license.created_at
+        createdAt: license.created_at || new Date().toISOString()
     });
 
     // 6. Get Signed URLs

@@ -17,16 +17,23 @@ export interface BlogPost {
     updated_at?: string;
 }
 
-export async function getBlogPosts(onlyPublished = true) {
+export async function getBlogPosts(onlyPublished = true, locale?: string) {
     const supabase = await createClient();
 
     let query = (supabase as any)
         .from('blog_posts')
-        .select('*')
+        .select(`
+            *,
+            blog_translations!left(title, excerpt, content, locale)
+        `)
         .order('created_at', { ascending: false });
 
     if (onlyPublished) {
         query = query.eq('is_published', true);
+    }
+
+    if (locale && locale !== 'en') {
+        query = query.eq('blog_translations.locale', locale);
     }
 
     const { data, error } = await query;
@@ -36,24 +43,54 @@ export async function getBlogPosts(onlyPublished = true) {
         return [];
     }
 
-    return data as BlogPost[];
+    return (data as any[]).map(post => {
+        const translation = post.blog_translations?.[0];
+        if (translation) {
+            return {
+                ...post,
+                title: translation.title || post.title,
+                excerpt: translation.excerpt || post.excerpt,
+                content: translation.content || post.content
+            };
+        }
+        return post;
+    }) as BlogPost[];
 }
 
-export async function getBlogPostBySlug(slug: string) {
+export async function getBlogPostBySlug(slug: string, locale?: string) {
     const supabase = await createClient();
 
-    const { data, error } = await (supabase as any)
+    let query = (supabase as any)
         .from('blog_posts')
-        .select('*')
-        .eq('slug', slug)
-        .single();
+        .select(`
+            *,
+            blog_translations!left(title, excerpt, content, locale)
+        `)
+        .eq('slug', slug);
+
+    if (locale && locale !== 'en') {
+        query = query.eq('blog_translations.locale', locale);
+    }
+
+    const { data, error } = await query.single();
 
     if (error) {
         console.error(`Error fetching blog post with slug ${slug}:`, error);
         return null;
     }
 
-    return data as BlogPost;
+    const post = data as any;
+    const translation = post.blog_translations?.[0];
+    if (translation) {
+        return {
+            ...post,
+            title: translation.title || post.title,
+            excerpt: translation.excerpt || post.excerpt,
+            content: translation.content || post.content
+        } as BlogPost;
+    }
+
+    return post as BlogPost;
 }
 
 export async function createBlogPost(post: Partial<BlogPost>) {

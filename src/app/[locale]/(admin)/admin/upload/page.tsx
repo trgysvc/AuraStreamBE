@@ -214,7 +214,7 @@ export default function BulkUploadPage() {
                                     {fileObj.coverUrl ? (
                                         <img src={fileObj.coverUrl} className="w-full h-full object-cover" alt="" />
                                     ) : (
-                                        <Music className="text-zinc-700" size={24} className="md:w-8 md:h-8" />
+                                        <Music size={24} className="text-zinc-700 md:w-8 md:h-8" />
                                     )}
                                     {fileObj.status === 'analyzing' && (
                                         <div className="absolute inset-0 bg-black/60 flex items-center justify-center">

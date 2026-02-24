@@ -40,7 +40,9 @@ export function TrackTable({ tracks }: TrackTableProps) {
                                 title: track.title,
                                 artist: track.artist,
                                 src: track.src,
-                                availableTunings: track.availableTunings
+                                availableTunings: track.availableTunings,
+                                duration: track.duration,
+                                bpm: track.bpm
                             })}
                             className={`
                                 group grid grid-cols-12 gap-4 items-center p-3 rounded-lg cursor-pointer transition-colors

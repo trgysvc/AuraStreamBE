@@ -15,8 +15,11 @@ import {
     Wind
 } from 'lucide-react';
 import { Footer } from '@/components/layout/Footer';
+import { useTranslations } from 'next-intl';
 
 export default function AboutUsPage() {
+    const t = useTranslations('About.Us');
+
     return (
         <div className="min-h-screen bg-black text-white flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
 
@@ -26,22 +29,26 @@ export default function AboutUsPage() {
                     <div className="space-y-10 animate-in fade-in slide-in-from-top-4 duration-1000">
                         <div className="space-y-2">
                             <h1 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter leading-[0.9] text-white">
-                                The Future of Sound, <br />
-                                <span className="text-indigo-500 text-glow-indigo">Intelligence of Frequency.</span>
+                                {t.rich('hero.title', {
+                                    br: () => <br />,
+                                    span: (chunks) => <span className="text-indigo-500 text-glow-indigo">{chunks}</span>
+                                })}
                             </h1>
                         </div>
 
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-12 border-t border-white/5">
                             <div className="lg:col-span-4">
-                                <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-600 mb-4">Who We Are?</h2>
+                                <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-600 mb-4">{t('hero.who')}</h2>
                                 <div className="h-1 w-12 bg-indigo-500" />
                             </div>
                             <div className="lg:col-span-8 space-y-6">
                                 <p className="text-xl md:text-2xl text-zinc-300 font-medium leading-relaxed">
-                                    Sonaraura transforms music from a mere background element into a living intelligence that manages the atmosphere of a space on biological and emotional levels.
+                                    {t('hero.p1')}
                                 </p>
                                 <p className="text-lg text-zinc-500 leading-relaxed max-w-3xl">
-                                    By merging sound engineering, artificial intelligence, and psychoacoustics, we have built the world's first <strong>Atmospheric Intelligence</strong> platform. We are not an ordinary streaming service. We are a technology company that synchronizes the frequency of sound, the vibe of the environment, and the listener's pulse.
+                                    {t.rich('hero.p2', {
+                                        strong: (chunks) => <strong className="text-white">{chunks}</strong>
+                                    })}
                                 </p>
                             </div>
                         </div>
@@ -53,15 +60,23 @@ export default function AboutUsPage() {
                     <div className="max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-20">
                         <div className="flex-1 space-y-8">
                             <div className="space-y-4">
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.5em] text-indigo-500">Our Vision</h3>
-                                <h4 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-white">Architecture <br /> Beyond Silence</h4>
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.5em] text-indigo-500">{t('vision.badge')}</h3>
+                                <h4 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-white">
+                                    {t.rich('vision.title', {
+                                        br: () => <br />
+                                    })}
+                                </h4>
                             </div>
                             <div className="space-y-6 text-zinc-400 leading-relaxed text-lg">
                                 <p>
-                                    Every space has a soul, every moment has a frequency. Our goal is to deepen the connection between businesses and creators with their target audiences through <strong>Frequency Engineering</strong>.
+                                    {t.rich('vision.p1', {
+                                        strong: (chunks) => <strong className="text-white">{chunks}</strong>
+                                    })}
                                 </p>
                                 <p>
-                                    We evolve music from the standard 440Hz mold into <strong>432Hz (Peace)</strong> and <strong>528Hz (Focus/Vitality)</strong> frequencies, synchronized with human biology in real-time. While doing this, we maintain the musical rhythm (BPM), re-engineering art with scientific precision.
+                                    {t.rich('vision.p2', {
+                                        strong: (chunks) => <strong className="text-white">{chunks}</strong>
+                                    })}
                                 </p>
                             </div>
                         </div>
@@ -81,37 +96,37 @@ export default function AboutUsPage() {
                 {/* 3. Why Sonaraura? (USP Grid) */}
                 <section className="py-32 px-8 md:px-16 max-w-[1400px] mx-auto space-y-16">
                     <div className="text-center space-y-4">
-                        <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-600">Technical Superiority</h2>
-                        <h3 className="text-5xl font-black italic uppercase tracking-tighter text-white leading-none">Why Sonaraura?</h3>
+                        <h2 className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-600">{t('usp.badge')}</h2>
+                        <h3 className="text-5xl font-black italic uppercase tracking-tighter text-white leading-none">{t('usp.title')}</h3>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <FeatureCard
                             icon={Cpu}
-                            title="Molecular Sound"
-                            subtitle="Frequencies Engineered"
-                            desc="We don't just transmit sound; we process it. With our patented technology, we modify track frequencies in real-time to trigger desired emotional states (calm, energy, focus) in the listener."
+                            title={t('usp.feature1.title')}
+                            subtitle={t('usp.feature1.subtitle')}
+                            desc={t('usp.feature1.desc')}
                             color="text-indigo-500"
                         />
                         <FeatureCard
                             icon={CloudLightning}
-                            title="Weather-Aware AI"
-                            subtitle="Atmospheric Sync"
-                            desc="Aura sees the world outside your space. When it rains, it makes smooth transitions to warmer, enveloping tones, and to energetic rhythms when the sun comes out."
+                            title={t('usp.feature2.title')}
+                            subtitle={t('usp.feature2.subtitle')}
+                            desc={t('usp.feature2.desc')}
                             color="text-blue-400"
                         />
                         <FeatureCard
                             icon={Shield}
-                            title="Invisible Protection"
-                            subtitle="LSB Watermarking"
-                            desc="We embed a digital seal (UUID) into every sound wave we broadcast, imperceptible to the human ear. This provides signal-level protection against copyright issues across platforms."
+                            title={t('usp.feature3.title')}
+                            subtitle={t('usp.feature3.subtitle')}
+                            desc={t('usp.feature3.desc')}
                             color="text-pink-500"
                         />
                         <FeatureCard
                             icon={Target}
-                            title="Autonomous Music Director"
-                            subtitle="Smart Flow AI"
-                            desc="An AI that manages your space's energy curve from dawn until midnight. It ends the struggle of manual playlist management, optimizing your biorhythm 24/7."
+                            title={t('usp.feature4.title')}
+                            subtitle={t('usp.feature4.subtitle')}
+                            desc={t('usp.feature4.desc')}
                             color="text-orange-500"
                         />
                     </div>
@@ -123,14 +138,14 @@ export default function AboutUsPage() {
                         <div className="flex justify-center gap-2 mb-4">
                             <Sparkles className="text-indigo-500" size={24} />
                         </div>
-                        <h4 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-white">Sonaraura</h4>
-                        <p className="text-xl md:text-2xl text-zinc-500 font-medium italic">The Architecture of Sound, the Frequency of Intelligence.</p>
+                        <h4 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-white">{t('footer.title')}</h4>
+                        <p className="text-xl md:text-2xl text-zinc-500 font-medium italic">{t('footer.desc')}</p>
                         <div className="pt-12">
                             <Link
                                 href="/dashboard/venue"
                                 className="px-12 py-5 bg-white text-black rounded-full font-black text-xs uppercase tracking-[0.3em] hover:bg-indigo-500 hover:text-white transition-all shadow-2xl inline-flex items-center gap-3"
                             >
-                                Command Center <ChevronRight size={16} />
+                                {t('footer.button')} <ChevronRight size={16} />
                             </Link>
                         </div>
                     </div>

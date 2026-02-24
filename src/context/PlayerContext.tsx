@@ -11,7 +11,7 @@ interface Track {
     id: string;
     title: string;
     artist: string;
-    duration: string;
+    duration: number | string;
     bpm: number;
     tags?: string[];
     image?: string;

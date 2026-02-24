@@ -26,7 +26,9 @@ export function TrackCard({ track }: TrackCardProps) {
                 title: track.title,
                 artist: track.artist,
                 src: track.src,
-                availableTunings: track.availableTunings
+                availableTunings: track.availableTunings,
+                duration: track.duration,
+                bpm: track.bpm
             });
         }
     };

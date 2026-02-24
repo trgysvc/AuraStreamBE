@@ -21,7 +21,7 @@ export async function submitReferral(formData: FormData) {
     }
 
     try {
-        const { error } = await supabase
+        const { error } = await (supabase as any)
             .from('referrals')
             .insert({
                 referrer_id: user.id,

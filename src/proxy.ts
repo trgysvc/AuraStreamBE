@@ -67,6 +67,6 @@ export async function proxy(request: NextRequest) {
 export const config = {
     matcher: [
         // i18n rotalarını kapsayacak ve statik dosyaları hariç tutacak matcher
-        '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+        '/((?!api|auth|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
     ],
 }

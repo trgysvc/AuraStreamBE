@@ -7,9 +7,11 @@ export const dynamic = 'force-dynamic';
 export default async function VenuePage({
     searchParams
 }: {
-    searchParams: { [key: string]: string | string[] | undefined }
+    params: Promise<{ locale: string }>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-    const genres = typeof searchParams.genre === 'string' ? searchParams.genre.split(',') : undefined;
+    const resolvedSearchParams = await searchParams;
+    const genres = typeof resolvedSearchParams.genre === 'string' ? resolvedSearchParams.genre.split(',') : undefined;
 
     // Reusing the store action with filters
     const tracks = await getStoreTracks_Action({ genres });

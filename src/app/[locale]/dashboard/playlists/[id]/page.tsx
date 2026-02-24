@@ -6,7 +6,7 @@ import { Play, Clock, MoreVertical, Trash2, Plus, Sparkles } from 'lucide-react'
 import Link from 'next/link';
 import Image from 'next/image';
 
-export default async function PlaylistDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function PlaylistDetailPage({ params }: { params: Promise<{ id: string, locale: string }> }) {
     const { id } = await params;
     const supabase = await createClient();
 

@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { 
-    MessageSquare, 
-    Loader2, 
-    CheckCircle2, 
+import {
+    MessageSquare,
+    Loader2,
+    CheckCircle2,
     Calendar,
     ArrowUpRight,
     UploadCloud,
@@ -14,7 +14,7 @@ import {
     FileText,
     ExternalLink
 } from 'lucide-react';
-import { updateRequestStatus_Action } from '@/app/actions/admin-requests';
+import { updateRequestStatus_Action, updateRequestNotes_Action } from '@/app/actions/admin-requests';
 
 const SimpleTooltip = ({ children, text }: { children: React.ReactNode; text: string }) => {
     return (
@@ -81,7 +81,7 @@ export function RequestActionCard({ req }: { req: any }) {
                     <h4 className="text-white font-bold">{req.profiles?.full_name || 'VIP Client'}</h4>
                     <p className="text-[10px] text-zinc-600 lowercase">{req.profiles?.email}</p>
                 </div>
-                
+
                 <div className="space-y-4">
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Aura Analytics</p>
                     <div className="grid grid-cols-2 gap-2">
@@ -90,13 +90,13 @@ export function RequestActionCard({ req }: { req: any }) {
                         <SpecBadge label="Len" val={req.specs?.duration} />
                         <SpecBadge label="Status" val={req.status} color={
                             req.status === 'pending' ? 'text-yellow-500' :
-                            req.status === 'processing' ? 'text-blue-400' :
-                            req.status === 'review' ? 'text-purple-400' :
-                            'text-green-400'
+                                req.status === 'processing' ? 'text-blue-400' :
+                                    req.status === 'review' ? 'text-purple-400' :
+                                        'text-green-400'
                         } />
                     </div>
                 </div>
-                
+
                 <div className="flex items-center gap-2 text-[9px] font-black text-zinc-700 uppercase tracking-widest pt-4 border-t border-white/5">
                     <Calendar size={12} /> Received {new Date(req.created_at).toLocaleDateString()}
                 </div>
@@ -114,9 +114,9 @@ export function RequestActionCard({ req }: { req: any }) {
                 <div className="flex flex-wrap gap-4">
                     {req.reference_links?.[0] && (
                         <SimpleTooltip text="Open reference track">
-                            <a 
-                                href={req.reference_links[0]} 
-                                target="_blank" 
+                            <a
+                                href={req.reference_links[0]}
+                                target="_blank"
                                 className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:bg-indigo-500/20 transition-all"
                             >
                                 External Reference <ArrowUpRight size={12} />
@@ -126,9 +126,9 @@ export function RequestActionCard({ req }: { req: any }) {
 
                     {req.specs?.project_soul_pdf && (
                         <SimpleTooltip text="Read Project Story / Soul">
-                            <a 
-                                href={req.specs.project_soul_pdf} 
-                                target="_blank" 
+                            <a
+                                href={req.specs.project_soul_pdf}
+                                target="_blank"
                                 className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:bg-emerald-500/20 transition-all"
                             >
                                 Project Soul PDF <FileText size={12} />
@@ -162,14 +162,14 @@ export function RequestActionCard({ req }: { req: any }) {
                 <div className="space-y-3 pt-6 border-t border-white/5">
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Internal Operational Notes</p>
                     <div className="flex gap-2">
-                        <textarea 
+                        <textarea
                             value={adminNotes}
                             onChange={e => setAdminNotes(e.target.value)}
                             placeholder="Add internal notes about production progress..."
                             className="flex-1 bg-black/20 border border-white/5 rounded-xl p-3 text-xs text-zinc-400 focus:outline-none focus:border-indigo-500 transition-all resize-none"
                             rows={2}
                         />
-                        <button 
+                        <button
                             onClick={handleSaveNotes}
                             disabled={isSavingNotes}
                             className="p-3 bg-white/5 hover:bg-white/10 rounded-xl text-zinc-500 hover:text-white transition-all flex items-center justify-center"
@@ -184,14 +184,14 @@ export function RequestActionCard({ req }: { req: any }) {
                     <div className="pt-6 mt-6 border-t border-white/5 space-y-4 animate-in fade-in duration-500">
                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500">Production Control</p>
                         <div className="bg-black/20 p-6 rounded-2xl border border-dashed border-white/10 flex items-center justify-between group/upload cursor-pointer hover:border-indigo-500/50 transition-all">
-                             <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-4">
                                 <UploadCloud className="text-zinc-600 group-hover/upload:text-indigo-400 transition-colors" size={24} />
                                 <div>
                                     <p className="text-[10px] font-black text-white uppercase tracking-widest">Deliver Produced Master</p>
                                     <p className="text-[9px] text-zinc-600 font-bold">WAV or FLAC format recommended</p>
                                 </div>
-                             </div>
-                             <button className="px-4 py-2 bg-white/5 text-zinc-400 rounded-lg text-[9px] font-black uppercase group-hover/upload:bg-indigo-600 group-hover/upload:text-white transition-all">Select File</button>
+                            </div>
+                            <button className="px-4 py-2 bg-white/5 text-zinc-400 rounded-lg text-[9px] font-black uppercase group-hover/upload:bg-indigo-600 group-hover/upload:text-white transition-all">Select File</button>
                         </div>
                     </div>
                 )}
@@ -204,7 +204,7 @@ export function RequestActionCard({ req }: { req: any }) {
                     {isEditingPrice ? (
                         <div className="flex items-center gap-2">
                             <span className="text-xl font-black text-zinc-500">$</span>
-                            <input 
+                            <input
                                 autoFocus
                                 value={quotePrice}
                                 onChange={e => setQuotePrice(e.target.value)}
@@ -214,7 +214,7 @@ export function RequestActionCard({ req }: { req: any }) {
                         </div>
                     ) : (
                         <div className="flex items-center justify-between md:justify-start gap-4 group/price">
-                            <h3 
+                            <h3
                                 onClick={() => setIsEditingPrice(true)}
                                 className="text-4xl font-black text-white italic tracking-tighter cursor-pointer hover:text-indigo-400 transition-colors"
                             >
@@ -227,7 +227,7 @@ export function RequestActionCard({ req }: { req: any }) {
 
                 <div className="space-y-2">
                     {req.status === 'pending' && (
-                        <button 
+                        <button
                             onClick={() => handleUpdateStatus('processing')}
                             className="w-full py-4 bg-white text-black rounded-xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-indigo-500 hover:text-white transition-all shadow-xl flex items-center justify-center gap-2"
                         >
@@ -235,9 +235,9 @@ export function RequestActionCard({ req }: { req: any }) {
                             Approve & Process
                         </button>
                     )}
-                    
+
                     {req.status === 'processing' && (
-                        <button 
+                        <button
                             onClick={() => handleUpdateStatus('review')}
                             className="w-full py-4 bg-indigo-600 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-indigo-500 transition-all shadow-xl flex items-center justify-center gap-2"
                         >
@@ -251,7 +251,7 @@ export function RequestActionCard({ req }: { req: any }) {
                             <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-center mb-2">
                                 <p className="text-[9px] font-black text-indigo-400 uppercase tracking-widest">Waiting for Payment</p>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => handleUpdateStatus('completed')}
                                 className="w-full py-4 bg-green-600 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-green-500 transition-all shadow-xl"
                             >
@@ -261,7 +261,7 @@ export function RequestActionCard({ req }: { req: any }) {
                     )}
 
                     {req.status !== 'completed' && req.status !== 'rejected' && (
-                        <button 
+                        <button
                             onClick={() => handleUpdateStatus('rejected')}
                             className="w-full py-4 bg-white/5 text-zinc-500 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-rose-500/10 hover:text-rose-500 transition-all border border-white/5"
                         >

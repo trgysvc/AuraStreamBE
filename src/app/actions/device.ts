@@ -34,7 +34,7 @@ export async function getDevices_Action(tenantId: string) {
         return [];
     }
 
-    return data as (Device & { venue: { business_name: string } | null })[];
+    return (data as any) as (Device & { venue: { business_name: string } | null })[];
 }
 
 export async function registerDevice_Action(data: {

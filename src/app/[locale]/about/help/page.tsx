@@ -4,8 +4,11 @@ import React from 'react';
 import { Info, Search, Music, Grid2X2, HelpCircle, FileText, User, CreditCard } from 'lucide-react';
 import { Footer } from '@/components/layout/Footer';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 export default function HelpCenterPage() {
+    const t = useTranslations('About.Help');
+
     return (
         <div className="flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
 
@@ -15,14 +18,14 @@ export default function HelpCenterPage() {
                     <div className="absolute inset-0 bg-gradient-to-b from-indigo-900/20 to-black z-0" />
                     <div className="relative z-10 max-w-2xl w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
                         <h1 className="text-5xl md:text-6xl font-black italic uppercase tracking-tighter leading-none">
-                            How can we help?
+                            {t('hero.title')}
                         </h1>
 
                         <div className="relative max-w-xl mx-auto w-full">
                             <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-zinc-500" size={20} />
                             <input
                                 type="text"
-                                placeholder="Search for help articles..."
+                                placeholder={t('hero.search')}
                                 className="w-full bg-white text-black pl-14 pr-6 py-4 rounded-full font-medium text-lg focus:outline-none focus:ring-4 focus:ring-indigo-500/50 shadow-2xl transition-all"
                             />
                         </div>
@@ -34,38 +37,38 @@ export default function HelpCenterPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <CategoryCard
                             icon={Info}
-                            title="Getting Started"
-                            desc="Start here for an overview of Sonaraura."
+                            title={t('categories.gettingStarted.title')}
+                            desc={t('categories.gettingStarted.desc')}
                             link="/about/howitworks?page=getting-started"
                         />
                         <CategoryCard
                             icon={Music}
-                            title="Music & Licensing"
-                            desc="Copyright, usage rights, and finding tracks."
+                            title={t('categories.licensing.title')}
+                            desc={t('categories.licensing.desc')}
                             link="/about/howitworks?page=direct-licensing"
                         />
                         <CategoryCard
                             icon={User}
-                            title="Account & Profile"
-                            desc="Managing your settings and preferences."
+                            title={t('categories.account.title')}
+                            desc={t('categories.account.desc')}
                             link="/about/howitworks?page=account-setup"
                         />
                         <CategoryCard
                             icon={CreditCard}
-                            title="Billing & Subscription"
-                            desc="Invoices, payment methods, and plans."
+                            title={t('categories.billing.title')}
+                            desc={t('categories.billing.desc')}
                             link="/pricing"
                         />
                         <CategoryCard
                             icon={Grid2X2}
-                            title="Features & Tech"
-                            desc="Learn about our AI and molecular sound."
+                            title={t('categories.tech.title')}
+                            desc={t('categories.tech.desc')}
                             link="/about/howitworks?page=technology"
                         />
                         <CategoryCard
                             icon={HelpCircle}
-                            title="Technical Support"
-                            desc="Troubleshooting playback and platform issues."
+                            title={t('categories.support.title')}
+                            desc={t('categories.support.desc')}
                             link="#"
                         />
                     </div>
@@ -73,14 +76,14 @@ export default function HelpCenterPage() {
 
                 {/* Popular Articles */}
                 <section className="max-w-4xl mx-auto px-6 md:px-12 pb-24 space-y-8">
-                    <h2 className="text-2xl font-black uppercase italic tracking-tight text-center">Popular Articles</h2>
+                    <h2 className="text-2xl font-black uppercase italic tracking-tight text-center">{t('popular')}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <ArticleLink title="Can I use this music on YouTube?" />
-                        <ArticleLink title="How do I cancel my subscription?" />
-                        <ArticleLink title="What is 432Hz tuning?" />
-                        <ArticleLink title="How to manage multi-location venues?" />
-                        <ArticleLink title="Using the High-Fidelity Playlist Editor" />
-                        <ArticleLink title="Billing cycle and invoices" />
+                        <ArticleLink title={t('articles.youtube')} />
+                        <ArticleLink title={t('articles.cancel')} />
+                        <ArticleLink title={t('articles.hz')} />
+                        <ArticleLink title={t('articles.multiLocation')} />
+                        <ArticleLink title={t('articles.editor')} />
+                        <ArticleLink title={t('articles.billingCycle')} />
                     </div>
                 </section>
             </main>

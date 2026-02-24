@@ -10,16 +10,17 @@ export interface AdminStats {
 export interface TrackAsset {
     id: string;
     title: string;
-    artist: string;
-    bpm: number;
-    duration_sec: number;
-    key: string;
-    status: string;
-    genre: string;
-    mood_tags: string[];
-    cover_image_url?: string;
-    popularity_score?: number;
-    created_at: string;
+    artist: string | null;
+    bpm: number | null;
+    duration_sec: number | null;
+    key: string | null;
+    status: string | null;
+    genre: string | null;
+    mood_tags: string[] | null;
+    cover_image_url: string | null;
+    popularity_score: number | null;
+    lyrics: string | null;
+    created_at: string | null;
     track_files?: any[];
 }
 

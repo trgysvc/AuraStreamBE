@@ -72,7 +72,7 @@ export default function AccountPage() {
                 }
 
                 // Explicit join with specific foreign key to avoid ambiguity
-                const { data: profileRecord, error: profileError } = await supabase
+                const { data: profileRecord } = await supabase
                     .from('profiles')
                     .select('*, tenant:tenants!profiles_tenant_id_fkey(*)')
                     .eq('id', user.id)
@@ -80,7 +80,7 @@ export default function AccountPage() {
 
                 let currentProfile = profileRecord;
 
-                if (!currentProfile || profileError) {
+                if (!currentProfile) {
                     const { data: simpleProfile } = await supabase
                         .from('profiles')
                         .select('*')
@@ -88,7 +88,7 @@ export default function AccountPage() {
                         .single();
 
                     if (simpleProfile) {
-                        currentProfile = simpleProfile;
+                        currentProfile = simpleProfile as any;
                         if (simpleProfile.tenant_id) {
                             const { data: tenantData } = await supabase
                                 .from('tenants')

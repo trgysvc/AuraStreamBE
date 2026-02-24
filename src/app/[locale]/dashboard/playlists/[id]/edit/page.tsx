@@ -3,14 +3,19 @@ import { redirect, notFound } from 'next/navigation';
 import { getPlaylistDetails_Action } from '@/app/actions/playlist';
 import { PlaylistEditorClient } from '@/components/dashboard/PlaylistEditorClient';
 
-export default async function PlaylistEditPage({ params }: { params: { id: string } }) {
+export default async function PlaylistEditPage({
+    params
+}: {
+    params: Promise<{ id: string, locale: string }>
+}) {
+    const { id } = await params;
     const supabase = await createClient();
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) redirect('/login');
 
     try {
-        const { playlist, items } = await getPlaylistDetails_Action(params.id);
+        const { playlist, items } = await getPlaylistDetails_Action(id);
 
         // Fetch some tracks for the search supply panel
         const { data: tracks } = await supabase

@@ -5,13 +5,16 @@ import { getBlogPosts, BlogPost } from '@/app/actions/blog';
 import { MainHeader } from '@/components/layout/MainHeader';
 import { Footer } from '@/components/layout/Footer';
 import { createClient } from '@/lib/db/server';
+import { getTranslations } from 'next-intl/server';
 
-export default async function BlogLandingPage() {
+export default async function BlogLandingPage({ params }: { params: Promise<{ locale: string }> }) {
+    const { locale } = await params;
+    const t = await getTranslations('Blog');
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     // Fetch posts on the server
-    const posts = await getBlogPosts(true);
+    const posts = await getBlogPosts(true, locale);
 
     const placeholderPosts: BlogPost[] = [
         {
@@ -55,13 +58,13 @@ export default async function BlogLandingPage() {
                 <div className="space-y-4 mb-16 lg:mb-24">
                     <div className="flex items-center gap-3 text-indigo-600 font-black uppercase tracking-[0.3em] text-[10px]">
                         <span className="h-px w-8 bg-indigo-600" />
-                        Our Journal
+                        {t('ourJournal')}
                     </div>
                     <h1 className="text-5xl lg:text-8xl font-black italic tracking-tighter leading-[0.85] uppercase">
                         SONAR<span className="text-zinc-200 font-light not-italic">AURA</span> BLOG
                     </h1>
                     <p className="text-zinc-400 max-w-2xl text-lg lg:text-xl font-medium leading-relaxed mt-6">
-                        Latest news, creative guides, and technical insights from the world of sound.
+                        {t('description')}
                     </p>
                 </div>
 
@@ -85,11 +88,11 @@ export default async function BlogLandingPage() {
                             <div className="p-8 lg:p-20 flex flex-col justify-center bg-white">
                                 <div className="flex items-center gap-3 mb-8">
                                     <span className="px-3 py-1 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full">
-                                        Editor&apos;s Pick
+                                        {t('editorsPick')}
                                     </span>
                                     <span className="text-zinc-400 text-xs font-bold uppercase tracking-wider flex items-center gap-1">
                                         <Calendar size={14} />
-                                        {new Date(featuredPost.published_at!).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                                        {new Date(featuredPost.published_at!).toLocaleDateString(locale === 'tr' ? 'tr-TR' : 'en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                                     </span>
                                 </div>
                                 <h2 className="text-4xl lg:text-6xl font-black italic tracking-tight mb-8 leading-[1] group-hover:text-indigo-600 transition-colors uppercase text-balance">
@@ -99,7 +102,7 @@ export default async function BlogLandingPage() {
                                     {featuredPost.excerpt}
                                 </p>
                                 <div className="flex items-center gap-2 text-zinc-900 font-black uppercase tracking-widest text-[11px]">
-                                    Read Article <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+                                    {t('readArticle')} <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
                                 </div>
                             </div>
                         </div>
@@ -126,10 +129,10 @@ export default async function BlogLandingPage() {
                             </div>
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-indigo-600 text-[10px] font-black uppercase tracking-[0.2em]">Resources</span>
+                                    <span className="text-indigo-600 text-[10px] font-black uppercase tracking-[0.2em]">{t('resources')}</span>
                                     <span className="w-1 h-1 rounded-full bg-zinc-200" />
                                     <span className="text-zinc-400 text-[10px] font-black uppercase tracking-[0.2em]">
-                                        {new Date(post.published_at!).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                        {new Date(post.published_at!).toLocaleDateString(locale === 'tr' ? 'tr-TR' : 'en-US', { month: 'short', day: 'numeric' })}
                                     </span>
                                 </div>
                                 <h3 className="text-2xl lg:text-3xl font-black italic tracking-tight group-hover:text-indigo-600 transition-colors leading-[1.1] uppercase text-balance">
@@ -148,19 +151,22 @@ export default async function BlogLandingPage() {
                     <div className="bg-zinc-50 rounded-[3rem] p-8 lg:p-24 overflow-hidden relative">
                         <div className="relative z-10 max-w-3xl space-y-8">
                             <h2 className="text-5xl lg:text-7xl font-black italic tracking-tighter text-zinc-900 leading-[0.9] uppercase">
-                                Subscribe to <br /><span className="text-indigo-600">Our Journal</span>
+                                {t.rich('subscribe', {
+                                    br: () => <br />,
+                                    spanTag: (chunks) => <span className="text-indigo-600">{chunks}</span>
+                                })}
                             </h2>
                             <p className="text-zinc-500 text-lg lg:text-xl font-medium leading-relaxed">
-                                Join our community and get the latest sonic trends, legal guides, and tech releases.
+                                {t('subscribeDesc')}
                             </p>
                             <form className="flex flex-col md:flex-row gap-4 max-w-md">
                                 <input
                                     type="email"
-                                    placeholder="Enter your email"
+                                    placeholder={t('emailPlaceholder')}
                                     className="flex-1 bg-white border border-zinc-200 rounded-2xl px-8 py-5 text-zinc-900 focus:outline-none focus:border-indigo-500 transition-all font-bold placeholder:text-zinc-300 shadow-sm"
                                 />
                                 <button className="bg-zinc-900 text-white font-black uppercase tracking-widest text-xs px-10 py-5 rounded-2xl hover:bg-black transition-all active:scale-95 shadow-lg">
-                                    Join Now
+                                    {t('joinNow')}
                                 </button>
                             </form>
                         </div>

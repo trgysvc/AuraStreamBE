@@ -9,7 +9,7 @@ import { createClient } from '@/lib/db/client';
 
 interface TrackInfo {
     title: string;
-    artist: string;
+    artist: string | null;
 }
 
 interface LicenseRecord {
@@ -34,7 +34,7 @@ export function CreatorLibrary() {
             if (user) {
                 const { data: profile } = await supabase.from('profiles').select('youtube_channel_id').eq('id', user.id).single();
                 if (profile?.youtube_channel_id) setYoutubeChannelId(profile.youtube_channel_id);
-                
+
                 // Load licenses
                 const { data: licenseData } = await supabase
                     .from('licenses')
@@ -91,15 +91,15 @@ export function CreatorLibrary() {
                     </p>
                     <div className="flex gap-4 max-w-md">
                         <div className="flex-1 relative">
-                            <input 
-                                type="text" 
+                            <input
+                                type="text"
                                 value={youtubeChannelId}
                                 onChange={(e) => setYoutubeChannelId(e.target.value)}
                                 placeholder="UCxxxxxxxxxxxxxx"
                                 className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-all font-mono"
                             />
                         </div>
-                        <button 
+                        <button
                             onClick={handleUpdateChannel}
                             disabled={isUpdatingChannel}
                             className="bg-white text-black hover:bg-orange-500 hover:text-white px-6 py-3 rounded-xl font-bold transition-all disabled:opacity-50"
@@ -137,7 +137,7 @@ export function CreatorLibrary() {
                                     <span className="text-[10px] font-mono text-slate-600 bg-white/5 px-2 py-1 rounded">
                                         {license.license_key}
                                     </span>
-                                    <button 
+                                    <button
                                         onClick={() => handleDownloadPDF(license.id)}
                                         className="p-2 hover:bg-orange-500/20 rounded-lg text-slate-400 hover:text-orange-500 transition-all"
                                         title="Download PDF Certificate"

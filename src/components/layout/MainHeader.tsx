@@ -6,8 +6,10 @@ import { Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { createClient } from '@/lib/db/client';
+import { useTranslations } from 'next-intl';
 
 export function MainHeader({ initialUser }: { initialUser?: any }) {
+    const t = useTranslations('Navigation');
     const supabase = createClient();
     const [user, setUser] = useState<any>(initialUser);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -23,7 +25,6 @@ export function MainHeader({ initialUser }: { initialUser?: any }) {
             fetchUser();
         }
 
-        // Keep state in sync with actual session changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
             if (event === 'SIGNED_IN' && session) {
                 setUser(session.user);
@@ -41,8 +42,6 @@ export function MainHeader({ initialUser }: { initialUser?: any }) {
         <>
             <header className="fixed top-0 left-0 right-0 z-[200] flex items-center justify-between px-6 bg-black/90 backdrop-blur-sm transition-all duration-300 border-b border-white/10 h-20">
                 <div className="flex items-center gap-12 h-full">
-                    {/* Logo Area */}
-                    {/* Logo Area */}
                     <Link href="/" className="flex items-center gap-3 group leading-none z-[210]">
                         <div className="relative h-10 w-10">
                             <Image
@@ -61,48 +60,47 @@ export function MainHeader({ initialUser }: { initialUser?: any }) {
 
                     {/* Desktop Navigation */}
                     <nav className="hidden lg:flex items-center gap-8 text-[15px] font-medium text-gray-400">
-                        <span className="cursor-default hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300">Venue</span>
-                        <span className="cursor-default hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300">Creators</span>
+                        <span className="cursor-default hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300">{t('venue')}</span>
+                        <span className="cursor-default hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] transition-all duration-300">{t('creators')}</span>
                         <Link
                             href="/pricing"
                             className={`transition-colors ${pathname === '/pricing' ? 'text-white' : 'hover:text-white'}`}
                         >
-                            Pricing
+                            {t('pricing')}
                         </Link>
                         <Link
                             href="/blog"
                             className={`transition-colors ${pathname === '/blog' ? 'text-white' : 'hover:text-white hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]'}`}
                         >
-                            Blog
+                            {t('blog')}
                         </Link>
                         <Link
                             href="/enterprise"
                             className={`transition-colors ${pathname === '/enterprise' ? 'text-white' : 'hover:text-white'}`}
                         >
-                            Enterprise
+                            {t('enterprise')}
                         </Link>
                     </nav>
                 </div>
 
                 <div className="flex items-center gap-6 h-full">
                     <div className="hidden lg:flex items-center gap-6">
-
                         {!user ? (
                             <>
                                 <Link href="/login" className="text-sm font-bold hover:text-gray-300 transition-colors">
-                                    Log in
+                                    {t('login')}
                                 </Link>
                                 <Link href="/signup" className="h-10 px-6 flex items-center justify-center rounded-full bg-white text-black text-sm font-bold hover:bg-gray-200 transition-colors">
-                                    Start free trial
+                                    {t('signup')}
                                 </Link>
                             </>
                         ) : (
                             <>
                                 <Link href="/dashboard" className="text-sm font-bold hover:text-gray-300 transition-colors">
-                                    Dashboard
+                                    {t('dashboard')}
                                 </Link>
                                 <Link href="/account" className="h-10 px-6 flex items-center justify-center rounded-full bg-white text-black text-sm font-bold hover:bg-gray-200 transition-colors">
-                                    Account
+                                    {t('account')}
                                 </Link>
                             </>
                         )}
@@ -119,26 +117,26 @@ export function MainHeader({ initialUser }: { initialUser?: any }) {
                 </div>
             </header>
 
-            {/* Mobile Drawer Overlay (Epidemic Style) */}
+            {/* Mobile Drawer Overlay */}
             <div className={`fixed inset-0 bg-black z-[190] transition-all duration-500 ease-in-out lg:hidden overflow-y-auto ${isMobileMenuOpen ? 'translate-y-0 opacity-100 pointer-events-auto' : '-translate-y-full opacity-0 pointer-events-none'}`}>
                 <nav className="flex flex-col items-center pt-32 pb-12 space-y-8 px-10 text-center min-h-full">
-                    <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black italic uppercase tracking-tighter text-white">Venue</Link>
-                    <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black italic uppercase tracking-tighter text-white">Creators</Link>
-                    <Link href="/pricing" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black italic uppercase tracking-tighter text-white">Pricing</Link>
-                    <Link href="/enterprise" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black italic uppercase tracking-tighter text-white">Enterprise</Link>
-                    <Link href="/about/ad" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black italic uppercase tracking-tighter text-indigo-400">Features</Link>
+                    <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black italic uppercase tracking-tighter text-white">{t('venue')}</Link>
+                    <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black italic uppercase tracking-tighter text-white">{t('creators')}</Link>
+                    <Link href="/pricing" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black italic uppercase tracking-tighter text-white">{t('pricing')}</Link>
+                    <Link href="/enterprise" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black italic uppercase tracking-tighter text-white">{t('enterprise')}</Link>
+                    <Link href="/about/ad" onClick={() => setIsMobileMenuOpen(false)} className="text-4xl font-black italic uppercase tracking-tighter text-indigo-400">{t('features')}</Link>
 
                     <div className="w-full h-px bg-white/10 my-4" />
 
                     {!user ? (
                         <div className="flex flex-col gap-6 w-full max-w-xs mx-auto">
-                            <Link href="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold text-zinc-400 uppercase tracking-widest">Log In</Link>
-                            <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)} className="py-5 bg-white text-black rounded-full font-black uppercase tracking-[0.2em] text-sm shadow-2xl">Start Free Trial</Link>
+                            <Link href="/login" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold text-zinc-400 uppercase tracking-widest">{t('login')}</Link>
+                            <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)} className="py-5 bg-white text-black rounded-full font-black uppercase tracking-[0.2em] text-sm shadow-2xl">{t('signup')}</Link>
                         </div>
                     ) : (
                         <div className="flex flex-col gap-6 w-full max-w-xs mx-auto">
-                            <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold text-zinc-400 uppercase tracking-widest">Dashboard</Link>
-                            <Link href="/account" onClick={() => setIsMobileMenuOpen(false)} className="py-5 bg-indigo-600 text-white rounded-full font-black uppercase tracking-[0.2em] text-sm shadow-xl">Account Settings</Link>
+                            <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="text-xl font-bold text-zinc-400 uppercase tracking-widest">{t('dashboard')}</Link>
+                            <Link href="/account" onClick={() => setIsMobileMenuOpen(false)} className="py-5 bg-indigo-600 text-white rounded-full font-black uppercase tracking-[0.2em] text-sm shadow-xl">{t('account')}</Link>
                         </div>
                     )}
                 </nav>

@@ -6,18 +6,20 @@ import { getBlogPostBySlug, BlogPost } from '@/app/actions/blog';
 import { notFound } from 'next/navigation';
 import { MainHeader } from '@/components/layout/MainHeader';
 import { Footer } from '@/components/layout/Footer';
+import { getTranslations } from 'next-intl/server';
 
 interface Props {
-    params: Promise<{ slug: string }>;
+    params: Promise<{ slug: string; locale: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const { slug } = await params;
-    const post = await getBlogPostBySlug(slug);
+    const { slug, locale } = await params;
+    const t = await getTranslations({ locale, namespace: 'Blog' });
+    const post = await getBlogPostBySlug(slug, locale);
 
     if (!post) {
         return {
-            title: 'Post Not Found',
+            title: t('postNotFound'),
         };
     }
 
@@ -41,8 +43,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function BlogPostPage({ params }: Props) {
-    const { slug } = await params;
-    const post = await getBlogPostBySlug(slug);
+    const { slug, locale } = await params;
+    const t = await getTranslations('Blog');
+    const post = await getBlogPostBySlug(slug, locale);
 
     const placeholders: Record<string, any> = {
         'what-is-royalty-free-music': {
@@ -85,19 +88,19 @@ Choosing royalty-free music from a direct licensor is the smartest way to scale 
             {/* Secondary Metadata Header */}
             <header className="fixed top-20 inset-x-0 h-16 bg-white/90 backdrop-blur-xl border-b border-zinc-100 z-40 transition-all">
                 <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
-                    <Link href="/blog" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-indigo-600 transition-colors group">
+                    <Link href={`/${locale}/blog`} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-indigo-600 transition-colors group">
                         <ChevronLeft size={14} className="transition-transform group-hover:-translate-x-1" />
-                        Back to Journal
+                        {t('backToJournal')}
                     </Link>
                     <div className="flex items-center gap-6">
                         <div className="hidden md:flex items-center gap-4 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-300">
-                            <span>Resources</span>
+                            <span>{t('resources')}</span>
                             <span className="w-1 h-1 rounded-full bg-zinc-200" />
-                            <span>Safe Content</span>
+                            <span>{t('safeContent')}</span>
                         </div>
                         <button className="flex items-center gap-2 px-4 py-2 bg-zinc-50 hover:bg-zinc-100 rounded-full text-[10px] font-black uppercase tracking-widest transition-all">
                             <Share2 size={12} />
-                            Share
+                            {t('share')}
                         </button>
                     </div>
                 </div>
@@ -109,7 +112,7 @@ Choosing royalty-free music from a direct licensor is the smartest way to scale 
                         <div className="space-y-4">
                             <div className="inline-flex items-center gap-3 text-indigo-600 font-black uppercase tracking-[0.3em] text-[10px]">
                                 <span className="h-px w-8 bg-indigo-600" />
-                                Deep Research
+                                {t('deepResearch')}
                             </div>
                             <h1 className="text-4xl lg:text-6xl font-black italic tracking-tighter leading-[0.9] uppercase max-w-5xl mx-auto text-balance">
                                 {displayPost.title}
@@ -122,7 +125,7 @@ Choosing royalty-free music from a direct licensor is the smartest way to scale 
                                     <User size={24} className="text-zinc-300" />
                                 </div>
                                 <div>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 leading-none mb-1">Written By</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 leading-none mb-1">{t('writtenBy')}</p>
                                     <p className="text-sm font-bold text-zinc-900">Dr. Sonar Aura</p>
                                 </div>
                             </div>
@@ -131,9 +134,9 @@ Choosing royalty-free music from a direct licensor is the smartest way to scale 
                                     <Calendar size={20} className="text-zinc-300" />
                                 </div>
                                 <div>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 leading-none mb-1">Published</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 leading-none mb-1">{t('published')}</p>
                                     <p className="text-sm font-bold text-zinc-900">
-                                        {new Date(displayPost.published_at!).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                                        {new Date(displayPost.published_at!).toLocaleDateString(locale === 'tr' ? 'tr-TR' : 'en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                                     </p>
                                 </div>
                             </div>
@@ -142,8 +145,8 @@ Choosing royalty-free music from a direct licensor is the smartest way to scale 
                                     <Clock size={20} className="text-zinc-300" />
                                 </div>
                                 <div>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 leading-none mb-1">Read Time</p>
-                                    <p className="text-sm font-bold text-zinc-900">8 min read</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 leading-none mb-1">{t('readTime')}</p>
+                                    <p className="text-sm font-bold text-zinc-900">{t('minRead', { minutes: 8 })}</p>
                                 </div>
                             </div>
                         </div>
@@ -178,7 +181,7 @@ Choosing royalty-free music from a direct licensor is the smartest way to scale 
                                             </p>
                                             <div className="mt-6 flex items-center gap-2 text-indigo-600 font-black uppercase tracking-widest text-[10px]">
                                                 <span className="h-px w-4 bg-indigo-600" />
-                                                Core Insights
+                                                {t('coreInsights')}
                                             </div>
                                         </div>
                                     );
@@ -205,10 +208,10 @@ Choosing royalty-free music from a direct licensor is the smartest way to scale 
                 <div className="max-w-7xl mx-auto px-6">
                     <div className="flex items-center justify-between mb-20">
                         <h2 className="text-4xl lg:text-6xl font-black italic tracking-tight uppercase leading-[0.9]">
-                            Continue <br /><span className="text-zinc-300 font-light not-italic">Exploring</span>
+                            {t('continueExploring')} <br /><span className="text-zinc-300 font-light not-italic">{t('exploring')}</span>
                         </h2>
-                        <Link href="/blog" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 hover:text-zinc-900 transition-colors group">
-                            Full Journal <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+                        <Link href={`/${locale}/blog`} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 hover:text-zinc-900 transition-colors group">
+                            {t('fullJournal')} <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
                         </Link>
                     </div>
 

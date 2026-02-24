@@ -10,7 +10,7 @@ export function MusicRequestForm() {
     const [submitted, setSubmitted] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    
+
     const [formData, setFormData] = useState({
         project_name: '',
         genre: 'Cinematic',
@@ -48,7 +48,7 @@ export function MusicRequestForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
-        
+
         try {
             const supabase = createClient();
             const { data: { user } } = await supabase.auth.getUser();
@@ -72,7 +72,7 @@ export function MusicRequestForm() {
                 }
             }
 
-            const { error } = await supabase
+            const { error } = await (supabase
                 .from('custom_requests')
                 .insert({
                     user_id: user?.id,
@@ -89,7 +89,7 @@ export function MusicRequestForm() {
                         venue_tags: formData.venue_tags,
                         project_soul_pdf: pdfUrl
                     }
-                });
+                } as any));
 
             if (error) throw error;
             setSubmitted(true);
@@ -109,7 +109,7 @@ export function MusicRequestForm() {
                 </div>
                 <h2 className="text-3xl font-black italic uppercase tracking-tighter text-white">Order Received</h2>
                 <p className="text-zinc-500 max-w-sm mx-auto font-medium">Our AI Architects and QC team are reviewing your request. You will receive a quote and payment link shortly.</p>
-                <button 
+                <button
                     onClick={() => setSubmitted(false)}
                     className="px-10 py-4 bg-white text-black rounded-full font-black text-xs uppercase tracking-[0.2em] hover:bg-zinc-200 transition-all"
                 >
@@ -128,11 +128,10 @@ export function MusicRequestForm() {
                         key={tag}
                         type="button"
                         onClick={() => toggleTag(category, tag)}
-                        className={`px-4 py-2 rounded-full text-[10px] font-bold transition-all border ${
-                            selected.includes(tag)
+                        className={`px-4 py-2 rounded-full text-[10px] font-bold transition-all border ${selected.includes(tag)
                                 ? 'bg-indigo-500 border-indigo-500 text-white shadow-[0_0_15px_rgba(99,102,241,0.4)]'
                                 : 'bg-black border-white/5 text-zinc-500 hover:border-white/20'
-                        }`}
+                            }`}
                     >
                         {tag}
                     </button>
@@ -153,10 +152,10 @@ export function MusicRequestForm() {
                     <div className="space-y-6">
                         <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 ml-1">Project Name</label>
-                            <input 
+                            <input
                                 required
                                 value={formData.project_name}
-                                onChange={e => setFormData({...formData, project_name: e.target.value})}
+                                onChange={e => setFormData({ ...formData, project_name: e.target.value })}
                                 placeholder="e.g. Brand Launch 2026"
                                 className="w-full bg-black border border-white/5 rounded-2xl px-6 py-4 text-white font-bold focus:outline-none focus:border-indigo-500 transition-all"
                             />
@@ -164,9 +163,9 @@ export function MusicRequestForm() {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 ml-1">Genre</label>
-                                <select 
+                                <select
                                     value={formData.genre}
-                                    onChange={e => setFormData({...formData, genre: e.target.value})}
+                                    onChange={e => setFormData({ ...formData, genre: e.target.value })}
                                     className="w-full bg-black border border-white/5 rounded-2xl px-6 py-4 text-white font-bold focus:outline-none focus:border-indigo-500 appearance-none"
                                 >
                                     {ALL_GENRES.slice(0, 50).map(g => <option key={g} value={g}>{g}</option>)}
@@ -176,9 +175,9 @@ export function MusicRequestForm() {
                                 <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 ml-1">Expected Length</label>
                                 <div className="relative">
                                     <Clock size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-600" />
-                                    <input 
+                                    <input
                                         value={formData.duration}
-                                        onChange={e => setFormData({...formData, duration: e.target.value})}
+                                        onChange={e => setFormData({ ...formData, duration: e.target.value })}
                                         className="w-full bg-black border border-white/5 rounded-2xl pl-14 pr-6 py-4 text-white font-bold focus:outline-none focus:border-indigo-500"
                                         placeholder="2:30"
                                     />
@@ -192,9 +191,9 @@ export function MusicRequestForm() {
                             <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 ml-1">Reference Link</label>
                             <div className="relative">
                                 <Link2 size={16} className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-600" />
-                                <input 
+                                <input
                                     value={formData.reference_link}
-                                    onChange={e => setFormData({...formData, reference_link: e.target.value})}
+                                    onChange={e => setFormData({ ...formData, reference_link: e.target.value })}
                                     placeholder="https://"
                                     className="w-full bg-black border border-white/5 rounded-2xl pl-14 pr-6 py-4 text-white font-bold focus:outline-none focus:border-indigo-500 transition-all"
                                 />
@@ -202,29 +201,28 @@ export function MusicRequestForm() {
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 ml-1">Detailed Prompt / Instructions</label>
-                            <textarea 
+                            <textarea
                                 required
                                 value={formData.prompt}
-                                onChange={e => setFormData({...formData, prompt: e.target.value})}
+                                onChange={e => setFormData({ ...formData, prompt: e.target.value })}
                                 rows={3}
                                 placeholder="Explain the instruments, tempo changes, and overall energy curve..."
                                 className="w-full bg-black border border-white/5 rounded-2xl px-6 py-4 text-white font-bold focus:outline-none focus:border-indigo-500 transition-all resize-none"
                             />
                         </div>
-                        
+
                         {/* PDF Upload Section */}
                         <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 ml-1">Project Soul / Story (PDF)</label>
-                            <div 
+                            <div
                                 onClick={() => fileInputRef.current?.click()}
-                                className={`group relative w-full border-2 border-dashed rounded-2xl p-6 transition-all cursor-pointer flex flex-col items-center justify-center gap-3 ${
-                                    pdfFile 
-                                        ? 'border-indigo-500 bg-indigo-500/5' 
+                                className={`group relative w-full border-2 border-dashed rounded-2xl p-6 transition-all cursor-pointer flex flex-col items-center justify-center gap-3 ${pdfFile
+                                        ? 'border-indigo-500 bg-indigo-500/5'
                                         : 'border-white/10 bg-black hover:border-white/20'
-                                }`}
+                                    }`}
                             >
-                                <input 
-                                    type="file" 
+                                <input
+                                    type="file"
                                     ref={fileInputRef}
                                     onChange={handleFileChange}
                                     accept=".pdf"
@@ -235,7 +233,7 @@ export function MusicRequestForm() {
                                         <div className="flex items-center gap-3 text-white">
                                             <FileText size={20} className="text-indigo-400" />
                                             <span className="text-sm font-bold truncate max-w-[200px]">{pdfFile.name}</span>
-                                            <button 
+                                            <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     setPdfFile(null);
@@ -277,7 +275,7 @@ export function MusicRequestForm() {
             </div>
 
             <div className="flex flex-col items-center gap-6">
-                <button 
+                <button
                     disabled={loading}
                     className="px-16 py-6 bg-white text-black rounded-full font-black text-sm uppercase tracking-[0.3em] hover:bg-indigo-500 hover:text-white transition-all shadow-[0_0_50px_rgba(255,255,255,0.1)] flex items-center gap-4 group"
                 >

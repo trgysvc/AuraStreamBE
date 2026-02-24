@@ -11,7 +11,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: 'Geçerli bir kayıt bulunamadı.' }, { status: 400 });
         }
 
-        const { id, title, content } = record;
+        const { id, title, content, excerpt } = record;
         const locales = ['tr', 'el', 'de', 'ru', 'fr'];
 
         // SADECE SUNUCUDA ÇALIŞAN GÜVENLİ ANAHTAR (Service Role)
@@ -21,8 +21,9 @@ export async function POST(req: Request) {
         );
 
         for (const locale of locales) {
-            const prompt = `Translate the following blog title and content into ${locale} language. Return only a JSON object with "title" and "content" keys. Do not use markdown blocks.
+            const prompt = `Translate the following blog title, excerpt, and content into ${locale} language. Return only a JSON object with "title", "excerpt", and "content" keys. Do not use markdown blocks.
       Title: ${title}
+      Excerpt: ${excerpt}
       Content: ${content}`;
 
             const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`, {
@@ -45,6 +46,7 @@ export async function POST(req: Request) {
                         blog_id: id,
                         locale,
                         title: translated.title,
+                        excerpt: translated.excerpt,
                         content: translated.content
                     }, { onConflict: 'blog_id,locale' });
             }

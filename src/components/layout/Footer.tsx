@@ -1,12 +1,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import LocaleSwitcher from './LocaleSwitcher';
+import { useTranslations } from 'next-intl';
 
 interface FooterProps {
     variant?: 'light' | 'dark' | 'white';
 }
 
 export function Footer({ variant = 'light' }: FooterProps) {
+    const t = useTranslations('Footer');
     const isDark = variant === 'dark';
 
     return (
@@ -42,33 +44,33 @@ export function Footer({ variant = 'light' }: FooterProps) {
                     {/* Links */}
                     <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-12">
                         <div className="space-y-6">
-                            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Product</h4>
+                            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">{t('product.title')}</h4>
                             <ul className={`space-y-4 text-sm font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-800'}`}>
-                                <li><Link href="/about/howitworks?page=direct-licensing" className="hover:text-white transition-opacity">Royalty-free music</Link></li>
-                                <li><Link href="/dashboard/venue" className="hover:text-white transition-opacity">Sound effects</Link></li>
-                                <li><Link href="#" className="hover:text-white transition-opacity">AI voiceovers</Link></li>
-                                <li><Link href="/pricing" className="hover:text-white transition-opacity">Pricing</Link></li>
-                                <li><Link href="/dashboard/request" className="hover:text-white transition-opacity">Aura Tailor</Link></li>
+                                <li><Link href="/about/howitworks?page=direct-licensing" className="hover:text-white transition-opacity">{t('product.royalty_free')}</Link></li>
+                                <li><Link href="/dashboard/venue" className="hover:text-white transition-opacity">{t('product.sfx')}</Link></li>
+                                <li><Link href="#" className="hover:text-white transition-opacity">{t('product.ai_voice')}</Link></li>
+                                <li><Link href="/pricing" className="hover:text-white transition-opacity">{t('product.pricing')}</Link></li>
+                                <li><Link href="/dashboard/request" className="hover:text-white transition-opacity">{t('product.tailor')}</Link></li>
                             </ul>
                         </div>
                         <div className="space-y-6">
-                            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">Learn More</h4>
+                            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">{t('learn_more.title')}</h4>
                             <ul className={`space-y-4 text-sm font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-800'}`}>
-                                <li><Link href="/about/howitworks" className="hover:text-white transition-opacity">How it works</Link></li>
-                                <li><Link href="/about/ad" className="hover:text-white transition-opacity">Features</Link></li>
-                                <li><Link href="/enterprise#contact-section" className="hover:text-white transition-opacity">For businesses</Link></li>
-                                <li><Link href="/enterprise" className="hover:text-white transition-opacity">Enterprise</Link></li>
-                                <li><Link href="/blog" className="hover:text-white transition-opacity">Blog</Link></li>
+                                <li><Link href="/about/howitworks" className="hover:text-white transition-opacity">{t('learn_more.how_it_works')}</Link></li>
+                                <li><Link href="/about/ad" className="hover:text-white transition-opacity">{t('learn_more.features')}</Link></li>
+                                <li><Link href="/enterprise#contact-section" className="hover:text-white transition-opacity">{t('learn_more.for_business')}</Link></li>
+                                <li><Link href="/enterprise" className="hover:text-white transition-opacity">{t('learn_more.enterprise')}</Link></li>
+                                <li><Link href="/blog" className="hover:text-white transition-opacity">{t('learn_more.blog')}</Link></li>
                             </ul>
                         </div>
                         <div className="space-y-6">
-                            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">About</h4>
+                            <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400">{t('about.title')}</h4>
                             <ul className={`space-y-4 text-sm font-medium ${isDark ? 'text-zinc-400' : 'text-zinc-800'}`}>
-                                <li><Link href="/about/help" className="hover:text-white transition-opacity">Help center</Link></li>
-                                <li><Link href="/about/us" className="hover:text-white transition-opacity">About us</Link></li>
-                                <li><Link href="#" className="hover:text-white transition-opacity">Press</Link></li>
-                                <li><Link href="#" className="hover:text-white transition-opacity">Careers</Link></li>
-                                <li><Link href="/contact" className="hover:text-white transition-opacity">Contact</Link></li>
+                                <li><Link href="/about/help" className="hover:text-white transition-opacity">{t('about.help')}</Link></li>
+                                <li><Link href="/about/us" className="hover:text-white transition-opacity">{t('about.us')}</Link></li>
+                                <li><Link href="#" className="hover:text-white transition-opacity">{t('about.press')}</Link></li>
+                                <li><Link href="#" className="hover:text-white transition-opacity">{t('about.careers')}</Link></li>
+                                <li><Link href="/contact" className="hover:text-white transition-opacity">{t('about.contact')}</Link></li>
                             </ul>
                         </div>
                     </div>
@@ -76,10 +78,10 @@ export function Footer({ variant = 'light' }: FooterProps) {
 
                 <div className={`pt-8 border-t flex flex-col md:flex-row items-center justify-between gap-6 text-[11px] font-bold uppercase tracking-wider ${isDark ? 'border-white/10 text-zinc-500' : 'border-zinc-200 text-zinc-400'}`}>
                     <div className="flex gap-4">
-                        <p>Copyright © SonarAura</p>
-                        <Link href="/legal" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Legal</Link>
-                        <Link href="/privacy" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Privacy</Link>
-                        <Link href="/cookies" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>Cookie</Link>
+                        <p>{t('copyright')}</p>
+                        <Link href="/legal" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>{t('legal.title')}</Link>
+                        <Link href="/privacy" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>{t('legal.privacy')}</Link>
+                        <Link href="/cookies" className={`transition-colors ${isDark ? 'hover:text-white' : 'hover:text-black'}`}>{t('legal.cookies')}</Link>
                     </div>
                     <div className={`flex gap-8 ${isDark ? 'text-white/40' : 'text-black/40'}`}>
                         <Link

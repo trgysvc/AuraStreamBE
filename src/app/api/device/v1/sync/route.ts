@@ -61,11 +61,13 @@ export async function POST(req: NextRequest) {
         }
 
         // 3. Update Heartbeat
+        const ipAddress = req.headers.get('x-forwarded-for')?.split(',')[0] || req.headers.get('x-real-ip');
+
         await supabase
             .from('devices')
             .update({
                 last_heartbeat: new Date().toISOString(),
-                ip_address: req.ip || req.headers.get('x-forwarded-for')
+                ip_address: ipAddress
             })
             .eq('id', device.id);
 
@@ -140,29 +142,28 @@ export async function POST(req: NextRequest) {
         const validItems: PlaylistItem[] = [];
 
         if (playlistItems) {
-            // @ts-ignore
             for (const item of playlistItems) {
-                const track = item.track;
+                // Supabase join returns an array or object depending on relation, cast to any to simplify for MVP
+                const track = (item as any).track;
                 if (!track) continue;
 
-                // Find best file (AAC 440hz preferred)
-                // @ts-ignore
-                const files = track.track_files || [];
-                // @ts-ignore
-                const bestFile = files.find(f => f.file_type === 'stream_aac' && f.tuning === '440hz')
-                    // @ts-ignore
-                    || files.find(f => f.file_type === 'stream_aac')
-                    // @ts-ignore
+                // handle cases where track might be an array (if schema is interpreted differently)
+                const actualTrack = Array.isArray(track) ? track[0] : track;
+                if (!actualTrack) continue;
+
+                const files = actualTrack.track_files || [];
+                const bestFile = files.find((f: any) => f.file_type === 'stream_aac' && f.tuning === '440hz')
+                    || files.find((f: any) => f.file_type === 'stream_aac')
                     || files[0];
 
                 if (bestFile) {
                     validItems.push({
-                        id: track.id,
-                        title: track.title,
-                        artist: track.artist,
+                        id: actualTrack.id,
+                        title: actualTrack.title,
+                        artist: actualTrack.artist,
                         file_url: `https://cdn.aurastream.com/${bestFile.s3_key}`, // Placeholder
                         file_hash: bestFile.file_hash || 'pending',
-                        duration: track.duration_sec,
+                        duration: actualTrack.duration_sec,
                         tuning_freq: bestFile.tuning || '440hz'
                     });
                 }
