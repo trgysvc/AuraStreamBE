@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Save, Image as ImageIcon, Globe, Lock, UploadCloud } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { createBlogPost, BlogPost } from '@/app/actions/blog';
 import Image from 'next/image';
 

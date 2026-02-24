@@ -3,7 +3,7 @@
 import React from 'react';
 import { Sparkles, Zap, Shield, Repeat, Layout, Search, BarChart3, CloudRain, Wind, Play, Globe } from 'lucide-react';
 import { Footer } from '@/components/layout/Footer';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 
 const FeatureSection = ({

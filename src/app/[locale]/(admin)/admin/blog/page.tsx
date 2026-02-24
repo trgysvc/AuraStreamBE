@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { Plus, Edit2, Trash2, Eye, Calendar, User } from 'lucide-react';
 import { getBlogPosts, deleteBlogPost, BlogPost } from '@/app/actions/blog';
 import Image from 'next/image';

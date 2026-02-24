@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/db/client';
 import { createPlaylist_Action } from '@/app/actions/playlist';
 import { Save, ChevronLeft, Loader2 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 export default function CreatePlaylistPage() {
     const router = useRouter();

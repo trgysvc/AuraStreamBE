@@ -10,13 +10,14 @@ import {
     Settings,
     Crown
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { S3Service } from '@/lib/services/s3';
 import { EnergyCurve } from '@/lib/logic/EnergyCurve';
 import { SmartWeatherCard } from '@/components/feature/venue/SmartWeatherCard';
 import { WeatherService } from '@/lib/services/weather';
 import { DashboardPlayableTrack } from '@/components/dashboard/DashboardPlayableTrack';
+import { getTranslations } from 'next-intl/server';
 
 async function getAuraHomeData() {
     const supabase = await createClient();
@@ -166,14 +167,22 @@ async function getAuraHomeData() {
     };
 }
 
-export default async function AuraHomePage() {
+export default async function AuraHomePage({ params }: { params: Promise<{ locale: string }> }) {
+    const { locale } = await params;
+    const t = await getTranslations({ locale, namespace: 'Dashboard' });
     const data = await getAuraHomeData();
     if (!data) return null;
 
     const { profile, tenant, venue, latestLicenses, topTracks, myRequests, currentTuning, time, isPersonalized } = data;
 
-    const displayName = tenant?.display_name || profile?.full_name?.split(' ')[0] || 'Architect';
-    const greeting = time < 12 ? 'Good Morning' : time < 18 ? 'Good Afternoon' : 'Good Evening';
+    const displayName = tenant?.display_name || profile?.full_name?.split(' ')[0] || t('greetings.architect');
+
+    // Greeting logic
+    let greetingKey = 'morning';
+    if (time >= 12 && time < 18) greetingKey = 'afternoon';
+    else if (time >= 18 || time < 5) greetingKey = 'evening';
+
+    const greeting = t(`greetings.${greetingKey}`);
 
     return (
         <div className="space-y-8 md:space-y-12 pb-24 md:pb-20 animate-in fade-in duration-1000">
@@ -186,27 +195,27 @@ export default async function AuraHomePage() {
                         </h1>
                         {['admin', 'system_admin', 'superadmin', 'enterprise_admin'].includes(profile?.role) ? (
                             <span className="w-fit bg-gradient-to-r from-white to-zinc-400 text-black text-[8px] md:text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest md:mt-4 shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                                Aura Admin User
+                                {t('badges.admin')}
                             </span>
                         ) : profile?.subscription_tier && profile.subscription_tier !== 'free' ? (
                             <span className="w-fit bg-gradient-to-r from-amber-400 to-orange-500 text-black text-[8px] md:text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest md:mt-4">
-                                {profile.subscription_tier} Member
+                                {t('badges.member', { tier: profile.subscription_tier })}
                             </span>
                         ) : (
                             <span className="w-fit bg-white/10 text-zinc-400 text-[8px] md:text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-widest md:mt-4 border border-white/5">
-                                Aura Free Tier
+                                {t('badges.free')}
                             </span>
                         )}
                     </div>
                     <p className="text-zinc-500 font-medium text-sm md:text-xl">
-                        {venue ? `Commanding ${venue.business_name || venue.name}` : 'The Sonaraura ecosystem is fully operational.'}
+                        {venue ? t('venue.commanding', { name: venue.business_name || venue.name }) : t('venue.operational')}
                     </p>
                 </div>
 
                 <div className="flex items-center gap-4">
                     <div className="flex-1 md:flex-none px-4 md:px-6 py-2 md:py-3 bg-white/5 border border-white/10 rounded-xl md:rounded-2xl flex items-center justify-between md:justify-start gap-4 shadow-2xl backdrop-blur-xl">
                         <div className="flex flex-col items-start md:items-end">
-                            <span className="text-[8px] md:text-[10px] font-black text-zinc-500 uppercase tracking-widest italic">Aura Tuning</span>
+                            <span className="text-[8px] md:text-[10px] font-black text-zinc-500 uppercase tracking-widest italic">{t('tuning.label')}</span>
                             <span className="text-sm md:text-lg font-black text-white italic leading-none">{currentTuning.toUpperCase()}</span>
                         </div>
                         <div className="h-8 w-8 md:h-10 md:w-10 bg-indigo-600/20 rounded-lg md:rounded-xl flex items-center justify-center text-indigo-400 border border-indigo-500/20">
@@ -220,9 +229,9 @@ export default async function AuraHomePage() {
                 {/* 2. Venue Intelligence (B2B Hub) */}
                 <div className="lg:col-span-8 space-y-6 md:space-y-8">
                     <div className="flex items-center justify-between px-2 md:px-0">
-                        <h3 className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.4em] text-zinc-600">Venue Intelligence</h3>
+                        <h3 className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.4em] text-zinc-600">{t('venue.intelligence')}</h3>
                         <Link href="/dashboard/venue" className="text-[9px] md:text-[10px] font-black text-indigo-400 hover:text-white transition-colors uppercase tracking-widest flex items-center gap-2 group">
-                            Open Venue <ArrowRight size={10} className="md:w-3 md:h-3 group-hover:translate-x-1 transition-transform" />
+                            {t('venue.open')} <ArrowRight size={10} className="md:w-3 md:h-3 group-hover:translate-x-1 transition-transform" />
                         </Link>
                     </div>
 
@@ -237,7 +246,7 @@ export default async function AuraHomePage() {
                                 <Music size={120} className="md:w-[200px] md:h-[200px]" />
                             </div>
                             <div className="space-y-4 md:space-y-6 relative z-10 h-full flex flex-col">
-                                <p className="text-[8px] md:text-[10px] font-black text-zinc-600 uppercase tracking-widest italic">Smart Flow Status</p>
+                                <p className="text-[8px] md:text-[10px] font-black text-zinc-600 uppercase tracking-widest italic">{t('venue.smart_flow_status')}</p>
                                 {venue ? (
                                     <div className="space-y-4 flex-1">
                                         <div className="flex items-center gap-4">
@@ -246,18 +255,18 @@ export default async function AuraHomePage() {
                                             </div>
                                             <div className="min-w-0">
                                                 <h4 className="text-lg md:text-2xl font-black text-white italic uppercase truncate">{venue.business_name || venue.name}</h4>
-                                                <p className="text-[10px] md:text-xs font-bold text-green-500 uppercase tracking-tighter">System Protected</p>
+                                                <p className="text-[10px] md:text-xs font-bold text-green-500 uppercase tracking-tighter">{t('venue.system_protected')}</p>
                                             </div>
                                         </div>
                                         <div className="pt-3 md:pt-4 border-t border-white/5">
-                                            <p className="text-[8px] md:text-[10px] font-black text-zinc-600 uppercase mb-1 md:mb-2">Next Transition</p>
-                                            <p className="text-[12px] md:text-sm font-bold text-zinc-300 italic">Smart Schedule Active</p>
+                                            <p className="text-[8px] md:text-[10px] font-black text-zinc-600 uppercase mb-1 md:mb-2">{t('venue.next_transition')}</p>
+                                            <p className="text-[12px] md:text-sm font-bold text-zinc-300 italic">{t('venue.schedule_active')}</p>
                                         </div>
                                     </div>
                                 ) : (
                                     <div className="space-y-4 flex-1 flex flex-col justify-center">
-                                        <p className="text-[12px] md:text-sm font-bold text-zinc-500 italic">No venue registered.</p>
-                                        <Link href="/dashboard/venue" className="text-[10px] md:text-xs font-black text-white underline tracking-widest">REGISTER BUSINESS</Link>
+                                        <p className="text-[12px] md:text-sm font-bold text-zinc-500 italic">{t('venue.no_venue')}</p>
+                                        <Link href="/dashboard/venue" className="text-[10px] md:text-xs font-black text-white underline tracking-widest">{t('venue.register')}</Link>
                                     </div>
                                 )}
                             </div>
@@ -267,9 +276,9 @@ export default async function AuraHomePage() {
                     <div className="bg-[#111] p-6 md:p-10 rounded-2xl md:rounded-[3rem] border border-white/5 shadow-2xl space-y-6 md:space-y-8">
                         <div className="flex items-center justify-between">
                             <h4 className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.3em] text-zinc-500">
-                                {isPersonalized ? "Your Most Listened" : "Popular Harmonics"}
+                                {isPersonalized ? t('stats.most_listened') : t('stats.popular')}
                             </h4>
-                            <Link href="/store" className="text-[8px] md:text-[9px] font-black text-zinc-600 uppercase tracking-widest pointer-events-none opacity-50">Enter Store</Link>
+                            <Link href="/store" className="text-[8px] md:text-[9px] font-black text-zinc-600 uppercase tracking-widest pointer-events-none opacity-50">{t('stats.enter_store')}</Link>
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
                             {topTracks.map((track) => (
@@ -281,10 +290,10 @@ export default async function AuraHomePage() {
 
                 <div className="lg:col-span-4 space-y-6 md:space-y-8">
                     <div className="space-y-4 md:space-y-6">
-                        <h3 className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.4em] text-zinc-600 px-2 md:px-0">Creative Assets</h3>
+                        <h3 className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.4em] text-zinc-600 px-2 md:px-0">{t('sections.creative_assets')}</h3>
                         <div className="bg-[#1E1E22] rounded-2xl md:rounded-[3rem] border border-white/5 p-6 md:p-8 space-y-6 md:space-y-8 shadow-2xl">
                             <div className="space-y-4 md:space-y-6">
-                                <p className="text-[8px] md:text-[10px] font-black text-zinc-500 uppercase tracking-widest border-l-2 border-indigo-500 pl-3 md:pl-4">Recently Licensed</p>
+                                <p className="text-[8px] md:text-[10px] font-black text-zinc-500 uppercase tracking-widest border-l-2 border-indigo-500 pl-3 md:pl-4">{t('sections.recently_licensed')}</p>
                                 {latestLicenses.length > 0 ? latestLicenses.map((license: any) => (
                                     <div key={license.id} className="flex items-center gap-3 md:gap-4 group cursor-default">
                                         <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg md:rounded-xl bg-zinc-800 border border-white/5 overflow-hidden flex-shrink-0 relative">
@@ -302,29 +311,29 @@ export default async function AuraHomePage() {
                                         </div>
                                         <div className="min-w-0 flex-1">
                                             <h5 className="text-[10px] md:text-[11px] font-black text-white uppercase italic truncate">{license.tracks?.title}</h5>
-                                            <p className="text-[8px] md:text-[9px] font-bold text-zinc-600 uppercase truncate">Project: {license.project_name}</p>
+                                            <p className="text-[8px] md:text-[9px] font-bold text-zinc-600 uppercase truncate">{t('sections.project_label', { name: license.project_name })}</p>
                                         </div>
                                         <button className="text-zinc-700 hover:text-indigo-400 transition-colors">
                                             <Download size={14} className="md:w-4 md:h-4" />
                                         </button>
                                     </div>
                                 )) : (
-                                    <p className="text-[10px] text-zinc-700 italic font-medium">No licenses registered yet.</p>
+                                    <p className="text-[10px] text-zinc-700 italic font-medium">{t('sections.no_licenses')}</p>
                                 )}
                             </div>
 
                             <div className="pt-6 md:pt-8 border-t border-white/5 space-y-4 md:space-y-6">
-                                <p className="text-[8px] md:text-[10px] font-black text-zinc-500 uppercase tracking-widest border-l-2 border-pink-500 pl-3 md:pl-4">Account Health</p>
+                                <p className="text-[8px] md:text-[10px] font-black text-zinc-500 uppercase tracking-widest border-l-2 border-pink-500 pl-3 md:pl-4">{t('sections.account_health')}</p>
                                 <div className="space-y-3 md:space-y-4">
-                                    <ReachItem icon={ShieldCheck} label="Content ID Whitelist" status="Sync Active" color="text-green-500" />
-                                    <ReachItem icon={Zap} label="Frequency Access" status="Full (528Hz)" color="text-indigo-500" />
-                                    <ReachItem icon={Crown} label="Elite Support" status="Dedicated" color="text-amber-500" />
+                                    <ReachItem icon={ShieldCheck} label={t('health.whitelist')} status={t('health.sync_active')} color="text-green-500" />
+                                    <ReachItem icon={Zap} label={t('health.freq_access')} status={t('health.full_hz')} color="text-indigo-500" />
+                                    <ReachItem icon={Crown} label={t('health.elite_support')} status={t('health.dedicated')} color="text-amber-500" />
                                 </div>
                             </div>
 
                             <Link href="/account" className="block w-full py-4 md:py-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl md:rounded-[2rem] text-center text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:text-white transition-all mt-6 md:mt-8">
                                 <div className="flex items-center justify-center gap-2">
-                                    <Settings size={12} className="md:w-3.5 md:h-3.5" /> Global Settings
+                                    <Settings size={12} className="md:w-3.5 md:h-3.5" /> {t('sections.global_settings')}
                                 </div>
                             </Link>
                         </div>
@@ -335,10 +344,10 @@ export default async function AuraHomePage() {
                         <div className="absolute -right-8 -bottom-8 opacity-20 group-hover:scale-110 transition-transform duration-700">
                             <Sparkles size={120} className="md:w-40 md:h-40" />
                         </div>
-                        <h4 className="text-xl md:text-2xl font-black text-white italic uppercase tracking-tighter leading-none">Need <br /> Something <br /> Unique?</h4>
-                        <p className="text-[11px] md:text-xs text-white/70 font-medium leading-relaxed max-w-[200px]">Commission a custom AI track tailored for your brand.</p>
+                        <h4 className="text-xl md:text-2xl font-black text-white italic uppercase tracking-tighter leading-none">{t.rich('cta.unique_title', { br: () => <br /> })}</h4>
+                        <p className="text-[11px] md:text-xs text-white/70 font-medium leading-relaxed max-w-[200px]">{t('cta.unique_desc')}</p>
                         <Link href="/dashboard/request" className="inline-flex items-center gap-2 text-[8px] md:text-[10px] font-black text-white uppercase tracking-widest bg-black/20 hover:bg-black/40 px-3 md:px-4 py-1.5 md:py-2 rounded-full transition-all">
-                            Music on Request <ArrowRight size={10} className="md:w-3 md:h-3" />
+                            {t('cta.request_button')} <ArrowRight size={10} className="md:w-3 md:h-3" />
                         </Link>
                     </div>
                 </div>

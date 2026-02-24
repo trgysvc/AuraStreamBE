@@ -3,7 +3,7 @@
 import { useEffect, useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Save, Image as ImageIcon, Globe, Lock } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { updateBlogPost, getBlogPosts, BlogPost } from '@/app/actions/blog';
 import Image from 'next/image';
 import { createClient } from '@/lib/db/client';

@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { ArrowRight, Globe, MapPin } from 'lucide-react';
 import { Footer } from '@/components/layout/Footer';
@@ -10,15 +10,20 @@ import { getTranslations, getLocale } from 'next-intl/server';
 import { BUSINESS_SECTORS } from './data';
 import TallyForm from '@/components/shared/TallyForm';
 
-export const metadata: Metadata = {
-    title: 'Enterprise | SonarAura',
-    description: 'Scale your sonic identity across hundreds of locations.'
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+    const { locale } = await params;
+    const t = await getTranslations({ locale, namespace: 'Enterprise.metadata' });
 
-export default async function EnterprisePage() {
-    const t = await getTranslations('Enterprise');
-    const tSector = await getTranslations('Sectors');
-    const locale = await getLocale();
+    return {
+        title: t('title'),
+        description: t('description'),
+    };
+}
+
+export default async function EnterprisePage({ params }: { params: Promise<{ locale: string }> }) {
+    const { locale } = await params;
+    const t = await getTranslations({ locale, namespace: 'Enterprise' });
+    const tSector = await getTranslations({ locale, namespace: 'Sectors' });
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -55,7 +60,7 @@ export default async function EnterprisePage() {
                         <Link href="#contact-section" className="px-10 py-5 bg-white text-black rounded-full font-bold text-lg hover:bg-gray-200 transition-transform hover:scale-105 shadow-2xl uppercase tracking-wider">
                             {t('demo')}
                         </Link>
-                        <Link href={`/${locale}/pricing`} className="flex items-center gap-3 font-bold border-b-2 border-white/20 pb-1 hover:border-white transition-all uppercase text-sm tracking-widest text-white">
+                        <Link href="/pricing" className="flex items-center gap-3 font-bold border-b-2 border-white/20 pb-1 hover:border-white transition-all uppercase text-sm tracking-widest text-white">
                             {t('viewPricing')} <ArrowRight size={20} />
                         </Link>
                     </div>
@@ -182,6 +187,7 @@ export default async function EnterprisePage() {
                                         src={item.img}
                                         alt={item.title}
                                         fill
+                                        sizes="(max-w-768px) 100vw, 33vw"
                                         className="object-cover opacity-60 grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700"
                                     />
                                     <div className="absolute top-6 left-6 md:top-10 md:left-10 px-4 py-1.5 bg-white text-black text-[9px] md:text-[10px] font-black uppercase tracking-widest rounded-full">
@@ -198,7 +204,7 @@ export default async function EnterprisePage() {
                                             {item.description}
                                         </p>
                                     </div>
-                                    <Link href={`/${locale}/about/howitworks`} className="flex items-center gap-2 font-black text-[8px] md:text-sm uppercase tracking-widest text-white/40 md:text-black/40 border-b border-white/10 md:border-black/10 w-fit pb-0.5 mt-4 hover:text-indigo-500 hover:border-indigo-500 transition-all">
+                                    <Link href="/about/howitworks" className="flex items-center gap-2 font-black text-[8px] md:text-sm uppercase tracking-widest text-white/40 md:text-black/40 border-b border-white/10 md:border-black/10 w-fit pb-0.5 mt-4 hover:text-indigo-500 hover:border-indigo-500 transition-all">
                                         {t('infrastructure.learnMore')} <ArrowRight size={14} />
                                     </Link>
                                 </div>
@@ -228,7 +234,7 @@ export default async function EnterprisePage() {
                                 {t('licensing.p2')}
                             </p>
                         </div>
-                        <Link href={`/${locale}/about/howitworks?page=direct-licensing`} className="inline-flex items-center gap-2 font-bold text-black border-b-2 border-black/20 pb-1 hover:border-black transition-all">
+                        <Link href="/about/howitworks?page=direct-licensing" className="inline-flex items-center gap-2 font-bold text-black border-b-2 border-black/20 pb-1 hover:border-black transition-all">
                             {t('infrastructure.learnMore')} <ArrowRight size={18} />
                         </Link>
                     </div>
@@ -237,6 +243,7 @@ export default async function EnterprisePage() {
                             src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=1600"
                             alt="Legal & Licensing"
                             fill
+                            sizes="(max-w-1024px) 100vw, 50vw"
                             className="object-cover grayscale"
                         />
                     </div>
@@ -256,7 +263,7 @@ export default async function EnterprisePage() {
                     <BusinessGrid tSector={tSector} />
 
                     <div className="flex justify-end">
-                        <Link href={`/${locale}/enterprise/spaces`} className="px-8 py-3 bg-white/10 text-white rounded-full font-bold text-sm hover:bg-white/20 transition-colors uppercase tracking-widest">
+                        <Link href="/enterprise/spaces" className="px-8 py-3 bg-white/10 text-white rounded-full font-bold text-sm hover:bg-white/20 transition-colors uppercase tracking-widest">
                             {t('curated.explore')}
                         </Link>
                     </div>
@@ -280,19 +287,19 @@ export default async function EnterprisePage() {
             <section id="contact-section" className="py-24 md:py-40 px-6 bg-[#F5F5F0]">
                 <div className="max-w-4xl mx-auto bg-white p-6 md:p-12 rounded-3xl shadow-2xl text-center space-y-4 md:space-y-6">
                     <div className="space-y-2 md:space-y-4">
-                        <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none uppercase italic">
+                        <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none uppercase italic text-zinc-900">
                             {t('cta.title')}
                         </h2>
-                        <p className="text-lg text-black/60 max-w-2xl mx-auto">
+                        <p className="text-lg text-zinc-600 max-w-2xl mx-auto">
                             {t('cta.desc')}
                         </p>
                     </div>
 
                     <TallyForm formId="zxqExR" />
 
-                    <p className="text-[10px] text-zinc-400 font-medium -mt-4">
+                    <p className="text-[10px] text-zinc-400 font-medium pt-4">
                         {t.rich('cta.agree', {
-                            link: (chunks) => <Link href={`/${locale}/legal`} className="underline hover:text-zinc-600 transition-colors">{chunks}</Link>
+                            link: (chunks) => <Link href="/legal" className="underline hover:text-zinc-600 transition-colors">{chunks}</Link>
                         })}
                     </p>
                 </div>
@@ -313,6 +320,7 @@ function BusinessGrid({ tSector }: { tSector: any }) {
                             src={sector.imagePath || `https://images.unsplash.com/photo-${sector.imageId}?q=80&w=800`}
                             alt={tSector(sector.key)}
                             fill
+                            sizes="(max-w-768px) 50vw, (max-w-1200px) 33vw, 20vw"
                             className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-40 group-hover:opacity-100"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />

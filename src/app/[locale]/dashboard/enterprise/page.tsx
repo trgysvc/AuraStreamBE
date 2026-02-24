@@ -7,7 +7,7 @@ import {
     Activity,
     LayoutDashboard
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { VenueActionRow } from '@/components/dashboard/VenueActionRow';
 
 async function getEnterpriseData() {

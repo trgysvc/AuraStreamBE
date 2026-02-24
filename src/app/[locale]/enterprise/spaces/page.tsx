@@ -1,5 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { Footer } from '@/components/layout/Footer';
@@ -7,12 +7,23 @@ import { MainHeader } from '@/components/layout/MainHeader';
 import { createClient } from '@/lib/db/server';
 import { getTranslations, getLocale } from 'next-intl/server';
 import { BUSINESS_SECTORS } from '../data';
+import { Metadata } from 'next';
 
-export default async function SpacesPage() {
-    const t = await getTranslations('Enterprise');
-    const tSpaces = await getTranslations('Enterprise.spaces');
-    const tSector = await getTranslations('Sectors');
-    const locale = await getLocale();
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+    const { locale } = await params;
+    const t = await getTranslations({ locale, namespace: 'Enterprise.metadata' });
+
+    return {
+        title: `${t('title')} | Spaces`,
+        description: t('description'),
+    };
+}
+
+export default async function SpacesPage({ params }: { params: Promise<{ locale: string }> }) {
+    const { locale } = await params;
+    const t = await getTranslations({ locale, namespace: 'Enterprise' });
+    const tSpaces = await getTranslations({ locale, namespace: 'Enterprise.spaces' });
+    const tSector = await getTranslations({ locale, namespace: 'Sectors' });
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -50,7 +61,7 @@ export default async function SpacesPage() {
                 <div className="max-w-[1400px] mx-auto space-y-16">
                     {/* Hero area */}
                     <div className="space-y-6">
-                        <Link href={`/${locale}/enterprise`} className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-sm font-bold uppercase tracking-widest mb-4">
+                        <Link href="/enterprise" className="inline-flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-sm font-bold uppercase tracking-widest mb-4">
                             <ArrowLeft size={16} /> {tSpaces('back')}
                         </Link>
                         <h1 className="text-5xl md:text-8xl font-black tracking-tight leading-[1.0] uppercase italic">
@@ -82,6 +93,7 @@ export default async function SpacesPage() {
                                                 src={sector.imagePath || `https://images.unsplash.com/photo-${sector.imageId}?q=80&w=800`}
                                                 alt={tSector(sector.key)}
                                                 fill
+                                                sizes="(max-w-768px) 100vw, (max-w-1200px) 50vw, 25vw"
                                                 className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100"
                                             />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
@@ -108,7 +120,7 @@ export default async function SpacesPage() {
                         <p className="text-xl text-zinc-400 max-w-xl mx-auto">
                             {tSpaces('missingDesc')}
                         </p>
-                        <Link href={`/${locale}/enterprise#contact-section`} className="inline-block px-12 py-5 bg-white text-black rounded-full font-bold text-lg hover:bg-zinc-200 transition-all uppercase tracking-widest shadow-2xl">
+                        <Link href="/enterprise#contact-section" className="inline-block px-12 py-5 bg-white text-black rounded-full font-bold text-lg hover:bg-zinc-200 transition-all uppercase tracking-widest shadow-2xl">
                             {t('cta.button')}
                         </Link>
                     </div>

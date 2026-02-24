@@ -1,16 +1,24 @@
 import React from 'react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { Mail } from 'lucide-react';
 import { Footer } from '@/components/layout/Footer';
 import { MainHeader } from '@/components/layout/MainHeader';
+import { getTranslations } from 'next-intl/server';
 import { Metadata } from 'next';
 
-export const metadata: Metadata = {
-    title: 'Contact',
-    description: 'Get in touch with Sonaraura. Reach out for customer support, creator collaborations, or enterprise solutions.',
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+    const { locale } = await params;
+    const t = await getTranslations({ locale, namespace: 'Contact.metadata' });
+    return {
+        title: t('title'),
+        description: t('description'),
+    };
+}
 
-export default function ContactPage() {
+export default async function ContactPage({ params }: { params: Promise<{ locale: string }> }) {
+    const { locale } = await params;
+    const t = await getTranslations({ locale, namespace: 'Contact' });
+
     return (
         <div className="min-h-screen bg-[#111] text-white selection:bg-white selection:text-black font-sans">
             <MainHeader />
@@ -19,7 +27,7 @@ export default function ContactPage() {
                 {/* Hero Section - Constrained */}
                 <section className="max-w-[1400px] mx-auto px-6 md:px-12 mb-12 md:mb-32">
                     <h1 className="text-5xl md:text-7xl lg:text-[8rem] font-black italic uppercase tracking-tighter leading-[0.9] text-white text-balance">
-                        Contacts
+                        {t('title')}
                     </h1>
                 </section>
 
@@ -36,9 +44,9 @@ export default function ContactPage() {
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent opacity-60" />
                             </div>
                             <div className="space-y-2 md:space-y-4">
-                                <h2 className="text-sm md:text-4xl font-black italic uppercase tracking-tighter text-white">Customer Support</h2>
+                                <h2 className="text-sm md:text-4xl font-black italic uppercase tracking-tighter text-white">{t('support.title')}</h2>
                                 <p className="text-zinc-400 text-[10px] md:text-lg font-medium leading-relaxed max-w-md hidden sm:block text-balance">
-                                    If you need any support when using Sonaraura, reach out to us at:
+                                    {t('support.desc')}
                                 </p>
                                 <div className="flex items-center gap-2 md:gap-3 text-indigo-400 font-bold tracking-tight text-lg md:text-2xl group-hover:text-white transition-colors">
                                     <Mail size={14} className="md:w-6 md:h-6" strokeWidth={2} />
@@ -57,9 +65,9 @@ export default function ContactPage() {
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent opacity-60" />
                             </div>
                             <div className="space-y-2 md:space-y-4">
-                                <h2 className="text-sm md:text-4xl font-black italic uppercase tracking-tighter text-white">Creator Collaborations</h2>
+                                <h2 className="text-sm md:text-4xl font-black italic uppercase tracking-tighter text-white">{t('creator.title')}</h2>
                                 <p className="text-zinc-400 text-[10px] md:text-lg font-medium leading-relaxed max-w-md hidden sm:block text-balance">
-                                    If you&apos;re a content creator who wants to collaborate with us, reach out to us at:
+                                    {t('creator.desc')}
                                 </p>
                                 <div className="flex items-center gap-2 md:gap-3 text-indigo-400 font-bold tracking-tight text-lg md:text-2xl group-hover:text-white transition-colors">
                                     <Mail size={14} className="md:w-6 md:h-6" strokeWidth={2} />
@@ -73,7 +81,7 @@ export default function ContactPage() {
                 {/* Related Content Section (Yellow Background) */}
                 <section className="w-full bg-[#F7D348] text-black py-16 md:py-32">
                     <div className="max-w-[1400px] mx-auto px-6 md:px-12">
-                        <h2 className="text-2xl md:text-5xl font-black italic uppercase tracking-tighter mb-10 md:mb-16">Related content</h2>
+                        <h2 className="text-2xl md:text-5xl font-black italic uppercase tracking-tighter mb-10 md:mb-16">{t('related.title')}</h2>
 
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-12">
                             {/* How it works */}
@@ -84,7 +92,7 @@ export default function ContactPage() {
                                         style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1000&auto=format&fit=crop)' }}
                                     />
                                 </div>
-                                <h3 className="text-sm md:text-2xl font-black italic uppercase tracking-tighter group-hover:underline decoration-2 underline-offset-4">How it works</h3>
+                                <h3 className="text-sm md:text-2xl font-black italic uppercase tracking-tighter group-hover:underline decoration-2 underline-offset-4">{t('related.howItWorks')}</h3>
                             </Link>
 
                             {/* Help Us Improve */}
@@ -95,7 +103,7 @@ export default function ContactPage() {
                                         style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1000&auto=format&fit=crop)' }}
                                     />
                                 </div>
-                                <h3 className="text-sm md:text-2xl font-black italic uppercase tracking-tighter group-hover:underline decoration-2 underline-offset-4">Help Us Improve</h3>
+                                <h3 className="text-sm md:text-2xl font-black italic uppercase tracking-tighter group-hover:underline decoration-2 underline-offset-4">{t('related.help')}</h3>
                             </Link>
 
                             {/* Help Center */}
@@ -106,7 +114,7 @@ export default function ContactPage() {
                                         style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1484417894907-623942c8ee29?q=80&w=1000&auto=format&fit=crop)' }}
                                     />
                                 </div>
-                                <h3 className="text-sm md:text-2xl font-black italic uppercase tracking-tighter group-hover:underline decoration-2 underline-offset-4">Help Center</h3>
+                                <h3 className="text-sm md:text-2xl font-black italic uppercase tracking-tighter group-hover:underline decoration-2 underline-offset-4">{t('related.center')}</h3>
                             </Link>
                         </div>
                     </div>
@@ -117,25 +125,28 @@ export default function ContactPage() {
                     <div className="max-w-[1400px] mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-12 md:gap-16">
                         {/* Left Content */}
                         <div className="w-full md:flex-1 space-y-8 md:space-y-10 text-center md:text-left">
-                            <h2 className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter">
-                                Subscribe to our <br /> latest news
-                            </h2>
+                            <h2
+                                className="text-3xl md:text-5xl font-black italic uppercase tracking-tighter"
+                                dangerouslySetInnerHTML={{ __html: t('subscribe.title') }}
+                            />
                             <div className="space-y-6 max-w-md mx-auto md:mx-0 text-left">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">E-mail</label>
+                                    <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500">{t('subscribe.email')}</label>
                                     <div className="flex flex-col sm:flex-row gap-2">
                                         <input
                                             type="email"
-                                            placeholder="Email"
+                                            placeholder={t('subscribe.placeholder')}
                                             className="flex-1 bg-white/5 border border-white/10 rounded-sm px-4 py-3 text-sm focus:outline-none focus:border-indigo-500 transition-colors"
                                         />
                                         <button className="bg-white text-black px-8 py-3 text-sm font-black uppercase tracking-widest hover:bg-indigo-500 hover:text-white transition-all whitespace-nowrap">
-                                            Subscribe
+                                            {t('subscribe.button')}
                                         </button>
                                     </div>
                                 </div>
-                                <p className="text-[10px] text-zinc-500 font-medium">
-                                    By subscribing, you agree to our <Link href="/privacy" className="underline hover:text-white">Privacy policy</Link>
+                                <p className="text-[10px] text-zinc-500 font-medium whitespace-pre-wrap">
+                                    {t.rich('subscribe.agree', {
+                                        link: (chunks) => <Link href="/privacy" className="underline hover:text-white">{chunks}</Link>
+                                    })}
                                 </p>
                             </div>
                         </div>

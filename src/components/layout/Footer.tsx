@@ -1,4 +1,6 @@
-import Link from 'next/link';
+'use client';
+
+import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import LocaleSwitcher from './LocaleSwitcher';
 import { useTranslations } from 'next-intl';

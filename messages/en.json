@@ -75,33 +75,41 @@
     },
     "About": {
         "Us": {
-            "title": "Sonaraura is the sound of the universe, re-engineered for branding.",
-            "subtitle": "The Architecture of Sound, the Frequency of Intelligence.",
-            "p1": "Sonaraura transforms music from a mere background element into a living intelligence that manages the atmosphere of a space on biological and emotional levels.",
-            "p2": "By merging sound engineering, artificial intelligence, and psychoacoustics, we have built the world's first <strong class=\"text-white\">Atmospheric Intelligence</strong> platform. We are not an ordinary streaming service. We are a technology company that synchronizes the frequency of sound, the vibe of the environment, and the listener's pulse.",
-            "visionTitle": "Architecture Beyond Silence",
-            "visionText": "Every space has a soul, every moment has a frequency. Our goal is to deepen the connection between businesses and creators with their target audiences through <strong class=\"text-white\">Frequency Engineering</strong>.",
-            "visionDetail": "We evolve music from the standard 440Hz mold into <strong class=\"text-white\">432Hz (Peace)</strong> and <strong class=\"text-white\">528Hz (Focus/Vitality)</strong> frequencies, synchronized with human biology in real-time. While doing this, we maintain the musical rhythm (BPM), re-engineering art with scientific precision.",
-            "principles": "Core Principles",
-            "feature1": {
-                "title": "Molecular Sound",
-                "subtitle": "Frequencies Engineered",
-                "desc": "We don't just transmit sound; we process it. With our patented technology, we modify track frequencies in real-time to trigger desired emotional states (calm, energy, focus) in the listener."
+            "hero": {
+                "title": "Sonaraura is the sound of the universe, <br /> re-engineered for branding.",
+                "who": "Who we are",
+                "p1": "Sonaraura transforms music from a mere background element into a living intelligence that manages the atmosphere of a space on biological and emotional levels.",
+                "p2": "By merging sound engineering, artificial intelligence, and psychoacoustics, we have built the world's first <strong>Atmospheric Intelligence</strong> platform. We are not an ordinary streaming service. We are a technology company that synchronizes the frequency of sound, the vibe of the environment, and the listener's pulse."
             },
-            "feature2": {
-                "title": "Weather-Aware AI",
-                "subtitle": "Atmospheric Sync",
-                "desc": "Aura sees the world outside your space. When it rains, it makes smooth transitions to warmer, enveloping tones, and to energetic rhythms when the sun comes out."
+            "vision": {
+                "badge": "Vision",
+                "title": "Architecture <br /> Beyond Silence",
+                "p1": "Every space has a soul, every moment has a frequency. Our goal is to deepen the connection between businesses and creators with their target audiences through <strong>Frequency Engineering</strong>.",
+                "p2": "We evolve music from the standard 440Hz mold into <strong>432Hz (Peace)</strong> and <strong>528Hz (Focus/Vitality)</strong> frequencies, synchronized with human biology in real-time. While doing this, we maintain the musical rhythm (BPM), re-engineering art with scientific precision."
             },
-            "feature3": {
-                "title": "Invisible Protection",
-                "subtitle": "LSB Watermarking",
-                "desc": "We embed a digital seal (UUID) into every sound wave we broadcast, imperceptible to the human ear. This provides signal-level protection against copyright issues across platforms."
-            },
-            "feature4": {
-                "title": "Autonomous Music Director",
-                "subtitle": "Smart Flow AI",
-                "desc": "An AI that manages your space's energy curve from dawn until midnight. It ends the struggle of manual playlist management, optimizing your biorhythm 24/7."
+            "usp": {
+                "badge": "Core Principles",
+                "title": "Why Sonaraura?",
+                "feature1": {
+                    "title": "Molecular Sound",
+                    "subtitle": "Frequencies Engineered",
+                    "desc": "We don't just transmit sound; we process it. With our patented technology, we modify track frequencies in real-time to trigger desired emotional states (calm, energy, focus) in the listener."
+                },
+                "feature2": {
+                    "title": "Weather-Aware AI",
+                    "subtitle": "Atmospheric Sync",
+                    "desc": "Aura sees the world outside your space. When it rains, it makes smooth transitions to warmer, enveloping tones, and to energetic rhythms when the sun comes out."
+                },
+                "feature3": {
+                    "title": "Invisible Protection",
+                    "subtitle": "LSB Watermarking",
+                    "desc": "We embed a digital seal (UUID) into every sound wave we broadcast, imperceptible to the human ear. This provides signal-level protection against copyright issues across platforms."
+                },
+                "feature4": {
+                    "title": "Autonomous Music Director",
+                    "subtitle": "Smart Flow AI",
+                    "desc": "An AI that manages your space's energy curve from dawn until midnight. It ends the struggle of manual playlist management, optimizing your biorhythm 24/7."
+                }
             },
             "footer": {
                 "title": "Sonaraura",
@@ -412,7 +420,7 @@
             "project-soul": "Project Soul Concept"
         },
         "vision": {
-            "title": "The Future of Sound, <br /> Frequency of Intelligence",
+            "title": "The Future of Sound, <br></br> Frequency of Intelligence",
             "subtitle": "Architecture beyond silence and frequency engineering.",
             "whoAreWe": {
                 "title": "Who We Are?",
@@ -438,7 +446,7 @@
         "readArticle": "Read Article",
         "postNotFound": "Post Not Found",
         "resources": "Resources",
-        "subscribe": "Subscribe to <br/> <spanTag>Our Journal</spanTag>",
+        "subscribe": "Subscribe to <br></br> <spanTag>Our Journal</spanTag>",
         "subscribeDesc": "Join our community and get the latest sonic trends, legal guides, and tech releases.",
         "emailPlaceholder": "Enter your email",
         "joinNow": "Join Now",
@@ -468,9 +476,9 @@
         "dental": "Dental Clinics & Waiting Rooms",
         "therapy": "Therapy & Psychology Offices",
         "beauty": "Beauty Salons & Hairdressers",
-        "meditation": "Meditasyon Merkezleri",
+        "meditation": "Meditation Centers",
         "fashion": "Luxury Fashion Boutiques",
-        "concept": "Konsept Mağazalar",
+        "concept": "Concept Stores",
         "auto": "Automotive Showrooms",
         "mall": "Shopping Mall Common Areas",
         "jewelry": "Jewelry Stores",
@@ -488,11 +496,11 @@
     },
     "Pricing": {
         "scientific": "Scientific Pricing",
-        "title": "Elite Audio <br/> Plans.",
+        "title": "Elite Audio <br></br> Plans.",
         "perMonth": "/ mo",
         "technicalBreakdown": "Technical Breakdown",
         "matrix": "Technical Matrix",
-        "symmetry": "Symmetry <br/> of Value.",
+        "symmetry": "Symmetry <br></br> of Value.",
         "layer": "Layer",
         "free": "Free",
         "pro": "Pro",
@@ -563,12 +571,16 @@
         }
     },
     "Enterprise": {
+        "metadata": {
+            "title": "Enterprise | SonarAura",
+            "description": "Scale your sonic identity across hundreds of locations."
+        },
         "badge": "Enterprise Solutions",
-        "title": "Soundtrack your <br/> entire ecosystem.",
+        "title": "Soundtrack your <br></br> entire ecosystem.",
         "description": "One platform to manage music, licensing, and atmosphere across hundreds of locations. Scale your sound with centralized control.",
         "demo": "Book a Demo",
         "viewPricing": "View Pricing",
-        "controlTitle": "Total Control.<br/> Zero Chaos.",
+        "controlTitle": "Total Control.<br></br> Zero Chaos.",
         "controlDesc": "Forget managing individual logins for every franchise. With SonarAura Enterprise, you control the sonic identity of 1,000+ locations from a single HQ dashboard.",
         "mgmt": {
             "scheduling": "Centralized Scheduling",
@@ -587,7 +599,7 @@
         },
         "infrastructure": {
             "badge": "Technical Edge",
-            "title": "Unmatched <br/> Infrastructure.",
+            "title": "Unmatched <br></br> Infrastructure.",
             "unlimited": "Unlimited Access",
             "catalog": "Catalog",
             "unlimitedDesc": "Discover exclusive tracks by award-winning composers and up-and-coming artists, tailored for premium venues.",
@@ -601,7 +613,7 @@
         },
         "licensing": {
             "badge": "A Unique License Model",
-            "title": "Music licensing <br/> made easy",
+            "title": "Music licensing <br></br> made easy",
             "p1": "Forget lawsuits, surprise fees, copyright claims, and admin headaches. Our direct license model means you're cleared to use our music globally — regardless of media, territory, or type of content, both online and offline. Removing legal risk for your business.",
             "p2": "And because we own all the rights to our music, including public performance rights, we can customize our plans to cover all of your soundtracking needs, now and in the future."
         },
@@ -619,7 +631,7 @@
         },
         "spaces": {
             "back": "Back to Enterprise",
-            "title": "The Architecture <br/> of Ambience.",
+            "title": "The Architecture <br></br> of Ambience.",
             "desc": "Every space has a pulse. We provide the technology to measure, manage, and scale the perfect sonic environment for every single location.",
             "group1": "Hospitality & Dining",
             "group2": "Wellness & Health",
@@ -663,6 +675,34 @@
         },
         "rights": "All rights reserved.",
         "copyright": "Copyright © SonarAura"
+    },
+    "Contact": {
+        "metadata": {
+            "title": "Contact",
+            "description": "Get in touch with Sonaraura. Reach out for customer support, creator collaborations, or enterprise solutions."
+        },
+        "title": "Contacts",
+        "support": {
+            "title": "Customer Support",
+            "desc": "If you need any support when using Sonaraura, reach out to us at:"
+        },
+        "creator": {
+            "title": "Creator Collaborations",
+            "desc": "If you're a content creator who wants to collaborate with us, reach out to us at:"
+        },
+        "related": {
+            "title": "Related content",
+            "howItWorks": "How it works",
+            "help": "Help Us Improve",
+            "center": "Help Center"
+        },
+        "subscribe": {
+            "title": "Subscribe to our <br /> latest news",
+            "email": "E-mail",
+            "placeholder": "Email",
+            "button": "Subscribe",
+            "agree": "By subscribing, you agree to our <link>Privacy policy</link>"
+        }
     },
     "Legal": {
         "Terms": {
@@ -777,5 +817,123 @@
                 "item3": "Simplify the user interface by surfacing your most-used taxonomy tags."
             }
         }
+    },
+    "Common": {
+        "loading": "Loading...",
+        "error": "An error occurred",
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "create": "Create",
+        "back": "Back",
+        "next": "Next",
+        "project": "Project",
+        "status": "Status",
+        "active": "Active",
+        "sync": "Sync",
+        "certified": "Certified"
+    },
+    "Dashboard": {
+        "greetings": {
+            "morning": "Good Morning",
+            "afternoon": "Good Afternoon",
+            "evening": "Good Evening",
+            "architect": "Architect"
+        },
+        "badges": {
+            "admin": "Aura Admin User",
+            "member": "{tier} Member",
+            "free": "Aura Free Tier"
+        },
+        "venue": {
+            "commanding": "Commanding {name}",
+            "operational": "The Sonaraura ecosystem is fully operational.",
+            "intelligence": "Venue Intelligence",
+            "open": "Open Venue",
+            "smart_flow_status": "Smart Flow Status",
+            "system_protected": "System Protected",
+            "schedule_active": "Smart Schedule Active",
+            "next_transition": "Next Transition",
+            "no_venue": "No venue registered.",
+            "register": "REGISTER BUSINESS"
+        },
+        "tuning": {
+            "label": "Aura Tuning"
+        },
+        "sections": {
+            "creative_assets": "Creative Assets",
+            "recently_licensed": "Recently Licensed",
+            "no_licenses": "No licenses registered yet.",
+            "project_label": "Project: {name}",
+            "account_health": "Account Health",
+            "global_settings": "Global Settings"
+        },
+        "weather": {
+            "title": "Atmospheric Context",
+            "location_fallback": "Your Location",
+            "ambient": "{temp}°C Ambient",
+            "optimization": "Aura is optimizing the acoustic frequency for <city/>.",
+            "current_setting": "Current setting: <setting/>",
+            "vibrant": "Vibrant (528Hz)",
+            "calm": "Calm (432Hz)",
+            "conditions": {
+                "clear": "Clear",
+                "rain": "Rain",
+                "clouds": "Cloudy",
+                "snow": "Snow",
+                "thunderstorm": "Stormy",
+                "drizzle": "Drizzle",
+                "mist": "Misty"
+            }
+        },
+        "stats": {
+            "most_listened": "Your Most Listened",
+            "popular": "Popular Harmonics",
+            "enter_store": "Enter Store"
+        },
+        "health": {
+            "whitelist": "Content ID Whitelist",
+            "sync_active": "Sync Active",
+            "freq_access": "Frequency Access",
+            "full_hz": "Full (528Hz)",
+            "elite_support": "Elite Support",
+            "dedicated": "Dedicated"
+        },
+        "cta": {
+            "unique_title": "Need Something Unique?",
+            "unique_desc": "Commission a custom AI track tailored for your brand.",
+            "request_button": "Music on Request"
+        }
+    },
+    "Playlists": {
+        "title": "Playlists",
+        "subtitle": "Curate your sonic identity.",
+        "create": "Create Playlist",
+        "empty": {
+            "title": "No Playlists Yet",
+            "desc": "Please create your playlist to start shaping the sonic atmosphere of your business."
+        },
+        "items": {
+            "tracks": "{count} Tracks",
+            "no_description": "No description"
+        }
+    },
+    "Sidebar": {
+        "home": "Home",
+        "fleet_control": "Fleet Intelligence",
+        "enterprise_item": "Enterprise Control",
+        "branch_network": "Branch Network",
+        "personnel": "Personnel",
+        "super_admin": "Super Admin",
+        "live_ops": "Live Operations",
+        "my_venue": "My Venue",
+        "media_library": "Media Library",
+        "music": "Music",
+        "sfx": "Sound Effects",
+        "identity": "Identity",
+        "profile": "Profile",
+        "settings": "Settings",
+        "logout": "Terminate Session"
     }
 }

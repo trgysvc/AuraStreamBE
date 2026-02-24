@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from '@/context/LocationContext';
 import { getWeather_Action, getCityFromCoords_Action, WeatherData } from '@/app/actions/weather';
-import { Sun, CloudRain, MapPin, Loader2 } from 'lucide-react';
+import { Sun, CloudRain, MapPin, Loader2, Cloud, Snowflake, CloudLightning, CloudDrizzle, CloudFog } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface SmartWeatherCardProps {
     initialWeather?: WeatherData | null;
@@ -12,9 +13,10 @@ interface SmartWeatherCardProps {
 
 export function SmartWeatherCard({ initialWeather, initialCity }: SmartWeatherCardProps) {
     const location = useLocation();
+    const t = useTranslations('Dashboard.weather');
     const [weather, setWeather] = useState<WeatherData | null>(initialWeather || null);
     const [loading, setLoading] = useState(!initialWeather);
-    const [displayCity, setDisplayCity] = useState<string>(initialCity || location.city || 'Your Location');
+    const [displayCity, setDisplayCity] = useState<string>(initialCity || location.city || t('location_fallback'));
 
     useEffect(() => {
         const fetchPreciseData = async () => {
@@ -70,7 +72,7 @@ export function SmartWeatherCard({ initialWeather, initialCity }: SmartWeatherCa
             </div>
             <div className="space-y-6 relative z-10">
                 <div className="flex items-center justify-between">
-                    <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest italic">Atmospheric Context</p>
+                    <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest italic">{t('title')}</p>
                     <div className="flex items-center gap-1.5 text-indigo-400">
                         <MapPin size={10} />
                         <span className="text-[9px] font-black uppercase tracking-widest">{displayCity}</span>
@@ -81,12 +83,12 @@ export function SmartWeatherCard({ initialWeather, initialCity }: SmartWeatherCa
                         {weather?.condition === 'clear' ? <Sun size={28} /> : <CloudRain size={28} />}
                     </div>
                     <div>
-                        <h4 className="text-2xl font-black text-white italic uppercase">{weather?.condition || 'Clear'}</h4>
-                        <p className="text-xs font-bold text-zinc-500 uppercase tracking-tighter">{weather?.temp || '0'}°C Ambient</p>
+                        <h4 className="text-2xl font-black text-white italic uppercase">{weather?.condition ? t(`conditions.${weather.condition}`) : t('conditions.clear')}</h4>
+                        <p className="text-xs font-bold text-zinc-500 uppercase tracking-tighter">{t('ambient', { temp: weather?.temp || '0' })}</p>
                     </div>
                 </div>
                 <p className="text-xs text-zinc-400 font-medium leading-relaxed">
-                    Aura is optimizing the acoustic frequency for <span className="text-indigo-400 font-bold">{displayCity}</span>. Current setting: <span className="text-white font-bold">{weather?.condition === 'clear' ? 'Vibrant (528Hz)' : 'Calm (432Hz)'}</span>.
+                    {t.rich('optimization', { city: () => <span className="text-indigo-400 font-bold">{displayCity}</span> })} {t.rich('current_setting', { setting: () => <span className="text-white font-bold">{weather?.condition === 'clear' ? t('vibrant') : t('calm')}</span> })}.
                 </p>
             </div>
         </div>

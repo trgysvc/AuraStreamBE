@@ -83,8 +83,8 @@ export default async function RootLayout({
     notFound();
   }
 
-  // Get messages for the client provider
-  const messages = await getMessages();
+  // Get messages for the client provider by directly importing to bypass context issues
+  const messages = (await import(`../../../messages/${locale}.json`)).default;
 
   return (
     <html lang={locale} suppressHydrationWarning>

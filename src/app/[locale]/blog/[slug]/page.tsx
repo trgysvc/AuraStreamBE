@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { Clock, Calendar, User, Share2, ChevronLeft, ArrowRight } from 'lucide-react';
 import { getBlogPostBySlug, BlogPost } from '@/app/actions/blog';
@@ -88,7 +88,7 @@ Choosing royalty-free music from a direct licensor is the smartest way to scale 
             {/* Secondary Metadata Header */}
             <header className="fixed top-20 inset-x-0 h-16 bg-white/90 backdrop-blur-xl border-b border-zinc-100 z-40 transition-all">
                 <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
-                    <Link href={`/${locale}/blog`} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-indigo-600 transition-colors group">
+                    <Link href="/blog" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-indigo-600 transition-colors group">
                         <ChevronLeft size={14} className="transition-transform group-hover:-translate-x-1" />
                         {t('backToJournal')}
                     </Link>
@@ -210,7 +210,7 @@ Choosing royalty-free music from a direct licensor is the smartest way to scale 
                         <h2 className="text-4xl lg:text-6xl font-black italic tracking-tight uppercase leading-[0.9]">
                             {t('continueExploring')} <br /><span className="text-zinc-300 font-light not-italic">{t('exploring')}</span>
                         </h2>
-                        <Link href={`/${locale}/blog`} className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 hover:text-zinc-900 transition-colors group">
+                        <Link href="/blog" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 hover:text-zinc-900 transition-colors group">
                             {t('fullJournal')} <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
                         </Link>
                     </div>

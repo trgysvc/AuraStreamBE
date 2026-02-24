@@ -1,11 +1,12 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Home, Music, Mic2, User, Settings, LogOut, ShieldCheck, Users } from 'lucide-react';
 import { createClient } from '@/lib/db/client';
+import { useTranslations } from 'next-intl';
 
 const SidebarItem = ({ icon: Icon, label, href, active }: { icon: React.ElementType, label: string, href: string, active?: boolean }) => (
     <Link
@@ -21,6 +22,7 @@ const SidebarItem = ({ icon: Icon, label, href, active }: { icon: React.ElementT
 );
 
 export default function Sidebar() {
+    const t = useTranslations('Sidebar');
     const pathname = usePathname();
     const router = useRouter();
     const supabase = createClient();
@@ -77,17 +79,17 @@ export default function Sidebar() {
             </div>
 
             <nav className="flex-1 space-y-1 overflow-y-auto no-scrollbar pb-10 bg-black">
-                <SidebarItem icon={Home} label="Home" href="/dashboard" active={pathname === '/dashboard'} />
+                <SidebarItem icon={Home} label={t('home')} href="/dashboard" active={pathname === '/dashboard'} />
 
                 {/* Fleet Control - Enterprise & Admin */}
                 {(isAdmin || isEnterprise) && (
                     <>
                         <div className="mt-8 px-6 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500/50 mb-2">
-                            Fleet Intelligence
+                            {t('fleet_control')}
                         </div>
                         <SidebarItem
                             icon={ShieldCheck}
-                            label="Enterprise Control"
+                            label={t('enterprise_item')}
                             href="/dashboard/enterprise"
                             active={pathname === '/dashboard/enterprise'}
                         />
@@ -96,17 +98,17 @@ export default function Sidebar() {
                                 href="/dashboard/enterprise/venues"
                                 className={`block py-2 text-[11px] font-bold uppercase tracking-widest transition-colors ${pathname === '/dashboard/enterprise/venues' ? 'text-indigo-400' : 'text-zinc-600 hover:text-white'}`}
                             >
-                                • Branch Network
+                                • {t('branch_network')}
                             </Link>
                             <Link
                                 href="/dashboard/enterprise/staff"
                                 className={`block py-2 text-[11px] font-bold uppercase tracking-widest transition-colors ${pathname === '/dashboard/enterprise/staff' ? 'text-pink-400' : 'text-zinc-600 hover:text-white'}`}
                             >
-                                • Personnel
+                                • {t('personnel')}
                             </Link>
                         </div>
                         {isAdmin && (
-                            <SidebarItem icon={Users} label="Super Admin" href="/admin/users" active={pathname?.startsWith('/admin/users')} />
+                            <SidebarItem icon={Users} label={t('super_admin')} href="/admin/users" active={pathname?.startsWith('/admin/users')} />
                         )}
                     </>
                 )}
@@ -115,11 +117,11 @@ export default function Sidebar() {
                 {(isStaff || isEnterprise || isAdmin) && (
                     <>
                         <div className="mt-8 px-6 text-[10px] font-black uppercase tracking-[0.2em] text-green-500/50 mb-2">
-                            Live Operations
+                            {t('live_ops')}
                         </div>
                         <SidebarItem
                             icon={ShieldCheck}
-                            label="My Venue"
+                            label={t('my_venue')}
                             href="/dashboard/venue"
                             active={pathname?.startsWith('/dashboard/venue')}
                         />
@@ -127,22 +129,22 @@ export default function Sidebar() {
                 )}
 
                 <div className="mt-8 px-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-700 mb-2">
-                    Media Library
+                    {t('media_library')}
                 </div>
-                <SidebarItem icon={Music} label="Music" href="/dashboard/music" active={pathname?.startsWith('/dashboard/music')} />
-                <SidebarItem icon={Mic2} label="Sound Effects" href="/dashboard/sfx" active={pathname?.startsWith('/dashboard/sfx')} />
+                <SidebarItem icon={Music} label={t('music')} href="/dashboard/music" active={pathname?.startsWith('/dashboard/music')} />
+                <SidebarItem icon={Mic2} label={t('sfx')} href="/dashboard/sfx" active={pathname?.startsWith('/dashboard/sfx')} />
 
                 <div className="mt-8 px-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-700 mb-2">
-                    Identity
+                    {t('identity')}
                 </div>
-                <SidebarItem icon={User} label="Profile" href="/dashboard/me" active={pathname === '/dashboard/me'} />
-                <SidebarItem icon={Settings} label="Settings" href="/account" active={pathname === '/account'} />
+                <SidebarItem icon={User} label={t('profile')} href="/dashboard/me" active={pathname === '/dashboard/me'} />
+                <SidebarItem icon={Settings} label={t('settings')} href="/account" active={pathname === '/account'} />
             </nav>
 
             <div className="p-6 border-t border-white/5 bg-black">
                 <button onClick={handleLogout} className="flex items-center gap-3 w-full py-3 px-4 rounded-xl bg-white/5 text-zinc-400 hover:text-rose-500 transition-all border border-white/5">
                     <LogOut size={16} />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Terminate Session</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">{t('logout')}</span>
                 </button>
             </div>
         </aside>

@@ -19,7 +19,7 @@ import {
     Loader2,
     Sparkles
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import {

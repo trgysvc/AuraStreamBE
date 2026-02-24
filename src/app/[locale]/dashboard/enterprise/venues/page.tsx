@@ -8,7 +8,7 @@ import {
     Settings2,
     Trash2
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 async function getVenuesData() {
     const supabase = await createClient();

@@ -3,7 +3,7 @@ import { createClient } from '@/lib/db/server';
 import { redirect } from 'next/navigation';
 import { getPlaylistDetails_Action } from '@/app/actions/playlist';
 import { Play, Clock, MoreVertical, Trash2, Plus, Sparkles } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 
 export default async function PlaylistDetailPage({ params }: { params: Promise<{ id: string, locale: string }> }) {

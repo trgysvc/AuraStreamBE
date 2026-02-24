@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/db/client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { Mail, Lock, ArrowRight, User } from 'lucide-react';
 
 export default function SignupPage() {

@@ -1,7 +1,7 @@
 'use client';
 
 import { Sparkles, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { MusicRequestForm } from '@/components/feature/licensing/MusicRequestForm';
 
 export default function MusicRequestPage() {

@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { ArrowRight, Calendar, ArrowUpRight } from 'lucide-react';
 import { getBlogPosts, BlogPost } from '@/app/actions/blog';

@@ -3,7 +3,7 @@
 import React from 'react';
 import { Info, Search, Music, Grid2X2, HelpCircle, FileText, User, CreditCard } from 'lucide-react';
 import { Footer } from '@/components/layout/Footer';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { useTranslations } from 'next-intl';
 
 export default function HelpCenterPage() {

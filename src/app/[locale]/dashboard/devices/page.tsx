@@ -3,7 +3,7 @@ import { createClient } from '@/lib/db/server';
 import { redirect } from 'next/navigation';
 import { getDevices_Action } from '@/app/actions/device';
 import { Plus, Monitor, Wifi, WifiOff, AlertCircle, RefreshCw } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 
 export default async function DevicesPage() {

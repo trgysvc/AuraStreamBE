@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { ArrowRight, Check, X, Shield, Activity, Cloud, Mic, Play, Lock, BarChart3, Clock, Zap, Layers, Layout } from 'lucide-react';
 import { MainHeader } from '@/components/layout/MainHeader';
 import { Footer } from '@/components/layout/Footer';

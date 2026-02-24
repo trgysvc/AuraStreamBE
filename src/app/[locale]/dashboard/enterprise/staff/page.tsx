@@ -10,7 +10,7 @@ import {
     ChevronDown,
     ArrowRight
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 
 async function getStaffData() {
     const supabase = await createClient();
