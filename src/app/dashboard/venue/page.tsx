@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { Search, ChevronDown, Sliders, Music, Sparkles as LucideSparkles, Play, Plus, Filter, ListMusic, Layers, Check, X, Wand2, Activity, MapPin, Wind, Zap, RefreshCw } from 'lucide-react';
 import TrackRow from '@/components/dashboard/TrackRow';
-import { getVenueTracks_Action } from '@/app/actions/venue';
+import { getVenueTracks_Action, getCurationCounts_Action } from '@/app/actions/venue';
 import { logSearchQuery_Action } from '@/app/actions/elite-analytics';
 import { ScheduleManager } from '@/components/feature/venue/ScheduleManager';
 import { SmartFlowProvider, useSmartFlow } from '@/context/SmartFlowContext';
@@ -45,14 +45,22 @@ function VenueDashboardContent() {
     const [loading, setLoading] = useState(true);
     const [selectedPlaylist, setSelectedPlaylist] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
+    const [curationCounts, setCurationCounts] = useState<Record<string, number>>({});
 
     useEffect(() => {
-        const fetchUser = async () => {
+        const fetchUserAndCounts = async () => {
             const supabase = createClient();
             const { data: { user } } = await supabase.auth.getUser();
-            if (user) setUserId(user.id);
+            if (user) {
+                setUserId(user.id);
+                const counts = await getCurationCounts_Action({ userId: user.id });
+                setCurationCounts(counts);
+            } else {
+                const counts = await getCurationCounts_Action();
+                setCurationCounts(counts);
+            }
         };
-        fetchUser();
+        fetchUserAndCounts();
     }, []);
 
     // Taxonomy Filters State
@@ -148,26 +156,31 @@ function VenueDashboardContent() {
         setList(list.includes(tag) ? list.filter(t => t !== tag) : [...list, tag]);
     };
 
+    const formatCount = (count: number | undefined, singular: string = "track", plural: string = "tracks") => {
+        if (count === undefined) return "Loading...";
+        return `${count} ${count === 1 ? singular : plural}`;
+    };
+
     const playlists = [
         { title: "Recommended tracks", tracks: "Aura AI", color: "bg-[#FF5533]", image: "https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=800" },
         { title: "Trending in Venues", tracks: "Popular", color: "bg-[#FF77AA]", image: "https://images.unsplash.com/photo-1514525253344-f856335d7d67?q=80&w=800" },
-        { title: "Can's Essentials", tracks: "24 playlists", color: "bg-[#AAAAAA]", image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=800" },
-        { title: "Creator's Picks", tracks: "117 playlists", color: "bg-[#4499FF]", image: "https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?q=80&w=800" },
-        { title: "Liked Songs", tracks: "Your favorites", color: "bg-pink-600", image: "https://images.unsplash.com/photo-1544690411-b752fa399f9c?q=80&w=800" },
-        { title: "Championships", tracks: "35 tracks", color: "bg-[#FFCC44]", image: "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=800" },
-        { title: "Sports & Action", tracks: "8 playlists", color: "bg-[#9966FF]", image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=800" },
-        { title: "Valentine's Day", tracks: "35 tracks", color: "bg-[#FF99CC]", image: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800" },
-        { title: "Morning Coffee", tracks: "Aura Chill", color: "bg-[#D2B48C]", image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=800" },
-        { title: "Deep Focus", tracks: "Workspace", color: "bg-[#2F4F4F]", image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=800" },
-        { title: "Late Night Jazz", tracks: "Lounge", color: "bg-[#4B0082]", image: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=800" },
-        { title: "Golden Hour", tracks: "Sunset", color: "bg-[#FF8C00]", image: "https://images.unsplash.com/photo-1470252649358-9c9e6c739946?q=80&w=800" },
-        { title: "Techno Bunker", tracks: "Underground", color: "bg-[#000000]", image: "https://images.unsplash.com/photo-1574433232643-49f0f6cc0d00?q=80&w=800" },
-        { title: "Aura Classics", tracks: "Legacy", color: "bg-[#DAA520]", image: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=800" },
-        { title: "Global Beats", tracks: "World", color: "bg-[#228B22]", image: "https://images.unsplash.com/photo-1526218626217-dc65a29bb444?q=80&w=800" },
-        { title: "Cinematic Vibe", tracks: "Storytelling", color: "bg-[#800000]", image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=800" }
+        { title: "Can's Essentials", tracks: formatCount(curationCounts["Can's Essentials"], "playlist", "playlists"), color: "bg-[#AAAAAA]", image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=800" },
+        { title: "Creator's Picks", tracks: formatCount(curationCounts["Creator's Picks"], "playlist", "playlists"), color: "bg-[#4499FF]", image: "https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?q=80&w=800" },
+        { title: "Liked Songs", tracks: formatCount(curationCounts["Liked Songs"]), color: "bg-pink-600", image: "https://images.unsplash.com/photo-1544690411-b752fa399f9c?q=80&w=800" },
+        { title: "Championships", tracks: formatCount(curationCounts["Championships"]), vibe: "Epic", color: "bg-[#FFCC44]", image: "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=800" },
+        { title: "Sports & Action", tracks: formatCount(curationCounts["Sports & Action"], "playlist", "playlists"), vibe: "Workout", color: "bg-[#9966FF]", image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=800" },
+        { title: "Valentine's Day", tracks: formatCount(curationCounts["Valentine's Day"]), vibe: "Romantic", color: "bg-[#FF99CC]", image: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800" },
+        { title: "Morning Coffee", tracks: formatCount(curationCounts["Morning Coffee"]), vibe: "Relaxing", color: "bg-[#D2B48C]", image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=800" },
+        { title: "Deep Focus", tracks: formatCount(curationCounts["Deep Focus"]), vibe: "Focus", color: "bg-[#2F4F4F]", image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=800" },
+        { title: "Late Night Jazz", tracks: formatCount(curationCounts["Late Night Jazz"]), genre: "Jazz", color: "bg-[#4B0082]", image: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=800" },
+        { title: "Golden Hour", tracks: formatCount(curationCounts["Golden Hour"]), vibe: "Dreamy", color: "bg-[#FF8C00]", image: "https://images.unsplash.com/photo-1470252649358-9c9e6c739946?q=80&w=800" },
+        { title: "Techno Bunker", tracks: formatCount(curationCounts["Techno Bunker"]), vibe: "Dark", color: "bg-[#000000]", image: "https://images.unsplash.com/photo-1574433232643-49f0f6cc0d00?q=80&w=800" },
+        { title: "Aura Classics", tracks: formatCount(curationCounts["Aura Classics"]), genre: "Legacy", color: "bg-[#DAA520]", image: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=800" },
+        { title: "Global Beats", tracks: formatCount(curationCounts["Global Beats"]), genre: "World", color: "bg-[#228B22]", image: "https://images.unsplash.com/photo-1526218626217-dc65a29bb444?q=80&w=800" },
+        { title: "Cinematic Vibe", tracks: formatCount(curationCounts["Cinematic Vibe"]), genre: "Cinematic", color: "bg-[#800000]", image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=800" }
     ];
 
-    const vibes = [
+    const vibesList = [
         { title: 'Chill', image: 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=800', color: 'bg-blue-500' },
         { title: 'Dreamy', image: 'https://images.unsplash.com/photo-1492724441997-5dc865305da7?q=80&w=800', color: 'bg-purple-500' },
         { title: 'Epic', image: 'https://images.unsplash.com/photo-1533750516457-a7f992034fec?q=80&w=800', color: 'bg-red-500' },
@@ -486,13 +499,26 @@ function VenueDashboardContent() {
                         <div className="space-y-6 md:space-y-8 pt-8 border-t border-white/5">
                             <h2 className="text-xl md:text-2xl font-black tracking-tight text-white uppercase italic">Premium Curation</h2>
                             <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 md:gap-4">
-                                {playlists.map((playlist, i) => (
+                                {playlists.map((playlist: any, i) => (
                                     <PlaylistCard
                                         key={i}
                                         {...playlist}
                                         onClick={() => {
                                             setSelectedPlaylist(playlist.title);
-                                            setQuery(playlist.title === "Recommended tracks" ? "" : playlist.title);
+                                            // Reset all filters before applying new curation search
+                                            setSelectedVibes([]);
+                                            setSelectedGenres([]);
+                                            setSelectedVenues([]);
+
+                                            if (playlist.vibe) {
+                                                setSelectedVibes([playlist.vibe]);
+                                                setQuery('');
+                                            } else if (playlist.genre) {
+                                                setSelectedGenres([playlist.genre]);
+                                                setQuery('');
+                                            } else {
+                                                setQuery(playlist.title === "Recommended tracks" ? "" : playlist.title);
+                                            }
                                             window.scrollTo({ top: 0, behavior: 'smooth' });
                                         }}
                                     />
@@ -550,11 +576,11 @@ function VenueDashboardContent() {
                         <div className="space-y-6 md:space-y-8 pt-12 border-t border-white/5">
                             <h2 className="text-xl md:text-2xl font-black tracking-tight text-white uppercase italic text-glow-indigo">Premium Vibes</h2>
                             <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 md:gap-4">
-                                {vibes.map((vibe, i) => (
+                                {vibesList.map((vibe, i) => (
                                     <PlaylistCard
                                         key={i}
                                         title={vibe.title}
-                                        tracks="Aura Curation"
+                                        tracks={formatCount(curationCounts[vibe.title])}
                                         color={vibe.color}
                                         image={vibe.image}
                                         onClick={() => {

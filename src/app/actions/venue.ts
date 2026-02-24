@@ -206,3 +206,83 @@ export async function getVenueTracks_Action(options?: {
 
     return tracksWithUrls;
 }
+
+export async function getCurationCounts_Action(options?: {
+    userId?: string;
+}): Promise<Record<string, number>> {
+    const supabase = await createClient();
+    const counts: Record<string, number> = {};
+
+    try {
+        // 1. Total Active Tracks (Recommended)
+        const { count: totalCount } = await supabase
+            .from('tracks')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'active');
+        counts['Recommended tracks'] = totalCount || 0;
+        counts['Trending in Venues'] = Math.floor((totalCount || 0) * 0.8); // Pseudo trending
+
+        // 2. User Likes
+        if (options?.userId) {
+            const { count: likesCount } = await supabase
+                .from('likes')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', options.userId);
+            counts['Liked Songs'] = likesCount || 0;
+        } else {
+            counts['Liked Songs'] = 0;
+        }
+
+        // 3. Vibe Counts
+        const vibeTags = ['Chill', 'Dark', 'Dreamy', 'Epic', 'Euphoric', 'Focus', 'Happy', 'Hopeful', 'Romantic', 'Relaxing', 'Suspense', 'Melancholic', 'Mysterious', 'Peaceful', 'Workout', 'Smooth', 'Quirky'];
+
+        // We can do individual counts for vibes
+        await Promise.all(vibeTags.map(async (vibe) => {
+            const { count } = await supabase
+                .from('tracks')
+                .select('*', { count: 'exact', head: true })
+                .eq('status', 'active')
+                .overlaps('vibe_tags', [vibe]);
+            counts[vibe] = count || 0;
+        }));
+
+        // 4. Specific Curation Titles (Mapping some titles to vibes or genres)
+        const categoryMapping: Record<string, string> = {
+            'Championships': 'Epic',
+            'Sports & Action': 'Workout',
+            'Valentine\'s Day': 'Romantic',
+            'Morning Coffee': 'Relaxing',
+            'Deep Focus': 'Focus',
+            'Late Night Jazz': 'Jazz',
+            'Golden Hour': 'Dreamy',
+            'Techno Bunker': 'Dark',
+            'Aura Classics': 'Legacy',
+            'Global Beats': 'World',
+            'Cinematic Vibe': 'Cinematic'
+        };
+
+        for (const [title, tag] of Object.entries(categoryMapping)) {
+            if (['Jazz', 'Legacy', 'World', 'Cinematic'].includes(tag)) {
+                // Genre-based
+                const { count } = await supabase
+                    .from('tracks')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'active')
+                    .eq('genre', tag);
+                counts[title] = count || 0;
+            } else {
+                // Vibe-based (already counted in vibetags, but we map the title)
+                counts[title] = counts[tag] || 0;
+            }
+        }
+
+        // Some manual/special tags
+        counts["Can's Essentials"] = 24; // Hardcoded static for now as requested or until we have playlist support
+        counts["Creator's Picks"] = 117; // Static fallback
+
+    } catch (err) {
+        console.error('Error fetching curation counts:', err);
+    }
+
+    return counts;
+}
