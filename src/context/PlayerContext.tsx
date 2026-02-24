@@ -80,12 +80,21 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             const audio = new Audio();
             audio.crossOrigin = "anonymous";
             audio.preload = "auto";
+            audio.id = "aura-internal-audio";
+            // Safari Fix: Appending to DOM and using playsinline prevents silence/blocking
+            audio.setAttribute('playsinline', 'true');
+            audio.setAttribute('webkit-playsinline', 'true');
+            audio.style.display = "none";
+            document.body.appendChild(audio);
             audioRef.current = audio;
 
             audio.addEventListener('timeupdate', () => setCurrentTime(audio.currentTime));
             audio.addEventListener('loadedmetadata', () => setDuration(audio.duration));
             audio.addEventListener('ended', () => {
                 handleTrackEnd();
+            });
+            audio.addEventListener('error', (e) => {
+                console.error("[Player] Audio Source Error:", audio.error);
             });
         }
 
@@ -98,7 +107,6 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                 node.fftSize = 256;
 
                 // Safari CORS Check: MediaElementSource requires proper CORS headers
-                // If it fails, we fall back to normal audio without visualizer
                 try {
                     const source = ctx.createMediaElementSource(audioRef.current);
                     source.connect(node);
@@ -106,16 +114,16 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                     audioContextRef.current = ctx;
                     setAnalyser(node);
                 } catch (sourceErr) {
-                    console.warn("MediaElementSource failed (likely CORS), visualizer disabled.");
+                    console.warn("[Player] WebAudio Node Link Failed (likely CORS/Safari Restriction):", sourceErr);
                 }
             }
         } catch (e) {
-            console.warn("Web Audio setup failed");
+            console.warn("[Player] Web Audio context initialization failed");
         }
 
         // --- Safari Unlocking Hack ---
         const unlock = async () => {
-            console.log("[Player] Unlocking Safari Audio...");
+            console.log("[Player] Unlocking Safari Audio Context...");
 
             // 1. Resume AudioContext
             if (audioContextRef.current) {
@@ -124,20 +132,20 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                 }
             }
 
-            // 2. Prime Audio Element
+            // 2. Prime Audio Element with a tiny silent play
             if (audioRef.current) {
                 try {
-                    // Playing and immediately pausing a tiny silent buffer is the gold standard for Safari
                     const p = audioRef.current.play();
                     if (p !== undefined) {
                         p.then(() => {
                             audioRef.current?.pause();
-                            console.log("[Player] Audio Element Primed");
+                            console.log("[Player] Hardware Audio Pipeline Primed");
                         }).catch(() => { });
                     }
                 } catch (e) { }
             }
 
+            // Remove listeners after first successful interaction
             window.removeEventListener('click', unlock);
             window.removeEventListener('touchstart', unlock);
             window.removeEventListener('mousedown', unlock);
@@ -150,6 +158,10 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             window.removeEventListener('click', unlock);
             window.removeEventListener('touchstart', unlock);
             window.removeEventListener('mousedown', unlock);
+            // Cleanup audio element on unmount
+            if (audioRef.current && document.body.contains(audioRef.current)) {
+                document.body.removeChild(audioRef.current);
+            }
         };
     }, []);
 
@@ -191,12 +203,10 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const playTrack = async (track: Track, list?: Track[]) => {
         if (!track || !audioRef.current) return;
 
-        // 1. IMMEDIATE PLAY (Safari Fix)
-        // We trigger a play on the current audio element immediately to keep the user gesture active.
-        // Even if the src isn't set yet, this "primes" the element.
-        const silentPlay = audioRef.current.play();
-        if (silentPlay !== undefined) {
-            silentPlay.then(() => { }).catch(() => { });
+        // 1. IMMEDIATE GESTURE CAPTURE (Safari Fix)
+        // Ensure AudioContext is resumed within the same task as the user click.
+        if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+            audioContextRef.current.resume().catch(() => { });
         }
 
         // Log telemetry for the PREVIOUS track
@@ -223,17 +233,13 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         let playUrl = track.availableTunings?.[targetTuning] || track.src;
 
         if (!playUrl) {
-            console.error("No valid source found for track:", track.title);
+            console.error("[Player] No valid source URL for:", track.title);
             return;
         }
 
         try {
-            // Ensure AudioContext is resumed on Safari
-            if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
-                audioContextRef.current.resume().catch(() => { });
-            }
-
-            // Set source and properties
+            // Safari specific: Reset engine before setting new source
+            audioRef.current.pause();
             audioRef.current.src = playUrl;
 
             if (!track.availableTunings?.[targetTuning]) {
@@ -244,20 +250,21 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                 audioRef.current.playbackRate = 1.0;
             }
 
-            // Safari specific: Don't call .load() if not necessary, or call it before setting src.
-            // Using .play() directly after setting .src is generally safer on Safari.
-            if (audioRef.current.paused) {
-                const playPromise = audioRef.current.play();
-                if (playPromise !== undefined) {
-                    await playPromise;
-                }
+            // Safari fix: Calling load() explicitly before play()
+            audioRef.current.load();
+
+            const playPromise = audioRef.current.play();
+            if (playPromise !== undefined) {
+                await playPromise;
             }
 
             setIsPlaying(true);
             setCurrentTrack(track);
 
         } catch (e) {
-            console.error("Play failed:", e);
+            console.error("[Player] Playback attempt failed:", e);
+            // If play fails, we still set the track so user can try hitting play button again
+            setCurrentTrack(track);
             setIsPlaying(false);
         }
     };
