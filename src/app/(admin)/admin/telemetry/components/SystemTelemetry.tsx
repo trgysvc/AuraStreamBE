@@ -24,6 +24,7 @@ import { getSystemTelemetry_Action } from '@/app/actions/admin-telemetry';
 export function SystemTelemetry() {
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [mounted, setMounted] = useState(false);
 
     const fetchSystemData = async () => {
         setLoading(true);
@@ -38,9 +39,13 @@ export function SystemTelemetry() {
     };
 
     useEffect(() => {
+        const timer = setTimeout(() => setMounted(true), 200);
         fetchSystemData();
         const interval = setInterval(fetchSystemData, 60000); // Refresh every minute
-        return () => clearInterval(interval);
+        return () => {
+            clearTimeout(timer);
+            clearInterval(interval);
+        };
     }, []);
 
     if (loading && !data) {
@@ -109,42 +114,44 @@ export function SystemTelemetry() {
                     </div>
 
                     <div className="h-[300px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={timeSeries}>
-                                <defs>
-                                    <linearGradient id="colorSpeed" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
-                                <XAxis
-                                    dataKey="time"
-                                    stroke="#444"
-                                    fontSize={10}
-                                    tickLine={false}
-                                    axisLine={false}
-                                />
-                                <YAxis
-                                    stroke="#444"
-                                    fontSize={10}
-                                    tickLine={false}
-                                    axisLine={false}
-                                />
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '12px', fontSize: '10px' }}
-                                    itemStyle={{ color: '#06b6d4' }}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="processed"
-                                    stroke="#06b6d4"
-                                    strokeWidth={3}
-                                    fillOpacity={1}
-                                    fill="url(#colorSpeed)"
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
+                        {mounted && (
+                            <ResponsiveContainer width="100%" height={300} debounce={1}>
+                                <AreaChart data={timeSeries}>
+                                    <defs>
+                                        <linearGradient id="colorSpeed" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3} />
+                                            <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
+                                    <XAxis
+                                        dataKey="time"
+                                        stroke="#444"
+                                        fontSize={10}
+                                        tickLine={false}
+                                        axisLine={false}
+                                    />
+                                    <YAxis
+                                        stroke="#444"
+                                        fontSize={10}
+                                        tickLine={false}
+                                        axisLine={false}
+                                    />
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '12px', fontSize: '10px' }}
+                                        itemStyle={{ color: '#06b6d4' }}
+                                    />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="processed"
+                                        stroke="#06b6d4"
+                                        strokeWidth={3}
+                                        fillOpacity={1}
+                                        fill="url(#colorSpeed)"
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                 </div>
 
@@ -161,36 +168,38 @@ export function SystemTelemetry() {
                     </div>
 
                     <div className="h-[300px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={timeSeries}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
-                                <XAxis
-                                    dataKey="time"
-                                    stroke="#444"
-                                    fontSize={10}
-                                    tickLine={false}
-                                    axisLine={false}
-                                />
-                                <YAxis
-                                    stroke="#444"
-                                    fontSize={10}
-                                    tickLine={false}
-                                    axisLine={false}
-                                />
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '12px', fontSize: '10px' }}
-                                    itemStyle={{ color: '#f43f5e' }}
-                                />
-                                <Line
-                                    type="monotone"
-                                    dataKey="errors"
-                                    stroke="#f43f5e"
-                                    strokeWidth={3}
-                                    dot={{ fill: '#f43f5e', r: 4 }}
-                                    activeDot={{ r: 6, stroke: '#f43f5e', strokeWidth: 2 }}
-                                />
-                            </LineChart>
-                        </ResponsiveContainer>
+                        {mounted && (
+                            <ResponsiveContainer width="100%" height={300} debounce={1}>
+                                <LineChart data={timeSeries}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
+                                    <XAxis
+                                        dataKey="time"
+                                        stroke="#444"
+                                        fontSize={10}
+                                        tickLine={false}
+                                        axisLine={false}
+                                    />
+                                    <YAxis
+                                        stroke="#444"
+                                        fontSize={10}
+                                        tickLine={false}
+                                        axisLine={false}
+                                    />
+                                    <Tooltip
+                                        contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '12px', fontSize: '10px' }}
+                                        itemStyle={{ color: '#f43f5e' }}
+                                    />
+                                    <Line
+                                        type="monotone"
+                                        dataKey="errors"
+                                        stroke="#f43f5e"
+                                        strokeWidth={3}
+                                        dot={{ fill: '#f43f5e', r: 4 }}
+                                        activeDot={{ r: 6, stroke: '#f43f5e', strokeWidth: 2 }}
+                                    />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                 </div>
             </div>
@@ -211,8 +220,8 @@ function KPICard({ title, value, icon: Icon, color, trend }: any) {
                         <Icon size={20} />
                     </div>
                     <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border ${trend === 'Warning' ? 'bg-rose-500/10 border-rose-500/20 text-rose-500' :
-                            trend === 'High' ? 'bg-amber-500/10 border-amber-500/20 text-amber-500' :
-                                'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'
+                        trend === 'High' ? 'bg-amber-500/10 border-amber-500/20 text-amber-500' :
+                            'bg-emerald-500/10 border-emerald-500/20 text-emerald-500'
                         }`}>
                         {trend}
                     </span>

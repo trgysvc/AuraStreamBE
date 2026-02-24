@@ -27,6 +27,7 @@ import { getVenueTelemetry_Action } from '@/app/actions/telemetry-venue';
 export function VenueAnalytics() {
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [mounted, setMounted] = useState(false);
 
     const fetchVenueData = async () => {
         setLoading(true);
@@ -41,9 +42,13 @@ export function VenueAnalytics() {
     };
 
     useEffect(() => {
+        const timer = setTimeout(() => setMounted(true), 200);
         fetchVenueData();
         const interval = setInterval(fetchVenueData, 120000); // Refresh every 2 mins
-        return () => clearInterval(interval);
+        return () => {
+            clearTimeout(timer);
+            clearInterval(interval);
+        };
     }, []);
 
     if (loading && !data) {
@@ -109,31 +114,33 @@ export function VenueAnalytics() {
                     </div>
 
                     <div className="h-[300px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={peakHours}>
-                                <XAxis
-                                    dataKey="hour"
-                                    stroke="#444"
-                                    fontSize={10}
-                                    tickLine={false}
-                                    axisLine={false}
-                                />
-                                <YAxis hide />
-                                <Tooltip
-                                    cursor={{ fill: 'transparent' }}
-                                    contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '12px', fontSize: '10px' }}
-                                />
-                                <Bar
-                                    dataKey="volume"
-                                    fill="#10b981"
-                                    radius={[4, 4, 0, 0]}
-                                >
-                                    {peakHours.map((entry: any, index: number) => (
-                                        <Cell key={`cell-${index}`} fill={parseInt(entry.hour) >= 18 || parseInt(entry.hour) <= 2 ? '#ec4899' : '#10b981'} opacity={0.8} />
-                                    ))}
-                                </Bar>
-                            </BarChart>
-                        </ResponsiveContainer>
+                        {mounted && (
+                            <ResponsiveContainer width="100%" height={300} debounce={1}>
+                                <BarChart data={peakHours}>
+                                    <XAxis
+                                        dataKey="hour"
+                                        stroke="#444"
+                                        fontSize={10}
+                                        tickLine={false}
+                                        axisLine={false}
+                                    />
+                                    <YAxis hide />
+                                    <Tooltip
+                                        cursor={{ fill: 'transparent' }}
+                                        contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '12px', fontSize: '10px' }}
+                                    />
+                                    <Bar
+                                        dataKey="volume"
+                                        fill="#10b981"
+                                        radius={[4, 4, 0, 0]}
+                                    >
+                                        {peakHours.map((entry: any, index: number) => (
+                                            <Cell key={`cell-${index}`} fill={parseInt(entry.hour) >= 18 || parseInt(entry.hour) <= 2 ? '#ec4899' : '#10b981'} opacity={0.8} />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                 </div>
 
@@ -223,8 +230,8 @@ function VenueKPICard({ title, value, icon: Icon, color, trend, sub }: any) {
                     </div>
                     {trend && (
                         <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border ${trend === 'Live' || trend === 'Healthy' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' :
-                                trend === 'Warning' ? 'bg-rose-500/10 border-rose-500/20 text-rose-500' :
-                                    'bg-zinc-500/10 border-zinc-500/20 text-zinc-500'
+                            trend === 'Warning' ? 'bg-rose-500/10 border-rose-500/20 text-rose-500' :
+                                'bg-zinc-500/10 border-zinc-500/20 text-zinc-500'
                             }`}>
                             {trend}
                         </span>

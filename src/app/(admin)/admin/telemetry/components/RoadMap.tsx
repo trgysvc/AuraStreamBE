@@ -35,6 +35,7 @@ const COLORS = ['#6366f1', '#ec4899', '#10b981', '#f59e0b', '#3b82f6'];
 export function RoadMap() {
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [mounted, setMounted] = useState(false);
 
     const fetchRoadmapData = async () => {
         setLoading(true);
@@ -49,9 +50,13 @@ export function RoadMap() {
     };
 
     useEffect(() => {
+        const timer = setTimeout(() => setMounted(true), 200);
         fetchRoadmapData();
         const interval = setInterval(fetchRoadmapData, 300000); // 5 mins
-        return () => clearInterval(interval);
+        return () => {
+            clearTimeout(timer);
+            clearInterval(interval);
+        };
     }, []);
 
     if (loading && !data) {
@@ -112,16 +117,18 @@ export function RoadMap() {
                     </div>
 
                     <div className="h-[350px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#222" />
-                                <XAxis type="number" dataKey="bpm" name="BPM" stroke="#444" fontSize={10} unit="bpm" />
-                                <YAxis type="number" dataKey="duration" name="Duration" stroke="#444" fontSize={10} unit="s" />
-                                <ZAxis type="number" dataKey="energy" range={[50, 400]} name="Energy" />
-                                <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '12px', fontSize: '10px' }} />
-                                <Scatter name="Tracks" data={aiRadar.scatterData} fill="#6366f1" />
-                            </ScatterChart>
-                        </ResponsiveContainer>
+                        {mounted && (
+                            <ResponsiveContainer width="100%" height={350} debounce={1}>
+                                <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#222" />
+                                    <XAxis type="number" dataKey="bpm" name="BPM" stroke="#444" fontSize={10} unit="bpm" />
+                                    <YAxis type="number" dataKey="duration" name="Duration" stroke="#444" fontSize={10} unit="s" />
+                                    <ZAxis type="number" dataKey="energy" range={[50, 400]} name="Energy" />
+                                    <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '12px', fontSize: '10px' }} />
+                                    <Scatter name="Tracks" data={aiRadar.scatterData} fill="#6366f1" />
+                                </ScatterChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                 </div>
 
@@ -166,25 +173,27 @@ export function RoadMap() {
                     </div>
 
                     <div className="h-[300px] w-full flex items-center">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={salesDev.venueSegmentData}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={60}
-                                    outerRadius={100}
-                                    paddingAngle={5}
-                                    dataKey="value"
-                                >
-                                    {salesDev.venueSegmentData.map((entry: any, index: number) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                    ))}
-                                </Pie>
-                                <Tooltip contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '12px', fontSize: '10px' }} />
-                                <Legend verticalAlign="middle" align="right" layout="vertical" iconType="circle" />
-                            </PieChart>
-                        </ResponsiveContainer>
+                        {mounted && (
+                            <ResponsiveContainer width="100%" height={300} debounce={1}>
+                                <PieChart>
+                                    <Pie
+                                        data={salesDev.venueSegmentData}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={100}
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                    >
+                                        {salesDev.venueSegmentData.map((entry: any, index: number) => (
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '12px', fontSize: '10px' }} />
+                                    <Legend verticalAlign="middle" align="right" layout="vertical" iconType="circle" />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                 </div>
 

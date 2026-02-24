@@ -34,6 +34,7 @@ export function MusicTelemetry() {
     const [inventory, setInventory] = useState<CatalogStats | null>(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'genre' | 'venue' | 'vibe'>('genre');
+    const [mounted, setMounted] = useState(false);
 
     const fetchMusicData = async () => {
         setLoading(true);
@@ -52,9 +53,13 @@ export function MusicTelemetry() {
     };
 
     useEffect(() => {
+        const timer = setTimeout(() => setMounted(true), 200);
         fetchMusicData();
         const interval = setInterval(fetchMusicData, 60000); // Refresh every minute
-        return () => clearInterval(interval);
+        return () => {
+            clearTimeout(timer);
+            clearInterval(interval);
+        };
     }, []);
 
     if (loading && !data) {
@@ -168,30 +173,32 @@ export function MusicTelemetry() {
                     </div>
 
                     <div className="h-[300px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={genrePopularity} layout="vertical">
-                                <XAxis type="number" hide />
-                                <YAxis
-                                    dataKey="name"
-                                    type="category"
-                                    stroke="#444"
-                                    fontSize={10}
-                                    tickLine={false}
-                                    axisLine={false}
-                                    width={100}
-                                />
-                                <Tooltip
-                                    cursor={{ fill: 'transparent' }}
-                                    contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '12px', fontSize: '10px' }}
-                                />
-                                <Bar
-                                    dataKey="plays"
-                                    fill="#6366f1"
-                                    radius={[0, 10, 10, 0]}
-                                    barSize={20}
-                                />
-                            </BarChart>
-                        </ResponsiveContainer>
+                        {mounted && (
+                            <ResponsiveContainer width="100%" height={300} debounce={1}>
+                                <BarChart data={genrePopularity} layout="vertical">
+                                    <XAxis type="number" hide />
+                                    <YAxis
+                                        dataKey="name"
+                                        type="category"
+                                        stroke="#444"
+                                        fontSize={10}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        width={100}
+                                    />
+                                    <Tooltip
+                                        cursor={{ fill: 'transparent' }}
+                                        contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '12px', fontSize: '10px' }}
+                                    />
+                                    <Bar
+                                        dataKey="plays"
+                                        fill="#6366f1"
+                                        radius={[0, 10, 10, 0]}
+                                        barSize={20}
+                                    />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                 </div>
 
@@ -239,51 +246,53 @@ export function MusicTelemetry() {
                 </div>
 
                 <div className="h-[400px] w-full mt-4">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={engagementTrends}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
-                            <XAxis
-                                dataKey="day"
-                                stroke="#444"
-                                fontSize={10}
-                                tickLine={false}
-                                axisLine={false}
-                                dy={10}
-                            />
-                            <YAxis
-                                stroke="#444"
-                                fontSize={10}
-                                tickLine={false}
-                                axisLine={false}
-                            />
-                            <Tooltip
-                                contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '12px', fontSize: '10px' }}
-                            />
-                            <Line
-                                type="monotone"
-                                dataKey="streams"
-                                stroke="#6366f1"
-                                strokeWidth={4}
-                                dot={{ fill: '#6366f1', r: 4 }}
-                                activeDot={{ r: 8 }}
-                            />
-                            <Line
-                                type="monotone"
-                                dataKey="skips"
-                                stroke="#ec4899"
-                                strokeWidth={2}
-                                strokeDasharray="5 5"
-                                dot={false}
-                            />
-                            <Line
-                                type="monotone"
-                                dataKey="faves"
-                                stroke="#10b981"
-                                strokeWidth={3}
-                                dot={{ fill: '#10b981', r: 4 }}
-                            />
-                        </LineChart>
-                    </ResponsiveContainer>
+                    {mounted && (
+                        <ResponsiveContainer width="100%" height={400} debounce={1}>
+                            <LineChart data={engagementTrends}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#222" vertical={false} />
+                                <XAxis
+                                    dataKey="day"
+                                    stroke="#444"
+                                    fontSize={10}
+                                    tickLine={false}
+                                    axisLine={false}
+                                    dy={10}
+                                />
+                                <YAxis
+                                    stroke="#444"
+                                    fontSize={10}
+                                    tickLine={false}
+                                    axisLine={false}
+                                />
+                                <Tooltip
+                                    contentStyle={{ backgroundColor: '#000', border: '1px solid #333', borderRadius: '12px', fontSize: '10px' }}
+                                />
+                                <Line
+                                    type="monotone"
+                                    dataKey="streams"
+                                    stroke="#6366f1"
+                                    strokeWidth={4}
+                                    dot={{ fill: '#6366f1', r: 4 }}
+                                    activeDot={{ r: 8 }}
+                                />
+                                <Line
+                                    type="monotone"
+                                    dataKey="skips"
+                                    stroke="#ec4899"
+                                    strokeWidth={2}
+                                    strokeDasharray="5 5"
+                                    dot={false}
+                                />
+                                <Line
+                                    type="monotone"
+                                    dataKey="faves"
+                                    stroke="#10b981"
+                                    strokeWidth={3}
+                                    dot={{ fill: '#10b981', r: 4 }}
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    )}
                 </div>
             </div>
         </div>
@@ -336,8 +345,8 @@ function TabButton({ active, onClick, label, icon: Icon }: { active: boolean, on
         <button
             onClick={onClick}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${active
-                    ? 'bg-emerald-500 text-black shadow-[0_0_20px_rgba(16,185,129,0.3)]'
-                    : 'text-zinc-500 hover:text-white'
+                ? 'bg-emerald-500 text-black shadow-[0_0_20px_rgba(16,185,129,0.3)]'
+                : 'text-zinc-500 hover:text-white'
                 }`}
         >
             <Icon size={12} />

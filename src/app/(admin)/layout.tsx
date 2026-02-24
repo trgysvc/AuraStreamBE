@@ -52,6 +52,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
                                 src="/logos/Logo.png"
                                 alt="SonarAura"
                                 fill
+                                sizes="40px"
                                 className="object-contain mix-blend-screen"
                                 priority
                             />
