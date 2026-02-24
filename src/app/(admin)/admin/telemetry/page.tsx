@@ -1,21 +1,29 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { 
-    Activity, 
-    BarChart3, 
-    Globe, 
-    Search, 
-    SkipForward, 
-    Zap, 
-    Clock, 
+import {
+    Activity,
+    BarChart3,
+    Globe,
+    Search,
+    SkipForward,
+    Zap,
+    Clock,
     MousePointer2,
     RefreshCw,
-    AlertCircle
+    AlertCircle,
+    LayoutDashboard,
+    Music2,
+    Compass
 } from 'lucide-react';
 import { getTelemetryData_Action } from '@/app/actions/admin-telemetry';
+import { SystemTelemetry } from './components/SystemTelemetry';
+import { MusicTelemetry } from './components/MusicTelemetry';
+import { VenueAnalytics } from './components/VenueAnalytics';
+import { RoadMap } from './components/RoadMap';
 
 export default function TelemetryReportPage() {
+    const [activeTab, setActiveTab] = useState<'system' | 'music' | 'venue' | 'roadmap'>('system');
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
@@ -32,73 +40,116 @@ export default function TelemetryReportPage() {
     };
 
     useEffect(() => {
-        fetchData();
-        const interval = setInterval(fetchData, 30000); // Auto refresh every 30s
-        return () => clearInterval(interval);
-    }, []);
+        if (activeTab === 'music' && !data) {
+            fetchData();
+        }
+    }, [activeTab]);
 
+    const TabButton = ({ id, label, icon: Icon }: { id: 'system' | 'music' | 'venue' | 'roadmap', label: string, icon: any }) => (
+        <button
+            onClick={() => setActiveTab(id)}
+            className={`flex items-center gap-3 px-8 py-4 rounded-2xl transition-all duration-500 border-2 ${activeTab === id
+                ? 'bg-indigo-500/10 border-indigo-500/40 text-white shadow-[0_0_20px_rgba(99,102,241,0.2)]'
+                : 'bg-white/5 border-transparent text-zinc-500 hover:bg-white/10 hover:text-zinc-300'
+                }`}
+        >
+            <Icon size={18} className={activeTab === id ? 'text-indigo-500' : 'text-zinc-600'} />
+            <span className="text-xs font-black uppercase tracking-[0.2em]">{label}</span>
+        </button>
+    );
+
+    return (
+        <div className="min-h-screen bg-gray-900 space-y-12 pb-20 animate-in fade-in duration-1000">
+            {/* Header Area */}
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-indigo-500/10 rounded-lg text-indigo-500">
+                            <Activity size={20} strokeWidth={3} />
+                        </div>
+                        <h1 className="text-4xl font-black italic uppercase tracking-tighter text-white">Telemetri Dashboard</h1>
+                    </div>
+                    <p className="text-zinc-500 font-medium uppercase tracking-widest text-[9px] ml-1">Command Center Signal Monitoring & Protocol Logs</p>
+                </div>
+
+                <div className="flex items-center gap-4 w-full md:w-auto">
+                    <button
+                        onClick={fetchData}
+                        className="flex items-center gap-2 px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all text-zinc-400 hover:text-white"
+                    >
+                        <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Force Sync
+                    </button>
+                </div>
+            </div>
+
+            {/* Navigation Tabs */}
+            <div className="flex flex-wrap gap-4 p-2 bg-black/40 rounded-[2.5rem] border border-white/5 inline-flex">
+                <TabButton id="system" label="1. System Telemetry" icon={LayoutDashboard} />
+                <TabButton id="music" label="2. Music Telemetry" icon={Music2} />
+                <TabButton id="venue" label="3. Venue Analytics" icon={Globe} />
+                <TabButton id="roadmap" label="4. Road Map" icon={Compass} />
+            </div>
+
+            {/* Dynamic Content */}
+            <div className="mt-12">
+                {activeTab === 'system' && <SystemTelemetry />}
+                {activeTab === 'music' && <MusicTelemetry />}
+                {activeTab === 'venue' && <VenueAnalytics />}
+                {activeTab === 'roadmap' && <RoadMap />}
+            </div>
+        </div>
+    );
+}
+
+function MusicTelemetryView({ data, loading }: any) {
     if (loading && !data) {
         return (
-            <div className="h-[60vh] flex flex-col items-center justify-center space-y-4">
-                <RefreshCw className="animate-spin text-indigo-500" size={40} />
-                <p className="text-zinc-500 font-black uppercase tracking-[0.3em] text-xs">Syncing Factory Telemetry...</p>
+            <div className="h-[40vh] flex flex-col items-center justify-center space-y-4">
+                <RefreshCw className="animate-spin text-indigo-500" size={30} />
+                <p className="text-zinc-500 font-black uppercase tracking-[0.3em] text-[10px]">Filtering Sonic Frequencies...</p>
             </div>
         );
     }
 
     return (
-        <div className="space-y-12 pb-20 animate-in fade-in duration-700">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-4xl font-black italic uppercase tracking-tighter text-white">System Telemetry</h1>
-                    <p className="text-zinc-500 font-medium mt-1">Real-time signal monitoring and AI adaptation logs.</p>
-                </div>
-                <button 
-                    onClick={fetchData}
-                    className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
-                >
-                    <RefreshCw size={14} className={loading ? 'animate-spin' : ''} /> Force Refresh
-                </button>
-            </div>
-
+        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             {/* 1. Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard 
-                    title="Aura Pulse" 
-                    value={`${data?.summary.totalPlays || 0}`} 
-                    sub="Active Playbacks" 
-                    icon={Activity} 
-                    color="text-indigo-500" 
+                <StatCard
+                    title="Aura Pulse"
+                    value={`${data?.summary.totalPlays || 0}`}
+                    sub="Active Playbacks"
+                    icon={Activity}
+                    color="text-indigo-500"
                 />
-                <StatCard 
-                    title="Mood Matcher" 
-                    value={`${data?.summary.skipRate || 0}%`} 
-                    sub="Skip Rate (Mismatch)" 
-                    icon={SkipForward} 
-                    color="text-pink-500" 
+                <StatCard
+                    title="Mood Matcher"
+                    value={`${data?.summary.skipRate || 0}%`}
+                    sub="Skip Rate (Mismatch)"
+                    icon={SkipForward}
+                    color="text-pink-500"
                 />
-                <StatCard 
-                    title="Molecular Focus" 
-                    value={`${data?.summary.tuningStats['432hz'] || 0}`} 
-                    sub="432Hz Healing Cycles" 
-                    icon={Zap} 
-                    color="text-amber-500" 
+                <StatCard
+                    title="Molecular Focus"
+                    value={`${data?.summary.tuningStats['432hz'] || 0}`}
+                    sub="432Hz Healing Cycles"
+                    icon={Zap}
+                    color="text-amber-500"
                 />
-                <StatCard 
-                    title="Geo Distribution" 
-                    value={`${Object.keys(data?.summary.regionStats || {}).length}`} 
-                    sub="Active Regions" 
-                    icon={Globe} 
-                    color="text-blue-500" 
+                <StatCard
+                    title="Geo Distribution"
+                    value={`${Object.keys(data?.summary.regionStats || {}).length}`}
+                    sub="Active Regions"
+                    icon={Globe}
+                    color="text-blue-500"
                 />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* 2. Recent Playback Stream */}
-                <div className="bg-[#1E1E22] rounded-[2.5rem] border border-white/5 p-8 space-y-6">
+                <div className="bg-[#111] rounded-[2.5rem] border border-white/5 p-8 space-y-6 shadow-2xl">
                     <h3 className="text-xs font-black uppercase tracking-[0.4em] text-zinc-600 flex items-center gap-2">
-                        <BarChart3 size={14} /> Playback Telemetry
+                        <BarChart3 size={14} /> Playback Stream
                     </h3>
                     <div className="space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar pr-4">
                         {data?.playbackSessions.map((session: any) => (
@@ -127,9 +178,9 @@ export default function TelemetryReportPage() {
                 </div>
 
                 {/* 3. Search Intelligence & UI Logs */}
-                <div className="bg-[#1E1E22] rounded-[2.5rem] border border-white/5 p-8 space-y-6">
+                <div className="bg-[#111] rounded-[2.5rem] border border-white/5 p-8 space-y-6 shadow-2xl">
                     <h3 className="text-xs font-black uppercase tracking-[0.4em] text-zinc-600 flex items-center gap-2">
-                        <Search size={14} /> Search Intelligence
+                        <Search size={14} /> Intelligence Logs
                     </h3>
                     <div className="space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar pr-4">
                         {data?.searchLogs.map((log: any) => (
@@ -164,7 +215,7 @@ export default function TelemetryReportPage() {
 
 function StatCard({ title, value, sub, icon: Icon, color }: any) {
     return (
-        <div className="bg-[#1E1E22] p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden group shadow-2xl">
+        <div className="bg-[#111] p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden group shadow-2xl">
             <div className={`absolute -right-4 -top-4 opacity-[0.03] group-hover:opacity-[0.1] transition-all duration-500 ${color}`}>
                 <Icon size={100} strokeWidth={1} />
             </div>

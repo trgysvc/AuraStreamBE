@@ -27,7 +27,7 @@ export async function getTelemetryData_Action() {
         const totalPlays = playbackSessions?.length || 0;
         const totalSkips = playbackSessions?.filter(s => s.skipped).length || 0;
         const skipRate = totalPlays > 0 ? (totalSkips / totalPlays) * 100 : 0;
-        
+
         const tuningStats = {
             '440hz': playbackSessions?.filter(s => s.tuning_used === '440hz').length || 0,
             '432hz': playbackSessions?.filter(s => s.tuning_used === '432hz').length || 0,
@@ -52,6 +52,81 @@ export async function getTelemetryData_Action() {
         };
     } catch (e) {
         console.error('Telemetry Fetch Error:', e);
+        throw e;
+    }
+}
+
+/**
+ * Fetches real-time system telemetry from the tracks processing pipeline.
+ */
+export async function getSystemTelemetry_Action() {
+    const supabase = createAdminClient();
+
+    // 1. Get current date/time info for 24h windows
+    const now = new Date();
+    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    try {
+        // 2. Fetch all relevant tracks from the last 24 hours for time-series, plus all pending
+        const { data: recentTracks, error } = await supabase
+            .from('tracks')
+            .select('status, created_at, updated_at')
+            .or(`status.in.(pending_qc,processing),updated_at.gte.${twentyFourHoursAgo.toISOString()}`);
+
+        if (error) throw error;
+
+        // 3. Calculate KPI Metrics
+        const pendingQueue = recentTracks.filter(t => ['pending_qc', 'processing'].includes(t.status || '')).length;
+        const successfulToday = recentTracks.filter(t =>
+            t.status === 'active' &&
+            t.updated_at &&
+            new Date(t.updated_at) >= startOfToday
+        ).length;
+        const criticalErrors = recentTracks.filter(t => t.status === 'rejected').length;
+
+        // 4. Generate Time-Series Data (24 Hourly Slots)
+        const timeSeries = [];
+        for (let i = 23; i >= 0; i--) {
+            const hourDate = new Date(now.getTime() - i * 60 * 60 * 1000);
+            const hourLabel = `${hourDate.getHours().toString().padStart(2, '0')}:00`;
+
+            // Count processed (active) and errors (rejected) in this hour window
+            const hourStart = new Date(hourDate.setMinutes(0, 0, 0));
+            const hourEnd = new Date(hourDate.setMinutes(59, 59, 999));
+
+            const processedInHour = recentTracks.filter(t =>
+                t.status === 'active' &&
+                t.updated_at &&
+                new Date(t.updated_at) >= hourStart &&
+                new Date(t.updated_at) <= hourEnd
+            ).length;
+
+            const errorsInHour = recentTracks.filter(t =>
+                t.status === 'rejected' &&
+                t.updated_at &&
+                new Date(t.updated_at) >= hourStart &&
+                new Date(t.updated_at) <= hourEnd
+            ).length;
+
+            timeSeries.push({
+                time: hourLabel,
+                processed: processedInHour,
+                errors: errorsInHour
+            });
+        }
+
+        return {
+            kpis: {
+                workerLoad: 68, // Static placeholder as per specs
+                pendingQueue,
+                successfulToday,
+                criticalErrors
+            },
+            timeSeries
+        };
+    } catch (e) {
+        console.error('System Telemetry Error:', e);
         throw e;
     }
 }
