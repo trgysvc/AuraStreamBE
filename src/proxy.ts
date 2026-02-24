@@ -1,9 +1,18 @@
+import createIntlMiddleware from 'next-intl/middleware';
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-// Fonksiyon adını Next.js'in istediği gibi 'proxy' yaptık
+// 1. Dil Ayarları Tanımlaması
+const intlMiddleware = createIntlMiddleware({
+    locales: ['en', 'tr', 'el', 'de', 'ru', 'fr'],
+    defaultLocale: 'en',
+    localeDetection: true
+});
+
 export async function proxy(request: NextRequest) {
-    // 1. GÜVENLİK VE PORT TEMİZLİĞİ (Sonsuz döngüyü kıran kısım)
+    // ---------------------------------------------------------
+    // ADIM 1: GÜVENLİK VE PORT TEMİZLİĞİ (EN BAŞA ALINDI!)
+    // ---------------------------------------------------------
     const host = request.headers.get('host');
     const isLocal = host?.includes('localhost') || host?.includes('127.0.0.1');
 
@@ -13,16 +22,19 @@ export async function proxy(request: NextRequest) {
         url.port = '';
         url.protocol = 'https:';
 
+        // İstek arızalıysa hemen HTTPS'e zorla, aşağıya inme!
         return NextResponse.redirect(url, 301);
     }
 
-    // 2. SUPABASE OTURUM YÖNETİMİ
-    let supabaseResponse = NextResponse.next({
-        request: {
-            headers: request.headers,
-        },
-    })
+    // ---------------------------------------------------------
+    // ADIM 2: NEXT-INTL DİL YÖNLENDİRMESİ
+    // ---------------------------------------------------------
+    // Bu response, içinde dil bilgisi ve yönlendirme (örn: /tr) barındıran altın objemizdir.
+    const intlResponse = intlMiddleware(request);
 
+    // ---------------------------------------------------------
+    // ADIM 3: SUPABASE OTURUM YÖNETİMİ (Güvenli Birleştirme)
+    // ---------------------------------------------------------
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -32,25 +44,29 @@ export async function proxy(request: NextRequest) {
                     return request.cookies.getAll()
                 },
                 setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
-                    supabaseResponse = NextResponse.next({
-                        request,
-                    })
+                    // 1. Gelen isteği güncelle (Supabase'in iç işleyişi için)
+                    cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+
+                    // 2. KRİTİK DÜZELTME: Yeni NextResponse OLUŞTURMA!
+                    // Çerezleri doğrudan intlResponse objesinin üzerine yaz ki dil ayarları ezilmesin.
                     cookiesToSet.forEach(({ name, value, options }) =>
-                        supabaseResponse.cookies.set(name, value, options)
+                        intlResponse.cookies.set(name, value, options)
                     )
                 },
             },
         }
     )
 
+    // Oturumu yenile
     await supabase.auth.getUser()
 
-    return supabaseResponse
+    // İçinde hem Next-intl dil ayarları hem de Supabase çerezleri barındıran nihai yanıtı dön.
+    return intlResponse
 }
 
 export const config = {
     matcher: [
-        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+        // i18n rotalarını kapsayacak ve statik dosyaları hariç tutacak matcher
+        '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
     ],
 }

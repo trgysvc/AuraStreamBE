@@ -30,6 +30,7 @@
     "meilisearch": "^0.55.0",
     "music-tempo": "^1.0.3",
     "next": "^16.1.6",
+    "next-intl": "^4.8.3",
     "pdf-lib": "^1.17.1",
     "pg": "^8.18.0",
     "qrcode": "^1.5.4",

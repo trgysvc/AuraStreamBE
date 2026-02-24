@@ -86,6 +86,7 @@ export function MainHeader({ initialUser }: { initialUser?: any }) {
 
                 <div className="flex items-center gap-6 h-full">
                     <div className="hidden lg:flex items-center gap-6">
+
                         {!user ? (
                             <>
                                 <Link href="/login" className="text-sm font-bold hover:text-gray-300 transition-colors">

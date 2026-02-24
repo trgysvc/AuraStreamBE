@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import LocaleSwitcher from './LocaleSwitcher';
 
 interface FooterProps {
     variant?: 'light' | 'dark' | 'white';
@@ -33,11 +34,8 @@ export function Footer({ variant = 'light' }: FooterProps) {
                                 SONAR<span className={`font-light ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}>AURA</span>
                             </span>
                         </div>
-                        <div className={`inline-flex items-center gap-2 px-4 py-2 border rounded text-sm font-medium cursor-pointer transition-colors ${isDark
-                            ? 'border-white/20 text-white hover:bg-white/10'
-                            : 'border-zinc-300 text-black hover:bg-zinc-100'
-                            }`}>
-                            English (US) ▾
+                        <div>
+                            <LocaleSwitcher isDark={isDark} />
                         </div>
                     </div>
 

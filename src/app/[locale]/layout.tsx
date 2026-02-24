@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google';
-import "./globals.css";
+import "../globals.css";
 import { PlayerProvider } from '@/context/PlayerContext';
 import { GlobalPlayer } from '@/components/feature/player/GlobalPlayer';
 import { LocationProvider } from '@/context/LocationContext';
+import { notFound } from 'next/navigation';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
+  // ... (keeping existing metadata)
   title: {
     default: "SonarAura | Intelligent Music for Venues",
     template: "%s | SonarAura"
@@ -64,23 +68,45 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params
 }: {
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
+  const { locale } = await params;
+
+  // Desteklenen diller kontrolü
+  const locales = ['en', 'tr', 'el', 'de', 'ru', 'fr'];
+  if (!locales.includes(locale)) {
+    notFound();
+  }
+
+  // Get messages for the client provider
+  const messages = await getMessages();
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <GoogleTagManager gtmId="GTM-TDKDDM4X" />
       <body className={`${inter.className} antialiased`} suppressHydrationWarning={true}>
-        <LocationProvider>
-          <PlayerProvider>
-            {children}
-            <GlobalPlayer />
-          </PlayerProvider>
-        </LocationProvider>
+        <NextIntlClientProvider
+          locale={locale}
+          messages={messages}
+          timeZone="Europe/Istanbul"
+        >
+          <LocationProvider>
+            <PlayerProvider>
+              {children}
+              <GlobalPlayer />
+            </PlayerProvider>
+          </LocationProvider>
+        </NextIntlClientProvider>
         <GoogleAnalytics gaId="G-VZNFSYLZ8Y" />
       </body>
     </html>
   );
 }
+
+
+
