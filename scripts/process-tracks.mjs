@@ -90,11 +90,12 @@ async function processAllTracks() {
 
             if (analysis.error) throw new Error(analysis.error);
 
-            // 4. Encode to High-Quality MP3 (CBR 320kbps)
-            console.log(` Transcoding to 320kbps MP3...`);
+            // 4. Encode to High-Quality MP3 (CBR 320kbps) with Normalization (-14 LUFS)
+            console.log(` Transcoding & Normalizing to 320kbps MP3...`);
             // -b:a 320k : Constant Bit Rate 320kbps
             // -codec:a libmp3lame : Use LAME encoder
-            execSync(`ffmpeg -y -i "${pcmPath}" -codec:a libmp3lame -b:a 320k "${outputPath}"`, { stdio: 'ignore' });
+            // -af loudnorm=I=-14:LRA=11:TP=-1.5 : EBU R128 Normalization
+            execSync(`ffmpeg -y -i "${pcmPath}" -af "loudnorm=I=-14:LRA=11:TP=-1.5" -codec:a libmp3lame -b:a 320k "${outputPath}"`, { stdio: 'ignore' });
 
             // 5. Upload Master MP3 to S3
             const processedKey = `processed/${track.id}/master.mp3`;
