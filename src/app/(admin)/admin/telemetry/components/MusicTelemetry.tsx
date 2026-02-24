@@ -9,7 +9,11 @@ import {
     TrendingUp,
     Music2,
     Zap,
-    RefreshCw
+    RefreshCw,
+    Clock,
+    Filter,
+    Store,
+    Smile
 } from 'lucide-react';
 import {
     BarChart,
@@ -23,16 +27,23 @@ import {
     Line
 } from 'recharts';
 import { getMusicTelemetry_Action } from '@/app/actions/telemetry-music';
+import { getCatalogStats_Action, CatalogStats } from '@/app/actions/telemetry-inventory';
 
 export function MusicTelemetry() {
     const [data, setData] = useState<any>(null);
+    const [inventory, setInventory] = useState<CatalogStats | null>(null);
     const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState<'genre' | 'venue' | 'vibe'>('genre');
 
     const fetchMusicData = async () => {
         setLoading(true);
         try {
-            const res = await getMusicTelemetry_Action();
-            setData(res);
+            const [telemetryRes, inventoryRes] = await Promise.all([
+                getMusicTelemetry_Action(),
+                getCatalogStats_Action()
+            ]);
+            setData(telemetryRes);
+            setInventory(inventoryRes);
         } catch (err) {
             console.error('Music Telemetry Fetch Error:', err);
         } finally {
@@ -81,11 +92,11 @@ export function MusicTelemetry() {
                     trend={parseFloat(kpis.skipRate) > 25 ? 'High' : 'Normal'}
                 />
                 <MusicKPICard
-                    title="Top Mood/Genre"
-                    value={kpis.topGenre}
-                    icon={TrendingUp}
+                    title="Catalog Inventory"
+                    value={inventory?.formattedTotalDuration || '0h'}
+                    icon={Clock}
                     color="text-emerald-500"
-                    sub="Category Dominance"
+                    sub={`${inventory?.totalTracks || 0} Total Tracks`}
                 />
                 <MusicKPICard
                     title="Zero-Result Searches"
@@ -94,6 +105,51 @@ export function MusicTelemetry() {
                     color="text-amber-500"
                     trend={kpis.zeroResultSearches24h > 0 ? 'Review Needed' : 'Healthy'}
                 />
+            </div>
+
+            {/* Catalog Inventory Drill-down */}
+            <div className="bg-[#111] border border-white/5 rounded-[2.5rem] p-8 space-y-8 shadow-2xl relative overflow-hidden">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+                    <div className="space-y-1">
+                        <h3 className="text-xs font-black uppercase tracking-[0.4em] text-zinc-500">Inventory Distribution</h3>
+                        <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Total Air-Time by Category</p>
+                    </div>
+
+                    <div className="flex items-center p-1 bg-white/5 rounded-2xl border border-white/5">
+                        <TabButton
+                            active={activeTab === 'genre'}
+                            onClick={() => setActiveTab('genre')}
+                            label="Genres"
+                            icon={Music2}
+                        />
+                        <TabButton
+                            active={activeTab === 'venue'}
+                            onClick={() => setActiveTab('venue')}
+                            label="Venues"
+                            icon={Store}
+                        />
+                        <TabButton
+                            active={activeTab === 'vibe'}
+                            onClick={() => setActiveTab('vibe')}
+                            label="Vibes"
+                            icon={Smile}
+                        />
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {(activeTab === 'genre' ? inventory?.genreDistribution :
+                        activeTab === 'venue' ? inventory?.venueDistribution :
+                            inventory?.vibeDistribution)?.map((item: any, idx: number) => (
+                                <div key={idx} className="bg-white/5 border border-white/5 rounded-2xl p-4 flex items-center justify-between group hover:border-emerald-500/30 transition-all">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400 group-hover:text-emerald-400 transition-colors">{item.name}</p>
+                                        <p className="text-xl font-black text-white italic">{item.formatted}</p>
+                                    </div>
+                                    <Filter size={14} className="text-zinc-700 group-hover:text-emerald-500/50 transition-colors" />
+                                </div>
+                            ))}
+                </div>
             </div>
 
             {/* Middle Row: Genre Chart & Skip Analytics */}
@@ -248,8 +304,8 @@ function MusicKPICard({ title, value, icon: Icon, color, trend, sub }: any) {
                     </div>
                     {trend && (
                         <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border ${trend === 'Live' || trend.startsWith('+') ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' :
-                                trend === 'High' || trend.startsWith('-') ? 'bg-rose-500/10 border-rose-500/20 text-rose-500' :
-                                    'bg-zinc-500/10 border-zinc-500/20 text-zinc-500'
+                            trend === 'High' || trend.startsWith('-') ? 'bg-rose-500/10 border-rose-500/20 text-rose-500' :
+                                'bg-zinc-500/10 border-zinc-500/20 text-zinc-500'
                             }`}>
                             {trend}
                         </span>
@@ -272,5 +328,20 @@ function LegendItem({ color, label }: { color: string, label: string }) {
             <div className={`w-2 h-2 rounded-full ${color}`} />
             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{label}</span>
         </div>
+    );
+}
+
+function TabButton({ active, onClick, label, icon: Icon }: { active: boolean, onClick: () => void, label: string, icon: any }) {
+    return (
+        <button
+            onClick={onClick}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${active
+                    ? 'bg-emerald-500 text-black shadow-[0_0_20px_rgba(16,185,129,0.3)]'
+                    : 'text-zinc-500 hover:text-white'
+                }`}
+        >
+            <Icon size={12} />
+            {label}
+        </button>
     );
 }
