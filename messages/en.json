@@ -76,14 +76,14 @@
     "About": {
         "Us": {
             "hero": {
-                "title": "Sonaraura is the sound of the universe, <br /> re-engineered for branding.",
+                "title": "Sonaraura is the sound of the universe, <br></br> re-engineered for branding.",
                 "who": "Who we are",
                 "p1": "Sonaraura transforms music from a mere background element into a living intelligence that manages the atmosphere of a space on biological and emotional levels.",
                 "p2": "By merging sound engineering, artificial intelligence, and psychoacoustics, we have built the world's first <strong>Atmospheric Intelligence</strong> platform. We are not an ordinary streaming service. We are a technology company that synchronizes the frequency of sound, the vibe of the environment, and the listener's pulse."
             },
             "vision": {
                 "badge": "Vision",
-                "title": "Architecture <br /> Beyond Silence",
+                "title": "Architecture <br></br> Beyond Silence",
                 "p1": "Every space has a soul, every moment has a frequency. Our goal is to deepen the connection between businesses and creators with their target audiences through <strong>Frequency Engineering</strong>.",
                 "p2": "We evolve music from the standard 440Hz mold into <strong>432Hz (Peace)</strong> and <strong>528Hz (Focus/Vitality)</strong> frequencies, synchronized with human biology in real-time. While doing this, we maintain the musical rhythm (BPM), re-engineering art with scientific precision."
             },
@@ -697,7 +697,7 @@
             "center": "Help Center"
         },
         "subscribe": {
-            "title": "Subscribe to our <br /> latest news",
+            "title": "Subscribe to our <br></br> latest news",
             "email": "E-mail",
             "placeholder": "Email",
             "button": "Subscribe",
@@ -935,5 +935,93 @@
         "profile": "Profile",
         "settings": "Settings",
         "logout": "Terminate Session"
+    },
+    "Auth": {
+        "login": {
+            "title": "Welcome back",
+            "subtitle": "Please enter your details to sign in.",
+            "email_label": "Email",
+            "email_placeholder": "Enter your email",
+            "password_label": "Password",
+            "password_placeholder": "Enter your password",
+            "forgot_password": "Forgot password?",
+            "submit": "Log In",
+            "submitting": "Signing in...",
+            "or_continue_with": "Or continue with",
+            "continue_google": "Continue with Google",
+            "continue_apple": "Continue with Apple",
+            "no_account": "Don't have an account?",
+            "signup_free": "Sign up for free",
+            "invalid_credentials": "Invalid email or password",
+            "quote_title": "Soundtrack the world.",
+            "quote_desc": "Access a world-class library of royalty-free music and sound effects. Curated for creators, by creators."
+        },
+        "signup": {
+            "title": "Create an account",
+            "subtitle": "Join the Sonaraura community today.",
+            "name_label": "Full Name",
+            "name_placeholder": "Enter your full name",
+            "email_label": "Email",
+            "email_placeholder": "Enter your email",
+            "password_label": "Password",
+            "password_placeholder": "Create a password",
+            "terms_prefix": "By becoming a member, you agree to our",
+            "terms": "Terms",
+            "cookie": "Cookie",
+            "privacy": "Privacy policy",
+            "submit": "Sign Up",
+            "submitting": "Creating account...",
+            "or_signup_with": "Or sign up with",
+            "continue_google": "Continue with Google",
+            "continue_apple": "Continue with Apple",
+            "have_account": "Already have an account?",
+            "login": "Log in",
+            "quote_title": "Soundtrack the world.",
+            "quote_desc": "Access a premium library of copyright-free music and sound effects. Curated by creators for businesses and creators."
+        }
+    },
+    "VenueDashboard": {
+        "tabs": {
+            "search": "search",
+            "assistant": "assistant",
+            "flow": "Smart Flow"
+        },
+        "search": {
+            "music": "Music",
+            "sfx": "Sound Effects",
+            "placeholder_search": "Search by character, vibe, genre, venue, theme…",
+            "placeholder_assistant": "Explain the vibe...",
+            "suggestions": "Suggestions",
+            "vibe_prefix": "Vibe: ",
+            "genre_prefix": "Genre: ",
+            "venue_prefix": "Venue: "
+        },
+        "filters": {
+            "segments": "Venue Segments",
+            "vibes": "Aura Vibes",
+            "genres": "Sonic Genre",
+            "tempo": "Tempo / BPM",
+            "reset": "Reset Engine",
+            "advanced": "Advanced Filters"
+        },
+        "results": {
+            "aura_results_for": "Aura Results for \"{query}\"",
+            "discovery_flow": "Discovery Flow",
+            "intelligence_layer": "Intelligence-Layer Active",
+            "flow_active": "Flow Active: {name}",
+            "no_assets": "No assets matching criteria",
+            "discovering": "Discovering more harmonics..."
+        },
+        "sections": {
+            "premium_curation": "Premium Curation",
+            "trending": "Trending in Venues",
+            "premium_vibes": "Premium Vibes",
+            "explore_more": "Explore More"
+        },
+        "promo": {
+            "title": "Music on Request",
+            "desc": "Elevate your venue with exclusive, custom-tailored sounds. Our AI and expert curators work for your brand.",
+            "button": "Get Started"
+        }
     }
 }

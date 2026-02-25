@@ -5,8 +5,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Link } from '@/i18n/navigation';
 import { Mail, Lock, ArrowRight, User } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function SignupPage() {
+    const t = useTranslations('Auth.signup');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [fullName, setFullName] = useState('');
@@ -79,9 +81,9 @@ export default function SignupPage() {
                 </div>
 
                 <div className="relative z-10 text-white p-12 max-w-lg">
-                    <h2 className="text-4xl font-bold tracking-tight mb-6">Soundtrack the world.</h2>
+                    <h2 className="text-4xl font-bold tracking-tight mb-6">{t('quote_title')}</h2>
                     <p className="text-gray-400 text-lg leading-relaxed">
-                        Access a premium library of copyright-free music and sound effects. Curated by creators for businesses and creators.
+                        {t('quote_desc')}
                     </p>
                 </div>
             </div>
@@ -90,15 +92,15 @@ export default function SignupPage() {
             <div className="w-full lg:w-1/2 flex items-center justify-center bg-white p-8 sm:p-12 md:p-16">
                 <div className="w-full max-w-md space-y-8">
                     <div className="text-center lg:text-left">
-                        <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">Create an account</h1>
-                        <p className="text-gray-500">Join the Sonaraura community today.</p>
+                        <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">{t('title')}</h1>
+                        <p className="text-gray-500">{t('subtitle')}</p>
                     </div>
 
                     <form onSubmit={handleSignup} className="space-y-6">
                         <div className="space-y-4">
                             <div>
                                 <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Full Name
+                                    {t('name_label')}
                                 </label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
@@ -112,14 +114,14 @@ export default function SignupPage() {
                                         value={fullName}
                                         onChange={(e) => setFullName(e.target.value)}
                                         className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-black focus:border-black sm:text-sm transition-all"
-                                        placeholder="Enter your full name"
+                                        placeholder={t('name_placeholder')}
                                     />
                                 </div>
                             </div>
 
                             <div>
                                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Email
+                                    {t('email_label')}
                                 </label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
@@ -134,14 +136,14 @@ export default function SignupPage() {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-black focus:border-black sm:text-sm transition-all"
-                                        placeholder="Enter your email"
+                                        placeholder={t('email_placeholder')}
                                     />
                                 </div>
                             </div>
 
                             <div>
                                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Password
+                                    {t('password_label')}
                                 </label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
@@ -156,22 +158,22 @@ export default function SignupPage() {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-md text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-black focus:border-black sm:text-sm transition-all"
-                                        placeholder="Create a password"
+                                        placeholder={t('password_placeholder')}
                                     />
                                 </div>
                             </div>
                         </div>
 
                         <div className="text-[10px] text-gray-500 text-center">
-                            By becoming a member, you agree to our{' '}
+                            {t('terms_prefix')}{' '}
                             <Link href="/terms" className="text-gray-900 font-semibold hover:underline">
-                                Terms
+                                {t('terms')}
                             </Link>,{' '}
                             <Link href="/cookies" className="text-gray-900 font-semibold hover:underline">
-                                Cookie
+                                {t('cookie')}
                             </Link>,{' '}
                             <Link href="/privacy" className="text-gray-900 font-semibold hover:underline">
-                                Privacy policy
+                                {t('privacy')}
                             </Link>.
                         </div>
 
@@ -189,7 +191,7 @@ export default function SignupPage() {
                             disabled={loading}
                             className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-full text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 disabled:opacity-70 transition-colors shadow-lg"
                         >
-                            {loading ? 'Creating account...' : 'Sign Up'}
+                            {loading ? t('submitting') : t('submit')}
                             {!loading && <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />}
                         </button>
                     </form>
@@ -199,7 +201,7 @@ export default function SignupPage() {
                             <div className="w-full border-t border-gray-200" />
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-white text-gray-500">Or sign up with</span>
+                            <span className="px-2 bg-white text-gray-500">{t('or_signup_with')}</span>
                         </div>
                     </div>
 
@@ -217,14 +219,14 @@ export default function SignupPage() {
                                     <path fill="#EA4335" d="M -14.754 43.989 C -12.982 43.989 -11.411 44.597 -10.167 45.812 L -6.703 42.375 C -8.801 40.421 -11.516 39.239 -14.754 39.239 C -19.402 39.239 -23.465 41.948 -25.415 45.862 L -21.480 48.945 C -20.533 46.108 -17.885 43.989 -14.754 43.989 Z" />
                                 </g>
                             </svg>
-                            Continue with Google
+                            {t('continue_google')}
                         </button>
                     </div>
 
                     <div className="mt-6 text-center text-sm text-gray-500">
-                        Already have an account?{' '}
+                        {t('have_account')}{' '}
                         <Link href="/login" className="font-semibold text-gray-900 hover:underline">
-                            Log in
+                            {t('login')}
                         </Link>
                     </div>
                 </div>

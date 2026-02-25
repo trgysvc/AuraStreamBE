@@ -76,14 +76,14 @@
     "About": {
         "Us": {
             "hero": {
-                "title": "Sonaraura evrenin sesidir, <br /> markalaşma için yeniden tasarlandı.",
+                "title": "Sonaraura evrenin sesidir, <br></br> markalaşma için yeniden tasarlandı.",
                 "who": "Biz Kimiz",
                 "p1": "Sonaraura, müziği sadece bir arka plan unsuru olmaktan çıkarıp, bir mekanın atmosferini biyolojik ve duygusal seviyelerde yöneten canlı bir zekaya dönüştürür.",
                 "p2": "Ses mühendisliği, yapay zeka ve psikoakustiği birleştirerek dünyanın ilk <strong>Atmosferik Zeka</strong> platformunu inşa ettik. Biz sıradan bir yayın servisi değiliz. Sesin frekansını, ortamın ruhunu ve dinleyicinin nabzını senkronize eden bir teknoloji şirketiyiz."
             },
             "vision": {
                 "badge": "Vizyon",
-                "title": "Sessizliğin Ötesindeki <br /> Mimari",
+                "title": "Sessizliğin Ötesindeki <br></br> Mimari",
                 "p1": "Her mekanın bir ruhu, her anın bir frekansı vardır. Amacımız, <strong>Frekans Mühendisliği</strong> aracılığıyla işletmelerin ve içerik üreticilerinin hedef kitleleriyle olan bağını derinleştirmektir.",
                 "p2": "Müziği standart 440Hz kalıbından çıkarıp, insan biyolojisiyle gerçek zamanlı olarak senkronize olan <strong>432Hz (Huzur)</strong> ve <strong>528Hz (Odak/Canlılık)</strong> frekanslarına evrimleştiriyoruz. Bunu yaparken müzikal ritmi (BPM) koruyor, sanatı bilimsel hassasiyetle yeniden mühendisliyoruz."
             },
@@ -704,7 +704,7 @@
             "center": "Yardım Merkezi"
         },
         "subscribe": {
-            "title": "En son haberlere <br /> abone olun",
+            "title": "En son haberlere <br></br> abone olun",
             "email": "E-posta",
             "placeholder": "E-posta",
             "button": "Abone Ol",
@@ -942,5 +942,93 @@
         "profile": "Profil",
         "settings": "Ayarlar",
         "logout": "Oturumu Kapat"
+    },
+    "Auth": {
+        "login": {
+            "title": "Tekrar hoş geldiniz",
+            "subtitle": "Lütfen giriş yapmak için bilgilerinizi girin.",
+            "email_label": "E-posta",
+            "email_placeholder": "E-posta adresinizi girin",
+            "password_label": "Şifre",
+            "password_placeholder": "Şifrenizi girin",
+            "forgot_password": "Şifremi unuttum",
+            "submit": "Giriş Yap",
+            "submitting": "Giriş yapılıyor...",
+            "or_continue_with": "Veya şununla devam edin",
+            "continue_google": "Google ile devam et",
+            "continue_apple": "Apple ile devam et",
+            "no_account": "Hesabınız yok mu?",
+            "signup_free": "Ücretsiz üye olun",
+            "invalid_credentials": "Geçersiz e-posta veya şifre",
+            "quote_title": "Dünyayı seslendirin.",
+            "quote_desc": "Telif haksız müzik ve ses efektlerinden oluşan birinci sınıf bir kütüphaneye erişin. Yaratıcılar için, yaratıcılar tarafından derlendi."
+        },
+        "signup": {
+            "title": "Hesap oluştur",
+            "subtitle": "Bugün Sonaraura topluluğuna katılın.",
+            "name_label": "Ad Soyad",
+            "name_placeholder": "Adınızı ve soyadınızı girin",
+            "email_label": "E-posta",
+            "email_placeholder": "E-posta adresinizi girin",
+            "password_label": "Şifre",
+            "password_placeholder": "Bir şifre oluşturun",
+            "terms_prefix": "Üye olarak şunları kabul etmiş olursunuz:",
+            "terms": "Kullanım Şartları",
+            "cookie": "Çerez",
+            "privacy": "Gizlilik politikası",
+            "submit": "Kayıt Ol",
+            "submitting": "Hesap oluşturuluyor...",
+            "or_signup_with": "Veya şununla kayıt olun",
+            "continue_google": "Google ile devam et",
+            "continue_apple": "Apple ile devam et",
+            "have_account": "Zaten bir hesabınız var mı?",
+            "login": "Giriş yap",
+            "quote_title": "Dünyayı seslendirin.",
+            "quote_desc": "Telif haksız müzik ve ses efektlerinden oluşan birinci sınıf bir kütüphaneye erişin. İşletmeler ve yaratıcılar için yaratıcılar tarafından derlendi."
+        }
+    },
+    "VenueDashboard": {
+        "tabs": {
+            "search": "arama",
+            "assistant": "asistan",
+            "flow": "Smart Flow"
+        },
+        "search": {
+            "music": "Müzik",
+            "sfx": "Ses Efektleri",
+            "placeholder_search": "Karakter, hava, tür, mekan, tema ile arayın…",
+            "placeholder_assistant": "Atmosferi anlatın...",
+            "suggestions": "Öneriler",
+            "vibe_prefix": "Hava: ",
+            "genre_prefix": "Tür: ",
+            "venue_prefix": "Mekan: "
+        },
+        "filters": {
+            "segments": "Mekan Segmentleri",
+            "vibes": "Aura Havaları",
+            "genres": "Sonik Tür",
+            "tempo": "Tempo / BPM",
+            "reset": "Motoru Sıfırla",
+            "advanced": "Gelişmiş Filtreler"
+        },
+        "results": {
+            "aura_results_for": "\"{query}\" İçin Aura Sonuçları",
+            "discovery_flow": "Keşif Akışı",
+            "intelligence_layer": "Zeka Katmanı Aktif",
+            "flow_active": "Akış Aktif: {name}",
+            "no_assets": "Kriterlere uygun öğe bulunamadı",
+            "discovering": "Daha fazla harmonik keşfediliyor..."
+        },
+        "sections": {
+            "premium_curation": "Premium Kürasyon",
+            "trending": "Mekanlarda Trend",
+            "premium_vibes": "Premium Havalar",
+            "explore_more": "Daha Fazla Keşfet"
+        },
+        "promo": {
+            "title": "İstek Üzerine Müzik",
+            "desc": "Mekanınızı size özel seslerle zirveye taşıyın. Yapay zekamız ve uzman küratörlerimiz markanız için çalışıyor.",
+            "button": "Hemen Başlayın"
+        }
     }
 }

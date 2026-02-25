@@ -10,6 +10,7 @@ import { ScheduleManager } from '@/components/feature/venue/ScheduleManager';
 import { SmartFlowProvider, useSmartFlow } from '@/context/SmartFlowContext';
 import { usePlayer } from '@/context/PlayerContext';
 import { createClient } from '@/lib/db/client';
+import { useTranslations } from 'next-intl';
 
 const PlaylistCard = ({ title, tracks, color, image, onClick }: { title: string, tracks: string, color: string, image?: string, onClick?: () => void }) => (
     <div className="group cursor-pointer" onClick={onClick}>
@@ -34,6 +35,7 @@ const PlaylistCard = ({ title, tracks, color, image, onClick }: { title: string,
 );
 
 function VenueDashboardContent() {
+    const t = useTranslations('VenueDashboard');
     const { activeRule } = useSmartFlow();
     const { playTrack } = usePlayer();
     const [activeSubTab, setActiveSubTab] = useState<'search' | 'assistant' | 'flow'>('search');
@@ -225,7 +227,7 @@ function VenueDashboardContent() {
                                     : 'text-zinc-500 hover:text-white bg-white/5 border-transparent hover:bg-white/10'
                                     }`}
                             >
-                                {tab === 'flow' ? 'Smart Flow' : tab}
+                                {tab === 'flow' ? t('tabs.flow') : t(`tabs.${tab}`)}
                             </button>
                         ))}
                     </div>
@@ -234,7 +236,7 @@ function VenueDashboardContent() {
                         <div className="px-4 md:px-6 py-1.5 md:py-2 bg-indigo-600/10 border border-indigo-500/20 rounded-full flex items-center gap-2 md:gap-3 animate-pulse">
                             <div className="h-1.5 w-1.5 md:h-2 md:w-2 rounded-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,1)]" />
                             <span className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-indigo-400 italic">
-                                Flow Active: {activeRule.name}
+                                {t('results.flow_active', { name: activeRule.name })}
                             </span>
                         </div>
                     )}
@@ -249,7 +251,7 @@ function VenueDashboardContent() {
                                     onClick={() => setIsSearchDropdownOpen(!isSearchDropdownOpen)}
                                     className="px-4 md:px-8 h-full flex items-center gap-2 md:gap-3 hover:bg-white/5 transition-colors group min-w-[120px] md:min-w-[180px]"
                                 >
-                                    <span className="text-[12px] md:text-[14px] font-bold text-white">{searchType}</span>
+                                    <span className="text-[12px] md:text-[14px] font-bold text-white">{searchType === 'Music' ? t('search.music') : t('search.sfx')}</span>
                                     <ChevronDown size={14} className={`text-zinc-500 group-hover:text-white transition-all ${isSearchDropdownOpen ? 'rotate-180' : ''}`} />
                                 </button>
                                 {isSearchDropdownOpen && (
@@ -262,7 +264,7 @@ function VenueDashboardContent() {
                                                     onClick={() => { setSearchType(option); setIsSearchDropdownOpen(false); }}
                                                     className="w-full text-left px-4 py-2.5 md:px-5 md:py-3 text-[11px] md:text-[13px] font-bold text-zinc-300 hover:text-white hover:bg-white/5 transition-colors first:rounded-t-md last:rounded-b-md"
                                                 >
-                                                    {option}
+                                                    {option === 'Music' ? t('search.music') : t('search.sfx')}
                                                 </button>
                                             ))}
                                         </div>
@@ -301,23 +303,23 @@ function VenueDashboardContent() {
                                             }
                                         }
                                     }}
-                                    placeholder={activeSubTab === 'assistant' ? "Explain the vibe..." : "Search by character, vibe, genre, venue, theme…"}
+                                    placeholder={activeSubTab === 'assistant' ? t('search.placeholder_assistant') : t('search.placeholder_search')}
                                     className="w-full bg-transparent text-white focus:outline-none text-[13px] md:text-[16px] h-full pl-6 md:pl-10 placeholder-zinc-700 font-bold"
                                 />
 
                                 {/* Omnibar Suggestions */}
                                 {query.length > 0 && activeSubTab !== 'assistant' && (
                                     <div className="absolute top-full left-0 right-0 mt-4 bg-[#1E1E22]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-4 z-50 flex flex-col gap-2">
-                                        <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-zinc-600 border-b border-white/5 mb-2">Suggestions</div>
+                                        <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-zinc-600 border-b border-white/5 mb-2">{t('search.suggestions')}</div>
                                         <div className="flex flex-wrap gap-2">
                                             {VIBE_TAGS.filter(v => v.toLowerCase().includes(query.toLowerCase())).slice(0, 3).map(v => (
-                                                <button key={v} onClick={() => { setSelectedVibes(prev => [...new Set([...prev, v])]); setQuery(''); }} className="px-3 py-1.5 rounded-lg bg-pink-600/10 border border-pink-500/20 text-pink-400 text-[11px] font-bold hover:bg-pink-600 hover:text-white transition-all">Vibe: {v}</button>
+                                                <button key={v} onClick={() => { setSelectedVibes(prev => [...new Set([...prev, v])]); setQuery(''); }} className="px-3 py-1.5 rounded-lg bg-pink-600/10 border border-pink-500/20 text-pink-400 text-[11px] font-bold hover:bg-pink-600 hover:text-white transition-all">{t('search.vibe_prefix')}{v}</button>
                                             ))}
                                             {GENRE_TAGS.filter(g => g.toLowerCase().includes(query.toLowerCase())).slice(0, 3).map(g => (
-                                                <button key={g} onClick={() => { setSelectedGenres(prev => [...new Set([...prev, g])]); setQuery(''); }} className="px-3 py-1.5 rounded-lg bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 text-[11px] font-bold hover:bg-indigo-600 hover:text-white transition-all">Genre: {g}</button>
+                                                <button key={g} onClick={() => { setSelectedGenres(prev => [...new Set([...prev, g])]); setQuery(''); }} className="px-3 py-1.5 rounded-lg bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 text-[11px] font-bold hover:bg-indigo-600 hover:text-white transition-all">{t('search.genre_prefix')}{g}</button>
                                             ))}
-                                            {VENUE_SECTORS.flatMap(s => s.tags).filter(t => t.toLowerCase().includes(query.toLowerCase())).slice(0, 3).map(t => (
-                                                <button key={t} onClick={() => { setSelectedVenues(prev => [...new Set([...prev, t])]); setQuery(''); }} className="px-3 py-1.5 rounded-lg bg-emerald-600/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-bold hover:bg-emerald-600 hover:text-white transition-all">Venue: {t}</button>
+                                            {VENUE_SECTORS.flatMap(s => s.tags).filter(venueTag => venueTag.toLowerCase().includes(query.toLowerCase())).slice(0, 3).map(venueTag => (
+                                                <button key={venueTag} onClick={() => { setSelectedVenues(prev => [...new Set([...prev, venueTag])]); setQuery(''); }} className="px-3 py-1.5 rounded-lg bg-emerald-600/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-bold hover:bg-emerald-600 hover:text-white transition-all">{t('search.venue_prefix')}{venueTag}</button>
                                             ))}
                                         </div>
                                     </div>
@@ -363,7 +365,7 @@ function VenueDashboardContent() {
                             <div className="space-y-8">
                                 <div className="flex items-center gap-3 ml-1 mb-2">
                                     <MapPin size={12} className="text-zinc-500" />
-                                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">Venue Segments</h3>
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">{t('filters.segments')}</h3>
                                 </div>
                                 {VENUE_SECTORS.map(s => (
                                     <div key={s.name} className="space-y-3">
@@ -388,7 +390,7 @@ function VenueDashboardContent() {
                             <div className="space-y-6">
                                 <div className="flex items-center gap-3 ml-1 mb-2">
                                     <Zap size={12} className="text-pink-500" />
-                                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">Aura Vibes</h3>
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">{t('filters.vibes')}</h3>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
                                     {VIBE_TAGS.map(v => (
@@ -408,7 +410,7 @@ function VenueDashboardContent() {
                             <div className="space-y-6">
                                 <div className="flex items-center gap-3 ml-1 mb-2">
                                     <Activity size={12} className="text-indigo-500" />
-                                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">Sonic Genre</h3>
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">{t('filters.genres')}</h3>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
                                     {GENRE_TAGS.map(g => (
@@ -427,7 +429,7 @@ function VenueDashboardContent() {
 
                             <div className="p-8 rounded-[2rem] bg-indigo-500/[0.03] border border-white/5 space-y-6 shadow-inner">
                                 <div className="flex items-center justify-between ml-1">
-                                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600">Tempo / BPM</h3>
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600">{t('filters.tempo')}</h3>
                                     <span className="text-[10px] font-black text-indigo-400">{bpmRange[1]}</span>
                                 </div>
                                 <div className="px-1">
@@ -445,7 +447,7 @@ function VenueDashboardContent() {
                                     className="w-full py-4 rounded-2xl bg-white/5 text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em] border border-white/5 hover:bg-white/10 hover:text-white transition-all flex items-center justify-center gap-3"
                                 >
                                     <RefreshCw size={12} />
-                                    Reset Engine
+                                    {t('filters.reset')}
                                 </button>
                             </div>
                         </aside>
@@ -457,13 +459,13 @@ function VenueDashboardContent() {
                             <div className="flex items-center justify-between border-b border-white/5 pb-6">
                                 <div>
                                     <h2 className="text-2xl font-black tracking-tight text-white uppercase italic">
-                                        {query ? `Aura Results for "${query}"` : (selectedPlaylist ? selectedPlaylist : 'Discovery Flow')}
+                                        {query ? t('results.aura_results_for', { query }) : (selectedPlaylist ? selectedPlaylist : t('results.discovery_flow'))}
                                     </h2>
                                     {(activeRule || selectedVenues.length > 0 || selectedVibes.length > 0) && (
                                         <div className="flex items-center gap-2 mt-2">
                                             <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-pulse" />
                                             <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest italic">
-                                                Intelligence-Layer Active
+                                                {t('results.intelligence_layer')}
                                             </p>
                                         </div>
                                     )}
@@ -473,7 +475,7 @@ function VenueDashboardContent() {
                                     disabled={true}
                                     className={`flex items-center gap-3 px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all border opacity-20 cursor-not-allowed bg-zinc-900/50 text-zinc-500 border-white/5`}
                                 >
-                                    <Sliders size={14} /> Advanced Filters
+                                    <Sliders size={14} /> {t('filters.advanced')}
                                 </button>
                             </div>
 
@@ -489,7 +491,7 @@ function VenueDashboardContent() {
                                 ) : (
                                     <div className="py-20 text-center flex flex-col items-center space-y-4 opacity-40">
                                         <LucideSparkles size={64} strokeWidth={1} />
-                                        <p className="text-xl font-bold uppercase italic tracking-tighter">No assets matching criteria</p>
+                                        <p className="text-xl font-bold uppercase italic tracking-tighter">{t('results.no_assets')}</p>
                                     </div>
                                 )}
                             </div>
@@ -497,7 +499,7 @@ function VenueDashboardContent() {
 
                         {/* 3. Premium Curation Section (8 boxes) */}
                         <div className="space-y-6 md:space-y-8 pt-8 border-t border-white/5">
-                            <h2 className="text-xl md:text-2xl font-black tracking-tight text-white uppercase italic">Premium Curation</h2>
+                            <h2 className="text-xl md:text-2xl font-black tracking-tight text-white uppercase italic">{t('sections.premium_curation')}</h2>
                             <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 md:gap-4">
                                 {playlists.map((playlist: any, i) => (
                                     <PlaylistCard
@@ -530,14 +532,14 @@ function VenueDashboardContent() {
                         <div className="pt-8">
                             <div className="bg-[#D9E1EB] rounded-3xl md:rounded-[3rem] overflow-hidden flex flex-col md:flex-row items-stretch border border-white/5 group/banner">
                                 <div className="flex-1 p-8 md:p-16 flex flex-col justify-center space-y-4 md:space-y-6">
-                                    <h2 className="text-3xl md:text-5xl font-serif text-[#111111] font-black uppercase tracking-tighter italic leading-tight max-w-md">Music on Request</h2>
-                                    <p className="text-[13px] md:text-[15px] text-zinc-800 max-w-sm font-medium">Elevate your venue with exclusive, custom-tailored sounds. Our AI and expert curators work for your brand.</p>
+                                    <h2 className="text-3xl md:text-5xl font-serif text-[#111111] font-black uppercase tracking-tighter italic leading-tight max-w-md">{t('promo.title')}</h2>
+                                    <p className="text-[13px] md:text-[15px] text-zinc-800 max-w-sm font-medium">{t('promo.desc')}</p>
                                     <div>
                                         <Link
                                             href="/dashboard/request"
                                             className="inline-block bg-black text-white px-8 py-3 md:px-10 md:py-4 font-bold text-xs md:text-[13px] hover:bg-zinc-900 transition-all active:scale-95 uppercase tracking-[0.2em] shadow-2xl"
                                         >
-                                            Get Started
+                                            {t('promo.button')}
                                         </Link>
                                     </div>
                                 </div>
@@ -555,8 +557,8 @@ function VenueDashboardContent() {
                         {/* 5. Trending in Venues List */}
                         <div className="space-y-8 pt-12 border-t border-white/5">
                             <div className="flex items-center justify-between">
-                                <h2 className="text-2xl font-black tracking-tight text-white uppercase italic">Trending in Venues</h2>
-                                <button className="text-[11px] font-black text-zinc-500 hover:text-white transition-colors uppercase tracking-[0.2em]">Explore More</button>
+                                <h2 className="text-2xl font-black tracking-tight text-white uppercase italic">{t('sections.trending')}</h2>
+                                <button className="text-[11px] font-black text-zinc-500 hover:text-white transition-colors uppercase tracking-[0.2em]">{t('sections.explore_more')}</button>
                             </div>
 
                             <div className="divide-y divide-white/5 bg-zinc-900/5 rounded-[2.5rem] overflow-hidden min-h-[400px]">
@@ -566,7 +568,7 @@ function VenueDashboardContent() {
                                     ))
                                 ) : (
                                     <div className="py-20 text-center flex items-center justify-center text-zinc-700 font-black uppercase tracking-widest text-[10px]">
-                                        Discovering more harmonics...
+                                        {t('results.discovering')}
                                     </div>
                                 )}
                             </div>
@@ -574,7 +576,7 @@ function VenueDashboardContent() {
 
                         {/* 6. Premium Vibes Section (8 Boxes) */}
                         <div className="space-y-6 md:space-y-8 pt-12 border-t border-white/5">
-                            <h2 className="text-xl md:text-2xl font-black tracking-tight text-white uppercase italic text-glow-indigo">Premium Vibes</h2>
+                            <h2 className="text-xl md:text-2xl font-black tracking-tight text-white uppercase italic text-glow-indigo">{t('sections.premium_vibes')}</h2>
                             <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 md:gap-4">
                                 {vibesList.map((vibe, i) => (
                                     <PlaylistCard
