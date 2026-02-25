@@ -436,6 +436,138 @@
         "construction": {
             "title": "Section Under Construction",
             "desc": "Our architects are documenting this part of the factory. Please check back shortly."
+        },
+        "content": {
+            "how-it-works": {
+                "title": "How It Works",
+                "p1": "Welcome to the How It Works section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "account-setup": {
+                "title": "Account Initialization",
+                "p1": "Welcome to the Account Initialization section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "core-stack": {
+                "title": "Modern Architecture",
+                "p1": "Welcome to the Modern Architecture section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "ai-engine": {
+                "title": "Aura AI Intelligence",
+                "p1": "Welcome to the Aura AI Intelligence section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "strategic-intel": {
+                "title": "Strategic Intelligence",
+                "p1": "Welcome to the Strategic Intelligence section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "frequency-eng": {
+                "title": "Molecular Sound (Hz)",
+                "p1": "Welcome to the Molecular Sound (Hz) section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "karaoke-engine": {
+                "title": "Karaoke & Word Sync",
+                "p1": "Welcome to the Karaoke & Word Sync section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "weather-ai": {
+                "title": "Atmospheric AI",
+                "p1": "Welcome to the Atmospheric AI section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "watermarking": {
+                "title": "Signal Protection",
+                "p1": "Welcome to the Signal Protection section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "interactive-waveforms": {
+                "title": "Sonic Discovery",
+                "p1": "Welcome to the Sonic Discovery section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "sync-precision": {
+                "title": "Frame-Perfect Sync",
+                "p1": "Welcome to the Frame-Perfect Sync section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "biorhythm-ml": {
+                "title": "Biorhythm Training",
+                "p1": "Welcome to the Biorhythm Training section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "edge-roi": {
+                "title": "Global Infrastructure",
+                "p1": "Welcome to the Global Infrastructure section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "revenue-intel": {
+                "title": "Revenue Intelligence",
+                "p1": "Welcome to the Revenue Intelligence section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "churn-heartbeat": {
+                "title": "Churn Prediction",
+                "p1": "Welcome to the Churn Prediction section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "ui-evolution": {
+                "title": "UI Data Evolution",
+                "p1": "Welcome to the UI Data Evolution section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "enterprise-hq": {
+                "title": "Enterprise Hub",
+                "p1": "Welcome to the Enterprise Hub section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "playlist-editor": {
+                "title": "Playlist Curation",
+                "p1": "Welcome to the Playlist Curation section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "smart-flow": {
+                "title": "Mastering Smart Flow",
+                "p1": "Welcome to the Mastering Smart Flow section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "scheduling": {
+                "title": "Dynamic Scheduling",
+                "p1": "Welcome to the Dynamic Scheduling section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "b2b-licensing": {
+                "title": "Commercial Licensing",
+                "p1": "Welcome to the Commercial Licensing section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "direct-licensing": {
+                "title": "Music Licensing Made Easy",
+                "p1": "Welcome to the Music Licensing Made Easy section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "upload-qc": {
+                "title": "The Production Factory",
+                "p1": "Welcome to the The Production Factory section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "revenue-share": {
+                "title": "Strategic Partnerships",
+                "p1": "Welcome to the Strategic Partnerships section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "tailor-process": {
+                "title": "The Tailor Workflow",
+                "p1": "Welcome to the The Tailor Workflow section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "project-soul": {
+                "title": "Project Soul Concept",
+                "p1": "Welcome to the Project Soul Concept section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            }
         }
     },
     "Blog": {
@@ -495,6 +627,10 @@
         "exhibition": "Exhibition Halls"
     },
     "Pricing": {
+        "metadata": {
+            "title": "Pricing",
+            "description": "Flexible, scientific pricing for creators and venues. From free browsing to elite enterprise audio ecosystems."
+        },
         "scientific": "Scientific Pricing",
         "title": "Elite Audio <br></br> Plans.",
         "perMonth": "/ mo",

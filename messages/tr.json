@@ -436,6 +436,138 @@
         "construction": {
             "title": "Bölüm Yapım Aşamasında",
             "desc": "Mimarlarımız fabrikanın bu bölümünü belgeliyor. Lütfen yakında tekrar kontrol edin."
+        },
+        "content": {
+            "how-it-works": {
+                "title": "Nasıl Çalışır?",
+                "p1": "Nasıl Çalışır? bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "account-setup": {
+                "title": "Hesap Başlatma",
+                "p1": "Hesap Başlatma bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "core-stack": {
+                "title": "Modern Mimari",
+                "p1": "Modern Mimari bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "ai-engine": {
+                "title": "Aura Yapay Zeka",
+                "p1": "Aura Yapay Zeka bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "strategic-intel": {
+                "title": "Stratejik Zeka",
+                "p1": "Stratejik Zeka bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "frequency-eng": {
+                "title": "Moleküler Ses (Hz)",
+                "p1": "Moleküler Ses (Hz) bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "karaoke-engine": {
+                "title": "Karaoke ve Kelime Senkronizasyonu",
+                "p1": "Karaoke ve Kelime Senkronizasyonu bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "weather-ai": {
+                "title": "Atmosferik Yapay Zeka",
+                "p1": "Atmosferik Yapay Zeka bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "watermarking": {
+                "title": "Sinyal Koruması",
+                "p1": "Sinyal Koruması bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "interactive-waveforms": {
+                "title": "Sonik Keşif",
+                "p1": "Sonik Keşif bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "sync-precision": {
+                "title": "Kare-Mükemmel Senkronizasyon",
+                "p1": "Kare-Mükemmel Senkronizasyon bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "biorhythm-ml": {
+                "title": "Biyoritim Eğitimi",
+                "p1": "Biyoritim Eğitimi bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "edge-roi": {
+                "title": "Küresel Altyapı",
+                "p1": "Küresel Altyapı bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "revenue-intel": {
+                "title": "Gelir Zekası",
+                "p1": "Gelir Zekası bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "churn-heartbeat": {
+                "title": "Abonelik Kaybı Tahmini",
+                "p1": "Abonelik Kaybı Tahmini bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "ui-evolution": {
+                "title": "UI Veri Evrimi",
+                "p1": "UI Veri Evrimi bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "enterprise-hq": {
+                "title": "Kurumsal Merkez",
+                "p1": "Kurumsal Merkez bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "playlist-editor": {
+                "title": "Çalma Listesi Kürasyonu",
+                "p1": "Çalma Listesi Kürasyonu bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "smart-flow": {
+                "title": "Smart Flow'u Ustalaştırmak",
+                "p1": "Smart Flow'u Ustalaştırmak bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "scheduling": {
+                "title": "Dinamik Programlama",
+                "p1": "Dinamik Programlama bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "b2b-licensing": {
+                "title": "Ticari Lisanslama",
+                "p1": "Ticari Lisanslama bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "direct-licensing": {
+                "title": "Müzik Lisanslaması Kolaylaştı",
+                "p1": "Müzik Lisanslaması Kolaylaştı bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "upload-qc": {
+                "title": "Üretim Fabrikası",
+                "p1": "Üretim Fabrikası bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "revenue-share": {
+                "title": "Stratejik Ortaklıklar",
+                "p1": "Stratejik Ortaklıklar bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "tailor-process": {
+                "title": "Tailor İş Akışı",
+                "p1": "Tailor İş Akışı bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "project-soul": {
+                "title": "Project Soul Konsepti",
+                "p1": "Project Soul Konsepti bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            }
         }
     },
     "Nav": {
@@ -502,6 +634,10 @@
         "exhibition": "Sergi Salonları"
     },
     "Pricing": {
+        "metadata": {
+            "title": "Fiyatlandırma",
+            "description": "İçerik üreticileri ve mekanlar için esnek, bilimsel fiyatlandırma. Ücretsiz taramadan elit kurumsal ses ekosistemlerine kadar."
+        },
         "scientific": "Bilimsel Fiyatlandırma",
         "title": "Elit Audio <br></br> Planları.",
         "perMonth": "/ ay",

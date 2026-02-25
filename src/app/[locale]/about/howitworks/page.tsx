@@ -153,6 +153,31 @@ function HelpCenterContent() {
                     </article>
                 );
             default:
+                if (t.has(`content.${id}.title` as any)) {
+                    return (
+                        <article className="space-y-10">
+                            <header className="space-y-4">
+                                <div className="h-16 w-16 bg-white/5 rounded-2xl flex items-center justify-center text-zinc-400">
+                                    <Info size={32} />
+                                </div>
+                                <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-none">
+                                    {t(`content.${id}.title` as any)}
+                                </h1>
+                            </header>
+                            <div className="prose prose-invert max-w-none space-y-8">
+                                <section className="space-y-4">
+                                    <p className="text-zinc-300 leading-relaxed text-lg">
+                                        {t(`content.${id}.p1` as any)}
+                                    </p>
+                                    <p className="text-zinc-300 leading-relaxed">
+                                        {t(`content.${id}.p2` as any)}
+                                    </p>
+                                </section>
+                            </div>
+                        </article>
+                    );
+                }
+
                 return (
                     <div className="py-20 text-center space-y-4">
                         <div className="h-20 w-20 bg-white/5 rounded-full flex items-center justify-center mx-auto">

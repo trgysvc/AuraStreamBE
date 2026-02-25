@@ -6,10 +6,18 @@ import { createClient } from '@/lib/db/server';
 import { Metadata } from 'next';
 import { getTranslations, getLocale } from 'next-intl/server';
 
-export const metadata: Metadata = {
-    title: 'Pricing',
-    description: 'Flexible, scientific pricing for creators and venues. From free browsing to elite enterprise audio ecosystems.',
-};
+interface PageProps {
+    params: Promise<{ locale: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps) {
+    const { locale } = await params;
+    const t = await getTranslations({ locale, namespace: 'Pricing.metadata' });
+    return {
+        title: t('title'),
+        description: t('description')
+    };
+}
 
 export default async function PricingPage() {
     const t = await getTranslations('Pricing');
