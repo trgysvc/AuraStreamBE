@@ -11,6 +11,7 @@ import { SmartFlowProvider, useSmartFlow } from '@/context/SmartFlowContext';
 import { usePlayer } from '@/context/PlayerContext';
 import { createClient } from '@/lib/db/client';
 import { useTranslations } from 'next-intl';
+import { SimilarityModal } from '@/components/dashboard/SimilarityModal';
 
 const PlaylistCard = ({ title, tracks, color, image, onClick }: { title: string, tracks: string, color: string, image?: string, onClick?: () => void }) => (
     <div className="group cursor-pointer" onClick={onClick}>
@@ -48,6 +49,18 @@ function VenueDashboardContent() {
     const [selectedPlaylist, setSelectedPlaylist] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
     const [curationCounts, setCurationCounts] = useState<Record<string, number>>({});
+
+    // Similarity Engine Modal State
+    const [isSimilarityModalOpen, setIsSimilarityModalOpen] = useState(false);
+    const [similarityReferenceTrack, setSimilarityReferenceTrack] = useState<any>(null);
+
+    const handleFindSimilar = useCallback((trackId: string) => {
+        const track = tracks.find(t => t.id === trackId);
+        if (track) {
+            setSimilarityReferenceTrack(track);
+            setIsSimilarityModalOpen(true);
+        }
+    }, [tracks]);
 
     useEffect(() => {
         const fetchUserAndCounts = async () => {
@@ -119,13 +132,14 @@ function VenueDashboardContent() {
                     title: t.title,
                     artist: t.artist,
                     duration: displayDuration,
+                    rawDurationMs: t.duration || 0,
                     bpm: t.bpm || 120,
                     tags: t.tags?.length ? t.tags : [t.genre || "Music", "General"],
                     image: t.coverImage,
                     lyrics: t.lyrics,
                     audioSrc: t.src,
                     src: t.src,
-                    metadata: (t as any).metadata
+                    metadata: t.metadata
                 };
             }));
 
@@ -486,7 +500,7 @@ function VenueDashboardContent() {
                                     </div>
                                 ) : tracks.length > 0 ? (
                                     tracks.slice(0, 10).map((track) => (
-                                        <TrackRow key={track.id} {...track} lyrics={track.lyrics} allTracks={tracks} />
+                                        <TrackRow key={track.id} {...track} lyrics={track.lyrics} allTracks={tracks} onSimilar={handleFindSimilar} />
                                     ))
                                 ) : (
                                     <div className="py-20 text-center flex flex-col items-center space-y-4 opacity-40">
@@ -564,7 +578,7 @@ function VenueDashboardContent() {
                             <div className="divide-y divide-white/5 bg-zinc-900/5 rounded-[2.5rem] overflow-hidden min-h-[400px]">
                                 {tracks.length > 5 ? (
                                     tracks.slice(5, 15).map((track) => (
-                                        <TrackRow key={track.id} {...track} lyrics={track.lyrics} allTracks={tracks} />
+                                        <TrackRow key={track.id} {...track} lyrics={track.lyrics} allTracks={tracks} onSimilar={handleFindSimilar} />
                                     ))
                                 ) : (
                                     <div className="py-20 text-center flex items-center justify-center text-zinc-700 font-black uppercase tracking-widest text-[10px]">
@@ -596,6 +610,17 @@ function VenueDashboardContent() {
                     </div>
                 </div>
             )}
+
+            {/* Smart Similarity Engine Overlay */}
+            <SimilarityModal
+                isOpen={isSimilarityModalOpen}
+                onClose={() => {
+                    setIsSimilarityModalOpen(false);
+                    setSimilarityReferenceTrack(null);
+                }}
+                referenceTrack={similarityReferenceTrack}
+                allTracks={tracks}
+            />
         </div>
     );
 }

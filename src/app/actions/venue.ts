@@ -21,6 +21,7 @@ export interface VenueTrack {
     src: string;
     availableTunings: Record<string, string>;
     tags: string[];
+    metadata?: any;
 }
 
 export async function getVenueTracks_Action(options?: {
@@ -54,6 +55,7 @@ export async function getVenueTracks_Action(options?: {
             lyrics,
             lyrics_synced,
             cover_image_url,
+            metadata,
             track_files (
                 s3_key,
                 file_type,
@@ -200,7 +202,8 @@ export async function getVenueTracks_Action(options?: {
             lyrics_synced: track.lyrics_synced || undefined,
             src: defaultSrc,
             availableTunings,
-            tags: track.mood_tags || [track.genre || "Music"]
+            tags: track.mood_tags || [track.genre || "Music"],
+            metadata: track.metadata || undefined
         };
     }));
 

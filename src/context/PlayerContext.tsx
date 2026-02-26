@@ -18,6 +18,7 @@ interface Track {
     src?: string;
     lyrics?: string;
     lyrics_synced?: any;
+    peakData?: number[];
     availableTunings?: Record<string, string>;
 }
 
@@ -37,7 +38,7 @@ interface PlayerContextType {
     volume: number;
     isShuffle: boolean;
     isRepeat: boolean;
-    playTrack: (track: Track, list?: Track[]) => void;
+    playTrack: (track: Track, list?: Track[], startTime?: number) => void;
     togglePlay: () => void;
     seek: (time: number) => void;
     setTuning: (tuning: '440hz' | '432hz' | '528hz') => void;
@@ -49,6 +50,8 @@ interface PlayerContextType {
     playNext: () => void;
     playPrevious: () => void;
     stop: () => void;
+    loopRegion: { start: number; end: number } | null;
+    setLoopRegion: (region: { start: number; end: number } | null) => void;
 }
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
@@ -70,6 +73,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [volume, setVolumeState] = useState(80);
     const [isShuffle, setIsShuffle] = useState(false);
     const [isRepeat, setIsRepeat] = useState(false);
+
+    // Similarity Engine Seamless Looping State
+    const [loopRegion, setLoopRegion] = useState<{ start: number; end: number } | null>(null);
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const audioContextRef = useRef<AudioContext | null>(null);
@@ -165,6 +171,28 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         };
     }, []);
 
+    // 2. High-Precision Seamless Loop Engine for Similarity Highlights
+    useEffect(() => {
+        let animationFrameId: number;
+        const checkLoop = () => {
+            if (isPlaying && loopRegion && audioRef.current) {
+                // If the player hits or passes the end of the yellow selection box, snap back immediately to the start
+                if (audioRef.current.currentTime >= loopRegion.end) {
+                    audioRef.current.currentTime = loopRegion.start;
+                }
+            }
+            animationFrameId = requestAnimationFrame(checkLoop);
+        };
+
+        if (loopRegion) {
+            animationFrameId = requestAnimationFrame(checkLoop);
+        }
+
+        return () => {
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        };
+    }, [isPlaying, loopRegion]);
+
     // Fetch User Data & Heartbeat (Feature 4: Churn Prediction)
     useEffect(() => {
         const fetchUserData = async () => {
@@ -200,7 +228,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const playTrack = async (track: Track, list?: Track[]) => {
+    const playTrack = async (track: Track, list?: Track[], startTime?: number) => {
         if (!track || !audioRef.current) return;
 
         // 1. IMMEDIATE GESTURE CAPTURE (Safari Fix)
@@ -223,8 +251,8 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
         if (list) setTrackList(list);
 
-        // If clicking current track, toggle it
-        if (currentTrack?.id === track.id) {
+        // If clicking current track, toggle it (unless we're explicitly seeking with startTime)
+        if (currentTrack?.id === track.id && startTime === undefined) {
             togglePlay();
             return;
         }
@@ -252,6 +280,11 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
             // Safari fix: Calling load() explicitly before play()
             audioRef.current.load();
+
+            // Set the start time if provided
+            if (startTime !== undefined) {
+                audioRef.current.currentTime = startTime;
+            }
 
             const playPromise = audioRef.current.play();
             if (playPromise !== undefined) {
@@ -364,10 +397,10 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     return (
         <PlayerContext.Provider value={{
             currentTrack, isPlaying, duration, currentTime, tuning, isAutoTuning, tier, role,
-            analyser, isMuted, volume, isShuffle, isRepeat,
+            analyser, isMuted, volume, isShuffle, isRepeat, loopRegion,
             playTrack, togglePlay, seek: (t) => { if (audioRef.current) audioRef.current.currentTime = t; },
             setTuning, setAutoTuning, setMuted, setVolume, setShuffle: setIsShuffle, setRepeat: setIsRepeat,
-            playNext, playPrevious, stop
+            playNext, playPrevious, stop, setLoopRegion
         }}>
             {children}
             {/* Hidden trigger for auto-play b/c of event listener closures */}

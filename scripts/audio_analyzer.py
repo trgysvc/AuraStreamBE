@@ -60,9 +60,9 @@ def analyze_audio(file_path, watermark_uuid=None):
         rms = librosa.feature.rms(y=y)
         energy = float(rms.mean() * 100)
         
-        # 4. Extract Waveform (100 points)
+        # 4. Extract Waveform (dynamic points, default 1000)
         total_samples = len(y)
-        points = 100
+        points = int(sys.argv[3]) if len(sys.argv) > 3 else 1000
         hop_length = total_samples // points
         if hop_length < 1: hop_length = 1
         

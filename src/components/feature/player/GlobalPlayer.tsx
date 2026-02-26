@@ -2,19 +2,19 @@
 
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { usePlayer } from '@/context/PlayerContext';
-import { 
-    Play, 
-    Pause, 
-    SkipBack, 
-    SkipForward, 
-    Volume2, 
+import {
+    Play,
+    Pause,
+    SkipBack,
+    SkipForward,
+    Volume2,
     VolumeX,
-    Repeat, 
-    Shuffle, 
-    Settings2, 
-    X, 
-    Mic2, 
-    ListMusic 
+    Repeat,
+    Shuffle,
+    Settings2,
+    X,
+    Mic2,
+    ListMusic
 } from 'lucide-react';
 
 const formatTime = (time: number) => {
@@ -61,7 +61,7 @@ export function GlobalPlayer() {
         if (!currentTrack?.lyrics) return [];
         const lines = currentTrack.lyrics.split('\n');
         const lrcRegex = /\[(\d{2}):(\d{2})\.(\d{2})\](.*)/;
-        
+
         const synced = lines.map(line => {
             const match = line.match(lrcRegex);
             if (match) {
@@ -133,8 +133,8 @@ export function GlobalPlayer() {
         <div
             id="global-player-panel"
             className={`fixed bottom-0 left-0 right-0 h-24 bg-[#0A0A0A] z-[100] border-t border-white/5 flex flex-col transition-all duration-700 ease-in-out ${isVisible
-                    ? 'translate-y-0 opacity-100 visible pointer-events-auto shadow-[0_-20px_60px_rgba(0,0,0,0.8)]'
-                    : 'translate-y-full opacity-0 invisible pointer-events-none'
+                ? 'translate-y-0 opacity-100 visible pointer-events-auto shadow-[0_-20px_60px_rgba(0,0,0,0.8)]'
+                : 'translate-y-full opacity-0 invisible pointer-events-none'
                 }`}
         >
             {/* 1. Top Scrub Bar (Restored Thin Line) */}
@@ -146,15 +146,15 @@ export function GlobalPlayer() {
             </div>
 
             <div className="flex-1 flex items-center px-12 relative h-full">
-                
+
                 {/* LEFT: Metadata */}
                 <div className="flex items-center gap-4 ml-32 min-w-0 group/meta max-w-[220px] z-10">
                     <div className="w-12 h-12 rounded-lg overflow-hidden bg-zinc-900 shadow-2xl border border-white/10 flex-shrink-0">
                         {currentTrack?.src ? (
-                            <img 
-                                src={currentTrack.src.includes('cover') ? currentTrack.src : "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=200"} 
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover/meta:scale-110" 
-                                alt={currentTrack.title} 
+                            <img
+                                src={currentTrack.src.includes('cover') ? currentTrack.src : "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=200"}
+                                className="w-full h-full object-cover transition-transform duration-500 group-hover/meta:scale-110"
+                                alt={currentTrack.title}
                             />
                         ) : <div className="w-full h-full flex items-center justify-center">🎵</div>}
                     </div>
@@ -168,7 +168,7 @@ export function GlobalPlayer() {
                 <div className="absolute left-[400px] right-[calc(50%+220px)] flex items-center justify-center overflow-hidden">
                     {showLyrics && currentLine && (
                         <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 text-center">
-                             <p className="text-zinc-200 text-[11px] font-black italic uppercase tracking-tighter line-clamp-1 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
+                            <p className="text-zinc-200 text-[11px] font-black italic uppercase tracking-tighter line-clamp-1 drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
                                 {currentLine.text}
                             </p>
                         </div>
@@ -179,15 +179,15 @@ export function GlobalPlayer() {
                 <div className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 z-20">
                     <div className="flex items-center gap-6 text-zinc-400">
                         <SimpleTooltip text={isShuffle ? "Shuffle On" : "Shuffle Off"}>
-                            <Shuffle 
-                                size={15} 
+                            <Shuffle
+                                size={15}
                                 onClick={() => setShuffle(!isShuffle)}
-                                className={`cursor-pointer transition-all ${isShuffle ? 'text-indigo-400 drop-shadow-[0_0_8px_rgba(129,140,248,0.8)]' : 'text-zinc-600 hover:text-white'}`} 
+                                className={`cursor-pointer transition-all ${isShuffle ? 'text-indigo-400 drop-shadow-[0_0_8px_rgba(129,140,248,0.8)]' : 'text-zinc-600 hover:text-white'}`}
                             />
                         </SimpleTooltip>
 
                         <SkipBack size={18} onClick={playPrevious} className="text-zinc-400 hover:text-white cursor-pointer transition-colors fill-current" />
-                        
+
                         <button
                             onClick={togglePlay}
                             className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(255,255,255,0.2)] flex-shrink-0"
@@ -196,18 +196,18 @@ export function GlobalPlayer() {
                         </button>
 
                         <SkipForward size={18} onClick={playNext} className="text-zinc-400 hover:text-white cursor-pointer transition-colors fill-current" />
-                        
+
                         <SimpleTooltip text={isRepeat ? "Repeat On" : "Repeat Off"}>
-                            <Repeat 
-                                size={15} 
+                            <Repeat
+                                size={15}
                                 onClick={() => setRepeat(!isRepeat)}
-                                className={`cursor-pointer transition-all ${isRepeat ? 'text-indigo-400 drop-shadow-[0_0_8px_rgba(129,140,248,0.8)]' : 'text-zinc-600 hover:text-white'}`} 
+                                className={`cursor-pointer transition-all ${isRepeat ? 'text-indigo-400 drop-shadow-[0_0_8px_rgba(129,140,248,0.8)]' : 'text-zinc-600 hover:text-white'}`}
                             />
                         </SimpleTooltip>
                     </div>
                     <div className="flex items-center gap-3 text-[8px] font-black text-zinc-700 tracking-widest uppercase italic">
                         <span>{formatTime(currentTime)}</span>
-                        <div className="w-36 h-0.5 bg-white/5 rounded-full overflow-hidden relative group/progress cursor-pointer">
+                        <div className="w-36 h-0.5 bg-white/5 rounded-full overflow-hidden relative group/progress cursor-pointer" onClick={handleProgressClick}>
                             <div
                                 className="h-full bg-white/30 group-hover/progress:bg-indigo-500 transition-colors"
                                 style={{ width: `${progressPercent}%` }}
@@ -255,9 +255,9 @@ export function GlobalPlayer() {
                             <button onClick={() => setMuted(!isMuted)} className="text-zinc-500 hover:text-white transition-colors">
                                 {isMuted || volume === 0 ? <VolumeX size={14} className="text-rose-500" /> : <Volume2 size={14} />}
                             </button>
-                            <input 
-                                type="range" min="0" max="100" 
-                                value={isMuted ? 0 : volume} 
+                            <input
+                                type="range" min="0" max="100"
+                                value={isMuted ? 0 : volume}
                                 onChange={(e) => setVolume(parseInt(e.target.value))}
                                 className="w-8 h-0.5 accent-indigo-500 cursor-pointer"
                             />

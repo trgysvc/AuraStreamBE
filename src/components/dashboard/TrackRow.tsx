@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Play, Download, Plus, Heart, MoreHorizontal, Wand2, ListPlus } from 'lucide-react';
-import { Waveform } from '@/components/shared/Waveform';
+import { WaveformSeekbar } from '@/components/shared/WaveformSeekbar';
 import { usePlayer } from '@/context/PlayerContext';
 import { toggleLikeTrack_Action, isTrackLiked_Action } from '@/app/actions/music';
 import AddToPlaylistPopover from './AddToPlaylistPopover';
@@ -40,8 +40,21 @@ export default function TrackRow({ id, title, artist, duration, bpm, tags, image
     const isCurrentTrack = currentTrack?.id === id;
     const isPlaying = isCurrentTrack && globalIsPlaying;
 
-    // Calculate progress for this track if it's playing
-    const progress = isCurrentTrack && totalDuration > 0 ? currentTime / totalDuration : 0;
+    // Helper: Convert "3:45" to seconds (225)
+    const getDurationInSeconds = (durationStr: string | number) => {
+        if (typeof durationStr === 'number') return durationStr;
+        if (!durationStr) return 0;
+        const parts = durationStr.split(':');
+        if (parts.length === 2) {
+            return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+        }
+        return 0;
+    };
+
+    const trackDurationSeconds = getDurationInSeconds(duration);
+
+    // Provide the correct currentTime state
+    const currentTrackTime = isCurrentTrack ? currentTime : 0;
 
     // Simplified multi-tenant session hook
     useEffect(() => {
@@ -129,16 +142,31 @@ export default function TrackRow({ id, title, artist, duration, bpm, tags, image
 
             {/* Waveform Visualization (Hidden on Mobile) */}
             <div className="hidden md:block flex-1 px-4 min-w-[200px]">
-                <Waveform
-                    seed={id}
-                    progress={progress}
-                    bpm={bpm}
-                    isPlaying={isPlaying}
-                    data={metadata?.waveform}
-                    height={36}
-                    inactiveColor="rgba(255,255,255,0.1)"
-                    activeColor={isCurrentTrack ? "#7C3AED" : "#FFFFFF"}
-                />
+                <div className="h-10 w-full relative">
+                    <WaveformSeekbar
+                        duration={trackDurationSeconds}
+                        currentTime={currentTrackTime}
+                        isPlaying={isPlaying}
+                        peakData={metadata?.waveform}
+                        playedColor={isCurrentTrack ? "#FFFFFF" : "rgba(255,255,255,0.2)"}
+                        unplayedColor={isCurrentTrack ? "#A855F7" : "rgba(255,255,255,0.2)"}
+                        onSeek={(time) => {
+                            if (isCurrentTrack) {
+                                // If it is already the active track, simply seek.
+                                const audioRef = document.getElementById('aura-internal-audio') as HTMLAudioElement;
+                                if (audioRef) audioRef.currentTime = time;
+                            } else {
+                                // If it's a new track, start playing from this specific point.
+                                if (!audioSrc) return;
+                                playTrack(
+                                    { id, title, artist, duration, bpm, tags, lyrics, src: audioSrc },
+                                    allTracks,
+                                    time
+                                );
+                            }
+                        }}
+                    />
+                </div>
             </div>
 
             {/* Meta Info: Time & BPM */}
@@ -162,10 +190,11 @@ export default function TrackRow({ id, title, artist, duration, bpm, tags, image
             <div className="flex items-center gap-1 md:gap-4 pr-1 md:pr-2 opacity-40 group-hover:opacity-100 transition-opacity relative">
                 <button
                     onClick={(e) => { e.stopPropagation(); onSimilar?.(id); }}
-                    className="hidden md:block p-2 text-zinc-400 hover:text-pink-500 transition-colors"
+                    className="hidden lg:flex items-center gap-2 py-1.5 px-3 rounded-full border border-white/5 bg-white/5 text-zinc-400 hover:text-yellow-400 hover:border-yellow-500/30 transition-all cursor-pointer shadow-lg"
                     title="Find similar tracks"
                 >
-                    <Wand2 size={18} />
+                    <Wand2 size={14} />
+                    <span className="text-[9px] font-black uppercase tracking-[0.2em]">Similar</span>
                 </button>
                 <button
                     onClick={handleLike}
