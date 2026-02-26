@@ -88,7 +88,13 @@ export function SmartWeatherCard({ initialWeather, initialCity }: SmartWeatherCa
                     </div>
                 </div>
                 <p className="text-xs text-zinc-400 font-medium leading-relaxed">
-                    {t.rich('optimization', { city: () => <span className="text-indigo-400 font-bold">{displayCity}</span> })} {t.rich('current_setting', { setting: () => <span className="text-white font-bold">{weather?.condition === 'clear' ? t('vibrant') : t('calm')}</span> })}.
+                    {t.rich('optimization', {
+                        cityName: displayCity,
+                        city: (chunks) => <span className="text-indigo-400 font-bold">{chunks}</span>
+                    })} {t.rich('current_setting', {
+                        settingName: weather?.condition === 'clear' ? t('vibrant') : t('calm'),
+                        setting: (chunks) => <span className="text-white font-bold">{chunks}</span>
+                    })}.
                 </p>
             </div>
         </div>

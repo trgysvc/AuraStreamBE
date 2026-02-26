@@ -98,6 +98,12 @@
         - 528Hz: +4 cents (Vitality/Regeneration)
     *   **Storage:** Processed masters are stored as separate assets in S3 (`processed/{id}/432hz.wav`, `processed/{id}/528hz.wav`) to avoid real-time CPU overhead in the browser.
 
+### 3.4 Smart Similarity Engine (Acoustic Matching)
+*   **Purpose:** Allow Venues to find acoustically identical tracks by dragging a Selection Loop over a Reference Waveform.
+*   **Algorithm:** Real-time Mean Squared Error (MSE) Mathematics combined with a 15-second Sliding Window.
+*   **Data Structure:** Array of 1000 normalized floats (0.0 to 1.0) stored per track.
+*   **Performance:** Client-side processing optimized with high-performance `requestAnimationFrame` canvas rendering and 200ms debounced loop calculations. 
+
 ## 4. Environment Variables
 (See Implementation Plan PDF for full list)
 *   **Supabase:** `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`.

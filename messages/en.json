@@ -1009,8 +1009,8 @@
             "title": "Atmospheric Context",
             "location_fallback": "Your Location",
             "ambient": "{temp}°C Ambient",
-            "optimization": "Aura is optimizing the acoustic frequency for <city/>.",
-            "current_setting": "Current setting: <setting/>",
+            "optimization": "Aura is optimizing the acoustic frequency for <city>{cityName}</city>.",
+            "current_setting": "Current setting: <setting>{settingName}</setting>",
             "vibrant": "Vibrant (528Hz)",
             "calm": "Calm (432Hz)",
             "conditions": {

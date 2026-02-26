@@ -1,5 +1,5 @@
 import { Link } from '@/i18n/navigation';
-import { Search, ArrowRight, Menu, X, Play } from 'lucide-react';
+import { Search, ArrowRight, Menu, X, Play, Building2, Users, Zap, Activity } from 'lucide-react';
 import { Footer } from '@/components/layout/Footer';
 import { MainHeader } from '@/components/layout/MainHeader';
 import { createClient } from '@/lib/db/server';
@@ -140,36 +140,90 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                         </p>
                     </div>
 
-                    {/* Mock UI Element */}
-                    <div className="max-w-4xl mx-auto bg-[#18181b] rounded-2xl md:rounded-xl shadow-2xl overflow-hidden text-left transform md:rotate-1 hover:rotate-0 transition-transform duration-500 scale-95 md:scale-100">
-                        <div className="p-6 border-b border-white/5 flex items-center justify-between">
-                            <span className="font-bold text-white text-sm">{t('sections.find_similar.mock_ui_title')}</span>
-                            <X size={18} className="text-zinc-500" />
-                        </div>
-                        <div className="p-4 md:p-8 space-y-6">
-                            {/* Player Mock */}
-                            <div className="flex items-center gap-4 bg-zinc-800/50 p-4 rounded-lg">
-                                <div className="w-12 h-12 bg-white/10 rounded flex items-center justify-center text-2xl">💿</div>
-                                <div className="flex-1">
-                                    <p className="text-white font-bold text-sm">All Gassed Up</p>
-                                    <p className="text-zinc-500 text-xs">Larry Poppinz</p>
+                    {/* High-Fidelity Smart Similarity Mock UI Element */}
+                    <div className="relative w-full max-w-[668px] mx-auto aspect-[4/3] md:aspect-[16/10] bg-[#0a0a0a] border border-[#27272a] rounded-2xl md:rounded-xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col text-left transform md:rotate-1 hover:rotate-0 hover:scale-[1.02] transition-transform duration-700 scale-[0.85] md:scale-100 transform-origin-top">
+                        <div className="p-4 md:p-5 border-b border-white/10 flex items-center justify-between bg-black/40 shrink-0">
+                            <div className="flex items-center gap-4">
+                                <div className="p-2 bg-yellow-400/10 rounded-xl border border-yellow-400/20">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-yellow-400"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z" /><path d="m14 7 3 3" /><path d="M5 6v4" /><path d="M19 14v4" /><path d="M10 2v2" /><path d="M7 8H3" /><path d="M21 16h-4" /><path d="M11 3H9" /></svg>
                                 </div>
-                                <div className="flex-1 h-8 bg-zinc-700/30 rounded flex items-center px-2">
-                                    <div className="w-full h-1 bg-zinc-600 rounded-full overflow-hidden">
-                                        <div className="w-1/3 h-full bg-[#F7D348]" />
-                                    </div>
+                                <div>
+                                    <h3 className="text-base md:text-xl font-black uppercase italic tracking-widest text-white leading-none">Smart Similarity</h3>
+                                    <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mt-1">Audio Acoustics Matching Engine</p>
                                 </div>
                             </div>
-                            {/* List Mock */}
-                            <div className="space-y-4 opacity-50">
-                                {[1, 2, 3].map(i => (
-                                    <div key={i} className="flex items-center gap-4">
-                                        <div className="w-10 h-10 bg-zinc-800 rounded" />
-                                        <div className="flex-1 space-y-2">
-                                            <div className="h-2 w-24 bg-zinc-700 rounded" />
-                                            <div className="h-2 w-16 bg-zinc-800 rounded" />
+                            <X size={16} className="text-zinc-500" />
+                        </div>
+
+                        <div className="p-4 flex-1 flex flex-col gap-4 bg-[#111] overflow-hidden">
+                            {/* Reference Track Panel Mock */}
+                            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 shadow-2xl flex flex-col gap-3 relative overflow-hidden shrink-0">
+                                <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z" /><path d="m14 7 3 3" /><path d="M5 6v4" /><path d="M19 14v4" /><path d="M10 2v2" /><path d="M7 8H3" /><path d="M21 16h-4" /><path d="M11 3H9" /></svg>
+                                </div>
+                                <div className="relative z-10 flex items-center gap-3 md:gap-4">
+                                    <div className="w-10 h-10 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-zinc-200 to-zinc-400 border border-white/10 shadow-lg flex items-center justify-center overflow-hidden shrink-0">
+                                        <div className="w-6 h-6 rounded-full bg-white/50 blur-md absolute" />
+                                    </div>
+                                    <div className="flex-1 truncate">
+                                        <div className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.3em] text-yellow-500 mb-0.5 md:mb-1">Reference Source</div>
+                                        <h4 className="text-sm md:text-lg font-black tracking-tight text-white uppercase italic leading-none truncate">Soulful Strides</h4>
+                                        <p className="text-[9px] md:text-[10px] text-zinc-400 font-medium mt-1 truncate">Sonaraura Studio</p>
+                                    </div>
+                                </div>
+
+                                {/* Waveform Engine Mock */}
+                                <div className="relative w-full h-10 md:h-14 bg-black/40 rounded-lg md:rounded-xl mt-1 overflow-hidden flex items-center px-1">
+                                    {/* Fake Waveform Bars */}
+                                    <div className="absolute inset-0 flex items-center justify-between px-1 gap-[2px] opacity-40">
+                                        {Array.from({ length: 150 }).map((_, i) => {
+                                            const h = Math.random() * 80 + 10;
+                                            return <div key={i} className="flex-1 bg-white rounded-full" style={{ height: `${h}%` }} />
+                                        })}
+                                    </div>
+                                    {/* Yellow Selection Overlay */}
+                                    <div className="absolute top-0 bottom-0 left-[25%] w-[12%] bg-yellow-400/35 border-x border-yellow-400 mix-blend-screen shadow-[0_0_20px_rgba(250,204,21,0.2)]">
+                                        <div className="absolute left-0 top-0 bottom-0 w-0.5 md:w-1 bg-yellow-400/50 cursor-col-resize shadow-[0_0_10px_rgba(250,204,21,0.5)]" />
+                                        <div className="absolute right-0 top-0 bottom-0 w-0.5 md:w-1 bg-yellow-400/50 cursor-col-resize shadow-[0_0_10px_rgba(250,204,21,0.5)]" />
+                                    </div>
+                                </div>
+                                <div className="flex justify-between items-center px-1">
+                                    <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-zinc-500">Drag yellow loop</span>
+                                    <span className="text-[8px] md:text-[9px] font-bold text-yellow-500 bg-yellow-500/10 px-1.5 py-0.5 rounded border border-yellow-500/20">0:55 - 1:10</span>
+                                </div>
+                            </div>
+
+                            {/* Acoustic Matches List Mock */}
+                            <div className="flex-1 flex flex-col space-y-2 relative min-h-0">
+                                <h4 className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-white mb-1 md:mb-2 shrink-0">Acoustic Matches</h4>
+
+                                {[
+                                    { match: '92%', title: 'Dancing Under Feint...', artist: 'sayonaramuse', time: '1:45', highlightLeft: '75%', highlightWidth: '8%' },
+                                    { match: '91%', title: 'A Veiled Spotlight', artist: 'sayonaramuse', time: '0:27', highlightLeft: '45%', highlightWidth: '10%' }
+                                ].map((item, i) => (
+                                    <div key={i} className="flex items-center gap-2 md:gap-3 p-2 md:p-3 bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.05] rounded-xl transition-all group shrink-0">
+                                        <div className="w-8 text-center font-black text-[10px] md:text-xs text-zinc-500">{item.match}</div>
+                                        <div className="w-8 h-8 md:w-10 md:h-10 bg-zinc-800 rounded-lg overflow-hidden shrink-0 relative bg-gradient-to-br from-orange-400/20 to-purple-500/20">
+                                            <div className="absolute inset-0 bg-black/20" />
                                         </div>
-                                        <div className="h-4 w-32 bg-zinc-800 rounded" />
+                                        <div className="w-24 md:w-32 shrink-0 truncate">
+                                            <h5 className="text-[9px] md:text-[11px] font-bold text-white truncate">{item.title}</h5>
+                                            <p className="text-[8px] md:text-[9px] text-zinc-500 truncate">{item.artist}</p>
+                                        </div>
+                                        <div className="flex-1 hidden md:block px-2">
+                                            <div className="relative w-full h-6 bg-black/40 rounded flex items-center px-0.5 overflow-hidden">
+                                                {/* Mini Waveform */}
+                                                <div className="absolute inset-0 flex items-center justify-between px-0.5 gap-[1px] opacity-20">
+                                                    {Array.from({ length: 50 }).map((_, j) => {
+                                                        const h = Math.random() * 80 + 10;
+                                                        return <div key={j} className="flex-1 bg-white rounded" style={{ height: `${h}%` }} />
+                                                    })}
+                                                </div>
+                                                {/* Highlight Box */}
+                                                <div className="absolute top-0 bottom-0 bg-yellow-400/40 border-x border-yellow-500/50 mix-blend-screen" style={{ left: item.highlightLeft, width: item.highlightWidth }} />
+                                            </div>
+                                        </div>
+                                        <div className="w-8 text-right font-black text-[8px] md:text-[10px] text-zinc-500">{item.time}</div>
                                     </div>
                                 ))}
                             </div>
@@ -200,62 +254,120 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                             </button>
                         </div>
                     </div>
-                    <div className="flex-1 relative group w-full scale-90 md:scale-100">
-                        <div className="w-full aspect-video bg-blue-400/20 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 blur-[120px] opacity-60" />
+                    <div className="flex-1 relative group w-full scale-[0.85] sm:scale-90 md:scale-100 origin-center md:origin-right">
+                        {/* Background Glow */}
+                        <div className="w-full aspect-video md:aspect-[16/10] bg-indigo-500/10 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 blur-[100px]" />
 
-                        <div className="relative w-full aspect-video bg-[#111] rounded-xl border border-white/10 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] overflow-hidden">
-                            <div className="p-6 h-full flex flex-col gap-4">
-                                <div className="flex items-center justify-between mb-2">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 bg-zinc-800 rounded flex items-center justify-center">🍒</div>
-                                        <div className="space-y-1">
-                                            <div className="h-2 w-24 bg-white/20 rounded" />
-                                            <div className="h-1.5 w-48 bg-white/10 rounded" />
+                        {/* Enterprise Fleet HQ Mockup Container */}
+                        <div className="relative w-full aspect-[4/3] md:aspect-[16/10] bg-[#0a0a0a] rounded-xl border border-white/[0.05] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col font-sans transition-transform duration-700 hover:scale-[1.02]">
+
+                            {/* Header Section */}
+                            <div className="p-4 md:p-6 pb-4 border-b border-white/[0.05]">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <h3 className="text-xl md:text-3xl font-black italic tracking-tighter text-white uppercase leading-none">
+                                                Enterprise <span className="text-indigo-500">Fleet</span>
+                                            </h3>
+                                            <span className="text-[7px] md:text-[9px] font-black italic tracking-widest text-indigo-400 bg-indigo-900/30 px-2 py-0.5 rounded border border-indigo-500/20 uppercase">HQ Control</span>
                                         </div>
+                                        <p className="text-[10px] md:text-xs text-zinc-500 font-medium">Central nervous system for your brand ecosystem.</p>
                                     </div>
-                                    <div className="h-4 w-4 bg-violet-500 rounded-full" />
-                                </div>
-
-                                <div className="space-y-3 overflow-hidden">
-                                    {[1, 2, 3, 4, 5].map((i) => (
-                                        <div key={i} className="flex items-center gap-4 py-2 border-b border-white/5 opacity-80 hover:opacity-100 transition-opacity">
-                                            <div className="w-10 h-10 bg-zinc-800 rounded overflow-hidden" />
-                                            <div className="flex-1 space-y-2">
-                                                <div className="h-1.5 w-32 bg-white/20 rounded" />
-                                                <div className="h-1 w-20 bg-white/10 rounded" />
-                                            </div>
-                                            <div className="flex-1 hidden md:block">
-                                                <div className="h-4 w-full bg-white/5 rounded-full overflow-hidden flex items-center px-1">
-                                                    <div className="h-[2px] w-1/3 bg-violet-400 rounded-full" />
-                                                </div>
-                                            </div>
-                                            <div className="w-12 h-1.5 bg-white/10 rounded" />
-                                            <div className="flex gap-2">
-                                                <div className="w-4 h-4 bg-white/5 rounded" />
-                                                <div className="w-4 h-4 bg-white/5 rounded" />
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <div className="grid grid-cols-4 gap-3 mt-2">
-                                    {[1, 2, 4].map(i => (
-                                        <div key={i} className="aspect-square bg-zinc-900 rounded-lg border border-white/5 flex flex-col p-2 gap-2">
-                                            <div className="w-full h-2/3 bg-zinc-800 rounded" />
-                                            <div className="h-1 w-3/4 bg-white/10 rounded" />
-                                        </div>
-                                    ))}
+                                    <button className="bg-white text-black px-3 py-1.5 md:px-4 md:py-2 rounded-lg text-[9px] md:text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:bg-zinc-200 transition-colors">
+                                        <Building2 size={12} className="hidden md:block" /> Add Branch
+                                    </button>
                                 </div>
                             </div>
 
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                            {/* Main Content Area */}
+                            <div className="p-4 md:p-6 flex-1 flex flex-col gap-4 md:gap-6 bg-[#0f0f0f]">
+
+                                {/* 4 Stats Cards */}
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                                    {/* Active Branches */}
+                                    <div className="bg-white/[0.02] border border-white/[0.05] rounded-xl md:rounded-2xl p-3 md:p-4 relative overflow-hidden group">
+                                        <div className="absolute -right-2 -bottom-2 opacity-5 group-hover:opacity-10 transition-opacity">
+                                            <Building2 size={64} className="text-white" />
+                                        </div>
+                                        <div className="relative z-10">
+                                            <p className="text-[8px] md:text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-2">Active Branches</p>
+                                            <h4 className="text-3xl md:text-4xl font-black italic text-white tracking-tighter leading-none mb-1">0</h4>
+                                            <p className="text-[8px] md:text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Operational Hubs</p>
+                                        </div>
+                                    </div>
+                                    {/* Global Personnel */}
+                                    <div className="bg-white/[0.02] border border-white/[0.05] rounded-xl md:rounded-2xl p-3 md:p-4 relative overflow-hidden group">
+                                        <div className="absolute -right-2 -bottom-2 opacity-5 group-hover:opacity-10 transition-opacity">
+                                            <Users size={64} className="text-white" />
+                                        </div>
+                                        <div className="relative z-10">
+                                            <p className="text-[8px] md:text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-2">Global Personnel</p>
+                                            <h4 className="text-3xl md:text-4xl font-black italic text-white tracking-tighter leading-none mb-1">0</h4>
+                                            <p className="text-[8px] md:text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Authorized Staff</p>
+                                        </div>
+                                    </div>
+                                    {/* Smart Devices */}
+                                    <div className="bg-white/[0.02] border border-white/[0.05] rounded-xl md:rounded-2xl p-3 md:p-4 relative overflow-hidden group hidden md:block">
+                                        <div className="absolute -right-2 -bottom-2 opacity-5 group-hover:opacity-10 transition-opacity">
+                                            <Zap size={64} className="text-white" />
+                                        </div>
+                                        <div className="relative z-10">
+                                            <p className="text-[8px] md:text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-2">Smart Devices</p>
+                                            <h4 className="text-3xl md:text-4xl font-black italic text-white tracking-tighter leading-none mb-1">0</h4>
+                                            <p className="text-[8px] md:text-[9px] font-bold text-zinc-500 uppercase tracking-widest">0 Synced Now</p>
+                                        </div>
+                                    </div>
+                                    {/* System Pulse */}
+                                    <div className="bg-white/[0.02] border border-white/[0.05] rounded-xl md:rounded-2xl p-3 md:p-4 relative overflow-hidden group">
+                                        <div className="absolute -right-2 -bottom-2 opacity-5 group-hover:opacity-10 transition-opacity">
+                                            <Activity size={64} className="text-white" />
+                                        </div>
+                                        <div className="relative z-10">
+                                            <p className="text-[8px] md:text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-2">System Pulse</p>
+                                            <h4 className="text-3xl md:text-4xl font-black italic text-white tracking-tighter leading-none mb-1">99.9%</h4>
+                                            <p className="text-[8px] md:text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Ecosystem Uptime</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Bottom Tables Area */}
+                                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-2">
+                                    {/* Recent Branches */}
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-end">
+                                            <h5 className="text-[9px] md:text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em]">Recent Branches</h5>
+                                            <span className="text-[9px] font-bold text-indigo-400 cursor-pointer hover:underline">Manage All</span>
+                                        </div>
+                                        <div className="bg-white/[0.02] border border-white/[0.05] rounded-xl overflow-hidden h-32 md:h-40 flex flex-col">
+                                            <div className="grid grid-cols-3 gap-2 py-2.5 px-4 bg-white/[0.02] border-b border-white/[0.05] text-[8px] font-black text-zinc-600 uppercase tracking-widest">
+                                                <div>Branch Name</div>
+                                                <div>Location</div>
+                                                <div className="text-right">Action</div>
+                                            </div>
+                                            <div className="flex-1 flex items-center justify-center">
+                                                <p className="text-[10px] md:text-[11px] font-black text-zinc-600 uppercase tracking-[0.2em] italic">No Branches Registered</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Management Team */}
+                                    <div className="space-y-3 hidden md:block">
+                                        <div className="flex justify-between items-end">
+                                            <h5 className="text-[9px] md:text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em]">Management Team</h5>
+                                            <span className="text-[9px] font-bold text-pink-500 cursor-pointer hover:underline">Authorized Personnel</span>
+                                        </div>
+                                        <div className="bg-transparent h-32 md:h-40" />
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* 3. Categories Grid (Dark) */}
-            <section className="py-20 md:py-32 px-6 bg-[#111] text-white">
+            < section className="py-20 md:py-32 px-6 bg-[#111] text-white" >
                 <div className="max-w-[1400px] mx-auto space-y-12 md:space-y-16">
                     <h2 className="text-4xl md:text-7xl font-bold tracking-tight text-center md:text-left leading-tight">
                         {t.rich('sections.all_sound.title', {
@@ -286,10 +398,10 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                         ))}
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* 4. Aura Tailor / Custom Music (Studio Background) */}
-            <section className="relative py-48 px-6 overflow-hidden">
+            < section className="relative py-48 px-6 overflow-hidden" >
                 <div
                     className="absolute inset-0 bg-cover bg-center"
                     style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2600)' }}
@@ -313,10 +425,10 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                         </Link>
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* 5. Value Highlight (Pink) */}
-            <section className="py-20 md:py-32 px-6 bg-[#E996B8] text-black">
+            < section className="py-20 md:py-32 px-6 bg-[#E996B8] text-black" >
                 <div className="max-w-[1400px] mx-auto text-center space-y-10 md:space-y-12">
                     <h2 className="text-5xl md:text-[8rem] font-bold tracking-tight leading-[0.9] mb-8 md:mb-12">
                         {t.rich('sections.value.title', {
@@ -341,9 +453,9 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                         {t('sections.value.cta_signup')}
                     </Link>
                 </div>
-            </section>
+            </section >
 
             <Footer />
-        </div>
+        </div >
     );
 }

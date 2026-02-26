@@ -1016,8 +1016,8 @@
             "title": "Atmosferik Bağlam",
             "location_fallback": "Konumunuz",
             "ambient": "{temp}°C Ortam",
-            "optimization": "Aura, <city/> için akustik frekansı optimize ediyor.",
-            "current_setting": "Güncel ayar: <setting/>",
+            "optimization": "Aura, <city>{cityName}</city> için akustik frekansı optimize ediyor.",
+            "current_setting": "Güncel ayar: <setting>{settingName}</setting>",
             "vibrant": "Canlı (528Hz)",
             "calm": "Sakin (432Hz)",
             "conditions": {
