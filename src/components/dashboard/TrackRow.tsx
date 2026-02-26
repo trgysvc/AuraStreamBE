@@ -18,17 +18,19 @@ interface Track {
     image?: string;
     lyrics?: string;
     audioSrc?: string;
+    acoustic_matrix_url?: string;
 }
 
 interface TrackProps extends Track {
     onSimilar?: (id: string) => void;
     metadata?: {
         waveform?: number[];
+        acoustic_matrix_url?: string;
     };
     allTracks?: Track[]; // Optional list context
 }
 
-export default function TrackRow({ id, title, artist, duration, bpm, tags, image, lyrics, audioSrc, onSimilar, metadata, allTracks }: TrackProps) {
+export default function TrackRow({ id, title, artist, duration, bpm, tags, image, lyrics, audioSrc, onSimilar, metadata, allTracks, acoustic_matrix_url }: TrackProps) {
     const { playTrack, currentTrack, isPlaying: globalIsPlaying, currentTime, duration: totalDuration } = usePlayer();
 
     // Multi-tenant state
@@ -148,6 +150,7 @@ export default function TrackRow({ id, title, artist, duration, bpm, tags, image
                         currentTime={currentTrackTime}
                         isPlaying={isPlaying}
                         peakData={metadata?.waveform}
+                        acousticMatrixUrl={acoustic_matrix_url || metadata?.acoustic_matrix_url}
                         playedColor={isCurrentTrack ? "#FFFFFF" : "rgba(255,255,255,0.2)"}
                         unplayedColor={isCurrentTrack ? "#A855F7" : "rgba(255,255,255,0.2)"}
                         onSeek={(time) => {

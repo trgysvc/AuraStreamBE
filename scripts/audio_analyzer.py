@@ -60,22 +60,87 @@ def analyze_audio(file_path, watermark_uuid=None):
         rms = librosa.feature.rms(y=y)
         energy = float(rms.mean() * 100)
         
-        # 4. Extract Waveform (dynamic points, default 1000)
+        # 4. Extract Acoustic Matrix (Exactly 5000 points, 54 features)
         total_samples = len(y)
-        points = int(sys.argv[3]) if len(sys.argv) > 3 else 1000
-        hop_length = total_samples // points
+        track_id = sys.argv[3] if len(sys.argv) > 3 else "unknown"
+        frames_target = 5000
+        hop_length = total_samples // frames_target
         if hop_length < 1: hop_length = 1
+
+        def trim_expand(feat):
+            if feat.ndim == 1:
+                if len(feat) >= frames_target:
+                    return feat[:frames_target]
+                else:
+                    return np.pad(feat, (0, frames_target - len(feat)), 'edge')
+            else:
+                if feat.shape[1] >= frames_target:
+                    return feat[:, :frames_target]
+                else:
+                    return np.pad(feat, ((0, 0), (0, frames_target - feat.shape[1])), 'edge')
+
+        rms_feat = librosa.feature.rms(y=y, hop_length=hop_length)
+        onset_env = librosa.onset.onset_strength(y=y, sr=sr, hop_length=hop_length)
+        spectral_centroid = librosa.feature.spectral_centroid(y=y, sr=sr, hop_length=hop_length)
+        spectral_bandwidth = librosa.feature.spectral_bandwidth(y=y, sr=sr, hop_length=hop_length)
+        spectral_rolloff = librosa.feature.spectral_rolloff(y=y, sr=sr, hop_length=hop_length)
+        spectral_flatness = librosa.feature.spectral_flatness(y=y, hop_length=hop_length)
+        zero_crossing_rate = librosa.feature.zero_crossing_rate(y=y, hop_length=hop_length)
+        mfcc = librosa.feature.mfcc(y=y, sr=sr, hop_length=hop_length, n_mfcc=20)
+        chroma = librosa.feature.chroma_cqt(y=y, sr=sr, hop_length=hop_length)
         
-        waveform = []
-        for i in range(0, total_samples, hop_length):
-            chunk = y[i:i+hop_length]
-            if len(chunk) > 0:
-                peak = float(max(abs(chunk)))
-                waveform.append(round(peak, 4))
+        # Tonnetz requires strictly valid chroma. If chroma has all zeros, it might throw a warning, but librosa handles it.
+        tonnetz = librosa.feature.tonnetz(y=librosa.effects.harmonic(y), sr=sr, chroma=chroma)
+        spectral_contrast = librosa.feature.spectral_contrast(y=y, sr=sr, hop_length=hop_length)
+
+        rms_feat = trim_expand(rms_feat[0])
+        onset_env = trim_expand(onset_env)
+        # Normalize RMS and Onset to 0.0 - 1.0 safely
+        if np.max(rms_feat) > 0:
+            rms_feat = rms_feat / np.max(rms_feat)
+        if np.max(onset_env) > 0:
+            onset_env = onset_env / np.max(onset_env)
+
+        spectral_centroid = trim_expand(spectral_centroid[0])
+        spectral_bandwidth = trim_expand(spectral_bandwidth[0])
+        spectral_rolloff = trim_expand(spectral_rolloff[0])
+        spectral_flatness = trim_expand(spectral_flatness[0])
+        zero_crossing_rate = trim_expand(zero_crossing_rate[0])
+
+        mfcc = trim_expand(mfcc)
+        chroma = trim_expand(chroma)
+        tonnetz = trim_expand(tonnetz)
+        spectral_contrast = trim_expand(spectral_contrast)
+
+        times = librosa.frames_to_time(np.arange(frames_target), sr=sr, hop_length=hop_length)
         
-        max_val = max(waveform) if waveform else 0
-        if max_val > 0:
-            waveform = [round(x / max_val, 3) for x in waveform]
+        matrix = []
+        chroma_names = ["C", "C_sharp", "D", "D_sharp", "E", "F", "F_sharp", "G", "G_sharp", "A", "A_sharp", "B"]
+        for i in range(frames_target):
+            frame = {
+                "frame_index": i,
+                "t": round(float(times[i]), 4),
+                "rms": round(float(rms_feat[i]), 4),
+                "onset_strength": round(float(onset_env[i]), 4),
+                "spectral_centroid": round(float(spectral_centroid[i]), 4),
+                "spectral_bandwidth": round(float(spectral_bandwidth[i]), 4),
+                "spectral_rolloff": round(float(spectral_rolloff[i]), 4),
+                "spectral_flatness": round(float(spectral_flatness[i]), 4),
+                "zero_crossing_rate": round(float(zero_crossing_rate[i]), 4)
+            }
+            for m in range(20):
+                frame[f"mfcc_{m+1}"] = round(float(mfcc[m, i]), 4)
+            for c in range(12):
+                frame[f"chroma_{chroma_names[c]}"] = round(float(chroma[c, i]), 4)
+            for tz in range(6):
+                frame[f"tonnetz_{tz+1}"] = round(float(tonnetz[tz, i]), 4)
+            for sc in range(7):
+                frame[f"contrast_{sc+1}"] = round(float(spectral_contrast[sc, i]), 4)
+            matrix.append(frame)
+            
+        matrix_file_path = f"/tmp/{track_id}_acoustic_matrix.json"
+        with open(matrix_file_path, 'w') as f:
+            json.dump(matrix, f)
         
         # 5. WATERMARKING (If UUID provided)
         if watermark_uuid:
@@ -89,7 +154,7 @@ def analyze_audio(file_path, watermark_uuid=None):
             "bpm": int(float(tempo)),
             "key": key,
             "energy": round(energy, 2),
-            "waveform": waveform,
+            "matrix_file_path": matrix_file_path,
             "watermarked": True if watermark_uuid else False
         }
         print(json.dumps(result))

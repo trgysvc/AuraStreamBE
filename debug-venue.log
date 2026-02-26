@@ -678,3 +678,51 @@ Default Src: https://aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com/raw/06
 Files: [{"s3_key":"raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A Veiled Spotlight.mp3","tuning":"440hz","file_type":"raw"}]
 Default Src: https://aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com/raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A%20Veiled%20Spotlight.mp3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA4MI2JOZFWCB7RIOJ%2F20260226%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260226T180745Z&X-Amz-Expires=3600&X-Amz-Signature=d2822132af67687e85adb3c9ffeca8475d90b654f7b219bb73760fd9acc5c96c&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject
 
+[2026-02-26T22:04:29.429Z] Track: A Veiled Spotlight (03d2279e-42b8-4aee-9121-e67279c94c33)
+Files: [{"s3_key":"raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A Veiled Spotlight.mp3","tuning":"440hz","file_type":"raw"}]
+Default Src: https://aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com/raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A%20Veiled%20Spotlight.mp3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA4MI2JOZFWCB7RIOJ%2F20260226%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260226T220429Z&X-Amz-Expires=3600&X-Amz-Signature=7f31de7e75f244637eb14983c88513a235e5a2cad6dec454edb84a03cd7f06df&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject
+
+[2026-02-26T22:04:30.734Z] Track: A Veiled Spotlight (03d2279e-42b8-4aee-9121-e67279c94c33)
+Files: [{"s3_key":"raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A Veiled Spotlight.mp3","tuning":"440hz","file_type":"raw"}]
+Default Src: https://aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com/raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A%20Veiled%20Spotlight.mp3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA4MI2JOZFWCB7RIOJ%2F20260226%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260226T220430Z&X-Amz-Expires=3600&X-Amz-Signature=7e3dd7eaedd211721e72deba5136d092b5a946acdeddef893bf555a534a1be1d&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject
+
+[2026-02-26T22:04:31.433Z] Track: A Veiled Spotlight (03d2279e-42b8-4aee-9121-e67279c94c33)
+Files: [{"s3_key":"raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A Veiled Spotlight.mp3","tuning":"440hz","file_type":"raw"}]
+Default Src: https://aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com/raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A%20Veiled%20Spotlight.mp3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA4MI2JOZFWCB7RIOJ%2F20260226%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260226T220431Z&X-Amz-Expires=3600&X-Amz-Signature=bd74103919b4e7ba5d2b1b354b989b8238a13f0809dbd50112b0c5dc29c1d3a9&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject
+
+[2026-02-26T22:21:40.159Z] Track: A Veiled Spotlight (03d2279e-42b8-4aee-9121-e67279c94c33)
+Files: [{"s3_key":"raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A Veiled Spotlight.mp3","tuning":"440hz","file_type":"raw"}]
+Default Src: https://aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com/raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A%20Veiled%20Spotlight.mp3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA4MI2JOZFWCB7RIOJ%2F20260226%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260226T222140Z&X-Amz-Expires=3600&X-Amz-Signature=58dd2b49de6499273ad39ebda9357ccf83682ec540804906c3940f7a8ebd0d17&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject
+
+[2026-02-26T22:31:16.668Z] Track: A Veiled Spotlight (03d2279e-42b8-4aee-9121-e67279c94c33)
+Files: [{"s3_key":"raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A Veiled Spotlight.mp3","tuning":"440hz","file_type":"raw"}]
+Default Src: https://aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com/raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A%20Veiled%20Spotlight.mp3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA4MI2JOZFWCB7RIOJ%2F20260226%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260226T223116Z&X-Amz-Expires=3600&X-Amz-Signature=c9742669927809251d6b7f068fdf945a747865f67a5a714e75c18ff6e9d2471c&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject
+
+[2026-02-26T22:31:23.563Z] Track: A Veiled Spotlight (03d2279e-42b8-4aee-9121-e67279c94c33)
+Files: [{"s3_key":"raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A Veiled Spotlight.mp3","tuning":"440hz","file_type":"raw"}]
+Default Src: https://aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com/raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A%20Veiled%20Spotlight.mp3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA4MI2JOZFWCB7RIOJ%2F20260226%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260226T223123Z&X-Amz-Expires=3600&X-Amz-Signature=47f57133277ec975ff5e7cbc44babb5a26005a5b8b17d59342f5c5f781d996a1&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject
+
+[2026-02-26T22:31:48.589Z] Track: A Veiled Spotlight (03d2279e-42b8-4aee-9121-e67279c94c33)
+Files: [{"s3_key":"raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A Veiled Spotlight.mp3","tuning":"440hz","file_type":"raw"}]
+Default Src: https://aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com/raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A%20Veiled%20Spotlight.mp3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA4MI2JOZFWCB7RIOJ%2F20260226%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260226T223148Z&X-Amz-Expires=3600&X-Amz-Signature=b1a194b27ea668529d86e9d4cc00c9e697482e455f43691cec968206546c26d1&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject
+
+[2026-02-26T22:32:04.987Z] Track: A Veiled Spotlight (03d2279e-42b8-4aee-9121-e67279c94c33)
+Files: [{"s3_key":"raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A Veiled Spotlight.mp3","tuning":"440hz","file_type":"raw"}]
+Default Src: https://aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com/raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A%20Veiled%20Spotlight.mp3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA4MI2JOZFWCB7RIOJ%2F20260226%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260226T223204Z&X-Amz-Expires=3600&X-Amz-Signature=2d7108e29471890c0b2fc7c5bfaa639ce616d87d08098235db47fcf35efc027f&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject
+
+[2026-02-26T22:32:22.663Z] Track: A Veiled Spotlight (03d2279e-42b8-4aee-9121-e67279c94c33)
+Files: [{"s3_key":"raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A Veiled Spotlight.mp3","tuning":"440hz","file_type":"raw"}]
+Default Src: https://aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com/raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A%20Veiled%20Spotlight.mp3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA4MI2JOZFWCB7RIOJ%2F20260226%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260226T223222Z&X-Amz-Expires=3600&X-Amz-Signature=559805fa26b25932420086202a81d5a9293a10da6c8013fcbafbfa14ea2a4b57&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject
+
+[2026-02-26T22:32:40.735Z] Track: A Veiled Spotlight (03d2279e-42b8-4aee-9121-e67279c94c33)
+Files: [{"s3_key":"raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A Veiled Spotlight.mp3","tuning":"440hz","file_type":"raw"}]
+Default Src: https://aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com/raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A%20Veiled%20Spotlight.mp3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA4MI2JOZFWCB7RIOJ%2F20260226%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260226T223240Z&X-Amz-Expires=3600&X-Amz-Signature=fe58c5ec620cf0b508526c4ba132e36f7b045ec0f343746f043fff3a129563fc&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject
+
+[2026-02-26T22:40:02.732Z] Track: A Veiled Spotlight (03d2279e-42b8-4aee-9121-e67279c94c33)
+Files: [{"s3_key":"raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A Veiled Spotlight.mp3","tuning":"440hz","file_type":"raw"}]
+Default Src: https://aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com/raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A%20Veiled%20Spotlight.mp3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA4MI2JOZFWCB7RIOJ%2F20260226%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260226T224002Z&X-Amz-Expires=3600&X-Amz-Signature=7428732c70ec6163e395bf0dd63d6024c972d9265a1fef37716dee0a076190d6&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject
+
+[2026-02-26T22:40:11.119Z] Track: A Veiled Spotlight (03d2279e-42b8-4aee-9121-e67279c94c33)
+Files: [{"s3_key":"raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A Veiled Spotlight.mp3","tuning":"440hz","file_type":"raw"}]
+Default Src: https://aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com/raw/064e51c3-77cb-4be5-9bc0-9bb29d604147/A%20Veiled%20Spotlight.mp3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIA4MI2JOZFWCB7RIOJ%2F20260226%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260226T224011Z&X-Amz-Expires=3600&X-Amz-Signature=8004cdcf6e1032a6a4ef137969263b162825aa9bb0cd41dc12ac5def0a4a3536&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject
+

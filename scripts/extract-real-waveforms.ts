@@ -43,6 +43,8 @@ async function processTracks() {
         return;
     }
 
+    const testTracks = tracks.slice(0, 1);
+
     console.log(`🎵 Found ${tracks.length} active tracks to process.`);
 
     let successCount = 0;
@@ -119,23 +121,50 @@ async function processTracks() {
                 throw new Error(`Python Script Error: ${analysisResult.error}`);
             }
 
-            if (!analysisResult.waveform || analysisResult.waveform.length === 0) {
-                throw new Error("Analyzed waveform array is empty!");
+            if (!analysisResult.matrix_file_path || !fs.existsSync(analysisResult.matrix_file_path)) {
+                throw new Error("Analyzed matrix JSON file is missing!");
             }
 
-            console.log(`📊 Successfully extracted ${analysisResult.waveform.length} wave points!`);
+            console.log(`📊 Successfully extracted Acoustic Matrix for ${track.title}!`);
 
-            // 4. Update Supabase
+            // 4. Read the Acoustic Matrix JSON and Upload to Supabase Bucket
+            console.log(`📤 Uploading Acoustic Matrix to Supabase Storage...`);
+            const matrixJsonPath = analysisResult.matrix_file_path;
+            const matrixBuffer = fs.readFileSync(matrixJsonPath);
+
+            const storagePath = `${track.id}.json`;
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('acoustic-data')
+                .upload(storagePath, matrixBuffer, {
+                    contentType: 'application/json',
+                    upsert: true
+                });
+
+            if (uploadError) {
+                throw new Error(`Supabase Storage Upload Error: ${uploadError.message}`);
+            }
+
+            const { data: publicUrlData } = supabase.storage
+                .from('acoustic-data')
+                .getPublicUrl(storagePath);
+
+            const acousticMatrixUrl = publicUrlData.publicUrl;
+
+            // 5. Update Supabase Database
             const newMetadata = {
                 ...(track.metadata || {}),
-                waveform: analysisResult.waveform,
                 true_energy: analysisResult.energy,
-                true_bpm: analysisResult.bpm
+                true_bpm: analysisResult.bpm,
+                acoustic_matrix_url: acousticMatrixUrl
             };
+            // Safely remove the legacy big waveform array from metadata to prevent DB bloat
+            if (newMetadata.waveform) delete newMetadata.waveform;
 
             const { error: updateError } = await supabase
                 .from('tracks')
-                .update({ metadata: newMetadata })
+                .update({
+                    metadata: newMetadata
+                })
                 .eq('id', track.id);
 
             if (updateError) {
@@ -147,6 +176,9 @@ async function processTracks() {
 
             // Cleanup temp file
             fs.unlinkSync(localFilePath);
+            if (fs.existsSync(matrixJsonPath)) {
+                fs.unlinkSync(matrixJsonPath);
+            }
 
         } catch (err: any) {
             console.error(`❌ Failed to process track ${track.title}:`, err.message);

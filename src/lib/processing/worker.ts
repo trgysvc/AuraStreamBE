@@ -2,7 +2,7 @@
 import { sqsClient } from '@/lib/queue/client';
 import { ReceiveMessageCommand, DeleteMessageCommand } from '@aws-sdk/client-sqs';
 import { createAdminClient } from '@/lib/db/admin-client';
-import { FFmpegService } from './ffmpeg'; 
+import { FFmpegService } from './ffmpeg';
 import { S3Service } from '@/lib/services/s3';
 import path from 'path';
 import fs from 'fs';
@@ -93,7 +93,7 @@ async function processTrackJob(trackId: string) {
             const s3Key = `processed/${trackId}/${fileName}`;
 
             console.log(`-> Generating ${tuning.id} version (Ratio: ${tuning.ratio.toFixed(4)})...`);
-            
+
             await FFmpegService.transcode(rawLocalPath, localPath, {
                 pitchRatio: tuning.ratio,
                 normalize: true,
@@ -113,6 +113,35 @@ async function processTrackJob(trackId: string) {
             }, { onConflict: 'track_id,file_type,tuning' });
         }
 
+        // --- UPLOAD ACOUSTIC MATRIX TO BUCKET ---
+        const matrixLocalPath = analysis.matrix_file_path;
+        const bucketPath = `${trackId}.json`;
+        let acousticMatrixUrl: string | null = null;
+
+        if (matrixLocalPath && fs.existsSync(matrixLocalPath)) {
+            console.log(`-> Uploading Acoustic Matrix to Supabase Storage...`);
+            const matrixFileBody = fs.readFileSync(matrixLocalPath);
+
+            const { data: uploadData, error: uploadError } = await supabase
+                .storage
+                .from('acoustic-data')
+                .upload(bucketPath, matrixFileBody, {
+                    contentType: 'application/json',
+                    upsert: true
+                });
+
+            if (uploadError) {
+                console.error(`[ERROR] Failed to upload Acoustic Matrix for ${trackId}:`, uploadError);
+            } else {
+                const { data: publicUrlData } = supabase
+                    .storage
+                    .from('acoustic-data')
+                    .getPublicUrl(bucketPath);
+
+                acousticMatrixUrl = publicUrlData.publicUrl;
+            }
+        }
+
         // 5. Finalize Track with REAL data from Python
         await supabase.from('tracks').update({
             status: 'active',
@@ -122,7 +151,7 @@ async function processTrackJob(trackId: string) {
             metadata: {
                 technical: { bpm: analysis.bpm, key: analysis.key },
                 vibe: { energy_level: analysis.energy },
-                waveform: analysis.waveform,
+                ...(acousticMatrixUrl ? { acoustic_matrix_url: acousticMatrixUrl } : {}),
                 steganography: "LSB_V1"
             },
             updated_at: new Date().toISOString()

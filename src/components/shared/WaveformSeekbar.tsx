@@ -6,6 +6,7 @@ interface WaveformSeekbarProps {
     duration: number;
     currentTime: number;
     peakData?: number[];
+    acousticMatrixUrl?: string;
     onSeek: (time: number) => void;
     isPlaying: boolean;
     className?: string;
@@ -57,6 +58,7 @@ export function WaveformSeekbar({
     duration,
     currentTime,
     peakData,
+    acousticMatrixUrl,
     onSeek,
     isPlaying,
     className = "",
@@ -91,28 +93,63 @@ export function WaveformSeekbar({
         return () => window.removeEventListener('resize', handleResize);
     }, [handleResize]);
 
+    const [fetchedPeaks, setFetchedPeaks] = useState<number[] | null>(null);
+
+    // Fetch acoustic JSON matrix if URL present
+    useEffect(() => {
+        if (!acousticMatrixUrl) return;
+
+        let isMounted = true;
+        const fetchMatrix = async () => {
+            try {
+                const res = await fetch(acousticMatrixUrl);
+                if (!res.ok) throw new Error('Network error');
+                const data = await res.json();
+
+                if (isMounted && Array.isArray(data)) {
+                    // Extract RMS values from the 5000-frame flat parameter array
+                    const rmsValues = data.map((frame: any) => frame.rms || 0);
+                    setFetchedPeaks(rmsValues);
+                }
+            } catch (err) {
+                console.warn("[Waveform] Failed to fetch high-res matrix, falling back:", err);
+                if (isMounted) setFetchedPeaks([]); // Empty array triggers fallback
+            }
+        };
+
+        fetchMatrix();
+
+        return () => { isMounted = false; };
+    }, [acousticMatrixUrl]);
+
     // Calculate processed peaks
     const processedPeaks = useMemo(() => {
-        if (!peakData) return [];
+        let dataSource: number[] = [];
 
-        // Sometimes Supabase returns JSON columns as stringified arrays
-        let parsedData = Array.isArray(peakData) ? peakData : [];
-        if (typeof peakData === 'string') {
-            try {
-                parsedData = JSON.parse(peakData);
-            } catch (e) {
-                console.error("Failed to parse peakData:", e);
-                return [];
+        // 1. Prioritize fetched high-res matrix RMS points
+        if (fetchedPeaks && fetchedPeaks.length > 0) {
+            dataSource = fetchedPeaks;
+        }
+        // 2. Fall back to legacy inline arrays in DB
+        else if (peakData) {
+            let parsedData = Array.isArray(peakData) ? peakData : [];
+            if (typeof peakData === 'string') {
+                try {
+                    parsedData = JSON.parse(peakData);
+                } catch (e) {
+                    console.error("Failed to parse peakData:", e);
+                }
             }
+            dataSource = parsedData;
         }
 
-        if (!parsedData || parsedData.length === 0) return [];
+        if (!dataSource || dataSource.length === 0) return [];
 
         // We need 1 bar per (barWidth + gap) pixels
         const totalBars = Math.floor(dimensions.width / (barWidth + gap));
         if (totalBars <= 0) return [];
 
-        const resampled = resampleArray(parsedData, totalBars);
+        const resampled = resampleArray(dataSource, totalBars);
 
         // Normalize against highest peak to use full height
         const maxPeak = Math.max(...resampled, 0.1); // Prevent div by 0
@@ -124,7 +161,7 @@ export function WaveformSeekbar({
             const energy = Math.pow(normalized, 1.8);
             return energy;
         });
-    }, [peakData, dimensions.width, barWidth, gap]);
+    }, [peakData, fetchedPeaks, dimensions.width, barWidth, gap]);
 
     // Synthetic data for buffering/fallback state if no peak data
     const syntheticPeaks = useMemo(() => {

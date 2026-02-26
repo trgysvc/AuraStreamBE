@@ -104,7 +104,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                             {
                                 title: 'Brand',
                                 subtitle: 'Commercials & Ads',
-                                img: 'https://images.unsplash.com/photo-1559136555-9303dff16302?q=80&w=1600',
+                                img: '/images/commercials_ads_brand.png',
                             }
                         ].map((item, i) => (
                             <div key={i} className={`min-w-[220px] lg:min-w-0 flex-shrink-0 group cursor-pointer ${i % 2 !== 0 ? 'mt-8 lg:mt-0' : ''}`}>
@@ -379,7 +379,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
                             { name: t('sections.categories_list.ads'), img: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800' },
                             { name: t('sections.categories_list.vlogs'), img: 'https://images.unsplash.com/photo-1533750516457-a7f992034fec?w=800' },
                             { name: t('sections.categories_list.cinematic'), img: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=800' },
-                            { name: t('sections.categories_list.travel'), img: 'https://images.unsplash.com/photo-1500835595351-263d8137b6a9?w=800' },
+                            { name: t('sections.categories_list.travel'), img: '/images/category_travel.png' },
                             { name: t('sections.categories_list.gaming'), img: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800' },
                             { name: t('sections.categories_list.tech'), img: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800' },
                             { name: t('sections.categories_list.nature'), img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800' },
