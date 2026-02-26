@@ -1,69 +1,12 @@
 'use client';
 
 import React from 'react';
-import { Sparkles, Zap, Shield, Repeat, Layout, Search, BarChart3, CloudRain, Wind, Play, Globe } from 'lucide-react';
+import { Sparkles, Zap, Shield, Repeat, Layout, Search, BarChart3, CloudRain, Wind, Play, Globe, Activity } from 'lucide-react';
 import { Footer } from '@/components/layout/Footer';
 import { Link } from '@/i18n/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
-const FeatureSection = ({
-    title,
-    subtitle,
-    description,
-    image,
-    reverse = false,
-    icon: Icon,
-    bgColor = "bg-black",
-    textColor = "text-white",
-    accentColor = "text-indigo-500",
-    descriptionColor = "text-zinc-400",
-    link = "/about/howitworks"
-}: {
-    title: string,
-    subtitle: string,
-    description: string,
-    image: string,
-    reverse?: boolean,
-    icon: any,
-    bgColor?: string,
-    textColor?: string,
-    accentColor?: string,
-    descriptionColor?: string,
-    link?: string
-}) => (
-    <section className={`py-20 md:py-32 px-6 md:px-16 ${bgColor} transition-colors duration-700`}>
-        <div className={`max-w-7xl mx-auto flex flex-col ${reverse ? 'md:flex-row-reverse' : 'md:flex-row'} items-center gap-12 md:gap-24`}>
-            <div className="flex-1 space-y-4 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <div className={`flex items-center gap-3 ${accentColor} font-black text-xs uppercase tracking-[0.3em]`}>
-                    <Icon size={18} />
-                    <span>{subtitle}</span>
-                </div>
-                <h2 className={`text-4xl md:text-6xl lg:text-7xl font-black italic uppercase tracking-tighter leading-[0.9] ${textColor}`}>
-                    {title}
-                </h2>
-                <p className={`text-lg md:text-xl ${descriptionColor} leading-relaxed max-w-xl font-medium`}>
-                    {description}
-                </p>
-                <div className="pt-4">
-                    <Link href={link} className={`inline-flex items-center gap-2 font-black text-xs uppercase tracking-[0.2em] border-b-2 ${textColor === 'text-black' ? 'border-black' : 'border-white'} pb-1 hover:text-indigo-500 hover:border-indigo-500 transition-all`}>
-                        Learn more
-                    </Link>
-                </div>
-            </div>
-            <div className="flex-1 w-full relative group">
-                <div className="absolute -inset-4 bg-indigo-500/20 rounded-[3rem] blur-3xl group-hover:bg-indigo-500/30 transition-all duration-700 opacity-50" />
-                <div className="relative aspect-[4/3] md:aspect-square overflow-hidden rounded-[2rem] md:rounded-[3.5rem] bg-zinc-900 border border-white/5 ring-1 ring-white/10 shadow-2xl">
-                    <div
-                        className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
-                        style={{ backgroundImage: `url(${image})` }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                </div>
-            </div>
-        </div>
-    </section>
-);
-
+import { FeatureSection } from '@/components/shared/FeatureSection';
 const AdvantageCard = ({ icon: Icon, title, description, link = "/about/howitworks" }: { icon: any, title: string, description: string, link?: string }) => (
     <div className="bg-white/5 p-5 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] border border-white/5 space-y-4 md:space-y-6 hover:border-indigo-500/30 transition-all group backdrop-blur-sm flex flex-col">
         <div className="h-10 w-10 md:h-14 md:w-14 bg-indigo-500/10 rounded-xl md:rounded-2xl flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500">
@@ -95,6 +38,8 @@ const IntelligenceCard = ({ title, description, tag, link = "/about/howitworks" 
 
 export default function CatalogAdPage() {
     const t = useTranslations('About.Ad');
+    const tCommon = useTranslations('Common');
+    const locale = useLocale();
 
     return (
         <div className="bg-black text-white font-sans selection:bg-indigo-500 selection:text-white overflow-x-hidden">
@@ -145,6 +90,8 @@ export default function CatalogAdPage() {
                     image="https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=1500&auto=format&fit=crop"
                     icon={Repeat}
                     accentColor="text-indigo-500"
+                    learnMoreText={tCommon('learnMore')}
+                    locale={locale}
                 />
 
                 <FeatureSection
@@ -156,6 +103,8 @@ export default function CatalogAdPage() {
                     reverse={true}
                     bgColor="bg-zinc-900"
                     accentColor="text-pink-500"
+                    learnMoreText={tCommon('learnMore')}
+                    locale={locale}
                 />
 
                 <FeatureSection
@@ -165,6 +114,8 @@ export default function CatalogAdPage() {
                     image="https://images.unsplash.com/photo-1438449805896-28a666819a20?q=80&w=1500&auto=format&fit=crop"
                     icon={CloudRain}
                     accentColor="text-cyan-400"
+                    learnMoreText={tCommon('learnMore')}
+                    locale={locale}
                 />
 
                 <FeatureSection
@@ -176,6 +127,8 @@ export default function CatalogAdPage() {
                     reverse={true}
                     bgColor="bg-indigo-950"
                     accentColor="text-indigo-400"
+                    learnMoreText={tCommon('learnMore')}
+                    locale={locale}
                 />
 
                 {/* The Matrix Section */}

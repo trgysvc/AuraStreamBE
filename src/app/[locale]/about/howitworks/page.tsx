@@ -61,6 +61,7 @@ function HelpCenterContent() {
             pages: [
                 { id: 'frequency-eng', title: t('pages.frequency-eng'), icon: Zap },
                 { id: 'karaoke-engine', title: t('pages.karaoke-engine'), icon: Music },
+                { id: 'smart-similarity', title: t('pages.smart-similarity'), icon: Search },
                 { id: 'weather-ai', title: t('pages.weather-ai'), icon: CloudLightning },
                 { id: 'watermarking', title: t('pages.watermarking'), icon: Shield },
                 { id: 'interactive-waveforms', title: t('pages.interactive-waveforms'), icon: Music },

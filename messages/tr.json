@@ -161,6 +161,21 @@
                     "subtitle": "Sonik Keşif",
                     "title": "Etkileşimli Dalga Formları",
                     "desc": "Sadece dinlemeyin, sesin anatomisini görün. Ekosistemimizdeki her parça, oynatmayla dans eden ve hassas arama imkanı sunan yüksek sadakatli etkileşimli dalga formu sunar."
+                },
+                "smartSimilarity": {
+                    "subtitle": "Akustik Eşleştirme Motoru",
+                    "title": "Akıllı Ses Benzerlik Motoru",
+                    "desc": "Referans bir ses dosyası göstererek akustik, ritmik ve dokusal olarak en benzer parçaları anında bulun."
+                },
+                "biorhythmML": {
+                    "subtitle": "Biyometrik Zeka",
+                    "title": "Biyoritim Destekli Öğrenme",
+                    "desc": "Sadece saatleri değil, içerideki dinleyici ve mekan biyoritmine göre müziği adapte etmeyi öğrenen makine öğrenimi katmanı."
+                },
+                "uiEvolution": {
+                    "subtitle": "Bağlamsal Arayüz",
+                    "title": "Adaptif Gelişen Arayüz",
+                    "desc": "Kullanıcının alışkanlıkları ve kimliğine göre sadece ilgili ekranları göstererek organik bir şekilde değişen arayüz."
                 }
             },
             "matrix": {
@@ -417,7 +432,9 @@
             "upload-qc": "Üretim Fabrikası",
             "revenue-share": "Stratejik Ortaklıklar",
             "tailor-process": "Tailor İş Akışı",
-            "project-soul": "Project Soul Konsepti"
+            "project-soul": "Project Soul Konsepti",
+            "smart-similarity": "Akıllı Benzerlik",
+            "biorhythm-ml": "Biyoritim Eğitimi"
         },
         "vision": {
             "title": "Sesin Geleceği, <br></br> Zekanın Frekansı",
@@ -567,6 +584,21 @@
                 "title": "Project Soul Konsepti",
                 "p1": "Project Soul Konsepti bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
                 "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+            },
+            "smart-similarity": {
+                "title": "Akıllı Ses Benzerlik Motoru",
+                "p1": "\"Acoustics Matching Engine\" (Akustik Eşleştirme Motoru), belirli bir referans sese müzikal, dokusal ve enerjik olarak en yakın parçaları bulmak için tasarlanmıştır. Geleneksel etiket bazlı aramaların aksine, bu sistem sesin doğrudan DNA'sını analiz eder.",
+                "p2": "Sadece bir müzik parçası seçin veya bir şarkının içerisinden belirli bir bölümü (örneğin bir gitar solosu veya agresif bir drop) seçerek sistemin akustik, ritmik ve frekanssal olarak en benzer parçaları saniyeler içinde önünüze getirmesini izleyin. Bu, çalma listesi küratörleri ve işletme sahipleri için sarsılmaz bir ruh hali oluşturmanın en hassas yoludur."
+            },
+            "biorhythm-ml": {
+                "title": "Biyoritim Destekli Öğrenme",
+                "p1": "Biyoritim ML, sadece günün saatlerine veya haftanın günlerine değil, mekandaki organik ritme ve dinleyici kalabalığına tepki verir. Bir mağazanın içindeki veya bir restoranın salonundaki enerji seviyesi anlık olarak değişebilir.",
+                "p2": "Aura, telemetri ve müşteri analizlerinden elde edilen anonimleştirilmiş veri kalıplarını kullanarak, makine öğrenimi katmanında karar verir. Bir mekanın biyoritmine adapte olur, tempoları, enerji seviyelerini (danceability/acousticness) ve frekansları anlık olarak optimize ederek dinleyici yorgunluğunu önler."
+            },
+            "ui-evolution": {
+                "title": "Adaptif Gelişen Arayüz",
+                "p1": "Adaptif Gelişen Arayüz, platformdaki kimliğinize ve alışkanlıklarınıza göre (Mekan yöneticisi mi, yayıncı mı, creator mı?) doğal ve organik bir şekilde şekillenir.",
+                "p2": "Etkileşimlerinizden öğrenerek, kullanılmayan araçları gizler ve ihtiyacınız olan işlevleri öne çıkarır. Bu evrimsel arayüz yönetimi, karmaşık süreçleri basitleştirir ve bilişsel yükü en aza indirir."
             }
         }
     },
@@ -1162,9 +1194,12 @@
             "explore_more": "Daha Fazla Keşfet"
         },
         "promo": {
-            "title": "İstek Üzerine Müzik",
-            "desc": "Mekanınızı size özel seslerle zirveye taşıyın. Yapay zekamız ve uzman küratörlerimiz markanız için çalışıyor.",
-            "button": "Hemen Başlayın"
+            "title": "Talep Üzerine Müzik",
+            "desc": "Özel olarak tasarlanmış seslerle mekanınızı bir üst seviyeye taşıyın. Yapay zekamız ve uzman küratörlerimiz markanız için çalışıyor.",
+            "button": "Hemen Başla"
         }
+    },
+    "Common": {
+        "learnMore": "Daha fazla bilgi al"
     }
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
-import { ArrowRight, Globe, MapPin } from 'lucide-react';
+import { ArrowRight, Globe, MapPin, Search, Activity, Layout } from 'lucide-react';
 import { Footer } from '@/components/layout/Footer';
 import { MainHeader } from '@/components/layout/MainHeader';
 import { createClient } from '@/lib/db/server';
@@ -9,6 +9,7 @@ import { Metadata } from 'next';
 import { getTranslations, getLocale } from 'next-intl/server';
 import { BUSINESS_SECTORS } from './data';
 import TallyForm from '@/components/shared/TallyForm';
+import { FeatureSection } from '@/components/shared/FeatureSection';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
     const { locale } = await params;
@@ -24,6 +25,8 @@ export default async function EnterprisePage({ params }: { params: Promise<{ loc
     const { locale } = await params;
     const t = await getTranslations({ locale, namespace: 'Enterprise' });
     const tSector = await getTranslations({ locale, namespace: 'Sectors' });
+    const tAd = await getTranslations({ locale, namespace: 'About.Ad' });
+    const tCommon = await getTranslations({ locale, namespace: 'Common' });
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -282,6 +285,44 @@ export default async function EnterprisePage({ params }: { params: Promise<{ loc
                     </div>
                 </div>
             </section>
+
+            <FeatureSection
+                title={tAd('features.smartSimilarity.title')}
+                subtitle={tAd('features.smartSimilarity.subtitle')}
+                description={tAd('features.smartSimilarity.desc')}
+                image="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1500&auto=format&fit=crop"
+                icon={Search}
+                link="/about/howitworks?page=smart-similarity"
+                accentColor="text-yellow-500"
+                learnMoreText={tCommon('learnMore')}
+                locale={locale}
+            />
+
+            <FeatureSection
+                title={tAd('features.biorhythmML.title')}
+                subtitle={tAd('features.biorhythmML.subtitle')}
+                description={tAd('features.biorhythmML.desc')}
+                image="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1500&auto=format&fit=crop"
+                icon={Activity}
+                reverse={true}
+                bgColor="bg-zinc-900"
+                link="/about/howitworks?page=biorhythm-ml"
+                accentColor="text-pink-500"
+                learnMoreText={tCommon('learnMore')}
+                locale={locale}
+            />
+
+            <FeatureSection
+                title={tAd('features.uiEvolution.title')}
+                subtitle={tAd('features.uiEvolution.subtitle')}
+                description={tAd('features.uiEvolution.desc')}
+                image="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1500&auto=format&fit=crop"
+                icon={Layout}
+                link="/about/howitworks?page=ui-evolution"
+                accentColor="text-cyan-400"
+                learnMoreText={tCommon('learnMore')}
+                locale={locale}
+            />
 
             {/* CTA Section */}
             <section id="contact-section" className="py-24 md:py-40 px-6 bg-[#F5F5F0]">

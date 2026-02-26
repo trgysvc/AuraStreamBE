@@ -129,8 +129,6 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
         // --- Safari Unlocking Hack ---
         const unlock = async () => {
-            console.log("[Player] Unlocking Safari Audio Context...");
-
             // 1. Resume AudioContext
             if (audioContextRef.current) {
                 if (audioContextRef.current.state === 'suspended') {

@@ -161,6 +161,21 @@
                     "subtitle": "Sonic Discovery",
                     "title": "Interactive Waveforms",
                     "desc": "Don't just listen, see the texture of the sound. Each track in our catalog features a live, interactive waveform that dances with the playback and allows for precision seeking."
+                },
+                "smartSimilarity": {
+                    "subtitle": "Acoustics Matching Engine",
+                    "title": "Smart Similarity",
+                    "desc": "Find musically, texturally, and energetically closest tracks instantly by providing a reference sound."
+                },
+                "biorhythmML": {
+                    "subtitle": "Biometric Intelligence",
+                    "title": "Biorhythm ML",
+                    "desc": "A machine learning layer that adapts music not just to time but to the biological rhythm of the venue and listeners."
+                },
+                "uiEvolution": {
+                    "subtitle": "Contextual Interface",
+                    "title": "UI Evolution",
+                    "desc": "An interface that organically transforms to reflect your habits and roles, displaying only relevant screens."
                 }
             },
             "matrix": {
@@ -417,7 +432,9 @@
             "upload-qc": "The Production Factory",
             "revenue-share": "Strategic Partnerships",
             "tailor-process": "The Tailor Workflow",
-            "project-soul": "Project Soul Concept"
+            "project-soul": "Project Soul Concept",
+            "smart-similarity": "Smart Similarity",
+            "biorhythm-ml": "Biorhythm ML"
         },
         "vision": {
             "title": "The Future of Sound, <br></br> Frequency of Intelligence",
@@ -567,6 +584,21 @@
                 "title": "Project Soul Concept",
                 "p1": "Welcome to the Project Soul Concept section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
                 "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+            },
+            "smart-similarity": {
+                "title": "Smart Similarity Engine",
+                "p1": "The Acoustics Matching Engine is designed to find tracks that are musically, texturally, and energetically closest to a given reference sound. Unlike traditional tag-based searches, this system directly analyzes the DNA of the audio.",
+                "p2": "Simply select a music track or highlight a specific section—like a guitar solo or an aggressive drop—and watch the system instantly return the most acoustically, rhythmically, and frequencyally similar tracks in seconds. This is the most precise way for playlist curators and business owners to establish an unwavering mood."
+            },
+            "biorhythm-ml": {
+                "title": "Biorhythm ML",
+                "p1": "Biorhythm ML doesn't just react to the time of day or day of the week; it responds to the organic rhythm of the venue and the listening crowd. The energy level inside a store or restaurant dining area can change instantly.",
+                "p2": "Using anonymized data patterns from telemetry and customer analytics, Aura makes decisions in its machine learning layer. It adapts to the venue's biorhythm, dynamically optimizing tempos, energy levels (danceability/acousticness), and frequencies to prevent listener fatigue."
+            },
+            "ui-evolution": {
+                "title": "UI Evolution",
+                "p1": "UI Evolution ensures that the interface organically adapts to the user's habits and identity on the platform. Whether you are a venue manager, a broadcaster, or a creator, the platform morphs to meet your specific operational needs.",
+                "p2": "By learning from your interactions, the system simplifies complex workflows by presenting only the relevant screens and tools. This adaptive interface approach reduces cognitive load and maximizes efficiency."
             }
         }
     },
@@ -1159,5 +1191,8 @@
             "desc": "Elevate your venue with exclusive, custom-tailored sounds. Our AI and expert curators work for your brand.",
             "button": "Get Started"
         }
+    },
+    "Common": {
+        "learnMore": "Learn more"
     }
 }
