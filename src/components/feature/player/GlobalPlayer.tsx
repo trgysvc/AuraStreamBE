@@ -259,7 +259,7 @@ export function GlobalPlayer() {
                                 type="range" min="0" max="100"
                                 value={isMuted ? 0 : volume}
                                 onChange={(e) => setVolume(parseInt(e.target.value))}
-                                className="w-8 h-0.5 accent-indigo-500 cursor-pointer"
+                                className="w-16 h-0.5 accent-indigo-500 cursor-pointer"
                             />
                         </div>
 
