@@ -32,69 +32,64 @@ export async function getVenueTracks_Action(options?: {
     moods?: string[]; // Legacy fallback
     query?: string;
     onlyLikedBy?: string;
+    userId?: string;
 }): Promise<VenueTrack[]> {
     const supabase = await createClient();
 
-    // 1. Build Query
-    let queryBuilder = supabase
-        .from('tracks')
-        .select(`
-            id,
-            title,
-            artist,
-            status,
-            bpm,
-            duration_sec,
-            genre,
-            sub_genres,
-            character_tags,
-            theme_tags,
-            venue_tags,
-            vocal_type,
-            mood_tags,
-            lyrics,
-            lyrics_synced,
-            cover_image_url,
-            metadata,
-            track_files (
-                s3_key,
-                file_type,
-                tuning
-            )
-        `)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
+    // 1. Build Base Query helper
+    const buildBaseQuery = () => {
+        let q = supabase
+            .from('tracks')
+            .select(`
+                id,
+                title,
+                artist,
+                status,
+                bpm,
+                duration_sec,
+                genre,
+                sub_genres,
+                character_tags,
+                theme_tags,
+                venue_tags,
+                vocal_type,
+                mood_tags,
+                lyrics,
+                lyrics_synced,
+                cover_image_url,
+                metadata,
+                track_files (
+                    s3_key,
+                    file_type,
+                    tuning
+                )
+            `)
+            .eq('status', 'active');
 
-    // 2. Apply Filters
-    if (options?.bpmRange) {
-        queryBuilder = queryBuilder.gte('bpm', options.bpmRange[0]).lte('bpm', options.bpmRange[1]);
-    }
+        // Apply Filters
+        if (options?.bpmRange) {
+            q = q.gte('bpm', options.bpmRange[0]).lte('bpm', options.bpmRange[1]);
+        }
+        if (options?.query) {
+            q = q.or(`title.ilike.%${options.query}%,artist.ilike.%${options.query}%,genre.ilike.%${options.query}%`);
+        }
+        if (options?.venues && options.venues.length > 0) {
+            q = q.overlaps('venue_tags', options.venues);
+        }
+        if (options?.vibes && options.vibes.length > 0) {
+            q = q.overlaps('vibe_tags', options.vibes);
+        }
+        if (options?.genres && options.genres.length > 0) {
+            q = q.in('genre', options.genres);
+        }
+        if (options?.moods && options.moods.length > 0) {
+            q = q.overlaps('mood_tags', options.moods);
+        }
+        return q;
+    };
 
-    if (options?.query) {
-        // Search across title, artist, and genre
-        queryBuilder = queryBuilder.or(`title.ilike.%${options.query}%,artist.ilike.%${options.query}%,genre.ilike.%${options.query}%`);
-    }
-
-    if (options?.venues && options.venues.length > 0) {
-        queryBuilder = queryBuilder.overlaps('venue_tags', options.venues);
-    }
-
-    if (options?.vibes && options.vibes.length > 0) {
-        queryBuilder = queryBuilder.overlaps('vibe_tags', options.vibes);
-    }
-
-    if (options?.genres && options.genres.length > 0) {
-        // Genres is a bit complex since track has string `genre` and string[] `sub_genres`.
-        // A simple overlaps on sub_genres is easiest, or an 'in' for primary genre.
-        // We'll use 'overlaps' on sub_genres and 'in' for genre using an OR condition.
-        // Since Supabase RPC/Or is a bit complex to chain dynamically, we'll try IN on genre to start,
-        // or a raw textSearch if needed.
-        queryBuilder = queryBuilder.in('genre', options.genres);
-    }
-
-    if (options?.moods && options.moods.length > 0) {
-        queryBuilder = queryBuilder.overlaps('mood_tags', options.moods);
-    }
+    let tracks: any[] = [];
+    let error: any = null;
 
     if (options?.onlyLikedBy) {
         const { data: likedData } = await supabase
@@ -104,14 +99,85 @@ export async function getVenueTracks_Action(options?: {
 
         const trackIds = likedData?.map(l => l.track_id) || [];
         if (trackIds.length > 0) {
-            queryBuilder = queryBuilder.in('id', trackIds);
-        } else {
-            // If user has no likes, return empty
-            return [];
+            const { data, error: qErr } = await buildBaseQuery().in('id', trackIds).limit(50);
+            tracks = data || [];
+            error = qErr;
         }
     }
+    // 2. Personalized Mix (50% played, 50% unheard) if userId is passed and NO strict query exists
+    else if (options?.userId && !options.query) {
 
-    const { data: tracks, error } = await queryBuilder.limit(50); // Limit for performance
+        // A. Fetch recent play history for this venue
+        const { data: playData } = await supabase
+            .from('playback_sessions')
+            .select('track_id')
+            .eq('venue_id', options.userId)
+            .order('played_at', { ascending: false })
+            .limit(500);
+
+        const allPlayedIds = playData?.map(p => p.track_id) || [];
+
+        // Count occurrences to find Top 25
+        const frequencyMap: Record<string, number> = {};
+        for (const id of allPlayedIds) {
+            frequencyMap[id] = (frequencyMap[id] || 0) + 1;
+        }
+
+        const topPlayedIds = Object.entries(frequencyMap)
+            .sort((a, b) => b[1] - a[1])
+            .map(entry => entry[0])
+            .slice(0, 25);
+
+        let popularTracks: any[] = [];
+        let unheardTracks: any[] = [];
+
+        // Fetch the Top 25 applying current filters
+        if (topPlayedIds.length > 0) {
+            const { data: pData } = await buildBaseQuery().in('id', topPlayedIds);
+            popularTracks = pData || [];
+        }
+
+        // Fetch 25 Unheard tracks applying current filters
+        let unheardQuery = buildBaseQuery()
+            .order('created_at', { ascending: false }) // Prioritize new unheards
+            .limit(25);
+
+        // To avoid PostgREST query parsing limits in NOT IN (...) clauses if a venue listened to 500 distinct tracks,
+        // we carefully exclude distinct played IDs. Supabase supports not.in, limiting distinct sizes to avoid massive URLs.
+        const uniquePlayedIds = Object.keys(frequencyMap);
+        if (uniquePlayedIds.length > 0) {
+            // Only pass a reasonable chunk to prevent URI Too Long
+            unheardQuery = unheardQuery.not('id', 'in', `(${uniquePlayedIds.slice(0, 50).join(',')})`);
+        }
+
+        const { data: uData, error: uErr } = await unheardQuery;
+        unheardTracks = uData || [];
+        error = uErr; // We mainly care if the unheard chunk fails critically
+
+        // Combine arrays
+        const combined = [...popularTracks, ...unheardTracks];
+
+        // Safely dedup
+        const uniqueCombined = Array.from(new Map(combined.map(item => [item['id'], item])).values());
+
+        // Fisher-Yates Shuffle
+        for (let i = uniqueCombined.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [uniqueCombined[i], uniqueCombined[j]] = [uniqueCombined[j], uniqueCombined[i]];
+        }
+
+        tracks = uniqueCombined;
+
+    }
+    // 3. Fallback to Chronological / Normal
+    else {
+        const { data, error: qErr } = await buildBaseQuery()
+            .order('created_at', { ascending: false })
+            .limit(50);
+
+        tracks = data || [];
+        error = qErr;
+    }
 
     if (error) {
         console.error('Venue Tracks Fetch Error:', error);

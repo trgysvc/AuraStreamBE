@@ -108,7 +108,8 @@ function VenueDashboardContent() {
                 vibes: vibes.length > 0 ? vibes : undefined,
                 genres: currentGenres.length > 0 ? currentGenres : undefined,
                 moods: combinedMoods.length > 0 ? combinedMoods : undefined,
-                onlyLikedBy: searchQuery === "Liked Songs" ? (userId || undefined) : undefined
+                onlyLikedBy: searchQuery === "Liked Songs" ? (userId || undefined) : undefined,
+                userId: userId || undefined
             });
 
             // Log search for analytics (Aura Tailor & Infrastructure ROI)
