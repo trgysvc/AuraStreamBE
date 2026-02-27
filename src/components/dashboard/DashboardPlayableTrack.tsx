@@ -13,6 +13,7 @@ interface DashboardPlayableTrackProps {
         src?: string; // S3 URL if available
         duration_sec?: number;
         bpm?: number;
+        metadata?: any;
     };
     allTracks?: any[];
 }
@@ -37,6 +38,8 @@ export function DashboardPlayableTrack({ track, allTracks }: DashboardPlayableTr
                 src: track.src || track.cover_image_url, // fallback if src missing, though likely won't play
                 duration: track.duration_sec ? `${Math.floor(track.duration_sec / 60)}:${(track.duration_sec % 60).toString().padStart(2, '0')}` : '0:00',
                 bpm: track.bpm || 120,
+                acoustic_matrix_url: track.metadata?.acoustic_matrix_url,
+                metadata: track.metadata
             }, allTracks);
         }
     };

@@ -20,6 +20,8 @@ interface Track {
     lyrics_synced?: any;
     peakData?: number[];
     availableTunings?: Record<string, string>;
+    acoustic_matrix_url?: string;
+    metadata?: any;
 }
 
 type Tier = 'free' | 'pro' | 'business' | 'enterprise';

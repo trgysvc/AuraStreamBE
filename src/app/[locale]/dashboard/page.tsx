@@ -133,7 +133,7 @@ async function getAuraHomeData() {
             console.error("Failed to sign track URLs", e);
         }
 
-        return { ...track, cover_image_url: signedCover, src: signedAudio };
+        return { ...track, cover_image_url: signedCover, src: signedAudio, metadata: track.metadata };
     }));
 
     const latestLicenses = await Promise.all((licenseRes.data || []).map(async (license: any) => {
