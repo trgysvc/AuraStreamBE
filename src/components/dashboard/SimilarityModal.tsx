@@ -21,6 +21,11 @@ export function SimilarityModal({ isOpen, onClose, referenceTrack, allTracks }: 
     const [matches, setMatches] = useState<SimilarityMatch[]>([]);
     const [isCalculating, setIsCalculating] = useState(false);
 
+    // New states for async remote data
+    const [referencePeakData, setReferencePeakData] = useState<number[] | null>(null);
+    const [targetTracksData, setTargetTracksData] = useState<TrackData[]>([]);
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
+
     // Precise string or number to MS parsing utility
     const getDurationMs = useCallback((durationVal: any) => {
         if (!durationVal) return 180000; // 3 min fallback
@@ -45,25 +50,73 @@ export function SimilarityModal({ isOpen, onClose, referenceTrack, allTracks }: 
 
             // Lock body scroll
             document.body.style.overflow = 'hidden';
+
+            // --- FIRE ASYNC MATRIX FETCHING ---
+            loadAcousticData();
+
         } else {
             // When closing the modal, clear any active loops so normal playback resumes
             setLoopRegion(null);
             document.body.style.overflow = '';
+            setReferencePeakData(null);
+            setTargetTracksData([]);
+            setIsDataLoaded(false);
         }
         return () => { document.body.style.overflow = ''; };
     }, [isOpen, referenceTrack, setLoopRegion, getDurationMs]);
 
-    // Data preparation for the Engine
-    const targetTracksData = useMemo<TrackData[]>(() => {
-        return allTracks
-            .filter(t => t.id !== referenceTrack?.id && t.metadata?.waveform?.length > 0)
-            .map(t => ({
-                id: t.id,
-                name: t.title,
-                peakData: t.metadata.waveform,
-                durationMs: getDurationMs(t.duration || t.rawDurationMs)
-            }));
-    }, [allTracks, referenceTrack, getDurationMs]);
+    // Data Engine Fetcher
+    const loadAcousticData = async () => {
+        if (!referenceTrack) return;
+        setIsCalculating(true);
+
+        try {
+            // 1. Fetch Reference Track Matrix
+            let refPeaks: number[] | null = null;
+            if (referenceTrack.metadata?.acoustic_matrix_url) {
+                const res = await fetch(referenceTrack.metadata.acoustic_matrix_url);
+                const matrixRaw = await res.json();
+                refPeaks = matrixRaw.map((frame: any) => frame.rms); // Extract just the RMS volume
+            } else if (referenceTrack.metadata?.waveform) {
+                refPeaks = referenceTrack.metadata.waveform; // Fallback legacy
+            }
+
+            setReferencePeakData(refPeaks);
+
+            // 2. Fetch Target Tracks Matrices (In Parallel chunks)
+            // Filter out tracks we shouldn't compare to
+            const validTargets = allTracks.filter(t => t.id !== referenceTrack?.id && (t.metadata?.acoustic_matrix_url || t.metadata?.waveform));
+
+            // Fetch targets concurrently mapping to TrackData format
+            const resolvedTargetsData: TrackData[] = await Promise.all(
+                validTargets.map(async (t) => {
+                    let peakData: number[] = [];
+                    if (t.metadata?.acoustic_matrix_url) {
+                        try {
+                            const res = await fetch(t.metadata.acoustic_matrix_url);
+                            const m = await res.json();
+                            peakData = m.map((f: any) => f.rms);
+                        } catch (e) { console.warn("Failed fetching matrix for", t.id); }
+                    } else if (t.metadata?.waveform) {
+                        peakData = t.metadata.waveform;
+                    }
+
+                    return {
+                        id: t.id,
+                        name: t.title,
+                        peakData: peakData,
+                        durationMs: getDurationMs(t.duration || t.rawDurationMs)
+                    };
+                })
+            );
+
+            setTargetTracksData(resolvedTargetsData.filter(t => t.peakData.length > 0));
+            setIsDataLoaded(true);
+        } catch (err) {
+            console.error("Failed loading similarity acoustic matrices:", err);
+        }
+        setIsCalculating(false);
+    };
 
     const refDurationMs = useMemo(() => {
         if (!referenceTrack) return 1;
@@ -81,17 +134,17 @@ export function SimilarityModal({ isOpen, onClose, referenceTrack, allTracks }: 
 
     // --- Debounced Similarity Engine Trigger ---
     useEffect(() => {
-        if (!isOpen || !referenceTrack || !referenceTrack.metadata?.waveform) return;
+        if (!isOpen || !referenceTrack || !isDataLoaded || !referencePeakData) return;
 
         setIsCalculating(true);
         // Debounce calculation by 200ms
         const timer = setTimeout(() => {
-            const safeRefLen = referenceTrack.metadata.waveform.length || 1000;
+            const safeRefLen = referencePeakData.length || 1000;
             const refStartIdx = Math.max(0, Math.floor((selectionStartMs / refDurationMs) * safeRefLen));
             const refEndIdx = Math.min(safeRefLen - 1, Math.floor((selectionEndMs / refDurationMs) * safeRefLen));
 
             const engineMatches = findSimilarSections(
-                referenceTrack.metadata.waveform,
+                referencePeakData,
                 refStartIdx,
                 refEndIdx,
                 targetTracksData,
@@ -103,7 +156,7 @@ export function SimilarityModal({ isOpen, onClose, referenceTrack, allTracks }: 
         }, 200);
 
         return () => clearTimeout(timer);
-    }, [isOpen, referenceTrack, selectionStartMs, selectionEndMs, targetTracksData, refDurationMs]);
+    }, [isOpen, referenceTrack, selectionStartMs, selectionEndMs, targetTracksData, refDurationMs, referencePeakData, isDataLoaded]);
 
 
     const handleSelectionChange = useCallback((start: number, end: number) => {
@@ -180,15 +233,17 @@ export function SimilarityModal({ isOpen, onClose, referenceTrack, allTracks }: 
                     </div>
 
                     <div className="relative z-10 w-full h-24 bg-black/40 rounded-2xl border border-white/5 overflow-hidden">
-                        <InteractiveWaveform
-                            duration={refDurationMs / 1000}
-                            peakData={referenceTrack.metadata?.waveform}
-                            isReference={true}
-                            selectionStartMs={selectionStartMs}
-                            selectionEndMs={selectionEndMs}
-                            onSelectionChange={handleSelectionChange}
-                            onSelectionDragEnd={handleSelectionDragEnd}
-                        />
+                        {referencePeakData && (
+                            <InteractiveWaveform
+                                duration={refDurationMs / 1000}
+                                peakData={referencePeakData} // Pass the async array
+                                isReference={true}
+                                selectionStartMs={selectionStartMs}
+                                selectionEndMs={selectionEndMs}
+                                onSelectionChange={handleSelectionChange}
+                                onSelectionDragEnd={handleSelectionDragEnd}
+                            />
+                        )}
                     </div>
                     <div className="relative z-10 flex justify-between text-[10px] font-black uppercase tracking-widest text-zinc-500">
                         <span>Drag yellow loop to analyze</span>
@@ -240,13 +295,15 @@ export function SimilarityModal({ isOpen, onClose, referenceTrack, allTracks }: 
 
                                         {/* The visual proof: Track Waveform with highlight */}
                                         <div className="flex-1 h-12 bg-black/20 rounded-xl overflow-hidden border border-white/5">
-                                            <InteractiveWaveform
-                                                duration={tDurMs / 1000}
-                                                peakData={track.metadata?.waveform}
-                                                isReference={false}
-                                                highlightStartMs={match.matchStartMs}
-                                                highlightEndMs={match.matchEndMs}
-                                            />
+                                            {targetTracksData.find(t => t.id === track.id)?.peakData && (
+                                                <InteractiveWaveform
+                                                    duration={tDurMs / 1000}
+                                                    peakData={targetTracksData.find(t => t.id === track.id)!.peakData} // Pass async array
+                                                    isReference={false}
+                                                    highlightStartMs={match.matchStartMs}
+                                                    highlightEndMs={match.matchEndMs}
+                                                />
+                                            )}
                                         </div>
 
                                         <div className="w-24 text-right text-[10px] font-black text-zinc-500 tracking-widest hidden md:block">
