@@ -164,6 +164,7 @@ async function processTracks() {
             const { error: updateError } = await supabase
                 .from('tracks')
                 .update({
+                    bpm: analysisResult.bpm,   // Critical: Sync true BPM directly into the column
                     metadata: newMetadata
                 })
                 .eq('id', track.id);
