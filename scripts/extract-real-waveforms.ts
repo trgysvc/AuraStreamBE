@@ -33,19 +33,20 @@ async function processTracks() {
     console.log('🚀 Starting High-Res True Waveform Extraction Process (1000 points)...');
 
     // 1. Fetch all active tracks with their files
-    const { data: tracks, error } = await supabase
+    const { data: allTracks, error } = await supabase
         .from('tracks')
         .select('id, title, metadata, track_files(s3_key, file_type)')
         .eq('status', 'active');
 
-    if (error || !tracks) {
+    if (error || !allTracks) {
         console.error('❌ Error fetching tracks:', error);
         return;
     }
 
-    const testTracks = tracks.slice(0, 1);
+    // Process only tracks that are missing the acoustic_matrix_url
+    const tracks = allTracks.filter(t => !t.metadata?.acoustic_matrix_url);
 
-    console.log(`🎵 Found ${tracks.length} active tracks to process.`);
+    console.log(`🎵 Found ${tracks.length} active tracks missing acoustic matrix to process.`);
 
     let successCount = 0;
     let failCount = 0;

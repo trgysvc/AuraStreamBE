@@ -111,6 +111,35 @@ async function processAllTracks() {
                 ContentLength: fileBuffer.length
             }));
 
+            // --- UPLOAD ACOUSTIC MATRIX TO BUCKET ---
+            const matrixLocalPath = analysis.matrix_file_path;
+            const bucketPath = `${track.id}.json`;
+            let acousticMatrixUrl = null;
+
+            if (matrixLocalPath && fs.existsSync(matrixLocalPath)) {
+                console.log(` Uploading Acoustic Matrix to Supabase Storage...`);
+                const matrixFileBody = fs.readFileSync(matrixLocalPath);
+
+                const { data: uploadData, error: uploadError } = await supabase
+                    .storage
+                    .from('acoustic-data')
+                    .upload(bucketPath, matrixFileBody, {
+                        contentType: 'application/json',
+                        upsert: true
+                    });
+
+                if (uploadError) {
+                    console.error(` [ERROR] Failed to upload Acoustic Matrix for ${track.id}:`, uploadError);
+                } else {
+                    const { data: publicUrlData } = supabase
+                        .storage
+                        .from('acoustic-data')
+                        .getPublicUrl(bucketPath);
+
+                    acousticMatrixUrl = publicUrlData.publicUrl;
+                }
+            }
+
             // 6. Update Database
             console.log(` Updating Database...`);
             await supabase.from('tracks').update({
@@ -121,6 +150,7 @@ async function processAllTracks() {
                     technical: { bpm: analysis.bpm, key: analysis.key },
                     vibe: { energy_level: analysis.energy },
                     waveform: analysis.waveform,
+                    ...(acousticMatrixUrl ? { acoustic_matrix_url: acousticMatrixUrl } : {}),
                     steganography: "LSB_V1_MP3_320K"
                 }
             }).eq('id', track.id);
