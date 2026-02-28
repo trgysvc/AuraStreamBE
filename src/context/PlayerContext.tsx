@@ -106,23 +106,35 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             });
         }
 
+        // Detect Apple/Safari environment to prevent mute bug
+        const isAppleDevice = () => {
+            if (typeof window === 'undefined') return false;
+            const ua = window.navigator.userAgent.toLowerCase();
+            const isIOS = /ipad|iphone|ipod/.test(ua) || (window.navigator.platform === 'MacIntel' && window.navigator.maxTouchPoints > 1);
+            const isSafari = /^((?!chrome|android).)*safari/i.test(window.navigator.userAgent);
+            return isIOS || isSafari;
+        };
+
         // Web Audio API for visualizer
         try {
-            const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-            if (AudioCtx && !audioContextRef.current && audioRef.current) {
-                const ctx = new AudioCtx();
-                const node = ctx.createAnalyser();
-                node.fftSize = 256;
+            if (isAppleDevice()) {
+                console.warn("[Player] Skipping Web Audio API on Apple device to prevent Safari muting bug.");
+            } else {
+                const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+                if (AudioCtx && !audioContextRef.current && audioRef.current) {
+                    const ctx = new AudioCtx();
+                    const node = ctx.createAnalyser();
+                    node.fftSize = 256;
 
-                // Safari CORS Check: MediaElementSource requires proper CORS headers
-                try {
-                    const source = ctx.createMediaElementSource(audioRef.current);
-                    source.connect(node);
-                    node.connect(ctx.destination);
-                    audioContextRef.current = ctx;
-                    setAnalyser(node);
-                } catch (sourceErr) {
-                    console.warn("[Player] WebAudio Node Link Failed (likely CORS/Safari Restriction):", sourceErr);
+                    try {
+                        const source = ctx.createMediaElementSource(audioRef.current);
+                        source.connect(node);
+                        node.connect(ctx.destination);
+                        audioContextRef.current = ctx;
+                        setAnalyser(node);
+                    } catch (sourceErr) {
+                        console.warn("[Player] WebAudio Node Link Failed:", sourceErr);
+                    }
                 }
             }
         } catch (e) {
@@ -131,33 +143,34 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
         // --- Safari Unlocking Hack ---
         const unlock = async () => {
-            // 1. Resume AudioContext
-            if (audioContextRef.current) {
-                if (audioContextRef.current.state === 'suspended') {
-                    await audioContextRef.current.resume().catch(e => console.warn("Context resume failed:", e));
-                }
+            if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+                await audioContextRef.current.resume().catch(e => console.warn("Context resume failed:", e));
             }
 
-            // 2. Prime Audio Element with a tiny silent play
             if (audioRef.current) {
                 try {
+                    // Just call play and catch the error instead of messing with base64 src
+                    // This is sufficient for Safari to register the user interaction for the audio element
                     const p = audioRef.current.play();
                     if (p !== undefined) {
                         p.then(() => {
                             audioRef.current?.pause();
                             console.log("[Player] Hardware Audio Pipeline Primed");
-                        }).catch(() => { });
+                        }).catch(() => {
+                            // Suppress typical "The play() request was interrupted" or "NotSupportedError"
+                        });
                     }
                 } catch (e) { }
             }
 
-            // Remove listeners after first successful interaction
             window.removeEventListener('click', unlock);
             window.removeEventListener('touchstart', unlock);
+            window.removeEventListener('touchend', unlock);
             window.removeEventListener('mousedown', unlock);
         };
         window.addEventListener('click', unlock);
         window.addEventListener('touchstart', unlock);
+        window.addEventListener('touchend', unlock);
         window.addEventListener('mousedown', unlock);
 
         return () => {
