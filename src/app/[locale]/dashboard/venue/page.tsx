@@ -573,7 +573,13 @@ function VenueDashboardContent() {
                         <div className="space-y-8 pt-12 border-t border-white/5">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-2xl font-black tracking-tight text-white uppercase italic">{t('sections.trending')}</h2>
-                                <button className="text-[11px] font-black text-zinc-500 hover:text-white transition-colors uppercase tracking-[0.2em]">{t('sections.explore_more')}</button>
+                                <button
+                                    onClick={() => performSearch(query, selectedVenues, selectedVibes, selectedGenres, bpmRange)}
+                                    className="text-[11px] font-black text-zinc-500 hover:text-white transition-colors uppercase tracking-[0.2em] flex items-center gap-2 group"
+                                >
+                                    {loading && <RefreshCw size={12} className="animate-spin" />}
+                                    {t('sections.explore_more')}
+                                </button>
                             </div>
 
                             <div className="divide-y divide-white/5 bg-zinc-900/5 rounded-[2.5rem] overflow-hidden min-h-[400px]">
@@ -583,7 +589,11 @@ function VenueDashboardContent() {
                                     ))
                                 ) : (
                                     <div className="py-20 text-center flex items-center justify-center text-zinc-700 font-black uppercase tracking-widest text-[10px]">
-                                        {t('results.discovering')}
+                                        {loading ? (
+                                            <RefreshCw className="animate-spin text-zinc-500" size={24} />
+                                        ) : (
+                                            t('results.discovering')
+                                        )}
                                     </div>
                                 )}
                             </div>

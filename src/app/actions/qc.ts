@@ -11,7 +11,21 @@ import { S3Service } from '@/lib/services/s3';
 export async function approveTrack_Action(trackId: string) {
     const supabase = await createClient();
 
-    // 1. Update status in DB
+    // 1. Double check data integrity (Waveform/Processing check)
+    const { data: currentTrack } = await supabase
+        .from('tracks')
+        .select('metadata, status')
+        .eq('id', trackId)
+        .single();
+
+    if (!currentTrack) throw new Error('Track not found');
+
+    // Safety Guard: Prevent approving tracks that haven't been processed by the worker
+    if (!(currentTrack.metadata as any)?.acoustic_matrix_url) {
+        throw new Error('AI Processing incomplete. Waveform data missing. Please wait for worker to finish.');
+    }
+
+    // 2. Update status in DB
     const { data: track, error } = await supabase
         .from('tracks')
         .update({ status: 'active', updated_at: new Date().toISOString() })

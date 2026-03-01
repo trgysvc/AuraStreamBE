@@ -82,9 +82,7 @@ async function processTrackJob(trackId: string) {
 
         // 3. Process High-Fidelity Versions
         const tunings = [
-            { id: '440hz', ratio: 1.0 },
-            { id: '432hz', ratio: 432 / 440 },
-            { id: '528hz', ratio: 528 / 440 }
+            { id: '440hz', ratio: 1.0 }
         ] as const;
 
         for (const tuning of tunings) {
@@ -144,7 +142,7 @@ async function processTrackJob(trackId: string) {
 
         // 5. Finalize Track with REAL data from Python
         await supabase.from('tracks').update({
-            status: 'active',
+            status: 'pending_qc',
             duration_sec: Math.round(analysis.duration), // Overwrite the 180s placeholder
             bpm: analysis.bpm,
             key: analysis.key,

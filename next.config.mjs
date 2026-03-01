@@ -14,6 +14,7 @@ const nextConfig = {
             bodySizeLimit: '2mb',
         },
     },
+
     images: {
         remotePatterns: [
             {
@@ -93,7 +94,6 @@ const nextConfig = {
     },
     webpack: (config, { isServer }) => {
         if (!isServer) {
-            // Fixes npm packages that depend on `fs` module or other Node.js built-ins
             config.resolve.fallback = {
                 ...config.resolve.fallback,
                 fs: false,
@@ -101,11 +101,18 @@ const nextConfig = {
                 tls: false,
             };
         }
-        // Specific ignore for jsmediatags react-native issue
+
+        // Final fix for jsmediatags react-native issue in ALL builders
         config.resolve.alias = {
             ...config.resolve.alias,
             'react-native-fs': false,
+            'net': false,
+            'tls': false
         };
+
+        // Suppress dynamic import warnings from next-intl/jsmediatags
+        config.module.exprContextCritical = false;
+
         return config;
     },
 };

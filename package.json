@@ -10,7 +10,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "e2e": "playwright test",
-    "supabase:pull": "npx supabase gen types typescript --project-id ifpbhptcnlndhwujprhn > src/types/supabase.ts"
+    "supabase:pull": "npx supabase gen types typescript --project-id ifpbhptcnlndhwujprhn > src/types/supabase.ts",
+    "worker": "npx tsx scripts/run-worker.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.995.0",

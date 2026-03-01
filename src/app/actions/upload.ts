@@ -92,7 +92,7 @@ export async function createTrackRecord_Action(formData: FormData, s3Key: string
         venue_tags: aiTags.venue_tags,
         cover_image_url: coverUrl,
         lyrics: lyrics || null,
-        status: 'pending_qc',
+        status: 'processing',
         ai_metadata: {
             source: 'manual_upload',
             uploader_id: user.id
