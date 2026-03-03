@@ -1201,5 +1201,48 @@
     },
     "Common": {
         "learnMore": "Daha fazla bilgi al"
+    },
+    "MusicRequest": {
+        "backToLibrary": "Kütüphaneye Dön",
+        "title": "İstek Üzerine \n Müzik",
+        "subtitle": "Aura Tailor: Benzersiz marka kimliğiniz için yüksek kaliteli, özel üretim müzik.",
+        "premiumService": "Premium Servis",
+        "features": {
+            "hiFi": "Yüksek Kalite (WAV)",
+            "stems": "Stem Dosyaları Dahil",
+            "rights": "Ticari Haklar",
+            "biorhythm": "Biyoritim Teknolojisi"
+        },
+        "form": {
+            "projectName": "Proje Adı",
+            "projectNamePlaceholder": "Örn: Marka Lansmanı 2026",
+            "genre": "Tür",
+            "expectedLength": "Beklenen Süre",
+            "lengthPlaceholder": "2:30",
+            "referenceLink": "Referans Bağlantısı",
+            "referencePlaceholder": "https://",
+            "prompt": "Detaylı Prompt / Talimatlar",
+            "promptPlaceholder": "Enstrümanları, tempo değişikliklerini ve genel enerji eğrisini açıklayın...",
+            "projectSoul": "Proje Ruhu / Hikayesi (PDF)",
+            "uploadStory": "Proje Hikayesini Yükle",
+            "pdfLimit": "PDF maks. 10MB",
+            "sonicTaxonomy": "Sonik Taksonomi",
+            "taxonomySubtitle": "İlgili etiketleri seçerek projenizin sonik kimliğini hassaslaştırın.",
+            "themes": "Temalar",
+            "characters": "Karakterler",
+            "vibes": "Aura Havaları",
+            "venueContext": "Mekan Bağlamı",
+            "submitButton": "Özel Sipariş Ver",
+            "billingNote": "Proje başına faturalandırılır.",
+            "errors": {
+                "pdfOnly": "Lütfen bir PDF dosyası yükleyin.",
+                "failed": "İstek gönderimi başarısız oldu."
+            },
+            "success": {
+                "title": "Sipariş Alındı",
+                "message": "Yapay Zeka Mimarlarımız ve QC ekibimiz isteğinizi inceliyor. Kısa süre içinde bir teklif ve ödeme bağlantısı alacaksınız.",
+                "submitAnother": "Başka Bir İstek Gönder"
+            }
+        }
     }
 }

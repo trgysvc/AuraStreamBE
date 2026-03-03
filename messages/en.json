@@ -1194,5 +1194,48 @@
     },
     "Common": {
         "learnMore": "Learn more"
+    },
+    "MusicRequest": {
+        "backToLibrary": "Back to Library",
+        "title": "Music \n on Request",
+        "subtitle": "Aura Tailor: High-fidelity, custom-produced music for your unique brand identity.",
+        "premiumService": "Premium Service",
+        "features": {
+            "hiFi": "High Fidelity (WAV)",
+            "stems": "Stems Included",
+            "rights": "Commercial Rights",
+            "biorhythm": "Biorhythm Tech"
+        },
+        "form": {
+            "projectName": "Project Name",
+            "projectNamePlaceholder": "e.g. Brand Launch 2026",
+            "genre": "Genre",
+            "expectedLength": "Expected Length",
+            "lengthPlaceholder": "2:30",
+            "referenceLink": "Reference Link",
+            "referencePlaceholder": "https://",
+            "prompt": "Detailed Prompt / Instructions",
+            "promptPlaceholder": "Explain the instruments, tempo changes, and overall energy curve...",
+            "projectSoul": "Project Soul / Story (PDF)",
+            "uploadStory": "Upload Project Story",
+            "pdfLimit": "PDF max 10MB",
+            "sonicTaxonomy": "Sonic Taxonomy",
+            "taxonomySubtitle": "Fine-tune the sonic identity of your project by selecting relevant tags.",
+            "themes": "Themes",
+            "characters": "Characters",
+            "vibes": "Vibes",
+            "venueContext": "Venue Context",
+            "submitButton": "Place Custom Order",
+            "billingNote": "Billed per project.",
+            "errors": {
+                "pdfOnly": "Please upload a PDF file.",
+                "failed": "Request submission failed."
+            },
+            "success": {
+                "title": "Order Received",
+                "message": "Our AI Architects and QC team are reviewing your request. You will receive a quote and payment link shortly.",
+                "submitAnother": "Submit Another"
+            }
+        }
     }
 }

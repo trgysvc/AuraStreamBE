@@ -71,6 +71,18 @@ export async function createTrackRecord_Action(formData: FormData, s3Key: string
         return { message: 'Missing required fields', error: 'Validation Error' };
     }
 
+    // 0. Strict Duplicate Check (Title + Artist)
+    const { data: existingTrack } = await supabase
+        .from('tracks')
+        .select('id')
+        .eq('title', title)
+        .eq('artist', artist || 'Sonaraura Studio')
+        .maybeSingle();
+
+    if (existingTrack) {
+        return { message: 'Duplicate track detected', error: 'Duplicate', success: false };
+    }
+
     // AI Auto-Tagging Prediction
     const aiTags = AITaxonomyService.predictTags({
         title,
@@ -130,7 +142,17 @@ export async function createTrackRecord_Action(formData: FormData, s3Key: string
         }));
     } catch (sqsError) {
         console.error('SQS Queue Error:', sqsError);
-        // We don't return an error here as the DB records are already saved
+        
+        // SQS Fault Tolerance (Atomic Cleanup)
+        // If SQS fails, we must delete the DB records so the user can retry cleanly.
+        await supabase.from('track_files').delete().eq('track_id', trackData.id);
+        await supabase.from('tracks').delete().eq('id', trackData.id);
+        
+        return { 
+            message: 'Queue Failure - Please Retry', 
+            error: 'SQS Error', 
+            success: false 
+        };
     }
 
     return { message: 'Track uploaded successfully!', success: true };

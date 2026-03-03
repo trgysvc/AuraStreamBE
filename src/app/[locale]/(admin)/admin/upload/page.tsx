@@ -112,7 +112,10 @@ export default function BulkUploadPage() {
         setIsGlobalUploading(true);
         const pendingFiles = files.filter(f => f.status === 'idle');
 
-        for (const fileObj of pendingFiles) {
+        // Parallel Upload Batching: Process 5 files at a time
+        const CHUNK_SIZE = 5;
+
+        const uploadFileAction = async (fileObj: UploadingFile) => {
             updateFileData(fileObj.id, { status: 'uploading', progress: 5 });
 
             try {
@@ -125,9 +128,6 @@ export default function BulkUploadPage() {
                         body: fileObj.coverBlob,
                         headers: { 'Content-Type': fileObj.coverBlob.type }
                     });
-                    // Construct public URL or S3 path (depends on CDN config)
-                    // For now, let's use a simple pattern or the signed URL (temporary)
-                    // Ideally, this should be the CloudFront URL.
                     finalCoverUrl = imgUrl.split('?')[0];
                 }
 
@@ -153,7 +153,6 @@ export default function BulkUploadPage() {
                 formData.set('bpm', fileObj.bpm);
                 formData.set('genre', fileObj.genre);
                 formData.set('lyrics', fileObj.lyrics);
-                formData.set('lyrics', fileObj.lyrics);
 
                 // Calculate Duration
                 const audio = new Audio(URL.createObjectURL(fileObj.file));
@@ -169,13 +168,21 @@ export default function BulkUploadPage() {
                 if (result.success) {
                     updateFileData(fileObj.id, { status: 'success', progress: 100 });
                 } else {
-                    throw new Error(result.error || 'DB Error');
+                    // Display specific error message from backend (e.g., Duplicate or Queue Failure)
+                    throw new Error(result.message || result.error || 'DB Error');
                 }
 
             } catch (err: any) {
                 updateFileData(fileObj.id, { status: 'error', error: err.message });
             }
+        };
+
+        // Execute in chunks
+        for (let i = 0; i < pendingFiles.length; i += CHUNK_SIZE) {
+            const chunk = pendingFiles.slice(i, i + CHUNK_SIZE);
+            await Promise.all(chunk.map(fileObj => uploadFileAction(fileObj)));
         }
+
         setIsGlobalUploading(false);
     };
 
