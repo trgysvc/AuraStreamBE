@@ -41,7 +41,7 @@ export function GlobalPlayer() {
         currentTrack, isPlaying, togglePlay, duration, currentTime,
         seek, analyser, tuning, setTuning, isAutoTuning, setAutoTuning, tier, role, stop,
         isMuted, setMuted, volume, setVolume, isShuffle, setShuffle, isRepeat, setRepeat,
-        playNext, playPrevious
+        playNext, playPrevious, isHighFidelity, setHighFidelity
     } = usePlayer();
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -282,10 +282,16 @@ export function GlobalPlayer() {
                 <div className="absolute bottom-28 right-12 w-64 bg-[#18181b] border border-white/10 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-8 space-y-6 animate-in slide-in-from-bottom-4 duration-300 z-[200]">
                     <h5 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Audio Engine Config</h5>
                     <div className="space-y-4">
-                        <div className="flex justify-between items-center">
-                            <span className="text-xs font-bold text-zinc-300 uppercase italic">High Fidelity (WAV)</span>
-                            <div className="h-5 w-10 bg-indigo-600 rounded-full p-1 flex justify-end shadow-lg"><div className="h-3 w-3 bg-white rounded-full" /></div>
+                        <div className="flex justify-between items-center cursor-pointer group" onClick={() => setHighFidelity(!isHighFidelity)}>
+                            <div className="space-y-0.5">
+                                <span className="text-xs font-bold text-zinc-300 uppercase italic group-hover:text-white transition-colors">Aura High-Fidelity</span>
+                                <p className="text-[8px] font-black text-indigo-500 uppercase tracking-widest">Exciter & Dynamic Pro</p>
+                            </div>
+                            <div className={`h-5 w-10 rounded-full p-1 flex transition-all duration-300 ${isHighFidelity ? 'bg-indigo-600 justify-end shadow-[0_0_15px_rgba(99,102,241,0.4)]' : 'bg-zinc-800 justify-start'}`}>
+                                <div className="h-3 w-3 bg-white rounded-full shadow-sm" />
+                            </div>
                         </div>
+
                         <div className="flex justify-between items-center opacity-40">
                             <span className="text-xs font-bold text-zinc-300 uppercase italic">Crossfade (3.5s)</span>
                             <div className="h-5 w-10 bg-zinc-800 rounded-full p-1 flex justify-start"><div className="h-3 w-3 bg-zinc-600 rounded-full" /></div>

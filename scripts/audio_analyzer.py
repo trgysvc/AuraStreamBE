@@ -43,25 +43,28 @@ def embed_watermark(y, watermark_text):
 
 def analyze_audio(file_path, watermark_uuid=None):
     try:
-        # Load audio file
-        y, sr = librosa.load(file_path)
+        # Load audio file - Force mono=False to preserve stereo elements
+        y, sr = librosa.load(file_path, mono=False)
         duration = librosa.get_duration(y=y, sr=sr)
         
+        # For analysis (BPM, Key, etc.), we need a mono version to avoid channel inconsistencies
+        y_mono = librosa.to_mono(y) if y.ndim > 1 else y
+        
         # 1. Extract BPM
-        tempo, _ = librosa.beat.beat_track(y=y, sr=sr)
+        tempo, _ = librosa.beat.beat_track(y=y_mono, sr=sr)
         
         # 2. Extract Key
-        chroma = librosa.feature.chroma_cqt(y=y, sr=sr)
+        chroma = librosa.feature.chroma_cqt(y=y_mono, sr=sr)
         key_index = chroma.mean(axis=1).argmax()
         notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
         key = notes[key_index]
         
         # 3. Energy estimate
-        rms = librosa.feature.rms(y=y)
+        rms = librosa.feature.rms(y=y_mono)
         energy = float(rms.mean() * 100)
         
         # 4. Extract Acoustic Matrix (Exactly 5000 points, 54 features)
-        total_samples = len(y)
+        total_samples = y_mono.shape[-1]
         track_id = sys.argv[3] if len(sys.argv) > 3 else "unknown"
         frames_target = 5000
         hop_length = total_samples // frames_target
@@ -79,19 +82,19 @@ def analyze_audio(file_path, watermark_uuid=None):
                 else:
                     return np.pad(feat, ((0, 0), (0, frames_target - feat.shape[1])), 'edge')
 
-        rms_feat = librosa.feature.rms(y=y, hop_length=hop_length)
-        onset_env = librosa.onset.onset_strength(y=y, sr=sr, hop_length=hop_length)
-        spectral_centroid = librosa.feature.spectral_centroid(y=y, sr=sr, hop_length=hop_length)
-        spectral_bandwidth = librosa.feature.spectral_bandwidth(y=y, sr=sr, hop_length=hop_length)
-        spectral_rolloff = librosa.feature.spectral_rolloff(y=y, sr=sr, hop_length=hop_length)
-        spectral_flatness = librosa.feature.spectral_flatness(y=y, hop_length=hop_length)
-        zero_crossing_rate = librosa.feature.zero_crossing_rate(y=y, hop_length=hop_length)
-        mfcc = librosa.feature.mfcc(y=y, sr=sr, hop_length=hop_length, n_mfcc=20)
-        chroma = librosa.feature.chroma_cqt(y=y, sr=sr, hop_length=hop_length)
+        rms_feat = librosa.feature.rms(y=y_mono, hop_length=hop_length)
+        onset_env = librosa.onset.onset_strength(y=y_mono, sr=sr, hop_length=hop_length)
+        spectral_centroid = librosa.feature.spectral_centroid(y=y_mono, sr=sr, hop_length=hop_length)
+        spectral_bandwidth = librosa.feature.spectral_bandwidth(y=y_mono, sr=sr, hop_length=hop_length)
+        spectral_rolloff = librosa.feature.spectral_rolloff(y=y_mono, sr=sr, hop_length=hop_length)
+        spectral_flatness = librosa.feature.spectral_flatness(y=y_mono, hop_length=hop_length)
+        zero_crossing_rate = librosa.feature.zero_crossing_rate(y=y_mono, hop_length=hop_length)
+        mfcc = librosa.feature.mfcc(y=y_mono, sr=sr, hop_length=hop_length, n_mfcc=20)
+        chroma = librosa.feature.chroma_cqt(y=y_mono, sr=sr, hop_length=hop_length)
         
         # Tonnetz requires strictly valid chroma. If chroma has all zeros, it might throw a warning, but librosa handles it.
-        tonnetz = librosa.feature.tonnetz(y=librosa.effects.harmonic(y), sr=sr, chroma=chroma)
-        spectral_contrast = librosa.feature.spectral_contrast(y=y, sr=sr, hop_length=hop_length)
+        tonnetz = librosa.feature.tonnetz(y=librosa.effects.harmonic(y_mono), sr=sr, chroma=chroma)
+        spectral_contrast = librosa.feature.spectral_contrast(y=y_mono, sr=sr, hop_length=hop_length)
 
         rms_feat = trim_expand(rms_feat[0])
         onset_env = trim_expand(onset_env)
@@ -144,9 +147,27 @@ def analyze_audio(file_path, watermark_uuid=None):
         
         # 5. WATERMARKING (If UUID provided)
         if watermark_uuid:
-            y = embed_watermark(y, watermark_uuid)
+            # For watermarking, we work on the mono signal for bit-stability
+            # Then we'll re-apply or just save the mono version if needed.
+            # But wait, we want to keep the original stereo for the output!
+            # So let's embed the watermark into BOTH channels if stereo, or just mono.
+            
+            if y.ndim > 1: # Stereo
+                y_w = np.array([embed_watermark(y[0], watermark_uuid), embed_watermark(y[1], watermark_uuid)])
+                # soundfile expects (samples, channels)
+                y_out = y_w.T
+            else: # Mono
+                y_out = embed_watermark(y, watermark_uuid)
+                
             # Save the watermarked file back to the same path, strictly as WAV
-            # subtype='PCM_16' ensures standard 16-bit WAV compatible with ffmpeg
+            sf.write(file_path, y_out, sr, format='WAV', subtype='PCM_16')
+        elif y.ndim > 1:
+            # If no watermark, but it's stereo, we must ensure it's saved in (samples, channels) format if librosa modified it
+            # Actually, librosa doesn't modify the file unless we sf.write.
+            # But the Worker.ts might expect a certain format. 
+            # To be safe, let's always save it back in the correct orientation if we touched it.
+            sf.write(file_path, y.T, sr, format='WAV', subtype='PCM_16')
+        else:
             sf.write(file_path, y, sr, format='WAV', subtype='PCM_16')
 
         result = {

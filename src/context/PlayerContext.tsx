@@ -54,6 +54,8 @@ interface PlayerContextType {
     stop: () => void;
     loopRegion: { start: number; end: number } | null;
     setLoopRegion: (region: { start: number; end: number } | null) => void;
+    isHighFidelity: boolean;
+    setHighFidelity: (enabled: boolean) => void;
 }
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
@@ -79,8 +81,15 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     // Similarity Engine Seamless Looping State
     const [loopRegion, setLoopRegion] = useState<{ start: number; end: number } | null>(null);
 
+    // Aura High-Fidelity DSP State
+    const [isHighFidelity, setIsHighFidelity] = useState(false);
+
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const audioContextRef = useRef<AudioContext | null>(null);
+    const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
+    const highShelfRef = useRef<BiquadFilterNode | null>(null);
+    const compressorRef = useRef<DynamicsCompressorNode | null>(null);
+    const gainNodeRef = useRef<GainNode | null>(null);
 
     // 1. Initialize Audio Instance (Singleton)
     useEffect(() => {
@@ -115,7 +124,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             return isIOS || isSafari;
         };
 
-        // Web Audio API for visualizer
+        // Web Audio API for visualizer and High-Fidelity DSP
         try {
             if (isAppleDevice()) {
                 console.warn("[Player] Skipping Web Audio API on Apple device to prevent Safari muting bug.");
@@ -123,15 +132,44 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                 const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
                 if (AudioCtx && !audioContextRef.current && audioRef.current) {
                     const ctx = new AudioCtx();
-                    const node = ctx.createAnalyser();
-                    node.fftSize = 256;
+                    
+                    // Create DSP Nodes
+                    const analyzerNode = ctx.createAnalyser();
+                    analyzerNode.fftSize = 256;
+
+                    const highShelf = ctx.createBiquadFilter();
+                    highShelf.type = 'highshelf';
+                    highShelf.frequency.value = 10000;
+                    highShelf.gain.value = 0; // Starts flat
+
+                    const compressor = ctx.createDynamicsCompressor();
+                    compressor.threshold.value = -24;
+                    compressor.knee.value = 30;
+                    compressor.ratio.value = 1; // Starts as bypass
+                    compressor.attack.value = 0.003;
+                    compressor.release.value = 0.25;
+
+                    const gainNode = ctx.createGain();
+                    gainNode.gain.value = 1.0;
 
                     try {
                         const source = ctx.createMediaElementSource(audioRef.current);
-                        source.connect(node);
-                        node.connect(ctx.destination);
+                        
+                        // Chain: Source -> HighShelf -> Compressor -> Gain -> Analyzer -> Destination
+                        source.connect(highShelf);
+                        highShelf.connect(compressor);
+                        compressor.connect(gainNode);
+                        gainNode.connect(analyzerNode);
+                        analyzerNode.connect(ctx.destination);
+
                         audioContextRef.current = ctx;
-                        setAnalyser(node);
+                        sourceNodeRef.current = source;
+                        highShelfRef.current = highShelf;
+                        compressorRef.current = compressor;
+                        gainNodeRef.current = gainNode;
+                        setAnalyser(analyzerNode);
+
+                        console.log("[Player] Aura Audio Engine Initialized");
                     } catch (sourceErr) {
                         console.warn("[Player] WebAudio Node Link Failed:", sourceErr);
                     }
@@ -398,6 +436,24 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         setIsAutoTuning(enabled);
     };
 
+    const setHighFidelity = (enabled: boolean) => {
+        setIsHighFidelity(enabled);
+        if (highShelfRef.current && compressorRef.current) {
+            if (enabled) {
+                // Harmonic Exciter: Boost highs for air and clarity
+                highShelfRef.current.gain.setTargetAtTime(8, audioContextRef.current?.currentTime || 0, 0.1);
+                // Tighten Dynamics: Light compression for "polished" sound
+                compressorRef.current.ratio.setTargetAtTime(3, audioContextRef.current?.currentTime || 0, 0.1);
+                console.log("[Player] Aura High-Fidelity Engaged");
+            } else {
+                // Restore Flat Response
+                highShelfRef.current.gain.setTargetAtTime(0, audioContextRef.current?.currentTime || 0, 0.1);
+                compressorRef.current.ratio.setTargetAtTime(1, audioContextRef.current?.currentTime || 0, 0.1);
+                console.log("[Player] Aura High-Fidelity Disengaged");
+            }
+        }
+    };
+
     const stop = () => {
         if (audioRef.current) {
             audioRef.current.pause();
@@ -411,6 +467,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         <PlayerContext.Provider value={{
             currentTrack, isPlaying, duration, currentTime, tuning, isAutoTuning, tier, role,
             analyser, isMuted, volume, isShuffle, isRepeat, loopRegion,
+            isHighFidelity, setHighFidelity,
             playTrack, togglePlay, seek: (t) => { if (audioRef.current) audioRef.current.currentTime = t; },
             setTuning, setAutoTuning, setMuted, setVolume, setShuffle: setIsShuffle, setRepeat: setIsRepeat,
             playNext, playPrevious, stop, setLoopRegion

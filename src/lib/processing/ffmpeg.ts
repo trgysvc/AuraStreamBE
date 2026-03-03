@@ -39,6 +39,7 @@ export const FFmpegService = {
             args.push(
                 '-c:a', 'aac',
                 '-b:a', bitrate,
+                '-ac', '2',
                 '-movflags', '+faststart',
                 '-y',
                 outputPath
