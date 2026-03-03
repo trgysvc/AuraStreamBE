@@ -71,6 +71,7 @@ export function CatalogTrackRow({ track }: { track: any }) {
 
     // Taxonomy State
     const [localTags, setLocalTags] = useState({
+        genre: track.genre || '',
         theme_tags: track.theme_tags || [],
         character_tags: track.character_tags || [],
         vibe_tags: track.vibe_tags || [],
@@ -167,20 +168,28 @@ export function CatalogTrackRow({ track }: { track: any }) {
     const handleAutoTag = async () => {
         setLoading(true);
         try {
-            const res = await autoTagTrack_Action(track.id);
+            // Updated Flow: Use preview mode to update local state and show editor
+            const res = await autoTagTrack_Action(track.id, { previewOnly: true });
             if (res.success && res.predictions) {
                 setLocalTags({
+                    genre: res.predictions.genre || track.genre,
                     vibe_tags: res.predictions.vibe_tags,
                     theme_tags: res.predictions.theme_tags,
                     character_tags: res.predictions.character_tags,
                     venue_tags: res.predictions.venue_tags,
                     sub_genres: res.predictions.sub_genres
                 });
-                alert('Aura AI has updated this track\'s taxonomy.');
+                // Also update the core edit data so the UI reflects the new genre
+                setEditData(prev => ({
+                    ...prev,
+                    genre: res.predictions.genre || prev.genre
+                }));
+                // Automatically open the editor for review
+                setShowTagEditor(true);
             }
         } catch (e) {
             console.error(e);
-            alert('AI Tagging failed');
+            alert('AI Tagging failed. Falling back to manual control.');
         } finally {
             setLoading(false);
         }

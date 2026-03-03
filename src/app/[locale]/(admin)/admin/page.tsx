@@ -19,12 +19,14 @@ async function getAdminData() {
         // 1. Fetch Counts with error handling
         const [
             pendingRes,
+            processingRes,
             profilesRes,
             venuesRes,
             disputesRes,
             tracksRes
         ] = await Promise.all([
             supabase.from('tracks').select('*', { count: 'exact', head: true }).eq('status', 'pending_qc'),
+            supabase.from('tracks').select('*', { count: 'exact', head: true }).eq('status', 'processing'),
             supabase.from('profiles').select('*', { count: 'exact', head: true }),
             supabase.from('venues').select('*', { count: 'exact', head: true }).eq('verification_status', 'verified'),
             supabase.from('disputes').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
@@ -48,6 +50,7 @@ async function getAdminData() {
         return {
             stats: {
                 pendingTracks: pendingRes.count || 0,
+                processingTracks: processingRes.count || 0,
                 totalUsers: profilesRes.count || 0,
                 activeVenues: venuesRes.count || 0,
                 openDisputes: disputesRes.count || 0,
@@ -60,7 +63,7 @@ async function getAdminData() {
     } catch (e: any) {
         console.error('Admin Data Fetch Error:', e);
         return {
-            stats: { pendingTracks: 0, totalUsers: 0, activeVenues: 0, openDisputes: 0, totalTracks: 0, newUsersWeek: 0 },
+            stats: { pendingTracks: 0, processingTracks: 0, totalUsers: 0, activeVenues: 0, openDisputes: 0, totalTracks: 0, newUsersWeek: 0 },
             recentLogs: [],
             error: 'Failed to fetch real-time data'
         };
@@ -95,15 +98,24 @@ export default async function AdminDashboard() {
             </div>
 
             {/* 2. Critical Operation Centers */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                 <MetricCard
                     title="QC Station"
                     value={stats.pendingTracks.toString()}
                     sub="Authorization Queue"
                     icon={Clock}
                     color="text-yellow-500"
-                    href="/admin/qc"
                     glow="shadow-yellow-500/5"
+                    href="/admin/qc"
+                />
+                <MetricCard
+                    title="Processing Lab"
+                    value={stats.processingTracks.toString()}
+                    sub="AI & Signal Factory"
+                    icon={HardDrive}
+                    color="text-cyan-500"
+                    glow="shadow-cyan-500/5"
+                    href="/admin/upload"
                 />
                 <MetricCard
                     title="Revenue Hub"
@@ -111,8 +123,8 @@ export default async function AdminDashboard() {
                     sub="Custom Requests"
                     icon={Zap}
                     color="text-pink-500"
-                    href="/admin/requests"
                     glow="shadow-pink-500/5"
+                    href="/admin/requests"
                 />
                 <MetricCard
                     title="Business Growth"
@@ -120,8 +132,8 @@ export default async function AdminDashboard() {
                     sub="Verified Venues"
                     icon={Activity}
                     color="text-indigo-500"
-                    href="/admin/users"
                     glow="shadow-indigo-500/5"
+                    href="/admin/users"
                 />
                 <MetricCard
                     title="Global Reach"
@@ -129,8 +141,8 @@ export default async function AdminDashboard() {
                     sub="Total Ecosystem"
                     icon={Users}
                     color="text-zinc-400"
-                    href="/admin/users"
                     glow="shadow-zinc-500/5"
+                    href="/admin/users"
                 />
             </div>
 

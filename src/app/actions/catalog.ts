@@ -3,7 +3,8 @@
 import { createClient } from '@/lib/db/server';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { revalidatePath } from 'next/cache';
-import { AITaxonomyService } from '@/lib/services/ai-taxonomy';
+import { AITaxonomyService, TaxonomyPrediction } from '@/lib/services/ai-taxonomy';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 /**
  * Updates comprehensive track metadata including the new Sonaraura Taxonomy.
@@ -46,9 +47,6 @@ export async function updateTrackMetadata_Action(trackId: string, data: {
  * Also cleans up any foreign key references (playback_sessions, playlist_items, likes, etc.)
  */
 export async function deleteTrack_Action(trackId: string) {
-    // We must use the service role key to bypass RLS policies.
-    // Otherwise, an admin cannot delete playback_sessions or likes created by other users,
-    // which then triggers a Postgres foreign key violation (23503) when deleting the track.
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
         throw new Error('Missing Supabase environment variables');
     }
@@ -64,28 +62,14 @@ export async function deleteTrack_Action(trackId: string) {
         }
     );
 
-    // 1. Delete from playback_sessions (uses Admin client to bypass RLS)
     await supabaseAdmin.from('playback_sessions').delete().eq('track_id', trackId);
-
-    // 2. Delete from playlist_items
     await supabaseAdmin.from('playlist_items').delete().eq('track_id', trackId);
-
-    // 3. Delete from likes
     await supabaseAdmin.from('likes').delete().eq('track_id', trackId);
-
-    // 4. Delete from track_reviews
     await supabaseAdmin.from('track_reviews').delete().eq('track_id', trackId);
-
-    // 5. Delete from track_files (even though it has cascade, better to be explicit)
     await supabaseAdmin.from('track_files').delete().eq('track_id', trackId);
-
-    // 6. Delete licenses (this will cascade to disputes if any)
     await supabaseAdmin.from('licenses').delete().eq('track_id', trackId);
-
-    // 7. Nullify custom_requests (since delivery_track_id is nullable)
     await supabaseAdmin.from('custom_requests').update({ delivery_track_id: null } as any).eq('delivery_track_id', trackId);
 
-    // 8. Finally delete the track itself
     const { error } = await supabaseAdmin
         .from('tracks')
         .delete()
@@ -101,42 +85,112 @@ export async function deleteTrack_Action(trackId: string) {
 }
 
 /**
- * Automatically predicts and applies taxonomy tags to a track based on its metadata.
+ * Enhanced AutoTag Logic using a Hybrid Approach (Gemini + Heuristics).
+ * Securely handles errors and ensures data is never wiped if AI fails.
  */
-export async function autoTagTrack_Action(trackId: string) {
+export async function autoTagTrack_Action(trackId: string, options?: { previewOnly?: boolean }) {
     const supabase = await createClient();
 
-    // 1. Fetch current metadata
     const { data: track, error: fetchError } = await supabase
         .from('tracks')
-        .select('title, artist, genre, sub_genres')
+        .select('title, artist, genre, sub_genres, vibe_tags, theme_tags, character_tags, venue_tags, ai_metadata')
         .eq('id', trackId)
         .single();
 
     if (fetchError || !track) {
-        console.error('AutoTag Fetch Error:', fetchError);
         throw new Error('Track not found');
     }
 
-    // 2. Predict Tags
-    const predictions = AITaxonomyService.predictTags({
-        title: track.title || 'Unknown Title',
-        artist: track.artist || 'Sonaraura Studio',
+    const currentData = {
         genre: track.genre || 'Ambient',
+        vibe_tags: track.vibe_tags || [],
+        theme_tags: track.theme_tags || [],
+        character_tags: track.character_tags || [],
+        venue_tags: track.venue_tags || [],
         sub_genres: track.sub_genres || []
-    });
+    };
 
-    // 3. Update Track
+    let predictions: TaxonomyPrediction & { genre?: string };
+
+    try {
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) throw new Error('Gemini API key missing');
+
+        const genAI = new GoogleGenerativeAI(apiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+        const aiMetadata = track.ai_metadata as any;
+        const promptContext = aiMetadata?.prompt || aiMetadata?.tags || '';
+        
+        const systemPrompt = `
+            You are Aura AI, a professional music curator for the Sonaraura Ecosystem.
+            Your goal is to validate and refine track metadata.
+
+            Current Data:
+            - Title: ${track.title}
+            - Artist: ${track.artist}
+            - Assigned Genre: ${track.genre || 'None'}
+            - Production Context: ${promptContext}
+
+            Instructions:
+            1. GENRE VALIDATION: The "Assigned Genre" usually comes from the file's ID3 tags. 
+               - If the Assigned Genre is specific and accurate, KEEP IT.
+               - If it is generic (e.g., "Other", "Unknown") or clearly mismatched based on the Production Context, suggest a more accurate Primary Genre.
+            2. TAGGING: Select the best tags from the lists below based on the track's vibe and context.
+            
+            Available Vibe Tags: Angry, Busy & Frantic, Chill, Dark, Dreamy, Epic, Euphoric, Focus, Happy, Hopeful, Laid Back, Melancholic, Mysterious, Peaceful, Quirky, Relaxing, Romantic, Sad, Scary, Sentimental, Sexy, Smooth, Sneaking, Suspense, Weird, Workout.
+            Available Theme Tags: Cinematic, Corporate, Vlog, Fashion, Sci-Fi, Travel.
+            Available Character Tags: Acoustic, Synthetic, Percussive, Minimal, Orchestral.
+            Available Venue Tags: Hotel Lobby, Lounge & Bar, Rooftop / Terrace, Airport / Lounge, Coffee Shop, Fine Dining, Bistro & Brasserie, Cocktail Bar, Fast Casual, Luxury Boutique, Streetwear Store, Shopping Mall, Showroom / Gallery, Spa & Massage, Yoga & Pilates, Gym & CrossFit, Hair Salon / Barber, Coworking Space, Corporate Office.
+
+            Return ONLY a valid JSON object:
+            {
+                "genre": "Refined or Existing Genre",
+                "vibe_tags": ["tag1", "tag2"],
+                "theme_tags": ["tag1"],
+                "character_tags": ["tag1"],
+                "venue_tags": ["tag1"],
+                "sub_genres": ["tag1", "tag2"]
+            }
+        `;
+
+        const result = await model.generateContent(systemPrompt);
+        const response = await result.response;
+        const text = response.text();
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        
+        if (jsonMatch) {
+            predictions = JSON.parse(jsonMatch[0]);
+        } else {
+            throw new Error('Invalid AI response format');
+        }
+    } catch (e) {
+        console.warn('Gemini AI failed/skipped, falling back to Heuristics:', e instanceof Error ? e.message : 'Unknown Error');
+        predictions = AITaxonomyService.predictTags({
+            title: track.title || '',
+            artist: track.artist || '',
+            genre: track.genre || '',
+            sub_genres: track.sub_genres || []
+        });
+    }
+
+    const finalUpdate: any = {
+        genre: predictions.genre || currentData.genre,
+        vibe_tags: predictions.vibe_tags.length > 0 ? predictions.vibe_tags : currentData.vibe_tags,
+        theme_tags: predictions.theme_tags.length > 0 ? predictions.theme_tags : currentData.theme_tags,
+        character_tags: predictions.character_tags.length > 0 ? predictions.character_tags : currentData.character_tags,
+        venue_tags: predictions.venue_tags.length > 0 ? predictions.venue_tags : currentData.venue_tags,
+        sub_genres: predictions.sub_genres.length > 0 ? predictions.sub_genres : currentData.sub_genres,
+        updated_at: new Date().toISOString()
+    };
+
+    if (options?.previewOnly) {
+        return { success: true, predictions: finalUpdate };
+    }
+
     const { error: updateError } = await supabase
         .from('tracks')
-        .update({
-            vibe_tags: predictions.vibe_tags,
-            theme_tags: predictions.theme_tags,
-            character_tags: predictions.character_tags,
-            venue_tags: predictions.venue_tags,
-            sub_genres: predictions.sub_genres,
-            updated_at: new Date().toISOString()
-        })
+        .update(finalUpdate)
         .eq('id', trackId);
 
     if (updateError) {
@@ -145,58 +199,29 @@ export async function autoTagTrack_Action(trackId: string) {
     }
 
     revalidatePath('/admin/catalog');
-    return { success: true, predictions };
+    return { success: true, predictions: finalUpdate };
 }
 
 /**
  * Bulk updates the entire active catalog using the AI Ingestion Engine.
- * Only tags tracks that are missing taxonomy data (theme, character, vibe, venue).
  */
 export async function batchAutoTagTracks_Action() {
     const supabase = await createClient();
 
-    // 1. Fetch all active tracks
     const { data: tracks, error: fetchError } = await supabase
         .from('tracks')
         .select('id, title, artist, genre, sub_genres')
         .eq('status', 'active');
 
     if (fetchError || !tracks) {
-        console.error('Batch AutoTag Fetch Error:', fetchError);
         throw new Error('Could not fetch catalog');
     }
 
-    console.log(`Starting Batch AI Tagging for ${tracks.length} tracks...`);
+    const results = { total: tracks.length, updated: 0, errors: 0 };
 
-    const results = {
-        total: tracks.length,
-        updated: 0,
-        errors: 0
-    };
-
-    // 2. Process in batches or parallel
     await Promise.all(tracks.map(async (track) => {
         try {
-            const predictions = AITaxonomyService.predictTags({
-                title: track.title || 'Unknown',
-                artist: track.artist || 'Sonaraura Studio',
-                genre: track.genre || 'Ambient',
-                sub_genres: track.sub_genres || []
-            });
-
-            const { error: updateError } = await supabase
-                .from('tracks')
-                .update({
-                    vibe_tags: predictions.vibe_tags,
-                    theme_tags: predictions.theme_tags,
-                    character_tags: predictions.character_tags,
-                    venue_tags: predictions.venue_tags,
-                    sub_genres: predictions.sub_genres,
-                    updated_at: new Date().toISOString()
-                })
-                .eq('id', track.id);
-
-            if (updateError) throw updateError;
+            await autoTagTrack_Action(track.id);
             results.updated++;
         } catch (e) {
             console.error(`Error auto-tagging track ${track.id}:`, e);
@@ -209,21 +234,16 @@ export async function batchAutoTagTracks_Action() {
 }
 
 /**
- * One-time action to migrate existing tracks with 'turgaysavaci' artist
- * to the new 'Sonaraura Studio' branding for corporate consistency.
+ * One-time action to fix branding consistency.
  */
 export async function fixBranding_Action() {
     const supabase = await createClient();
-
     const { error, count } = await supabase
         .from('tracks')
         .update({ artist: 'Sonaraura Studio' })
         .eq('artist', 'turgaysavaci');
 
-    if (error) {
-        console.error('Branding Fix Error:', error);
-        throw error;
-    }
+    if (error) throw error;
 
     revalidatePath('/admin/catalog');
     revalidatePath('/dashboard/venue');
