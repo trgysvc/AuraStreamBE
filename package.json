@@ -6,7 +6,7 @@
     "dev": "next dev --webpack & npm run worker",
     "build": "next build --webpack",
     "start": "next start -H 0.0.0.0",
-    "lint": "next lint --webpack",
+    "lint": "next lint .",
     "test": "jest",
     "test:watch": "jest --watch",
     "e2e": "playwright test",

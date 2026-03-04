@@ -8,11 +8,12 @@ const intlMiddleware = createIntlMiddleware({
     localeDetection: true
 });
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
     // ---------------------------------------------------------
     // ADIM 1: GÜVENLİK VE PORT TEMİZLİĞİ
     // ---------------------------------------------------------
-    const host = request.headers.get('host');
+    const headers = await request.headers;
+    const host = headers.get('host');
     const isLocal = host?.includes('localhost') || host?.includes('127.0.0.1');
 
     if (host && host.includes(':3000') && !isLocal) {
