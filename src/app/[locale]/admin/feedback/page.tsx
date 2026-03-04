@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from '@/i18n/navigation';
 import { createClient } from '@/lib/db/client';
+import { useTranslations } from 'next-intl';
 import { Database } from '@/types/supabase';
 import {
     CheckCircle2,
@@ -34,6 +35,7 @@ type Feedback = Database['public']['Tables']['feedbacks']['Row'] & {
 };
 
 export default function FeedbackAdminPage() {
+    const t = useTranslations('Feedback');
     const supabase = createClient();
     const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
     const [loading, setLoading] = useState(true);
@@ -97,6 +99,7 @@ export default function FeedbackAdminPage() {
             case 'feature': return '💡';
             case 'content': return '🎵';
             case 'billing': return '💳';
+            case 'development': return '🛠️';
             default: return '📝';
         }
     };
@@ -119,13 +122,13 @@ export default function FeedbackAdminPage() {
                     className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors w-fit border border-white/5 px-4 py-2 rounded-xl bg-white/[0.02] group"
                 >
                     <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                    <span className="text-xs font-black uppercase tracking-widest">Admin Paneline Dön</span>
+                    <span className="text-xs font-black uppercase tracking-widest">{t('form.back')}</span>
                 </Link>
 
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-black italic uppercase tracking-tighter">Feedback Triage</h1>
-                        <p className="text-zinc-400 font-medium text-sm">Kullanıcı geri bildirimlerini ve sorunlarını yönetin.</p>
+                        <p className="text-zinc-400 font-medium text-sm">{t('categories.title')}</p>
                     </div>
                     <div className="flex gap-2 bg-white/5 p-1 rounded-xl border border-white/5">
                         {['all', 'new', 'in_progress', 'resolved'].map((s) => (
@@ -252,7 +255,10 @@ export default function FeedbackAdminPage() {
                                                     {key === 'ip_address' ? 'IP Adresi' :
                                                         key === 'userAgent' ? 'Tarayıcı' :
                                                             key === 'screen' ? 'Ekran Çözünürlüğü' :
-                                                                key === 'url' ? 'Kaynak URL' : key}
+                                                                key === 'url' ? 'Kaynak URL' :
+                                                                    key === 'aboutMe' ? 'Hakkında' :
+                                                                        key === 'interests' ? 'İlgi Alanları' :
+                                                                            key === 'goals' ? 'Geliştirme Hedefleri' : key}
                                                 </p>
                                                 <p className="text-xs font-mono text-zinc-300 truncate">{JSON.stringify(value).replace(/"/g, '')}</p>
                                             </div>

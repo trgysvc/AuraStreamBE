@@ -51,10 +51,8 @@ export default async function EnterprisePage({ params }: { params: Promise<{ loc
 
                 <div className="relative z-20 max-w-5xl w-full text-center space-y-10">
                     <p className="text-sm font-bold uppercase tracking-[0.4em] text-zinc-400">{t('badge')}</p>
-                    <h1 className="text-5xl md:text-8xl font-black tracking-tight leading-[1.0] uppercase italic">
-                        {t.rich('title', {
-                            br: () => <br />
-                        })}
+                    <h1 className="text-5xl md:text-8xl font-black tracking-tight leading-[1.0] uppercase italic whitespace-pre-line">
+                        {t('title')}
                     </h1>
                     <p className="text-xl md:text-2xl text-gray-200 font-light max-w-3xl mx-auto leading-relaxed">
                         {t('description')}
@@ -75,10 +73,8 @@ export default async function EnterprisePage({ params }: { params: Promise<{ loc
                 <div className="max-w-[1400px] mx-auto">
                     <div className="flex flex-col lg:flex-row items-center gap-20">
                         <div className="flex-1 space-y-8">
-                            <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white uppercase italic leading-[1.1]">
-                                {t.rich('controlTitle', {
-                                    br: () => <br />
-                                })}
+                            <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white uppercase italic leading-[1.1] whitespace-pre-line">
+                                {t('controlTitle')}
                             </h2>
                             <p className="text-xl text-zinc-400 leading-relaxed max-w-xl">
                                 {t('controlDesc')}
@@ -153,10 +149,8 @@ export default async function EnterprisePage({ params }: { params: Promise<{ loc
                 <div className="max-w-[1400px] mx-auto space-y-8 md:space-y-12">
                     <div className="space-y-3">
                         <p className="text-[10px] font-black uppercase tracking-[0.4em] text-black/40 leading-none">{t('infrastructure.badge')}</p>
-                        <h2 className="text-3xl md:text-5xl font-black tracking-tight uppercase italic leading-[0.9]">
-                            {t.rich('infrastructure.title', {
-                                br: () => <br />
-                            })}
+                        <h2 className="text-3xl md:text-5xl font-black tracking-tight uppercase italic leading-[0.9] whitespace-pre-line">
+                            {t('infrastructure.title')}
                         </h2>
                     </div>
 
@@ -223,10 +217,8 @@ export default async function EnterprisePage({ params }: { params: Promise<{ loc
                     <div className="space-y-8">
                         <div>
                             <p className="text-xs font-bold uppercase tracking-[0.2em] text-black/50 mb-4">{t('licensing.badge')}</p>
-                            <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none">
-                                {t.rich('licensing.title', {
-                                    br: () => <br />
-                                })}
+                            <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none whitespace-pre-line">
+                                {t('licensing.title')}
                             </h2>
                         </div>
                         <div className="space-y-6 text-lg text-zinc-700 leading-relaxed">
@@ -258,7 +250,7 @@ export default async function EnterprisePage({ params }: { params: Promise<{ loc
                 <div className="max-w-[1400px] mx-auto space-y-12">
                     <div className="space-y-2">
                         <p className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400">{t('curated.badge')}</p>
-                        <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white uppercase italic">
+                        <h2 className="text-4xl md:text-6xl font-black tracking-tight text-white uppercase italic whitespace-pre-line">
                             {t('curated.title')}
                         </h2>
                     </div>
@@ -328,7 +320,7 @@ export default async function EnterprisePage({ params }: { params: Promise<{ loc
             <section id="contact-section" className="py-24 md:py-40 px-6 bg-[#F5F5F0]">
                 <div className="max-w-4xl mx-auto bg-white p-6 md:p-12 rounded-3xl shadow-2xl text-center space-y-4 md:space-y-6">
                     <div className="space-y-2 md:space-y-4">
-                        <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none uppercase italic text-zinc-900">
+                        <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none uppercase italic text-zinc-900 whitespace-pre-line">
                             {t('cta.title')}
                         </h2>
                         <p className="text-lg text-zinc-600 max-w-2xl mx-auto">

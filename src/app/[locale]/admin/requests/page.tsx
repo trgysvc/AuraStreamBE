@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/db/server';
 import { Sparkles } from 'lucide-react';
 import { RequestActionCard } from '@/components/dashboard/RequestActionCard';
+import { getTranslations } from 'next-intl/server';
 
 async function getCustomRequests() {
     const supabase = await createClient();
@@ -16,19 +17,21 @@ async function getCustomRequests() {
     return data || [];
 }
 
-export default async function RequestHubPage() {
+export default async function RequestHubPage({ params }: { params: Promise<{ locale: string }> }) {
+    const { locale } = await params;
+    const t = await getTranslations({ locale, namespace: 'Requests' });
     const requests = await getCustomRequests();
 
     return (
         <div className="space-y-12 pb-20 animate-in fade-in duration-700">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-4xl font-black italic uppercase tracking-tighter text-white">Request Hub</h1>
-                    <p className="text-zinc-500 font-medium mt-1 text-[15px]">Manage high-ticket &quot;Music on Request&quot; custom orders.</p>
+                    <h1 className="text-4xl font-black italic uppercase tracking-tighter text-white">{t('title')}</h1>
+                    <p className="text-zinc-500 font-medium mt-1 text-[15px]">{t('subtitle')}</p>
                 </div>
                 <div className="flex items-center gap-4">
                     <div className="px-6 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full text-indigo-500 text-[10px] font-black uppercase tracking-widest">
-                        {requests.length} Total Orders
+                        {t('total_orders', { count: requests.length })}
                     </div>
                 </div>
             </div>
@@ -38,7 +41,7 @@ export default async function RequestHubPage() {
                     <div className="h-16 w-16 bg-white/5 rounded-full flex items-center justify-center mx-auto">
                         <Sparkles size={32} className="text-zinc-600" />
                     </div>
-                    <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs">No custom orders in the system.</p>
+                    <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs">{t('no_orders')}</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 gap-6">

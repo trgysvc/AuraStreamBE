@@ -327,7 +327,7 @@ export async function getCurationCounts_Action(options?: {
             'Techno Bunker': 'Dark',
             'Aura Classics': 'Legacy',
             'Global Beats': 'World',
-            'Cinematic Vibe': 'Cinematic'
+            'Lobby': 'Hotel Lobby'
         };
 
         for (const [title, tag] of Object.entries(categoryMapping)) {
@@ -338,6 +338,14 @@ export async function getCurationCounts_Action(options?: {
                     .select('*', { count: 'exact', head: true })
                     .eq('status', 'active')
                     .eq('genre', tag);
+                counts[title] = count || 0;
+            } else if (tag === 'Hotel Lobby') {
+                // Venue-based
+                const { count } = await supabase
+                    .from('tracks')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('status', 'active')
+                    .overlaps('venue_tags', [tag]);
                 counts[title] = count || 0;
             } else {
                 // Vibe-based (already counted in vibetags, but we map the title)

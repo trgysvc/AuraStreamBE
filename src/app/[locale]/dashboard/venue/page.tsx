@@ -194,7 +194,7 @@ function VenueDashboardContent() {
         { title: "Techno Bunker", tracks: formatCount(curationCounts["Techno Bunker"]), vibe: "Dark", color: "bg-[#000000]", image: "https://images.unsplash.com/photo-1574433232643-49f0f6cc0d00?q=80&w=800" },
         { title: "Aura Classics", tracks: formatCount(curationCounts["Aura Classics"]), genre: "Legacy", color: "bg-[#DAA520]", image: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=800" },
         { title: "Global Beats", tracks: formatCount(curationCounts["Global Beats"]), genre: "World", color: "bg-[#228B22]", image: "https://images.unsplash.com/photo-1526218626217-dc65a29bb444?q=80&w=800" },
-        { title: "Cinematic Vibe", tracks: formatCount(curationCounts["Cinematic Vibe"]), genre: "Cinematic", color: "bg-[#800000]", image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=800" }
+        { title: "Lobby", tracks: formatCount(curationCounts["Lobby"]), venue: "Hotel Lobby", color: "bg-[#AAAAAA]", image: "/images/lobby.png" }
     ];
 
     const vibesList = [
@@ -532,6 +532,9 @@ function VenueDashboardContent() {
                                                 setQuery('');
                                             } else if (playlist.genre) {
                                                 setSelectedGenres([playlist.genre]);
+                                                setQuery('');
+                                            } else if (playlist.venue) {
+                                                setSelectedVenues([playlist.venue]);
                                                 setQuery('');
                                             } else {
                                                 setQuery(playlist.title === "Recommended tracks" ? "" : playlist.title);

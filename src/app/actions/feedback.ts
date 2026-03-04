@@ -35,7 +35,10 @@ export async function submitFeedback(formData: FormData) {
     const metadataStr = formData.get('metadata') as string;
     const severity = (formData.get('severity') as FeedbackSeverity) || 'low';
 
-    if (!category || !description) {
+    // For development category, we don't strictly need a description as we have specific metadata fields
+    const descriptionValue = category === 'development' ? (description || 'Development Participation Request') : description;
+
+    if (!category || (!descriptionValue && category !== 'development')) {
         return { error: 'Lütfen tüm zorunlu alanları doldurun.' };
     }
 
@@ -48,22 +51,28 @@ export async function submitFeedback(formData: FormData) {
             ip_address: ip
         };
 
-        const { error } = await supabase
+        const { data, error: insertError } = await supabase
             .from('feedbacks')
             .insert({
                 user_id: user.id,
                 category,
                 title,
-                description,
+                description: descriptionValue,
                 severity,
                 metadata,
                 status: 'new'
-            });
+            })
+            .select()
+            .single();
 
-        if (error) {
-            console.error('Feedback DB Error:', error);
-            // If it's a schema cache issue, we might see it here
-            return { error: 'Geri bildirim kaydedilemedi. Lütfen daha sonra tekrar deneyin.' };
+        if (insertError) {
+            console.error('Feedback Insert Error details:', {
+                message: insertError.message,
+                details: insertError.details,
+                hint: insertError.hint,
+                code: insertError.code
+            });
+            throw new Error(`Geri bildirim kaydedilemedi: ${insertError.message}`);
         }
 
         revalidatePath('/admin/feedback');

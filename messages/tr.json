@@ -1,20 +1,20 @@
 {
     "HomePage": {
         "hero": {
-            "title": "İçeriğinizi müziklendirin",
-            "subtitle": "Her hikaye için telifsiz müzik ve ses efektleri.",
+            "title": "İşletmeniz ve içerikleriniz için müzik",
+            "subtitle": "Her işletme ve içerik için müzik ve ses efektleri.",
             "search_placeholder": "Deneyin: 'Sinematik', 'Vlog'...",
             "search_button": "Ara"
         },
         "sections": {
             "categories": {
-                "title": "Her hikaye için müzik.",
+                "title": "Her platforma uygun müzik.",
                 "subtitle": "Herhangi bir platform için mükemmel parçayı bulun."
             },
             "find_similar": {
                 "badge": "Benzerini Bul",
-                "title": "Müzik kullanarak müzik bulun.",
-                "description": "Favori rif, hook, drop veya bridge'inizi kullanarak benzer ton ve sesteki parçaları arayın.",
+                "title": "Müziğin izini sürün.",
+                "description": "Seçtiğiniz bir parçanın en sevdiğiniz rif, hook veya bridge bölümünü referans gösterin; AuraStream gelişmiş tını analiziyle size aynı ruhu taşıyan benzer sesleri bulsun.",
                 "mock_ui_title": "Benzer parçaları bul"
             },
             "venue": {
@@ -76,14 +76,14 @@
     "About": {
         "Us": {
             "hero": {
-                "title": "Sonaraura evrenin sesidir, <br></br> markalaşma için yeniden tasarlandı.",
+                "title": "Sonaraura evrenin sesidir, \n markalaşma için yeniden tasarlandı.",
                 "who": "Biz Kimiz",
                 "p1": "Sonaraura, müziği sadece bir arka plan unsuru olmaktan çıkarıp, bir mekanın atmosferini biyolojik ve duygusal seviyelerde yöneten canlı bir zekaya dönüştürür.",
                 "p2": "Ses mühendisliği, yapay zeka ve psikoakustiği birleştirerek dünyanın ilk <strong>Atmosferik Zeka</strong> platformunu inşa ettik. Biz sıradan bir yayın servisi değiliz. Sesin frekansını, ortamın ruhunu ve dinleyicinin nabzını senkronize eden bir teknoloji şirketiyiz."
             },
             "vision": {
                 "badge": "Vizyon",
-                "title": "Sessizliğin Ötesindeki <br></br> Mimari",
+                "title": "Sessizliğin Ötesindeki \n Mimari",
                 "p1": "Her mekanın bir ruhu, her anın bir frekansı vardır. Amacımız, <strong>Frekans Mühendisliği</strong> aracılığıyla işletmelerin ve içerik üreticilerinin hedef kitleleriyle olan bağını derinleştirmektir.",
                 "p2": "Müziği standart 440Hz kalıbından çıkarıp, insan biyolojisiyle gerçek zamanlı olarak senkronize olan <strong>432Hz (Huzur)</strong> ve <strong>528Hz (Odak/Canlılık)</strong> frekanslarına evrimleştiriyoruz. Bunu yaparken müzikal ritmi (BPM) koruyor, sanatı bilimsel hassasiyetle yeniden mühendisliyoruz."
             },
@@ -108,7 +108,7 @@
                 "feature4": {
                     "title": "Otonom Müzik Direktörü",
                     "subtitle": "Smart Flow AI",
-                    "desc": "Şafaktan gece yarısına kadar mekanınızın enerji eğrisini yöneten bir yapay zeka. Manuel çalma listesi yönetimi zahmetine son verir, bioritminizi 7/24 optimize eder."
+                    "desc": "Şafaktan gece yarısına kadar mekanınızın enerji eğrisini yöneten bir yapay zeka. Manuel çalma listesi yönetimi zahmetine son verir, biyoritminizi 7/24 optimize eder."
                 }
             },
             "footer": {
@@ -130,7 +130,7 @@
                 "frequency": {
                     "subtitle": "Frekans Mühendisliği",
                     "title": "Moleküler Ses Teknolojisi",
-                    "desc": "Sadece müzik çalmıyoruz; sesin fiziksel yapısını manipüle ediyoruz. 440Hz, 432Hz (İyileşme) ve 528Hz (Odak) arasında tek bir ritim bile kaybetmeden sorunsuz geçiş yapın. Sonaraura dinleyicileri biyolojik düzeyde etkiler."
+                    "desc": "Sadece müzik çalmıyoruz; sesin fiziksel yapısını manipüle ediyoruz. 440Hz, 432Hz (Huzur) ve 528Hz (Odak) arasında tek bir ritim bile kaybetmeden sorunsuz geçiş yapın. Sonaraura dinleyicileri biyolojik düzeyde etkiler."
                 },
                 "karaoke": {
                     "subtitle": "Kelime Düzeyinde Hassasiyet",
@@ -149,7 +149,7 @@
                 },
                 "enterprise": {
                     "subtitle": "Filo Hakimiyeti",
-                    "title": "Kurumsal Merkez Karargahı",
+                    "title": "Merkezi Ağ Yönetimi",
                     "desc": "Tek bir taktik arayüzden binlerce mekanı kontrol edin. Tüm işletmeniz genelinde yayın kalitesinde hassasiyetle cihaz sağlığını, senkronizasyon durumunu ve küresel programlamayı izleyin."
                 },
                 "studio": {
@@ -164,12 +164,12 @@
                 },
                 "smartSimilarity": {
                     "subtitle": "Akustik Eşleştirme Motoru",
-                    "title": "Akıllı Ses Benzerlik Motoru",
+                    "title": "Akustik Benzerlik Motoru",
                     "desc": "Referans bir ses dosyası göstererek akustik, ritmik ve dokusal olarak en benzer parçaları anında bulun."
                 },
                 "biorhythmML": {
                     "subtitle": "Biyometrik Zeka",
-                    "title": "Biyoritim Destekli Öğrenme",
+                    "title": "Biyoritmik Yapay Zeka",
                     "desc": "Sadece saatleri değil, içerideki dinleyici ve mekan biyoritmine göre müziği adapte etmeyi öğrenen makine öğrenimi katmanı."
                 },
                 "uiEvolution": {
@@ -189,7 +189,7 @@
             },
             "cta": {
                 "title": "Geleceğin müziğini tasarlamaya hazır mısınız?",
-                "desc": "Şimdiye kadar inşa edilmiş en teknik gelişmiş ses ekosistemini deneyimleyin.",
+                "desc": "Şimdiye kadar inşa edilmiş en gelişmiş ses ekosistemini deneyimleyin.",
                 "button": "Erken Erişim Alın"
             }
         },
@@ -275,7 +275,7 @@
                     "precision": {
                         "f": "Süre Hassasiyeti",
                         "t": "⚠️ Tahmini",
-                        "a": "✅ Gerçek Zamanlı Dosya Senk (Kare-Mükemmel)"
+                        "a": "✅ Gerçek Zamanlı Dosya Senk (Milimetrik)"
                     },
                     "roi": {
                         "f": "Altyapı ROI",
@@ -305,7 +305,7 @@
             },
             "cta": {
                 "title": "Mekanınızın Ruhu, Sizin Sesiniz.",
-                "desc": "Milisaniye hassasiiyetinde otonom bir ses fabrikası ile tanışın.",
+                "desc": "Milisaniye hassasiyetinde otonom bir ses fabrikası ile tanışın.",
                 "button": "Hemen Başlayın"
             }
         },
@@ -352,44 +352,44 @@
         },
         "Research": {
             "hero": {
-                "title": "Sonaraura'da Araştırma",
-                "desc": "Tüm profesyonel içerik üreticilerine sesleniyoruz — Araştırma çalışmalarımıza katılın ve içerik üreticisi deneyiminin geleceğini şekillendirmeye yardımcı olun.",
-                "button": "Araştırma için bize katılın"
+                "title": "İçgörü ve İnovasyon Laboratuvarı",
+                "desc": "Sektör profesyonellerini ve içerik üreticilerini, Sonaraura deneyiminin geleceğini birlikte tasarlamak üzere stratejik araştırma çalışmalarımıza davet ediyoruz.",
+                "button": "Araştırma Paneline Başvurun"
             },
             "benefits": {
-                "title": "Sizin için ne var?",
+                "title": "Katılımcı Değer Teklifi",
                 "paid": {
-                    "title": "Zamanınız için ödeme alın",
-                    "desc": "Katıldıktan sonra bir hediye kartı alacaksınız. Tutar, projenin türüne ve uzunluğuna bağlı olarak değişecektir."
+                    "title": "Profesyonel Teşvikler",
+                    "desc": "Katılımcılar, sağladıkları uzmanlık ve zaman karşılığında proje bazlı teşviklerle ödüllendirilir. Ücretlendirme, çalışmanın kapsamına göre belirlenir."
                 },
                 "peeks": {
-                    "title": "Önizlemeler alın",
-                    "desc": "Bir röportajda deneyiminizi paylaşın, bir prototipi veya beta özelliğini test edin ve çalışmalarımız hakkında içgörü edinin."
+                    "title": "Stratejik Erken Erişim",
+                    "desc": "Derinlemesine mülakatlara ve prototip testlerine katılarak, teknolojik yol haritamıza özel erken erişim imkanı elde edin."
                 },
                 "influence": {
-                    "title": "Geleceği etkileyin",
-                    "desc": "Katılımınız, doğru yönde gelişmemize ve profesyonellerin en önemli ihtiyaçlarına öncelik vermemize yardımcı olur."
+                    "title": "Sektörel Etki",
+                    "desc": "Görüşleriniz doğrudan yol haritamızı şekillendirir ve ekosistemin küresel profesyonellerin yüksek standartlarına göre evrilmesini sağlar."
                 }
             },
             "howItWorks": {
-                "title": "Nasıl çalışır?",
+                "title": "Katılım Protokolü",
                 "step1": {
-                    "title": "1. Bir form doldurun",
-                    "desc": "Bize kendinizden ve ilgi alanlarınızdan biraz bahsedin. Sizi sizinle ilgili konu ve ürünlerle eşleştirmemize yardımcı olacaktır."
+                    "title": "1. Profesyonel Profil",
+                    "desc": "İlgi alanlarınız ve geçmişinizle ilgili kısa bir ön anketi tamamlayın. Bu, sizi ilgili inovasyon projeleriyle eşleştirmemize yardımcı olur."
                 },
                 "step2": {
-                    "title": "2. Haberdar edilmeyi bekleyin",
-                    "desc": "Profesyonel ilgi alanlarınıza uygun bir çalışma olduğunda size bir e-posta göndereceğiz."
+                    "title": "2. Seçici Bilgilendirme",
+                    "desc": "Profiliniz yaklaşan stratejik bir çalışmanın kriterleriyle eşleştiğinde ekibimiz sizinle iletişime geçecektir."
                 },
                 "step3": {
-                    "title": "3. Bir çağrı planlayın",
-                    "desc": "Katılmaya karar verirseniz, geri bildirim oturumunu koordine etmek için sizinle birlikte çalışacağız."
+                    "title": "3. İş Birliği Oturumu",
+                    "desc": "Seçilmeniz durumunda, uzman geri bildirimlerinizi ve operasyonel içgörülerinizi almak üzere bir oturum koordine edeceğiz."
                 },
-                "cta": "Araştırma için bize katılın"
+                "cta": "Panele Katılın"
             },
             "finalCta": {
-                "title": "Sesiniz önemli. Dünyanın dört bir yanındaki içerik üreticileri için daha iyi bir deneyim inşa edelim.",
-                "button": "Araştırma için bize katılın"
+                "title": "Uzmanlığınız mimarimizi yönlendiriyor. Küresel içerik üreticisi deneyimini birlikte yeniden tanımlayalım.",
+                "button": "Stratejik Ortak Olun"
             }
         }
     },
@@ -417,8 +417,8 @@
             "weather-ai": "Atmosferik Yapay Zeka",
             "watermarking": "Sinyal Koruması",
             "interactive-waveforms": "Sonik Keşif",
-            "sync-precision": "Kare-Mükemmel Senkronizasyon",
-            "biorhythm-ml": "Biyoritim Eğitimi",
+            "sync-precision": "Kusursuz Senkronizasyon",
+            "biorhythm-ml": "Biyoritmik Yapay Zeka",
             "edge-roi": "Küresel Altyapı",
             "revenue-intel": "Gelir Zekası",
             "churn-heartbeat": "Abonelik Kaybı Tahmini",
@@ -428,16 +428,15 @@
             "smart-flow": "Smart Flow'u Ustalaştırmak",
             "scheduling": "Dinamik Programlama",
             "b2b-licensing": "Ticari Lisanslama",
-            "direct-licensing": "Müzik Lisanslaması Kolaylaştı",
+            "direct-licensing": "Lisanslamada Yeni Standart",
             "upload-qc": "Üretim Fabrikası",
             "revenue-share": "Stratejik Ortaklıklar",
             "tailor-process": "Tailor İş Akışı",
             "project-soul": "Project Soul Konsepti",
-            "smart-similarity": "Akıllı Benzerlik",
-            "biorhythm-ml": "Biyoritim Eğitimi"
+            "smart-similarity": "Akustik Benzerlik Motoru"
         },
         "vision": {
-            "title": "Sesin Geleceği, <br></br> Zekanın Frekansı",
+            "title": "Sesin Geleceği, \n Zekanın Frekansı",
             "subtitle": "Sessizliğin ötesindeki mimari ve frekans mühendisliği.",
             "whoAreWe": {
                 "title": "Biz Kimiz?",
@@ -506,13 +505,8 @@
                 "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
             },
             "sync-precision": {
-                "title": "Kare-Mükemmel Senkronizasyon",
-                "p1": "Kare-Mükemmel Senkronizasyon bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
-                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
-            },
-            "biorhythm-ml": {
-                "title": "Biyoritim Eğitimi",
-                "p1": "Biyoritim Eğitimi bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "title": "Kusursuz Senkronizasyon",
+                "p1": "Kusursuz Senkronizasyon bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
                 "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
             },
             "edge-roi": {
@@ -530,11 +524,6 @@
                 "p1": "Abonelik Kaybı Tahmini bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
                 "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
             },
-            "ui-evolution": {
-                "title": "UI Veri Evrimi",
-                "p1": "UI Veri Evrimi bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
-                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
-            },
             "enterprise-hq": {
                 "title": "Kurumsal Merkez",
                 "p1": "Kurumsal Merkez bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
@@ -547,7 +536,7 @@
             },
             "smart-flow": {
                 "title": "Smart Flow'u Ustalaştırmak",
-                "p1": "Smart Flow'u Ustalaştırmak bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "p1": "Smart Flow'u Ustalaştırmak bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfarak tasarlanmıştır.",
                 "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
             },
             "scheduling": {
@@ -561,8 +550,8 @@
                 "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
             },
             "direct-licensing": {
-                "title": "Müzik Lisanslaması Kolaylaştı",
-                "p1": "Müzik Lisanslaması Kolaylaştı bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
+                "title": "Lisanslamada Yeni Standart",
+                "p1": "Lisanslamada Yeni Standart bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
                 "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
             },
             "upload-qc": {
@@ -586,13 +575,13 @@
                 "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
             },
             "smart-similarity": {
-                "title": "Akıllı Ses Benzerlik Motoru",
+                "title": "Akustik Benzerlik Motoru",
                 "p1": "\"Acoustics Matching Engine\" (Akustik Eşleştirme Motoru), belirli bir referans sese müzikal, dokusal ve enerjik olarak en yakın parçaları bulmak için tasarlanmıştır. Geleneksel etiket bazlı aramaların aksine, bu sistem sesin doğrudan DNA'sını analiz eder.",
                 "p2": "Sadece bir müzik parçası seçin veya bir şarkının içerisinden belirli bir bölümü (örneğin bir gitar solosu veya agresif bir drop) seçerek sistemin akustik, ritmik ve frekanssal olarak en benzer parçaları saniyeler içinde önünüze getirmesini izleyin. Bu, çalma listesi küratörleri ve işletme sahipleri için sarsılmaz bir ruh hali oluşturmanın en hassas yoludur."
             },
             "biorhythm-ml": {
-                "title": "Biyoritim Destekli Öğrenme",
-                "p1": "Biyoritim ML, sadece günün saatlerine veya haftanın günlerine değil, mekandaki organik ritme ve dinleyici kalabalığına tepki verir. Bir mağazanın içindeki veya bir restoranın salonundaki enerji seviyesi anlık olarak değişebilir.",
+                "title": "Biyoritmik Yapay Zeka",
+                "p1": "Biyoritmik Yapay Zeka, sadece günün saatlerine veya haftanın günlerine değil, mekandaki organik ritme ve dinleyici kalabalığına tepki verir. Bir mağazanın içindeki veya bir restoranın salonundaki enerji seviyesi anlık olarak değişebilir.",
                 "p2": "Aura, telemetri ve müşteri analizlerinden elde edilen anonimleştirilmiş veri kalıplarını kullanarak, makine öğrenimi katmanında karar verir. Bir mekanın biyoritmine adapte olur, tempoları, enerji seviyelerini (danceability/acousticness) ve frekansları anlık olarak optimize ederek dinleyici yorgunluğunu önler."
             },
             "ui-evolution": {
@@ -617,7 +606,7 @@
         "readArticle": "Yazıyı Oku",
         "postNotFound": "Yazı Bulunamadı",
         "resources": "Kaynaklar",
-        "subscribe": "Bültenimize <br></br> <spanTag>Abone Olun</spanTag>",
+        "subscribe": "Bültenimize \n <spanTag>Abone Olun</spanTag>",
         "subscribeDesc": "Topluluğumuza katılın ve en son sonik trendleri, yasal rehberleri ve teknoloji yayınlarını alın.",
         "emailPlaceholder": "E-posta adresinizi girin",
         "joinNow": "Hemen Katıl",
@@ -671,11 +660,11 @@
             "description": "İçerik üreticileri ve mekanlar için esnek, bilimsel fiyatlandırma. Ücretsiz taramadan elit kurumsal ses ekosistemlerine kadar."
         },
         "scientific": "Bilimsel Fiyatlandırma",
-        "title": "Elit Audio <br></br> Planları.",
+        "title": "Elit Audio \n Planları.",
         "perMonth": "/ ay",
         "technicalBreakdown": "Teknik Detaylar",
         "matrix": "Teknik Matris",
-        "symmetry": "Değerin <br></br> Simetrisi.",
+        "symmetry": "Değerin \n Simetrisi.",
         "layer": "Katman",
         "free": "Ücretsiz",
         "pro": "Pro",
@@ -683,7 +672,7 @@
         "enterprise": "Kurum.",
         "plans": {
             "free": {
-                "name": "Ücretsiz",
+                "name": "Aura Kaşif",
                 "desc": "Kaşifler için",
                 "button": "Yakında"
             },
@@ -751,11 +740,11 @@
             "description": "Ses kimliğinizi yüzlerce konumda ölçeklendirin. Merkezi kontrolle sesinizi yönetin."
         },
         "badge": "Kurumsal Çözümler",
-        "title": "Tüm ekosisteminizi <br></br> seslendirin.",
+        "title": "Tüm ekosisteminizi \n seslendirin.",
         "description": "Yüzlerce mekanda müzik, lisans ve atmosferi yönetmek için tek bir platform. Sesinizi merkezi kontrolle ölçeklendirin.",
         "demo": "Demo Rezervasyonu",
         "viewPricing": "Fiyatları Görüntüle",
-        "controlTitle": "Tam Kontrol.<br></br> Sıfır Kaos.",
+        "controlTitle": "Tam Kontrol.\n Sıfır Kaos.",
         "controlDesc": "Her bayi için ayrı girişleri yönetmeyi unutun. SonarAura Enterprise ile tek bir merkez dashboard üzerinden 1.000'den fazla mekanın sonik kimliğini kontrol edersiniz.",
         "mgmt": {
             "scheduling": "Merkezi Programlama",
@@ -774,7 +763,7 @@
         },
         "infrastructure": {
             "badge": "Teknik Avantaj",
-            "title": "Eşsiz <br></br> Altyapı.",
+            "title": "Eşsiz \n Altyapı.",
             "unlimited": "Sınırsız Erişim",
             "catalog": "Katalog",
             "unlimitedDesc": "Premium mekanlar için tasarlanmış, ödüllü besteciler ve yükselen sanatçıların özel parçalarını keşfedin.",
@@ -788,9 +777,9 @@
         },
         "licensing": {
             "badge": "Benzersiz Bir Lisans Modeli",
-            "title": "Müzik lisanslama <br></br> artık çok kolay",
+            "title": "Müzik lisanslama \n artık çok kolay",
             "p1": "Davaları, sürpriz ücretleri, telif hakkı taleplerini ve yönetimsel zorlukları unutun. Doğrudan lisans modelimiz, müziğimizi hem çevrimiçi hem de çevrimdışı olarak mecradan, bölgeden veya içerik türünden bağımsız olarak global olarak kullanabileceğiniz anlamına gelir. İşletmeniz için yasal riski ortadan kaldırır.",
-            "p2": "Ve müziğimizin tüm haklarına biz sahip olduğumuz için, genel performans hakları dahil olmak üzere, planlarımızı şu andaki ve gelecekteki tüm seslendirme ihtiyaçlarınızı kapsayacak şekilde özelleştirebiliriz."
+            "p2": "Ve müziğimizin tüm haklarına biz sahip olduğumuz için, genel performans hakları dahil olmak üzere, planlarımızı şu andaki ve gelekteki tüm seslendirme ihtiyaçlarınızı kapsayacak şekilde özelleştirebiliriz."
         },
         "curated": {
             "badge": "Özel Çalma Listeleri",
@@ -801,12 +790,12 @@
         "cta": {
             "title": "Sesinizi ölçeklendirmeye hazır mısınız?",
             "desc": "Mekan sayınıza ve özel ihtiyaçlarınıza göre uyarlanmış özel bir fiyat teklifi alın.",
-            "agree": "Fiyat teklifi isteyerek, <link>Hizmet Şartlarımızı</link> kabul etmiş olursunuz.",
+            "agree": "Fiyat teklifi isteyerek, <link>Kullanım Şartlarımızı</link> kabul etmiş olursunuz.",
             "button": "Özel Kurulum İste"
         },
         "spaces": {
             "back": "Kurumsala Dön",
-            "title": "Ambiyansın <br></br> Mimarisi.",
+            "title": "Ambiyansın \n Mimarisi.",
             "desc": "Her mekanın bir nabzı vardır. Her bir konum için mükemmel sonik ortamı ölçmek, yönetmek ve ölçeklendirmek için gerekli teknolojiyi sağlıyoruz.",
             "group1": "Konaklama ve Yeme-İçme",
             "group2": "Zindelik ve Sağlık",
@@ -872,7 +861,7 @@
             "center": "Yardım Merkezi"
         },
         "subscribe": {
-            "title": "En son haberlere <br></br> abone olun",
+            "title": "En son haberlere \n abone olun",
             "email": "E-posta",
             "placeholder": "E-posta",
             "button": "Abone Ol",
@@ -900,7 +889,7 @@
                 "title": "4. Ticari ve Bireysel Kullanım",
                 "b2b": {
                     "title": "B2B Abonelikleri:",
-                    "content": "Belirtilen mekan içerisinde Umuma Açık Mahallerde Yayın için münhasır olmayan bir lisans verir. Bu lisans, ticari alanlar için yerel performans hakları gerekliliklerine uygundur."
+                    "content": "Belirtilen mekan içerisinde Umuma Açık Mahallerde Yayın (Müzik Yayını) için münhasır olmayan bir lisans verir. Bu lisans, ticari alanlar için yerel performans hakları gerekliliklerine uygundur."
                 },
                 "individual": {
                     "title": "Bireysel Lisanslar:",
@@ -1007,7 +996,8 @@
         "status": "Durum",
         "active": "Aktif",
         "sync": "Senkronize",
-        "certified": "Sertifikalı"
+        "certified": "Sertifikalı",
+        "learnMore": "Daha fazla bilgi al"
     },
     "Dashboard": {
         "greetings": {
@@ -1019,7 +1009,7 @@
         "badges": {
             "admin": "Aura Yönetici Kullanıcısı",
             "member": "{tier} Üyesi",
-            "free": "Aura Ücretsiz Plan"
+            "free": "Aura Kaşif"
         },
         "venue": {
             "commanding": "{name} Yönetiliyor",
@@ -1039,7 +1029,7 @@
         "sections": {
             "creative_assets": "Yaratıcı Varlıklar",
             "recently_licensed": "Son Lisanslananlar",
-            "no_licenses": "Henüz lisanslı içerik bulunmuyor.",
+            "no_licenses": "Henüz lisanslı içerik bulunuyor.",
             "project_label": "Proje: {name}",
             "account_health": "Hesap Sağlığı",
             "global_settings": "Genel Ayarlar"
@@ -1096,7 +1086,7 @@
     },
     "Sidebar": {
         "home": "Ana Sayfa",
-        "fleet_control": "Filo Zekası",
+        "fleet_control": "Merkezi Filo Yönetimi",
         "enterprise_item": "Kurumsal Kontrol",
         "branch_network": "Şube Ağı",
         "personnel": "Personel",
@@ -1127,8 +1117,8 @@
             "continue_apple": "Apple ile devam et",
             "no_account": "Hesabınız yok mu?",
             "signup_free": "Ücretsiz üye olun",
-            "invalid_credentials": "Geçersiz e-posta veya şifre",
-            "quote_title": "Dünyayı seslendirin.",
+            "invalid_credentials": "Geçersiz eposta veya şifre",
+            "quote_title": "İçeriklerinize ruh katın.",
             "quote_desc": "Telif haksız müzik ve ses efektlerinden oluşan birinci sınıf bir kütüphaneye erişin. Yaratıcılar için, yaratıcılar tarafından derlendi."
         },
         "signup": {
@@ -1151,7 +1141,7 @@
             "continue_apple": "Apple ile devam et",
             "have_account": "Zaten bir hesabınız var mı?",
             "login": "Giriş yap",
-            "quote_title": "Dünyayı seslendirin.",
+            "quote_title": "İçeriklerinize ruh katın.",
             "quote_desc": "Telif haksız müzik ve ses efektlerinden oluşan birinci sınıf bir kütüphaneye erişin. İşletmeler ve yaratıcılar için yaratıcılar tarafından derlendi."
         }
     },
@@ -1164,7 +1154,7 @@
         "search": {
             "music": "Müzik",
             "sfx": "Ses Efektleri",
-            "placeholder_search": "Karakter, hava, tür, mekan, tema ile arayın…",
+            "placeholder_search": "Tını, atmosfer, tür, mekan, tema ile arayın…",
             "placeholder_assistant": "Atmosferi anlatın...",
             "suggestions": "Öneriler",
             "vibe_prefix": "Hava: ",
@@ -1173,7 +1163,7 @@
         },
         "filters": {
             "segments": "Mekan Segmentleri",
-            "vibes": "Aura Havaları",
+            "vibes": "Aura Vibes",
             "genres": "Sonik Tür",
             "tempo": "Tempo / BPM",
             "reset": "Motoru Sıfırla",
@@ -1190,7 +1180,7 @@
         "sections": {
             "premium_curation": "Premium Kürasyon",
             "trending": "Mekanlarda Trend",
-            "premium_vibes": "Premium Havalar",
+            "premium_vibes": "Aura Vibes",
             "explore_more": "Daha Fazla Keşfet"
         },
         "promo": {
@@ -1198,9 +1188,6 @@
             "desc": "Özel olarak tasarlanmış seslerle mekanınızı bir üst seviyeye taşıyın. Yapay zekamız ve uzman küratörlerimiz markanız için çalışıyor.",
             "button": "Hemen Başla"
         }
-    },
-    "Common": {
-        "learnMore": "Daha fazla bilgi al"
     },
     "MusicRequest": {
         "backToLibrary": "Kütüphaneye Dön",
@@ -1230,7 +1217,7 @@
             "taxonomySubtitle": "İlgili etiketleri seçerek projenizin sonik kimliğini hassaslaştırın.",
             "themes": "Temalar",
             "characters": "Karakterler",
-            "vibes": "Aura Havaları",
+            "vibes": "Aura Vibes",
             "venueContext": "Mekan Bağlamı",
             "submitButton": "Özel Sipariş Ver",
             "billingNote": "Proje başına faturalandırılır.",
@@ -1244,5 +1231,40 @@
                 "submitAnother": "Başka Bir İstek Gönder"
             }
         }
+    },
+    "Feedback": {
+        "title": "Yardım & Geri Bildirim",
+        "search_help": "Yardım dokümanlarında ara...",
+        "categories": {
+            "title": "Kategori Seçin",
+            "bug": "Hata Bildir",
+            "feature": "Özellik Öner",
+            "content": "İçerik Sorunu",
+            "billing": "Faturalandırma",
+            "development": "Geliştirme için bize katılın!"
+        },
+        "form": {
+            "description": "Açıklama",
+            "description_placeholder": "Lütfen detayları buraya yazın...",
+            "email_placeholder": "E-postanız",
+            "submit": "Gönder",
+            "submitting": "Gönderiliyor...",
+            "success_title": "Teşekkürler!",
+            "success_message": "Geri bildiriminiz başarıyla alındı.",
+            "error_message": "Geri bildirim kaydedilemedi. Lütfen daha sonra tekrar deneyin.",
+            "back": "Geri",
+            "about_me": "Kendinizden bahsedin (deneyim, uzmanlık)",
+            "interests": "İlgi alanlarınız",
+            "goals": "Sistemde geliştirmek istediğiniz konular",
+            "about_me_placeholder": "Yazılım, tasarım veya müzik alanındaki deneyimleriniz...",
+            "interests_placeholder": "Hangi teknolojiler veya alanlarla ilgileniyorsunuz?",
+            "goals_placeholder": "AuraStream'e nasıl katkıda bulunmak istersiniz?"
+        }
+    },
+    "Requests": {
+        "title": "İstek Paneli",
+        "subtitle": "Yüksek bütçeli 'Özel Müzik' siparişlerini yönetin.",
+        "total_orders": "{count} Toplam Sipariş",
+        "no_orders": "Sistemde henüz özel sipariş bulunmuyor."
     }
 }

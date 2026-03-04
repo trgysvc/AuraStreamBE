@@ -28,9 +28,8 @@ export default function AboutUsPage() {
                 <section className="py-24 px-8 md:px-16 max-w-[1400px] mx-auto">
                     <div className="space-y-10 animate-in fade-in slide-in-from-top-4 duration-1000">
                         <div className="space-y-2">
-                            <h1 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter leading-[0.9] text-white">
+                            <h1 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter leading-[0.9] text-white whitespace-pre-line">
                                 {t.rich('hero.title', {
-                                    br: () => <br />,
                                     span: (chunks) => <span className="text-indigo-500 text-glow-indigo">{chunks}</span>
                                 })}
                             </h1>
@@ -61,10 +60,8 @@ export default function AboutUsPage() {
                         <div className="flex-1 space-y-8">
                             <div className="space-y-4">
                                 <h3 className="text-[10px] font-black uppercase tracking-[0.5em] text-indigo-500">{t('vision.badge')}</h3>
-                                <h4 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-white">
-                                    {t.rich('vision.title', {
-                                        br: () => <br />
-                                    })}
+                                <h4 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-white whitespace-pre-line">
+                                    {t('vision.title')}
                                 </h4>
                             </div>
                             <div className="space-y-6 text-zinc-400 leading-relaxed text-lg">

@@ -2,7 +2,7 @@ import createIntlMiddleware from 'next-intl/middleware';
 import { NextResponse, type NextRequest } from 'next/server'
 
 // 1. Dil Ayarları Tanımlaması
-const intlMiddleware = createIntlMiddleware({
+const intlProxy = createIntlMiddleware({
     locales: ['en', 'tr', 'el', 'de', 'ru', 'fr'],
     defaultLocale: 'en',
     localeDetection: true
@@ -27,7 +27,7 @@ export async function proxy(request: NextRequest) {
     // ---------------------------------------------------------
     // ADIM 2: NEXT-INTL DİL YÖNLENDİRMESİ
     // ---------------------------------------------------------
-    return intlMiddleware(request);
+    return intlProxy(request);
 }
 
 export const config = {

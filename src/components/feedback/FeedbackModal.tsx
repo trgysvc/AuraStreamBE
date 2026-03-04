@@ -9,21 +9,24 @@ import {
     CreditCard,
     AlertTriangle,
     CheckCircle2,
-    Loader2
+    Loader2,
+    ChevronRight
 } from 'lucide-react';
 import { submitFeedback } from '@/app/actions/feedback';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 interface FeedbackModalProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
-type Category = 'bug' | 'feature' | 'content' | 'billing';
+type Category = 'bug' | 'feature' | 'content' | 'billing' | 'development';
 type Severity = 'low' | 'medium' | 'high' | 'critical';
 
 export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
     const pathname = usePathname();
+    const t = useTranslations('Feedback');
     const [step, setStep] = useState<'category' | 'details'>('category');
     const [category, setCategory] = useState<Category | null>(null);
     const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
@@ -34,6 +37,9 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
     const [severity, setSeverity] = useState<Severity>('low');
     const [contentIssues, setContentIssues] = useState<string[]>([]);
     const [featurePriority, setFeaturePriority] = useState(3);
+    const [aboutMe, setAboutMe] = useState('');
+    const [interests, setInterests] = useState('');
+    const [goals, setGoals] = useState('');
 
     // Auto-collected Metadata
     const [metadata, setMetadata] = useState<any>({});
@@ -49,6 +55,9 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
             setSeverity('low');
             setContentIssues([]);
             setFeaturePriority(3);
+            setAboutMe('');
+            setInterests('');
+            setGoals('');
 
             // Collect Metadata
             const meta = {
@@ -64,7 +73,9 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
     }, [isOpen, pathname]);
 
     const handleSubmit = async () => {
-        if (!category || !description) return;
+        if (!category) return;
+        if (category !== 'development' && !description) return;
+        if (category === 'development' && (!aboutMe || !interests || !goals)) return;
 
         setStatus('submitting');
         setErrorMessage(null);
@@ -76,6 +87,9 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
             ...metadata,
             contentIssues: category === 'content' ? contentIssues : undefined,
             featurePriority: category === 'feature' ? featurePriority : undefined,
+            aboutMe: category === 'development' ? aboutMe : undefined,
+            interests: category === 'development' ? interests : undefined,
+            goals: category === 'development' ? goals : undefined,
         }));
 
         if (category === 'bug') {
@@ -85,6 +99,8 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
             formData.append('title', `Feature Request`);
         } else if (category === 'content') {
             formData.append('title', `Content Issue: ${contentIssues.join(', ')}`);
+        } else if (category === 'development') {
+            formData.append('title', `Geliştirme Katılım Başvurusu`);
         } else {
             formData.append('title', `Billing Issue`);
         }
@@ -98,7 +114,7 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
             }, 2000);
         } else {
             setStatus('error');
-            setErrorMessage(result?.error || 'Failed to submit feedback. Please try again.');
+            setErrorMessage(result?.error || t('form.error_message'));
         }
     };
 
@@ -112,10 +128,11 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                 {/* Header */}
                 <div className="flex items-center justify-between p-6 border-b border-white/5">
                     <h3 className="text-xl font-black italic uppercase tracking-tighter text-white">
-                        {step === 'category' ? 'Help & Feedback' :
-                            category === 'bug' ? 'Report a Bug' :
-                                category === 'feature' ? 'Request a Feature' :
-                                    category === 'content' ? 'Content Issue' : 'Billing Help'}
+                        {step === 'category' ? t('title') :
+                            category === 'bug' ? t('categories.bug') :
+                                category === 'feature' ? t('categories.feature') :
+                                    category === 'content' ? t('categories.content') :
+                                        category === 'development' ? t('categories.development') : t('categories.billing')}
                     </h3>
                     <button onClick={onClose} className="text-zinc-400 hover:text-white transition-colors">
                         <X size={20} />
@@ -129,36 +146,55 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                             <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center">
                                 <CheckCircle2 size={32} className="text-green-500" />
                             </div>
-                            <h4 className="text-xl font-bold text-white">Thank You!</h4>
-                            <p className="text-zinc-400 text-sm">Your feedback has been received. Our team will review it shortly.</p>
+                            <h4 className="text-xl font-bold text-white">{t('form.success_title')}</h4>
+                            <p className="text-zinc-400 text-sm">{t('form.success_message')}</p>
                         </div>
                     ) : step === 'category' ? (
-                        <div className="grid grid-cols-2 gap-4">
-                            <CategoryButton
-                                icon={Bug}
-                                label="Report Bug"
-                                desc="Something's broken"
-                                onClick={() => { setCategory('bug'); setStep('details'); }}
-                            />
-                            <CategoryButton
-                                icon={Lightbulb}
-                                label="Feature Request"
-                                desc="I have an idea"
-                                onClick={() => { setCategory('feature'); setStep('details'); }}
-                            />
-                            <CategoryButton
-                                icon={Music}
-                                label="Content Issue"
-                                desc="Wrong track/tag"
-                                onClick={() => { setCategory('content'); setStep('details'); }}
-                            />
-                            <CategoryButton
-                                icon={CreditCard}
-                                label="Billing & Plan"
-                                desc="Payment issues"
-                                onClick={() => { setCategory('billing'); setStep('details'); }}
-                            />
-                        </div>
+                        <>
+                            <div className="grid grid-cols-2 gap-4">
+                                <CategoryButton
+                                    icon={Bug}
+                                    label={t('categories.bug')}
+                                    desc="Something's broken"
+                                    onClick={() => { setCategory('bug'); setStep('details'); }}
+                                />
+                                <CategoryButton
+                                    icon={Lightbulb}
+                                    label={t('categories.feature')}
+                                    desc="I have an idea"
+                                    onClick={() => { setCategory('feature'); setStep('details'); }}
+                                />
+                                <CategoryButton
+                                    icon={Music}
+                                    label={t('categories.content')}
+                                    desc="Wrong track/tag"
+                                    onClick={() => { setCategory('content'); setStep('details'); }}
+                                />
+                                <CategoryButton
+                                    icon={CreditCard}
+                                    label={t('categories.billing')}
+                                    desc="Payment issues"
+                                    onClick={() => { setCategory('billing'); setStep('details'); }}
+                                />
+                            </div>
+                            <div className="mt-4">
+                                <button
+                                    onClick={() => { setCategory('development'); setStep('details'); }}
+                                    className="w-full flex items-center justify-between p-4 bg-indigo-600/10 border border-indigo-500/20 rounded-2xl hover:bg-indigo-600/20 hover:border-indigo-500/40 transition-all group"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="p-2 bg-indigo-500/20 rounded-lg group-hover:bg-indigo-500/30 transition-colors">
+                                            <Lightbulb size={20} className="text-indigo-400" />
+                                        </div>
+                                        <div className="text-left">
+                                            <div className="font-bold text-white text-sm">{t('categories.development')}</div>
+                                            <div className="text-xs text-zinc-500">Ekibimizin bir parçası olun</div>
+                                        </div>
+                                    </div>
+                                    <ChevronRight size={20} className="text-zinc-600 group-hover:text-white transition-colors" />
+                                </button>
+                            </div>
+                        </>
                     ) : (
                         <div className="space-y-6">
                             {/* Dynamic Fields */}
@@ -226,19 +262,51 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                                 </div>
                             )}
 
-                            <div className="space-y-3">
-                                <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">
-                                    {category === 'feature' ? 'Describe your idea' :
-                                        category === 'content' ? 'Tell us more detail' :
-                                            'Describe the issue'}
-                                </label>
-                                <textarea
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    placeholder="Type here..."
-                                    className="w-full h-32 bg-black/50 border border-white/10 rounded-xl p-4 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none"
-                                />
-                            </div>
+                            {category === 'development' ? (
+                                <div className="space-y-4">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">{t('form.about_me')}</label>
+                                        <textarea
+                                            value={aboutMe}
+                                            onChange={(e) => setAboutMe(e.target.value)}
+                                            placeholder={t('form.about_me_placeholder')}
+                                            className="w-full h-24 bg-black/50 border border-white/10 rounded-xl p-4 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">{t('form.interests')}</label>
+                                        <textarea
+                                            value={interests}
+                                            onChange={(e) => setInterests(e.target.value)}
+                                            placeholder={t('form.interests_placeholder')}
+                                            className="w-full h-24 bg-black/50 border border-white/10 rounded-xl p-4 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">{t('form.goals')}</label>
+                                        <textarea
+                                            value={goals}
+                                            onChange={(e) => setGoals(e.target.value)}
+                                            placeholder={t('form.goals_placeholder')}
+                                            className="w-full h-24 bg-black/50 border border-white/10 rounded-xl p-4 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none"
+                                        />
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">
+                                        {category === 'feature' ? 'Describe your idea' :
+                                            category === 'content' ? 'Tell us more detail' :
+                                                t('form.description')}
+                                    </label>
+                                    <textarea
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
+                                        placeholder={t('form.description_placeholder')}
+                                        className="w-full h-32 bg-black/50 border border-white/10 rounded-xl p-4 text-white text-sm placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-none"
+                                    />
+                                </div>
+                            )}
 
                             {status === 'error' && (
                                 <div className="flex items-center gap-2 text-red-400 bg-red-500/10 p-3 rounded-lg border border-red-500/20">
@@ -252,22 +320,22 @@ export default function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {
                                     onClick={() => setStep('category')}
                                     className="px-4 py-3 rounded-xl font-bold text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
                                 >
-                                    Back
+                                    {t('form.back')}
                                 </button>
                                 <button
                                     onClick={handleSubmit}
-                                    disabled={!description || status === 'submitting'}
+                                    disabled={(category === 'development' ? (!aboutMe || !interests || !goals) : !description) || status === 'submitting'}
                                     className="flex-1 px-4 py-3 bg-indigo-600 rounded-xl font-bold text-white hover:bg-indigo-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                 >
                                     {status === 'submitting' && <Loader2 size={16} className="animate-spin" />}
-                                    Submit Feedback
+                                    {status === 'submitting' ? t('form.submitting') : t('form.submit')}
                                 </button>
                             </div>
                         </div>
                     )}
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }
 

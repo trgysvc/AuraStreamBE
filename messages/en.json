@@ -1,20 +1,20 @@
 {
     "HomePage": {
         "hero": {
-            "title": "Soundtrack your content",
-            "subtitle": "Royalty-free music and sound effects for every story.",
+            "title": "Music for your business and content",
+            "subtitle": "Music and sound effects for every business and story.",
             "search_placeholder": "Try 'Cinematic', 'Vlog'...",
             "search_button": "Search"
         },
         "sections": {
             "categories": {
-                "title": "Music for every story.",
+                "title": "Music for every platform.",
                 "subtitle": "Find the perfect track for any platform."
             },
             "find_similar": {
                 "badge": "Find Similar",
-                "title": "Use music to find music.",
-                "description": "Search for tracks with a similar tone and sound, using your favorite riff, hook, drop, or bridge.",
+                "title": "Trace the music.",
+                "description": "Provide a reference of your favorite riff, hook, or bridge section from any track; AuraStream will use advanced tonal analysis to find similar sounds that carry the same soul.",
                 "mock_ui_title": "Find similar tracks"
             },
             "venue": {
@@ -76,14 +76,14 @@
     "About": {
         "Us": {
             "hero": {
-                "title": "Sonaraura is the sound of the universe, <br></br> re-engineered for branding.",
+                "title": "Sonaraura is the sound of the universe, \n re-engineered for branding.",
                 "who": "Who we are",
                 "p1": "Sonaraura transforms music from a mere background element into a living intelligence that manages the atmosphere of a space on biological and emotional levels.",
                 "p2": "By merging sound engineering, artificial intelligence, and psychoacoustics, we have built the world's first <strong>Atmospheric Intelligence</strong> platform. We are not an ordinary streaming service. We are a technology company that synchronizes the frequency of sound, the vibe of the environment, and the listener's pulse."
             },
             "vision": {
                 "badge": "Vision",
-                "title": "Architecture <br></br> Beyond Silence",
+                "title": "Architecture \n Beyond Silence",
                 "p1": "Every space has a soul, every moment has a frequency. Our goal is to deepen the connection between businesses and creators with their target audiences through <strong>Frequency Engineering</strong>.",
                 "p2": "We evolve music from the standard 440Hz mold into <strong>432Hz (Peace)</strong> and <strong>528Hz (Focus/Vitality)</strong> frequencies, synchronized with human biology in real-time. While doing this, we maintain the musical rhythm (BPM), re-engineering art with scientific precision."
             },
@@ -130,7 +130,7 @@
                 "frequency": {
                     "subtitle": "Frequency Engineering",
                     "title": "Molecular Sound Tech",
-                    "desc": "We don't just play music; we manipulate its physical structure. Seamlessly shift between 440Hz, 432Hz (Healing), and 528Hz (Focus) without losing a single beat. Sonaraura impacts listeners at a biological level."
+                    "desc": "We don't just play music; we manipulate its physical structure. Seamlessly shift between 440Hz, 432Hz (Peace), and 528Hz (Focus) without losing a single beat. Sonaraura impacts listeners at a biological level."
                 },
                 "karaoke": {
                     "subtitle": "Word-Level Precision",
@@ -164,12 +164,12 @@
                 },
                 "smartSimilarity": {
                     "subtitle": "Acoustics Matching Engine",
-                    "title": "Smart Similarity",
+                    "title": "Acoustic Similarity Engine",
                     "desc": "Find musically, texturally, and energetically closest tracks instantly by providing a reference sound."
                 },
                 "biorhythmML": {
                     "subtitle": "Biometric Intelligence",
-                    "title": "Biorhythm ML",
+                    "title": "Biorhythm AI",
                     "desc": "A machine learning layer that adapts music not just to time but to the biological rhythm of the venue and listeners."
                 },
                 "uiEvolution": {
@@ -352,44 +352,44 @@
         },
         "Research": {
             "hero": {
-                "title": "Research at Sonaraura",
-                "desc": "Calling all professional creators — Join our research studies and help shape the future of the creator experience.",
-                "button": "Join us for research"
+                "title": "Insight & Innovation Lab",
+                "desc": "We invite industry professionals and creators to collaborate in our strategic research studies to co-design the future of the Sonaraura experience.",
+                "button": "Apply for Research Panel"
             },
             "benefits": {
-                "title": "What’s in it for you?",
+                "title": "Participant Value Proposition",
                 "paid": {
-                    "title": "Get paid for your time",
-                    "desc": "You will receive a gift card after participating. The amount will vary depending on the type and length of the project."
+                    "title": "Professional Incentives",
+                    "desc": "Participants are recognized for their expertise and time through project-based compensation. Rates are determined by the study's complexity and duration."
                 },
                 "peeks": {
-                    "title": "Get sneak peeks",
-                    "desc": "Share your experience in an interview, test a prototype or a beta feature, and get an inside scoop on our work."
+                    "title": "Strategic Early Access",
+                    "desc": "Participate in specialized interviews and prototype testing to gain exclusive early access to our technological pipeline."
                 },
                 "influence": {
-                    "title": "Influence future",
-                    "desc": "Your participation helps us evolve in the right direction and prioritize the top needs of professionals."
+                    "title": "Industry Influence",
+                    "desc": "Your insights directly inform our roadmap, ensuring the ecosystem evolves to meet the high standards of global professionals."
                 }
             },
             "howItWorks": {
-                "title": "How it works",
+                "title": "Engagement Protocol",
                 "step1": {
-                    "title": "1. Fill out a form",
-                    "desc": "Tell us a little about yourself and your interests. It will help us match you to the topics and products that are relevant to you."
+                    "title": "1. Professional Profile",
+                    "desc": "Complete a brief initial survey regarding your interests and background. This helps us align you with relevant innovation projects."
                 },
                 "step2": {
-                    "title": "2. Wait to be notified",
-                    "desc": "We’ll send an email when there’s a study that fits your professional interests."
+                    "title": "2. Selective Notification",
+                    "desc": "Our team will reach out when your profile matches the specific criteria of an upcoming strategic study."
                 },
                 "step3": {
-                    "title": "3. Schedule a call",
-                    "desc": "If you decide to participate, we’ll work with you to coordinate the feedback session."
+                    "title": "3. Collaborative Session",
+                    "desc": "Upon selection, we will coordinate a session to capture your specialized feedback and operational insights."
                 },
-                "cta": "Join us for research"
+                "cta": "Join the Panel"
             },
             "finalCta": {
-                "title": "Your voice matters. Let’s build a better experience for creators around the world.",
-                "button": "Join us for research"
+                "title": "Your expertise drives our architecture. Let's redefine the global creator experience together.",
+                "button": "Become a Strategic Partner"
             }
         }
     },
@@ -417,7 +417,7 @@
             "weather-ai": "Atmospheric AI",
             "watermarking": "Signal Protection",
             "interactive-waveforms": "Sonic Discovery",
-            "sync-precision": "Frame-Perfect Sync",
+            "sync-precision": "Kusursuz Sync",
             "biorhythm-ml": "Biorhythm Training",
             "edge-roi": "Global Infrastructure",
             "revenue-intel": "Revenue Intelligence",
@@ -433,15 +433,15 @@
             "revenue-share": "Strategic Partnerships",
             "tailor-process": "The Tailor Workflow",
             "project-soul": "Project Soul Concept",
-            "smart-similarity": "Smart Similarity"
+            "smart-similarity": "Acoustic Similarity Engine"
         },
         "vision": {
-            "title": "The Future of Sound, <br></br> Frequency of Intelligence",
+            "title": "The Future of Sound, \n Frequency of Intelligence",
             "subtitle": "Architecture beyond silence and frequency engineering.",
             "whoAreWe": {
                 "title": "Who We Are?",
                 "p1": "Sonaraura transforms music from a mere background element into a living intelligence that manages the atmosphere of a space on biological and emotional levels.",
-                "p2": "By merging sound engineering, artificial intelligence, and psychoacoustics, we have built the world's first Atmospheric Intelligence platform. We are a technology company that synchronizes the frequency of sound, the vibe of the environment, and the listener's pulse."
+                "p2": "By merging sound engineering, artificial intelligence, and psychoacoustics, we have built the world's first Atmospheric Intelligence platform. We are not an ordinary streaming service. We are a technology company that synchronizes the frequency of sound, the vibe of the environment, and the listener's pulse."
             },
             "ourVision": {
                 "title": "Our Vision",
@@ -505,13 +505,8 @@
                 "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
             },
             "sync-precision": {
-                "title": "Frame-Perfect Sync",
-                "p1": "Welcome to the Frame-Perfect Sync section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
-                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
-            },
-            "biorhythm-ml": {
-                "title": "Biorhythm Training",
-                "p1": "Welcome to the Biorhythm Training section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
+                "title": "Kusursuz Sync",
+                "p1": "Welcome to the Kusursuz Sync section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
                 "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
             },
             "edge-roi": {
@@ -527,11 +522,6 @@
             "churn-heartbeat": {
                 "title": "Churn Prediction",
                 "p1": "Welcome to the Churn Prediction section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
-                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
-            },
-            "ui-evolution": {
-                "title": "UI Data Evolution",
-                "p1": "Welcome to the UI Data Evolution section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
                 "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
             },
             "enterprise-hq": {
@@ -585,13 +575,13 @@
                 "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
             },
             "smart-similarity": {
-                "title": "Smart Similarity Engine",
+                "title": "Acoustic Similarity Engine",
                 "p1": "The Acoustics Matching Engine is designed to find tracks that are musically, texturally, and energetically closest to a given reference sound. Unlike traditional tag-based searches, this system directly analyzes the DNA of the audio.",
                 "p2": "Simply select a music track or highlight a specific section—like a guitar solo or an aggressive drop—and watch the system instantly return the most acoustically, rhythmically, and frequencyally similar tracks in seconds. This is the most precise way for playlist curators and business owners to establish an unwavering mood."
             },
             "biorhythm-ml": {
-                "title": "Biorhythm ML",
-                "p1": "Biorhythm ML doesn't just react to the time of day or day of the week; it responds to the organic rhythm of the venue and the listening crowd. The energy level inside a store or restaurant dining area can change instantly.",
+                "title": "Biorhythm AI",
+                "p1": "Biorhythm AI doesn't just react to the time of day or day of the week; it responds to the organic rhythm of the venue and the listening crowd. The energy level inside a store or restaurant dining area can change instantly.",
                 "p2": "Using anonymized data patterns from telemetry and customer analytics, Aura makes decisions in its machine learning layer. It adapts to the venue's biorhythm, dynamically optimizing tempos, energy levels (danceability/acousticness), and frequencies to prevent listener fatigue."
             }
         }
@@ -604,7 +594,7 @@
         "readArticle": "Read Article",
         "postNotFound": "Post Not Found",
         "resources": "Resources",
-        "subscribe": "Subscribe to <br></br> <spanTag>Our Journal</spanTag>",
+        "subscribe": "Subscribe to \n <spanTag>Our Journal</spanTag>",
         "subscribeDesc": "Join our community and get the latest sonic trends, legal guides, and tech releases.",
         "emailPlaceholder": "Enter your email",
         "joinNow": "Join Now",
@@ -658,11 +648,11 @@
             "description": "Flexible, scientific pricing for creators and venues. From free browsing to elite enterprise audio ecosystems."
         },
         "scientific": "Scientific Pricing",
-        "title": "Elite Audio <br></br> Plans.",
+        "title": "Elite Audio \n Plans.",
         "perMonth": "/ mo",
         "technicalBreakdown": "Technical Breakdown",
         "matrix": "Technical Matrix",
-        "symmetry": "Symmetry <br></br> of Value.",
+        "symmetry": "Symmetry \n of Value.",
         "layer": "Layer",
         "free": "Free",
         "pro": "Pro",
@@ -670,7 +660,7 @@
         "enterprise": "Ent.",
         "plans": {
             "free": {
-                "name": "Free",
+                "name": "Aura Explorer",
                 "desc": "For explorers",
                 "button": "Soon"
             },
@@ -738,11 +728,11 @@
             "description": "Scale your sonic identity across hundreds of locations."
         },
         "badge": "Enterprise Solutions",
-        "title": "Soundtrack your <br></br> entire ecosystem.",
+        "title": "Soundtrack your \n entire ecosystem.",
         "description": "One platform to manage music, licensing, and atmosphere across hundreds of locations. Scale your sound with centralized control.",
         "demo": "Book a Demo",
         "viewPricing": "View Pricing",
-        "controlTitle": "Total Control.<br></br> Zero Chaos.",
+        "controlTitle": "Total Control.\n Zero Chaos.",
         "controlDesc": "Forget managing individual logins for every franchise. With SonarAura Enterprise, you control the sonic identity of 1,000+ locations from a single HQ dashboard.",
         "mgmt": {
             "scheduling": "Centralized Scheduling",
@@ -761,7 +751,7 @@
         },
         "infrastructure": {
             "badge": "Technical Edge",
-            "title": "Unmatched <br></br> Infrastructure.",
+            "title": "Unmatched \n Infrastructure.",
             "unlimited": "Unlimited Access",
             "catalog": "Catalog",
             "unlimitedDesc": "Discover exclusive tracks by award-winning composers and up-and-coming artists, tailored for premium venues.",
@@ -775,7 +765,7 @@
         },
         "licensing": {
             "badge": "A Unique License Model",
-            "title": "Music licensing <br></br> made easy",
+            "title": "Music licensing \n made easy",
             "p1": "Forget lawsuits, surprise fees, copyright claims, and admin headaches. Our direct license model means you're cleared to use our music globally — regardless of media, territory, or type of content, both online and offline. Removing legal risk for your business.",
             "p2": "And because we own all the rights to our music, including public performance rights, we can customize our plans to cover all of your soundtracking needs, now and in the future."
         },
@@ -793,7 +783,7 @@
         },
         "spaces": {
             "back": "Back to Enterprise",
-            "title": "The Architecture <br></br> of Ambience.",
+            "title": "The Architecture \n of Ambience.",
             "desc": "Every space has a pulse. We provide the technology to measure, manage, and scale the perfect sonic environment for every single location.",
             "group1": "Hospitality & Dining",
             "group2": "Wellness & Health",
@@ -859,7 +849,7 @@
             "center": "Help Center"
         },
         "subscribe": {
-            "title": "Subscribe to our <br></br> latest news",
+            "title": "Subscribe to our \n latest news",
             "email": "E-mail",
             "placeholder": "Email",
             "button": "Subscribe",
@@ -994,7 +984,8 @@
         "status": "Status",
         "active": "Active",
         "sync": "Sync",
-        "certified": "Certified"
+        "certified": "Certified",
+        "learnMore": "Learn More"
     },
     "Dashboard": {
         "greetings": {
@@ -1006,7 +997,7 @@
         "badges": {
             "admin": "Aura Admin User",
             "member": "{tier} Member",
-            "free": "Aura Free Tier"
+            "free": "Aura Explorer"
         },
         "venue": {
             "commanding": "Commanding {name}",
@@ -1096,7 +1087,7 @@
         "identity": "Identity",
         "profile": "Profile",
         "settings": "Settings",
-        "logout": "Terminate Session"
+        "logout": "Log Out"
     },
     "Auth": {
         "login": {
@@ -1115,7 +1106,7 @@
             "no_account": "Don't have an account?",
             "signup_free": "Sign up for free",
             "invalid_credentials": "Invalid email or password",
-            "quote_title": "Soundtrack the world.",
+            "quote_title": "Bring your content to life.",
             "quote_desc": "Access a world-class library of royalty-free music and sound effects. Curated for creators, by creators."
         },
         "signup": {
@@ -1138,7 +1129,7 @@
             "continue_apple": "Continue with Apple",
             "have_account": "Already have an account?",
             "login": "Log in",
-            "quote_title": "Soundtrack the world.",
+            "quote_title": "Bring your content to life.",
             "quote_desc": "Access a premium library of copyright-free music and sound effects. Curated by creators for businesses and creators."
         }
     },
@@ -1151,7 +1142,7 @@
         "search": {
             "music": "Music",
             "sfx": "Sound Effects",
-            "placeholder_search": "Search by character, vibe, genre, venue, theme…",
+            "placeholder_search": "Search by tone, vibe, genre, venue, theme…",
             "placeholder_assistant": "Explain the vibe...",
             "suggestions": "Suggestions",
             "vibe_prefix": "Vibe: ",
@@ -1177,7 +1168,7 @@
         "sections": {
             "premium_curation": "Premium Curation",
             "trending": "Trending in Venues",
-            "premium_vibes": "Premium Vibes",
+            "premium_vibes": "Aura Vibes",
             "explore_more": "Explore More"
         },
         "promo": {
@@ -1185,9 +1176,6 @@
             "desc": "Elevate your venue with exclusive, custom-tailored sounds. Our AI and expert curators work for your brand.",
             "button": "Get Started"
         }
-    },
-    "Common": {
-        "learnMore": "Learn more"
     },
     "MusicRequest": {
         "backToLibrary": "Back to Library",
@@ -1231,5 +1219,40 @@
                 "submitAnother": "Submit Another"
             }
         }
+    },
+    "Feedback": {
+        "title": "Help & Feedback",
+        "search_help": "Search help articles...",
+        "categories": {
+            "title": "Select Category",
+            "bug": "Report a Bug",
+            "feature": "Suggest a Feature",
+            "content": "Content Issue",
+            "billing": "Billing Help",
+            "development": "Join us for development!"
+        },
+        "form": {
+            "description": "Description",
+            "description_placeholder": "Please enter the details here...",
+            "email_placeholder": "Your email",
+            "submit": "Submit",
+            "submitting": "Submitting...",
+            "success_title": "Thank you!",
+            "success_message": "Your feedback has been received successfully.",
+            "error_message": "Failed to save feedback. Please try again later.",
+            "back": "Back",
+            "about_me": "Tell us about yourself (experience, expertise)",
+            "interests": "Your interests",
+            "goals": "Topics you want to develop in the system",
+            "about_me_placeholder": "Your experience in software, design, or music...",
+            "interests_placeholder": "What technologies or areas are you interested in?",
+            "goals_placeholder": "How would you like to contribute to AuraStream?"
+        }
+    },
+    "Requests": {
+        "title": "Request Hub",
+        "subtitle": "Manage high-ticket 'Music on Request' custom orders.",
+        "total_orders": "{count} Total Orders",
+        "no_orders": "No custom orders in the system."
     }
 }
