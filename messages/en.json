@@ -433,8 +433,7 @@
             "revenue-share": "Strategic Partnerships",
             "tailor-process": "The Tailor Workflow",
             "project-soul": "Project Soul Concept",
-            "smart-similarity": "Smart Similarity",
-            "biorhythm-ml": "Biorhythm ML"
+            "smart-similarity": "Smart Similarity"
         },
         "vision": {
             "title": "The Future of Sound, <br></br> Frequency of Intelligence",
@@ -594,11 +593,6 @@
                 "title": "Biorhythm ML",
                 "p1": "Biorhythm ML doesn't just react to the time of day or day of the week; it responds to the organic rhythm of the venue and the listening crowd. The energy level inside a store or restaurant dining area can change instantly.",
                 "p2": "Using anonymized data patterns from telemetry and customer analytics, Aura makes decisions in its machine learning layer. It adapts to the venue's biorhythm, dynamically optimizing tempos, energy levels (danceability/acousticness), and frequencies to prevent listener fatigue."
-            },
-            "ui-evolution": {
-                "title": "UI Evolution",
-                "p1": "UI Evolution ensures that the interface organically adapts to the user's habits and identity on the platform. Whether you are a venue manager, a broadcaster, or a creator, the platform morphs to meet your specific operational needs.",
-                "p2": "By learning from your interactions, the system simplifies complex workflows by presenting only the relevant screens and tools. This adaptive interface approach reduces cognitive load and maximizes efficiency."
             }
         }
     },
@@ -962,15 +956,15 @@
                 "title": "Data We Collect & Why",
                 "session": {
                     "title": "Session Intelligence",
-                    "content": "We use essential cookies via <strong class=\"text-white\">Supabase</strong> to keep you securely logged in. Without these, your Aura settings and personalized Smart Flow rules cannot be accessed."
+                    "content": "We use essential cookies via <strong>Supabase</strong> to keep you securely logged in. Without these, your Aura settings and personalized Smart Flow rules cannot be accessed."
                 },
                 "telemetry": {
                     "title": "Playback Telemetry",
-                    "content": "We track interaction data such as <strong class=\"text-white\">skip rates</strong>, <strong class=\"text-white\">listening duration</strong>, and <strong class=\"text-white\">frequency tuning preferences</strong> (432Hz vs 440Hz). This helps our AI refine your space's biorythm and improve the Smart Flow algorithm."
+                    "content": "We track interaction data such as <strong>skip rates</strong>, <strong>listening duration</strong>, and <strong>frequency tuning preferences</strong> (432Hz vs 440Hz). This helps our AI refine your space's biorythm and improve the Smart Flow algorithm."
                 },
                 "infra": {
                     "title": "Infrastructure Pulse",
-                    "content": "We log <strong class=\"text-white\">search latency</strong> and <strong class=\"text-white\">CDN response times</strong>. These \"performance sensors\" tell our architects which global regions need more capacity, ensuring sub-millisecond audio delivery."
+                    "content": "We log <strong>search latency</strong> and <strong>CDN response times</strong>. These \"performance sensors\" tell our architects which global regions need more capacity, ensuring sub-millisecond audio delivery."
                 },
                 "fraud": {
                     "title": "Fraud Prevention",
@@ -979,7 +973,7 @@
             },
             "improve": {
                 "title": "Improving Your Experience",
-                "content": "The data collected through these technologies is strictly used for <strong class=\"text-white\">Product Evolution</strong>. We do not sell your personal behavior to third-party advertisers. Instead, we use it to:",
+                "content": "The data collected through these technologies is strictly used for <strong>Product Evolution</strong>. We do not sell your personal behavior to third-party advertisers. Instead, we use it to:",
                 "item1": "Decrease audio buffering times globally.",
                 "item2": "Train our AI to predict your venue's peak energy hours more accurately.",
                 "item3": "Simplify the user interface by surfacing your most-used taxonomy tags."

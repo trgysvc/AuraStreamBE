@@ -35,12 +35,14 @@ export const getWeather_Action = async (lat: number, lon: number): Promise<Weath
 
 export const getCityFromCoords_Action = async (lat: number, lon: number): Promise<string | null> => {
     try {
-        const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+        const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`, {
+            signal: AbortSignal.timeout(4000)
+        });
         if (!res.ok) return null;
         const data = await res.json();
         return data.city || data.locality || data.principalSubdivision || null;
-    } catch (e) {
-        console.error('Reverse Geocode Action Error:', e);
+    } catch (e: any) {
+        console.error('Reverse Geocode Action Error:', e.message || 'fetch failed');
         return null;
     }
 };

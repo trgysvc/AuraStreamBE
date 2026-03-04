@@ -1,6 +1,6 @@
 
 console.log('Script init started...');
-import { S3Client, GetObjectCommand, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, GetObjectCommand, PutObjectCommand, DeleteObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
 import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 import path from 'path';
@@ -31,30 +31,67 @@ const s3Client = new S3Client({
 async function processAllTracks() {
     console.log('--- Sonaraura Processing & Watermarking Engine: Started ---');
 
-    const { data: tracks, error } = await supabase
+    const { data: allTracks, error } = await supabase
         .from('tracks')
-        .select('id, title')
-        .in('status', ['active', 'pending_qc']);
+        .select(`
+            id, 
+            title, 
+            status,
+            track_files (file_type, s3_key)
+        `)
+        .in('status', ['processing', 'active', 'pending_qc']);
 
     if (error) return console.error(error);
 
-    for (const track of tracks) {
+    // Filter tracks efficiently in-memory before the main loop
+    const tracksToProcess = allTracks.filter((track) => {
+        const hasRaw = track.track_files.some(f => f.file_type === 'raw');
+        const isProcessed = track.track_files.some(f => ['stream_mp3', 'stream_aac'].includes(f.file_type));
+        return hasRaw && !isProcessed;
+    });
+
+    console.log(`Found ${tracksToProcess.length} track(s) needing processing out of ${allTracks.length} total tracks.\n`);
+
+    for (const track of tracksToProcess) {
         console.log(`\nProcessing [${track.title}]...`);
 
-        const { data: files } = await supabase.from('track_files').select('s3_key, file_type').eq('track_id', track.id).eq('file_type', 'raw').limit(1);
-        if (!files?.length) continue;
-
-        const s3Key = files[0].s3_key;
-
-        // SKIP if already processed
-        if (s3Key.startsWith('processed/')) {
-            console.log(` [Skip] Already processed: ${track.title}`);
-            continue;
-        }
+        const rawFile = track.track_files.find(f => f.file_type === 'raw');
+        const s3Key = rawFile.s3_key;
 
         const tempFiles = [];
 
         try {
+            const processedKey = `processed/${track.id}/master.mp3`;
+
+            // --- ZERO-DOWNLOAD S3 VERIFICATION ---
+            try {
+                // Check if physical file already exists on S3
+                await s3Client.send(new HeadObjectCommand({
+                    Bucket: env.AWS_S3_BUCKET_PROCESSED || env.AWS_S3_BUCKET_RAW,
+                    Key: processedKey
+                }));
+
+                console.log(` [S3 Sync] Physical file detected but missing in DB. Healing database...`);
+
+                // Heal Track Files
+                await supabase.from('track_files').upsert({
+                    track_id: track.id,
+                    file_type: 'stream_mp3',
+                    s3_key: processedKey,
+                    tuning: '440hz'
+                }, { onConflict: 'track_id,file_type,tuning' });
+
+                // Heal Track Status
+                await supabase.from('tracks').update({ status: 'active' }).eq('id', track.id);
+                continue; // Skip the heavy download & processing Since S3 already has it
+
+            } catch (headErr) {
+                // 404 Not Found means we SHOULD process it, which is the expected happy path.
+                if (headErr.name !== 'NotFound') {
+                    console.error(` [S3 Sync] Unexpected error verifying object:`, headErr);
+                }
+            }
+
             // 1. Download from S3 (Raw) - Save as input file preserving extension
             // We need to know the extension to help ffmpeg/librosa if needed, but we'll convert to WAV anyway.
             const rawExt = path.extname(s3Key);
@@ -77,9 +114,6 @@ async function processAllTracks() {
             });
 
             // 2. Decode to PCM WAV (16-bit, 44.1kHz) for predictable Steganography
-            // -y: Overwrite output
-            // -ar 44100: Set sample rate to 44.1kHz
-            // -ac 2: Set channels to 2 (Stereo)
             console.log(` Decoding to PCM WAV...`);
             execSync(`ffmpeg -y -i "${inputPath}" -ar 44100 -ac 2 "${pcmPath}"`, { stdio: 'ignore' });
 
@@ -92,13 +126,9 @@ async function processAllTracks() {
 
             // 4. Encode to High-Quality MP3 (CBR 320kbps) with Normalization (-14 LUFS)
             console.log(` Transcoding & Normalizing to 320kbps MP3...`);
-            // -b:a 320k : Constant Bit Rate 320kbps
-            // -codec:a libmp3lame : Use LAME encoder
-            // -af loudnorm=I=-14:LRA=11:TP=-1.5 : EBU R128 Normalization
             execSync(`ffmpeg -y -i "${pcmPath}" -af "loudnorm=I=-14:LRA=11:TP=-1.5" -codec:a libmp3lame -b:a 320k "${outputPath}"`, { stdio: 'ignore' });
 
             // 5. Upload Master MP3 to S3
-            const processedKey = `processed/${track.id}/master.mp3`;
             console.log(` Uploading Master MP3...`);
 
             const fileBuffer = fs.readFileSync(outputPath);
@@ -143,16 +173,19 @@ async function processAllTracks() {
             // 6. Update Database
             console.log(` Updating Database...`);
             await supabase.from('tracks').update({
+                status: 'active',
                 bpm: analysis.bpm,
                 key: analysis.key,
-                duration_sec: analysis.duration,
+                duration_sec: Math.round(analysis.duration),
+                status: 'active', // Explicitly mark as active after successful batch process
                 metadata: {
                     technical: { bpm: analysis.bpm, key: analysis.key },
                     vibe: { energy_level: analysis.energy },
                     waveform: analysis.waveform,
                     ...(acousticMatrixUrl ? { acoustic_matrix_url: acousticMatrixUrl } : {}),
                     steganography: "LSB_V1_MP3_320K"
-                }
+                },
+                updated_at: new Date().toISOString()
             }).eq('id', track.id);
 
             await supabase.from('track_files').upsert({
@@ -175,6 +208,8 @@ async function processAllTracks() {
 
         } catch (err) {
             console.error(` Error processing track ${track.id} (${track.title}):`, err.message);
+            // Optional: Mark as rejected in DB if it failed critically
+            await supabase.from('tracks').update({ status: 'rejected' }).eq('id', track.id);
         } finally {
             // Temp Cleanup
             tempFiles.forEach(p => { if (fs.existsSync(p)) fs.unlinkSync(p) });

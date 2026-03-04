@@ -142,16 +142,15 @@ export async function createTrackRecord_Action(formData: FormData, s3Key: string
         }));
     } catch (sqsError) {
         console.error('SQS Queue Error:', sqsError);
-        
-        // SQS Fault Tolerance (Atomic Cleanup)
-        // If SQS fails, we must delete the DB records so the user can retry cleanly.
-        await supabase.from('track_files').delete().eq('track_id', trackData.id);
-        await supabase.from('tracks').delete().eq('id', trackData.id);
-        
-        return { 
-            message: 'Queue Failure - Please Retry', 
-            error: 'SQS Error', 
-            success: false 
+
+        // SQS Fault Tolerance
+        // If SQS fails, we mark the track as rejected so the admin knows it failed queuing.
+        await supabase.from('tracks').update({ status: 'rejected' }).eq('id', trackData.id);
+
+        return {
+            message: 'Queue Failure - Track marked as rejected',
+            error: 'SQS Error',
+            success: false
         };
     }
 
