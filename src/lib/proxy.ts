@@ -9,7 +9,7 @@ const intlMiddleware = createIntlMiddleware({
     localeDetection: true
 });
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
     // ---------------------------------------------------------
     // ADIM 1: GÜVENLİK VE PORT TEMİZLİĞİ (EN BAŞA ALINDI!)
     // ---------------------------------------------------------

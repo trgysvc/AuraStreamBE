@@ -5,6 +5,7 @@ import "../globals.css";
 import { PlayerProvider } from '@/context/PlayerContext';
 import { GlobalPlayer } from '@/components/feature/player/GlobalPlayer';
 import { LocationProvider } from '@/context/LocationContext';
+import { SmartFlowProvider } from '@/context/SmartFlowContext';
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
@@ -96,10 +97,12 @@ export default async function RootLayout({
           timeZone="Europe/Istanbul"
         >
           <LocationProvider>
-            <PlayerProvider>
-              {children}
-              <GlobalPlayer />
-            </PlayerProvider>
+            <SmartFlowProvider venueId="default-venue">
+              <PlayerProvider>
+                {children}
+                <GlobalPlayer />
+              </PlayerProvider>
+            </SmartFlowProvider>
           </LocationProvider>
         </NextIntlClientProvider>
         <GoogleAnalytics gaId="G-VZNFSYLZ8Y" />

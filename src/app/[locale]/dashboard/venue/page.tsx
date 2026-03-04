@@ -638,8 +638,6 @@ function VenueDashboardContent() {
 
 export default function VenueDashboardPage() {
     return (
-        <SmartFlowProvider venueId="default-venue">
-            <VenueDashboardContent />
-        </SmartFlowProvider>
+        <VenueDashboardContent />
     );
 }

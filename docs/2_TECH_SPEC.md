@@ -140,16 +140,18 @@
     *   **Initial Defaults:** Duration is temporarily set to `180` (overridden by processor).
 4.  **Asynchronous Processing (Worker):**
     *   **Trigger:** AWS SQS message sent post-upload.
+    *   **Autonomous Execution:** In local development, the worker is automatically started alongside the Next.js server via `npm run dev`. No manual script execution is required.
     *   **Signal Analysis:** Python (librosa) extracts real `duration`, `bpm`, `key`, and `waveform`.
     *   **Steganography:** UUID embedded into signal using Least Significant Bit (LSB) V1.
     *   **Transcoding:** High-fidelity master generated and moved to `processed/` bucket.
-    *   **Final Sync:** DB record updated with real analytical data.
+    *   **Final Sync:** DB record updated with real analytical data, moving the track to `pending_qc` status.
 
 ## 7. Scripts Reference
 Located in `/scripts`, these tools manage the factory's lifecycle.
 
 ### 7.1 Core Processing
-*   `process-tracks.mjs`: The primary worker. Downloads raw files, runs Python analyzer, uploads watermarked masters, and updates DB.
+*   `process-tracks.mjs`: The primary batch worker (Manual/Background). Downloads raw files, runs Python analyzer, uploads watermarked masters, and updates DB.
+*   `run-worker.ts`: The high-fidelity polling worker. Orchestrated to run automatically in development via `npm run dev`.
 *   `audio_analyzer.py`: Technical signal analyzer (BPM, Key, Energy, Duration, Waveform, LSB Watermark).
 *   `refresh-durations.mjs`: Maintenance tool to synchronize database `duration_sec` with real S3 file lengths.
 

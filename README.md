@@ -20,7 +20,7 @@ SONARAURA goes beyond traditional streaming. It leverages **Frequency Engineerin
 - **Churn Prediction Heartbeat:** Intelligent monitoring of user session health to proactively manage retention.
 - [x] **Enterprise Fleet Control:** Global management hub for multiple venues, branches, and centralized staff permissions.
 - [x] **High-Fidelity Playlist Curation:** Professional drag-and-drop editor with real-time sync and smart library discovery.
-- [x] **Ingest Engine:** Bulk upload with autonomous metadata extraction (ID3, BPM, Key, Lyrics, Cover Art).
+- [x] **Ingest Engine:** "Fire and forget" bulk upload with autonomous metadata extraction and background processing (ID3, BPM, Key, Lyrics, Cover Art). Processing starts automatically upon upload.
 
 ---
 
