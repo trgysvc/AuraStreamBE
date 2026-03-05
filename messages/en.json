@@ -550,9 +550,32 @@
                 "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
             },
             "direct-licensing": {
-                "title": "Music Licensing Made Easy",
-                "p1": "Welcome to the Music Licensing Made Easy section. Sonaraura is designed from the ground up to seamlessly integrate this capability into your workflow.",
-                "p2": "We provide comprehensive tools, metrics, and artificial intelligence models to ensure that this feature operates at peak efficiency, empowering both venues and creators inside our continuous feedback loop."
+                "title": "Direct Licensing",
+                "intro": "Direct Licensing is a bilateral contract model between the user and the rights holder (the creator, producer, or a platform like Sonaraura that holds all rights), rather than through a collective management organization (such as MÜ-YAP, MESAM, MSG). The legal basis of this model in Turkey is solid, based on the Law on Intellectual and Artistic Works (FSEK) No. 5846.",
+                "s1": {
+                    "title": "1. FSEK Articles 18 and 48: Right of Disposal",
+                    "p1": "The law grants the authority to use economic rights (reproduction, distribution, performance, publication) over the work primarily to the author, and through transfer to the producer or related institution.",
+                    "p2": "<strong>Basis:</strong> The author or rights holder can transfer these rights to any person or institution by contract or grant permission for use (license). There is no requirement for a collective management organization; the primary factor is the consent of the rights holder."
+                },
+                "s2": {
+                    "title": "2. No Obligation to Join a Collective Management Organization",
+                    "p1": "It is not a legal requirement for an artist or producer in Turkey to be a member of a collective management organization.",
+                    "p2": "<strong>Basis:</strong> If a producer (like Sonaraura) has collected all the rights to the works within its structure and has not authorized any collective management organization for the tracking of these rights (or has reserved these rights), they have the right to license this music directly."
+                },
+                "s3": {
+                    "title": "3. \"Copyright Claim\" and \"Double Dipping\" Risk",
+                    "p1": "The most critical point in the direct licensing model is that the music has \"Royalty-Free\" or \"Directly Licensed\" status.",
+                    "p2": "<strong>Legal Process:</strong> When you obtain a license from Sonaraura, this document replaces a valid \"Certificate of Permission\" (Consent) within the scope of Law No. 5846. When you present this contract during inspections, the right of collective management organizations to demand a separate royalty from you is legally nullified because the rights holder has already given you this permission directly."
+                },
+                "s4": {
+                    "title": "4. Freedom of Contract (Turkish Code of Obligations)",
+                    "p1": "In accordance with the general legal principle of \"Freedom of Contract,\" parties can enter into contracts with any content, provided it does not violate mandatory provisions of the law.",
+                    "p2": "<strong>Conclusion:</strong> A license agreement between a business and a content provider (Sonaraura) is a legally valid contract that binds both parties."
+                },
+                "summary": {
+                    "title": "In Summary",
+                    "p1": "Direct licensing model is completely legal. However, the most important condition here is that the institution granting the license (Sonaraura) has taken over this authority from both the composer and the performer (all economic rights holders) of the music it offers. Since all rights are gathered in one hand in the Sonaraura model, the certificate provided to the user ensures complete legal protection."
+                }
             },
             "upload-qc": {
                 "title": "The Production Factory",

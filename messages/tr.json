@@ -550,9 +550,32 @@
                 "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
             },
             "direct-licensing": {
-                "title": "Lisanslamada Yeni Standart",
-                "p1": "Lisanslamada Yeni Standart bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
-                "p2": "Bu özelliğin en yüksek verimlilikte çalışmasını sağlamak için kapsamlı araçlar, metrikler ve yapay zeka modelleri sunarak hem mekanları hem de içerik üreticilerini sürekli geri bildirim döngümüzde güçlendiriyoruz."
+                "title": "Doğrudan Lisanslama (Direct Licensing)",
+                "intro": "Doğrudan Lisanslama (Direct Licensing), müzik kullanım haklarının bir meslek birliği (MÜ-YAP, MESAM, MSG gibi) aracılığıyla değil, bizzat hak sahibi (eser sahibi, yapımcı veya Sonaraura gibi tüm hakları elinde bulunduran platform) ile kullanıcı arasında yapılan ikili bir sözleşme modelidir. Bu modelin Türkiye'deki kanuni dayanağı oldukça sağlamdır ve temelini 5846 sayılı Fikir ve Sanat Eserleri Kanunu (FSEK) oluşturur.",
+                "s1": {
+                    "title": "1. FSEK Madde 18 ve 48: Tasarruf Yetkisi",
+                    "p1": "Kanun, eser üzerindeki mali hakları (çoğaltma, yayma, temsil, yayım) kullanma yetkisini aslen eser sahibine, devir yoluyla da yapımcıya veya ilgili kuruma verir.",
+                    "p2": "<strong>Dayanak:</strong> Eser sahibi veya hak sahibi, sahip olduğu bu hakları dilediği kişi veya kuruma sözleşme ile devredebilir veya kullanım izni (lisans) verebilir. Arada bir meslek birliği olma zorunluluğu yoktur; asıl olan hak sahibinin rızasıdır."
+                },
+                "s2": {
+                    "title": "2. Meslek Birliklerine Üye Olma Zorunluluğunun Olmaması",
+                    "p1": "Türkiye'de bir sanatçının veya yapımcının bir meslek birliğine üye olması yasal bir zorunluluk değildir.",
+                    "p2": "<strong>Dayanak:</strong> Eğer bir yapımcı (Sonaraura gibi) kendi bünyesindeki eserlerin tüm haklarını topladıysa ve herhangi bir meslek birliğine bu hakların takibi için yetki vermediyse (veya bu hakları saklı tuttuysa), bu müzikleri doğrudan lisanslama hakkına sahiptir."
+                },
+                "s3": {
+                    "title": "3. Telif Hakkı Talebi ve Double Dipping Riski",
+                    "p1": "Doğrudan lisans modelinde en kritik nokta, müziğin \"Royalty-Free\" veya \"Directly Licensed\" statüsünde olmasıdır.",
+                    "p2": "<strong>Kanuni Süreç:</strong> Siz Sonaraura'dan bir lisans aldığınızda, bu belge 5846 sayılı kanun kapsamında geçerli bir \"Kullanım İzin Belgesi\" (Muvafakatname) yerine geçer. Denetimlerde bu sözleşmeyi ibraz ettiğinizde, meslek birliklerinin sizden ayrıca bir telif talep etme hakkı yasal olarak düşer, çünkü hak sahibi zaten size bu izni doğrudan vermiştir."
+                },
+                "s4": {
+                    "title": "4. Sözleşme Serbestisi (Türk Borçlar Kanunu)",
+                    "p1": "Genel hukuk prensibi olan \"Sözleşme Serbestisi\" uyarınca, taraflar kanunun emredici hükümlerine aykırı olmamak kaydıyla diledikleri içerikte sözleşme yapabilirler.",
+                    "p2": "<strong>Sonuç:</strong> Bir işletme ile bir içerik sağlayıcı (Sonaraura) arasında yapılan lisans sözleşmesi, her iki tarafı da bağlayan, hukuken geçerli bir akittir."
+                },
+                "summary": {
+                    "title": "Özetle",
+                    "p1": "Doğrudan lisans modeli tamamen yasaldır. Ancak burada en önemli şart; lisansı veren kurumun (Sonaraura), sunduğu müziklerin hem bestecisinden hem de icracısından (tüm mali hak sahiplerinden) bu yetkiyi devralmış olmasıdır. Sonaraura modelinde tüm haklar tek elde toplandığı için, kullanıcıya sunulan sertifika tam bir hukuki koruma sağlar."
+                }
             },
             "upload-qc": {
                 "title": "Üretim Fabrikası",

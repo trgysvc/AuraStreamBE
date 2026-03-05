@@ -115,41 +115,53 @@ function HelpCenterContent() {
 
     function renderContent(id: string) {
         switch (id) {
-            case 'vision':
+            case 'direct-licensing':
                 return (
                     <article className="space-y-10">
                         <header className="space-y-4">
-                            <div className="h-16 w-16 bg-indigo-600/10 rounded-2xl flex items-center justify-center text-indigo-500">
-                                <Zap size={32} />
+                            <div className="h-16 w-16 bg-white/5 rounded-2xl flex items-center justify-center text-zinc-400">
+                                <FileText size={32} />
                             </div>
-                            <h1 className="text-5xl font-black italic uppercase tracking-tighter leading-none">
-                                {t.rich('vision.title', {
-                                    br: () => <br />
-                                })}
+                            <h1 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter leading-none">
+                                {t('content.direct-licensing.title')}
                             </h1>
-                            <p className="text-xl text-zinc-400 font-medium">{t('vision.subtitle')}</p>
                         </header>
+                        <div className="prose prose-invert max-w-none space-y-12">
+                            <p className="text-zinc-300 leading-relaxed text-lg">
+                                {t('content.direct-licensing.intro')}
+                            </p>
 
-                        <div className="prose prose-invert max-w-none space-y-8">
-                            <section className="space-y-4">
-                                <h2 className="text-2xl font-black uppercase italic tracking-tight text-white border-b border-white/5 pb-2">{t('vision.whoAreWe.title')}</h2>
-                                <p className="text-zinc-300 leading-relaxed text-lg">
-                                    {t('vision.whoAreWe.p1')}
-                                </p>
-                                <p className="text-zinc-300 leading-relaxed">
-                                    {t('vision.whoAreWe.p2')}
-                                </p>
-                            </section>
+                            {[1, 2, 3, 4].map((num) => (
+                                <section key={num} className="space-y-4">
+                                    <h2 className="text-2xl font-black uppercase italic tracking-tight text-white border-b border-white/5 pb-2">
+                                        {t(`content.direct-licensing.s${num}.title` as any)}
+                                    </h2>
+                                    <p className="text-zinc-300 leading-relaxed">
+                                        {t.rich(`content.direct-licensing.s${num}.p1` as any, {
+                                            strong: (chunks) => <strong className="text-white font-bold">{chunks}</strong>,
+                                            br: () => <br />
+                                        })}
+                                    </p>
+                                    {t.has(`content.direct-licensing.s${num}.p2` as any) && (
+                                        <p className="text-zinc-300 leading-relaxed">
+                                            {t.rich(`content.direct-licensing.s${num}.p2` as any, {
+                                                strong: (chunks) => <strong className="text-white font-bold">{chunks}</strong>,
+                                                br: () => <br />
+                                            })}
+                                        </p>
+                                    )}
+                                </section>
+                            ))}
 
-                            <section className="space-y-4">
-                                <h2 className="text-2xl font-black uppercase italic tracking-tight text-white border-b border-white/5 pb-2">{t('vision.ourVision.title')}</h2>
-                                <p className="text-zinc-300 leading-relaxed">
-                                    {t('vision.ourVision.p1')}
+                            <div className="bg-white/5 border border-white/10 rounded-2xl p-8 space-y-4">
+                                <h3 className="text-xl font-black uppercase italic tracking-tight text-white flex items-center gap-2">
+                                    <Info size={20} className="text-indigo-400" />
+                                    {t('content.direct-licensing.summary.title')}
+                                </h3>
+                                <p className="text-zinc-300 leading-relaxed italic">
+                                    {t('content.direct-licensing.summary.p1')}
                                 </p>
-                                <p className="text-zinc-300 leading-relaxed">
-                                    {t('vision.ourVision.p2')}
-                                </p>
-                            </section>
+                            </div>
                         </div>
                     </article>
                 );
