@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/db/server';
+import { getSignedUrlWrapper } from '@/lib/services/s3';
 
 export async function searchTracks_Action(query: string, limit: number = 20) {
     const supabase = await createClient();
@@ -18,7 +19,23 @@ export async function searchTracks_Action(query: string, limit: number = 20) {
         return [];
     }
 
-    return data;
+    const processedData = await Promise.all(data.map(async (t: any) => {
+        let signedUrl = t.cover_image_url;
+        if (signedUrl && !signedUrl.startsWith('http')) {
+            try {
+                const signed = await getSignedUrlWrapper(signedUrl);
+                signedUrl = signed;
+            } catch (e) {
+                console.error('Failed to sign search image:', e);
+            }
+        }
+        return {
+            ...t,
+            cover_image_url: signedUrl
+        };
+    }));
+
+    return processedData;
 }
 
 export async function toggleLikeTrack_Action(trackId: string, userId: string, tenantId?: string) {

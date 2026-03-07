@@ -182,7 +182,7 @@ export default function TrackRow({ id, title, artist, duration, bpm, tags, image
             <div className="hidden lg:block w-48 flex-shrink-0 px-4">
                 <div className="flex flex-wrap gap-1">
                     {tags?.slice(0, 2).map(tag => (
-                        <span key={tag} className="px-2 py-0.5 bg-white/5 rounded text-[10px] font-black text-zinc-400 uppercase tracking-tighter border border-white/5">
+                        <span key={tag} className="px-2 py-0.5 bg-white/5 rounded text-[10px] font-black text-zinc-400 uppercase tracking-tighter border border-white/5 line-clamp-4">
                             {tag}
                         </span>
                     ))}

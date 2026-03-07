@@ -247,10 +247,10 @@ export function CatalogTrackRow({ track }: { track: any }) {
                             <>
                                 {track.sub_genres && track.sub_genres.length > 0 ? (
                                     track.sub_genres.slice(0, 3).map((g: string) => (
-                                        <span key={g} className="px-1.5 py-0.5 bg-indigo-500/10 text-indigo-400 rounded-[4px] text-[7px] font-black uppercase tracking-wider">{g}</span>
+                                        <span key={g} className="px-1.5 py-0.5 bg-indigo-500/10 text-indigo-400 rounded-[4px] text-[7px] font-black uppercase tracking-wider line-clamp-4">{g}</span>
                                     ))
                                 ) : (
-                                    <span className="px-1.5 py-0.5 bg-indigo-500/10 text-indigo-400 rounded-[4px] text-[7px] font-black uppercase tracking-wider">{track.genre}</span>
+                                    <span className="px-1.5 py-0.5 bg-indigo-500/10 text-indigo-400 rounded-[4px] text-[7px] font-black uppercase tracking-wider line-clamp-4">{track.genre}</span>
                                 )}
                                 {track.sub_genres && track.sub_genres.length > 3 && (
                                     <span className="text-[7px] font-bold text-zinc-500">+{track.sub_genres.length - 3}</span>

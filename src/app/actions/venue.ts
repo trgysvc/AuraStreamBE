@@ -33,6 +33,7 @@ export async function getVenueTracks_Action(options?: {
     query?: string;
     onlyLikedBy?: string;
     userId?: string;
+    timeOfDay?: string[];
 }): Promise<VenueTrack[]> {
     const supabase = await createClient();
 
@@ -84,6 +85,11 @@ export async function getVenueTracks_Action(options?: {
         }
         if (options?.moods && options.moods.length > 0) {
             q = q.overlaps('mood_tags', options.moods);
+        }
+        if (options?.timeOfDay && options.timeOfDay.length > 0) {
+            // metadata is a JSONB column containing { time_of_day: ["Morning"] }
+            // Using contains to match array elements inside the JSON structure
+            q = q.contains('metadata', { time_of_day: options.timeOfDay });
         }
         return q;
     };
@@ -137,10 +143,12 @@ export async function getVenueTracks_Action(options?: {
             popularTracks = pData || [];
         }
 
-        // Fetch 25 Unheard tracks applying current filters
+        // Fetch Unheard tracks applying current filters to fill up to 50 total slots
+        const slotsNeeded = 50 - popularTracks.length;
         let unheardQuery = buildBaseQuery()
             .order('created_at', { ascending: false }) // Prioritize new unheards
-            .limit(25);
+            .limit(slotsNeeded > 0 ? slotsNeeded : 0);
+
 
         // To avoid PostgREST query parsing limits in NOT IN (...) clauses if a venue listened to 500 distinct tracks,
         // we carefully exclude distinct played IDs. Supabase supports not.in, limiting distinct sizes to avoid massive URLs.
@@ -276,6 +284,149 @@ export async function getVenueTracks_Action(options?: {
     return tracksWithUrls;
 }
 
+export async function getTrendingTracks_Action(): Promise<VenueTrack[]> {
+    const supabase = await createClient();
+
+    // Fetch top 10 tracks by play counts from playback_sessions
+    // In a real system we'd aggregate this in a view or cache, 
+    // but for now we'll do a simple join or count.
+
+    // First, get the most played track IDs
+    const { data: trendingData, error: trendingError } = await supabase
+        .from('playback_sessions')
+        .select('track_id')
+        .order('played_at', { ascending: false })
+        .limit(100);
+
+    if (trendingError) {
+        console.error('Error fetching trending IDs:', trendingError);
+        return [];
+    }
+
+    // Count frequencies
+    const freq: Record<string, number> = {};
+    trendingData?.forEach(p => {
+        freq[p.track_id] = (freq[p.track_id] || 0) + 1;
+    });
+
+    const topIds = Object.entries(freq)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10)
+        .map(e => e[0]);
+
+    // If we don't have enough data, just get the latest 10 tracks
+    if (topIds.length < 5) {
+        const { data: latestTracks } = await supabase
+            .from('tracks')
+            .select('id')
+            .eq('status', 'active')
+            .order('created_at', { ascending: false })
+            .limit(10);
+
+        topIds.push(...(latestTracks?.map(t => t.id) || []));
+    }
+
+    // Reuse the existing venue tracks fetch with these specific IDs
+    const { data: tracks, error: tracksError } = await supabase
+        .from('tracks')
+        .select(`
+            id,
+            title,
+            artist,
+            status,
+            bpm,
+            duration_sec,
+            genre,
+            sub_genres,
+            character_tags,
+            theme_tags,
+            venue_tags,
+            vocal_type,
+            mood_tags,
+            lyrics,
+            lyrics_synced,
+            cover_image_url,
+            metadata,
+            track_files (
+                s3_key,
+                file_type,
+                tuning
+            )
+        `)
+        .in('id', Array.from(new Set(topIds)).slice(0, 10))
+        .eq('status', 'active');
+
+    if (tracksError || !tracks) {
+        console.error('Error fetching trending tracks details:', tracksError);
+        return [];
+    }
+
+    // Format results (Reuse logic from getVenueTracks_Action or better yet, extract it)
+    // For now, I'll manually apply the formatting logic for consistency
+    const sortedTracks = topIds.map(id => tracks.find(t => t.id === id)).filter((t): t is typeof tracks[0] => !!t);
+
+    return Promise.all(sortedTracks.map(async (track) => {
+        const availableTunings: Record<string, string> = {};
+        let defaultSrc = '';
+        const files = (track.track_files as any[]) || [];
+        const streamFiles = files.filter((f) => f.file_type === 'stream_aac' || f.file_type === 'stream_mp3');
+
+        for (const file of streamFiles) {
+            try {
+                const url = await S3Service.getDownloadUrl(file.s3_key);
+                if (file.tuning) {
+                    availableTunings[file.tuning] = url;
+                    if (file.tuning === '440hz') defaultSrc = url;
+                }
+            } catch { }
+        }
+
+        if (!defaultSrc) defaultSrc = Object.values(availableTunings)[0] || '';
+
+        // Final Fallback: Raw file
+        if (!defaultSrc) {
+            const rawFile = files.find((f) => f.file_type === 'raw');
+            if (rawFile) {
+                try {
+                    defaultSrc = await S3Service.getDownloadUrl(rawFile.s3_key);
+                } catch { }
+            }
+        }
+
+        let finalCoverImage = track.cover_image_url;
+        if (finalCoverImage && finalCoverImage.includes('amazonaws.com')) {
+            try {
+                const urlParts = finalCoverImage.split('.com/');
+                if (urlParts.length > 1) {
+                    const s3Key = decodeURIComponent(urlParts[1]);
+                    finalCoverImage = await S3Service.getDownloadUrl(s3Key, process.env.AWS_S3_BUCKET_RAW!);
+                }
+            } catch { }
+        }
+
+        return {
+            id: track.id,
+            title: track.title,
+            artist: track.artist || 'Sonaraura AI',
+            bpm: track.bpm || 120,
+            duration: track.duration_sec || 0,
+            genre: track.genre || 'Music',
+            sub_genres: track.sub_genres || [],
+            character_tags: track.character_tags || [],
+            theme_tags: track.theme_tags || [],
+            venue_tags: track.venue_tags || [],
+            vocal_type: track.vocal_type || undefined,
+            coverImage: finalCoverImage || undefined,
+            lyrics: track.lyrics || undefined,
+            lyrics_synced: track.lyrics_synced || undefined,
+            src: defaultSrc,
+            availableTunings,
+            tags: track.mood_tags || [track.genre || "Music"],
+            metadata: track.metadata || undefined
+        };
+    }));
+}
+
 export async function getCurationCounts_Action(options?: {
     userId?: string;
 }): Promise<Record<string, number>> {
@@ -327,7 +478,8 @@ export async function getCurationCounts_Action(options?: {
             'Techno Bunker': 'Dark',
             'Aura Classics': 'Legacy',
             'Global Beats': 'World',
-            'Lobby': 'Hotel Lobby'
+            'Lobby': 'Hotel Lobby',
+            'The Roastery': 'Coffee Shop'
         };
 
         for (const [title, tag] of Object.entries(categoryMapping)) {
@@ -339,7 +491,7 @@ export async function getCurationCounts_Action(options?: {
                     .eq('status', 'active')
                     .eq('genre', tag);
                 counts[title] = count || 0;
-            } else if (tag === 'Hotel Lobby') {
+            } else if (tag === 'Hotel Lobby' || tag === 'Coffee Shop') {
                 // Venue-based
                 const { count } = await supabase
                     .from('tracks')

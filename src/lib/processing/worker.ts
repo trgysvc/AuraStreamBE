@@ -150,6 +150,7 @@ async function processTrackJob(trackId: string) {
                 technical: { bpm: analysis.bpm, key: analysis.key },
                 vibe: { energy_level: analysis.energy },
                 ...(acousticMatrixUrl ? { acoustic_matrix_url: acousticMatrixUrl } : {}),
+                ...(analysis.time_of_day && analysis.time_of_day.length > 0 ? { time_of_day: analysis.time_of_day } : {}),
                 steganography: "LSB_V1"
             },
             updated_at: new Date().toISOString()

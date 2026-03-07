@@ -124,11 +124,28 @@ export function PlaylistEditorClient({ playlist, initialItems, allTracks }: Prop
     const handleAddTrack = async (track: Track) => {
         try {
             setIsSaving(true);
+
+            // Create a temporary local item for instant UI update
+            const tempId = `temp-${Date.now()}`;
+            const newItem: PlaylistItem = {
+                id: tempId,
+                track_id: track.id,
+                position: items.length + 1,
+                track: track
+            };
+
+            // Optimistic update
+            setItems(prev => [...prev, newItem]);
+
+            // Persist to DB
             await addTracksToPlaylist_Action(playlist.id, [track.id]);
-            // Refresh page to get new items with their unique item IDs
+
+            // Background refresh to true-up IDs without blocking the UI
             router.refresh();
         } catch (error) {
             console.error('Failed to add:', error);
+            // Revert on failure
+            setItems(prev => prev.filter(item => item.track_id !== track.id));
         } finally {
             setIsSaving(false);
         }
@@ -202,7 +219,7 @@ export function PlaylistEditorClient({ playlist, initialItems, allTracks }: Prop
                                                     <div className="flex items-center gap-4">
                                                         <div className="w-10 h-10 bg-zinc-900 rounded relative overflow-hidden shrink-0 border border-white/5">
                                                             {item.track?.cover_image_url ? (
-                                                                <Image src={item.track.cover_image_url} alt="" fill className="object-cover" />
+                                                                <img src={item.track.cover_image_url} alt="" className="w-full h-full object-cover" />
                                                             ) : (
                                                                 <div className="absolute inset-0 flex items-center justify-center"><Music size={16} className="text-zinc-800" /></div>
                                                             )}
@@ -273,7 +290,11 @@ export function PlaylistEditorClient({ playlist, initialItems, allTracks }: Prop
                                     <div key={track.id} className="p-4 hover:bg-white/[0.02] transition-colors group flex items-center gap-4">
                                         <div className="w-12 h-12 bg-zinc-900 rounded-xl relative overflow-hidden shrink-0 border border-white/5">
                                             {track.cover_image_url ? (
-                                                <Image src={track.cover_image_url} alt="" fill className="object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
+                                                <img
+                                                    src={track.cover_image_url}
+                                                    alt={track.title}
+                                                    className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity"
+                                                />
                                             ) : (
                                                 <div className="absolute inset-0 flex items-center justify-center"><Music size={18} className="text-zinc-800" /></div>
                                             )}

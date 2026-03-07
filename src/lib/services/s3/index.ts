@@ -93,3 +93,27 @@ export const S3Service = {
         return s3Client.send(command);
     }
 };
+
+/**
+ * Generate a signed URL for an existing S3 URL or Key.
+ */
+export async function getSignedUrlWrapper(urlOrKey: string, bucket: string = process.env.AWS_S3_BUCKET_PUBLIC || process.env.AWS_S3_BUCKET_PROCESSED!) {
+    try {
+        // If it's a full URL, attempt to extract the key
+        let key = urlOrKey;
+        if (urlOrKey.startsWith('http')) {
+            const urlObj = new URL(urlOrKey);
+            // S3 URLs are typically: https://bucket-name.s3.region.amazonaws.com/key/path
+            key = urlObj.pathname.startsWith('/') ? urlObj.pathname.substring(1) : urlObj.pathname;
+        }
+
+        const command = new GetObjectCommand({
+            Bucket: bucket,
+            Key: key,
+        });
+        return await getSignedUrl(s3Client, command, { expiresIn: 3600 * 24 }); // 24 hours
+    } catch (error) {
+        console.error('Error signing URL:', error);
+        return urlOrKey; // Fallback to original
+    }
+}

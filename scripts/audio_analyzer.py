@@ -6,6 +6,7 @@ import warnings
 import numpy as np
 import soundfile as sf
 import hashlib
+from tinytag import TinyTag
 
 # Suppress warnings for clean output
 warnings.filterwarnings('ignore')
@@ -170,13 +171,26 @@ def analyze_audio(file_path, watermark_uuid=None):
         else:
             sf.write(file_path, y, sr, format='WAV', subtype='PCM_16')
 
+        # 6. Metadata Extraction (Tinytag)
+        time_of_day = []
+        try:
+            tag = TinyTag.get(file_path)
+            composer = tag.composer or ""
+            comp_upper = composer.upper()
+            if "MORNING" in comp_upper: time_of_day.append("Morning")
+            if "MIDDAY" in comp_upper: time_of_day.append("Midday")
+            if "EVENING" in comp_upper: time_of_day.append("Evening")
+        except Exception:
+            pass
+
         result = {
             "duration": round(duration, 2),
             "bpm": int(float(tempo)),
             "key": key,
             "energy": round(energy, 2),
             "matrix_file_path": matrix_file_path,
-            "watermarked": True if watermark_uuid else False
+            "watermarked": True if watermark_uuid else False,
+            "time_of_day": time_of_day
         }
         print(json.dumps(result))
         

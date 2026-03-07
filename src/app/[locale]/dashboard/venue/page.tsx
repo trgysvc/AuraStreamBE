@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { Link } from '@/i18n/navigation';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { Link, useRouter } from '@/i18n/navigation';
 import { Search, ChevronDown, Sliders, Music, Sparkles as LucideSparkles, Play, Plus, Filter, ListMusic, Layers, Check, X, Wand2, Activity, MapPin, Wind, Zap, RefreshCw } from 'lucide-react';
 import TrackRow from '@/components/dashboard/TrackRow';
-import { getVenueTracks_Action, getCurationCounts_Action } from '@/app/actions/venue';
+import { getVenueTracks_Action, getCurationCounts_Action, getTrendingTracks_Action } from '@/app/actions/venue';
+import { searchPlaylists_Action } from '@/app/actions/playlist';
 import { logSearchQuery_Action } from '@/app/actions/elite-analytics';
 import { ScheduleManager } from '@/components/feature/venue/ScheduleManager';
 import { SmartFlowProvider, useSmartFlow } from '@/context/SmartFlowContext';
@@ -38,17 +39,27 @@ const PlaylistCard = ({ title, tracks, color, image, onClick }: { title: string,
 function VenueDashboardContent() {
     const t = useTranslations('VenueDashboard');
     const { activeRule } = useSmartFlow();
-    const { playTrack } = usePlayer();
+    const router = useRouter();
+    const {
+        playTrack,
+        currentTrack,
+        isPlaying,
+        setTrackList: setPlayerQueue,
+        setOnQueueEnd
+    } = usePlayer();
     const [activeSubTab, setActiveSubTab] = useState<'search' | 'assistant' | 'flow'>('search');
     const [searchType, setSearchType] = useState('Music');
     const [isSearchDropdownOpen, setIsSearchDropdownOpen] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
     const [query, setQuery] = useState('');
     const [tracks, setTracks] = useState<any[]>([]);
+    const [searchedPlaylists, setSearchedPlaylists] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedPlaylist, setSelectedPlaylist] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
     const [curationCounts, setCurationCounts] = useState<Record<string, number>>({});
+    const [trendingTracks, setTrendingTracks] = useState<any[]>([]);
+    const [discoveryLoading, setDiscoveryLoading] = useState(false);
 
     // Similarity Engine Modal State
     const [isSimilarityModalOpen, setIsSimilarityModalOpen] = useState(false);
@@ -74,6 +85,13 @@ function VenueDashboardContent() {
                 const counts = await getCurationCounts_Action();
                 setCurationCounts(counts);
             }
+            // Fetch trending tracks
+            const trending = await getTrendingTracks_Action();
+            setTrendingTracks(trending.map(t => ({
+                ...t,
+                duration: (t.duration && t.duration > 0) ? `${Math.floor(t.duration / 60)}:${Math.round(t.duration % 60).toString().padStart(2, '0')}` : "0:00",
+                rawDurationMs: t.duration * 1000
+            })));
         };
         fetchUserAndCounts();
     }, []);
@@ -83,6 +101,7 @@ function VenueDashboardContent() {
     const [selectedVibes, setSelectedVibes] = useState<string[]>([]);
     const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
     const [bpmRange, setBpmRange] = useState<[number, number]>([60, 180]);
+    const [pageIndex, setPageIndex] = useState(0);
 
     const performSearch = useCallback(async (
         searchQuery: string,
@@ -101,7 +120,7 @@ function VenueDashboardContent() {
                 if (activeRule.genres) currentGenres = [...new Set([...currentGenres, ...activeRule.genres])];
             }
 
-            const data = await getVenueTracks_Action({
+            const dataPromise = getVenueTracks_Action({
                 query: searchQuery === "Liked Songs" ? undefined : searchQuery,
                 bpmRange: activeRule ? undefined : bpm,
                 venues: venues.length > 0 ? venues : undefined,
@@ -111,6 +130,15 @@ function VenueDashboardContent() {
                 onlyLikedBy: searchQuery === "Liked Songs" ? (userId || undefined) : undefined,
                 userId: userId || undefined
             });
+
+            const queryForPlaylists = (searchQuery && searchQuery !== "Liked Songs") ? searchQuery : "";
+            const playlistsPromise = (queryForPlaylists && userId)
+                ? searchPlaylists_Action(queryForPlaylists, userId)
+                : Promise.resolve([]);
+
+            const [data, playlistsData] = await Promise.all([dataPromise, playlistsPromise]);
+
+            setSearchedPlaylists(playlistsData);
 
             // Log search for analytics (Aura Tailor & Infrastructure ROI)
             if (searchQuery || venues.length > 0 || vibes.length > 0 || currentGenres.length > 0) {
@@ -143,6 +171,7 @@ function VenueDashboardContent() {
                     metadata: t.metadata
                 };
             }));
+            setPageIndex(0); // Reset pagination on new search
 
         } catch (err) {
             console.error('Search error:', err);
@@ -165,8 +194,65 @@ function VenueDashboardContent() {
         }
     }, [query, selectedVenues, selectedVibes, selectedGenres, bpmRange, performSearch]);
 
+    const [shouldAutoPlay, setShouldAutoPlay] = useState(false);
+
+    // Wrap refreshDiscovery for button to avoid type mismatch
+    const handleRefreshDiscovery = () => refreshDiscovery(false);
+
+    useEffect(() => {
+        if (shouldAutoPlay && tracks.length > 0 && !isPlaying) {
+            console.log("[Dashboard] Auto-playing first track of new discovery list...");
+            const current20Tracks = tracks.slice(pageIndex * 20, (pageIndex + 1) * 20);
+            if (current20Tracks.length > 0) {
+                playTrack(current20Tracks[0], current20Tracks);
+                setShouldAutoPlay(false);
+            }
+        }
+    }, [tracks, pageIndex, shouldAutoPlay, isPlaying, playTrack]);
+
+    const refreshDiscovery = useCallback(async (autoPlayAfterRefresh?: boolean) => {
+        // If we have more tracks in the current pool (assume 50 max, 20 per page)
+        // move to the next page.
+        if ((pageIndex + 1) * 20 < tracks.length) {
+            setPageIndex(prev => prev + 1);
+            if (autoPlayAfterRefresh) setShouldAutoPlay(true);
+            return;
+        }
+
+        // Otherwise, fetch a completely new fresh pool from the server
+        setDiscoveryLoading(true);
+        if (autoPlayAfterRefresh) setShouldAutoPlay(true);
+        try {
+            await performSearch(query, selectedVenues, selectedVibes, selectedGenres, bpmRange);
+        } finally {
+            setDiscoveryLoading(false);
+        }
+    }, [query, selectedVenues, selectedVibes, selectedGenres, bpmRange, performSearch, pageIndex, tracks.length]);
+
+    // 1. Sync dashboard list with player queue for real-time consistency
+    const visibleTracks = useMemo(() => tracks.slice(pageIndex * 20, (pageIndex + 1) * 20), [tracks, pageIndex]);
+
+    useEffect(() => {
+        if (visibleTracks.length > 0) {
+            setPlayerQueue(visibleTracks);
+        }
+    }, [visibleTracks, setPlayerQueue]);
+
+    // 2. Configure Auto-Discovery (onQueueEnd)
+    useEffect(() => {
+        const handleQueueEnd = () => {
+            console.log("[Dashboard] Queue ended, triggering auto-discovery...");
+            refreshDiscovery(true);
+        };
+        // MUST wrap in a function because setOnQueueEnd expects a state value, 
+        // and if it's a function, React treats it as an updater (prev => next).
+        setOnQueueEnd(() => handleQueueEnd);
+        return () => setOnQueueEnd(null);
+    }, [refreshDiscovery, setOnQueueEnd]);
+
     const handleTrackPlay = (track: any) => {
-        playTrack(track, tracks); // Pass current view list for auto-play
+        const visibleTracks = tracks.slice(pageIndex * 20, (pageIndex + 1) * 20);
+        playTrack(track, visibleTracks); // Pass current view list for auto-play
     };
 
     const toggleTag = (list: string[], setList: (l: string[]) => void, tag: string) => {
@@ -186,7 +272,7 @@ function VenueDashboardContent() {
         { title: "Liked Songs", tracks: formatCount(curationCounts["Liked Songs"]), color: "bg-pink-600", image: "https://images.unsplash.com/photo-1544690411-b752fa399f9c?q=80&w=800" },
         { title: "Championships", tracks: formatCount(curationCounts["Championships"]), vibe: "Epic", color: "bg-[#FFCC44]", image: "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=800" },
         { title: "Sports & Action", tracks: formatCount(curationCounts["Sports & Action"], "playlist", "playlists"), vibe: "Workout", color: "bg-[#9966FF]", image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=800" },
-        { title: "Valentine's Day", tracks: formatCount(curationCounts["Valentine's Day"]), vibe: "Romantic", color: "bg-[#FF99CC]", image: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800" },
+        { title: "The Roastery", tracks: formatCount(curationCounts["The Roastery"]), venue: "Coffee Shop", color: "bg-[#4A2C2A]", image: "/images/the-roastery.png" },
         { title: "Morning Coffee", tracks: formatCount(curationCounts["Morning Coffee"]), vibe: "Relaxing", color: "bg-[#D2B48C]", image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=800" },
         { title: "Deep Focus", tracks: formatCount(curationCounts["Deep Focus"]), vibe: "Focus", color: "bg-[#2F4F4F]", image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=800" },
         { title: "Late Night Jazz", tracks: formatCount(curationCounts["Late Night Jazz"]), genre: "Jazz", color: "bg-[#4B0082]", image: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=800" },
@@ -494,14 +580,32 @@ function VenueDashboardContent() {
                                 </button>
                             </div>
 
+                            {/* Searched Playlists Display */}
+                            {searchedPlaylists.length > 0 && activeSubTab === 'search' && (
+                                <div className="space-y-6 pt-2 pb-8 mb-8 border-b border-white/5">
+                                    <h2 className="text-xl font-black tracking-tight text-zinc-400 uppercase italic">Found Playlists</h2>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
+                                        {searchedPlaylists.map((playlist: any) => (
+                                            <PlaylistCard
+                                                key={playlist.id}
+                                                title={playlist.name}
+                                                tracks={`${playlist.item_count} tracks`}
+                                                color="bg-zinc-800"
+                                                onClick={() => router.push(`/dashboard/playlists/${playlist.id}`)}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="divide-y divide-white/5 bg-zinc-900/5 rounded-[2.5rem] overflow-hidden min-h-[400px]">
                                 {loading && tracks.length === 0 ? (
                                     <div className="py-20 flex flex-col items-center justify-center space-y-6 opacity-30">
                                         <div className="h-10 w-10 border-4 border-white/10 border-t-white rounded-full animate-spin" />
                                     </div>
                                 ) : tracks.length > 0 ? (
-                                    tracks.slice(0, 10).map((track) => (
-                                        <TrackRow key={track.id} {...track} lyrics={track.lyrics} allTracks={tracks} onSimilar={handleFindSimilar} />
+                                    tracks.slice(pageIndex * 20, pageIndex * 20 + 10).map((track) => (
+                                        <TrackRow key={track.id} {...track} lyrics={track.lyrics} allTracks={visibleTracks} onSimilar={handleFindSimilar} />
                                     ))
                                 ) : (
                                     <div className="py-20 text-center flex flex-col items-center space-y-4 opacity-40">
@@ -510,6 +614,7 @@ function VenueDashboardContent() {
                                     </div>
                                 )}
                             </div>
+
                         </div>
 
                         {/* 3. Premium Curation Section (8 boxes) */}
@@ -527,14 +632,14 @@ function VenueDashboardContent() {
                                             setSelectedGenres([]);
                                             setSelectedVenues([]);
 
-                                            if (playlist.vibe) {
+                                            if (playlist.venue) {
+                                                setSelectedVenues([playlist.venue]);
+                                                setQuery('');
+                                            } else if (playlist.vibe) {
                                                 setSelectedVibes([playlist.vibe]);
                                                 setQuery('');
                                             } else if (playlist.genre) {
                                                 setSelectedGenres([playlist.genre]);
-                                                setQuery('');
-                                            } else if (playlist.venue) {
-                                                setSelectedVenues([playlist.venue]);
                                                 setQuery('');
                                             } else {
                                                 setQuery(playlist.title === "Recommended tracks" ? "" : playlist.title);
@@ -546,7 +651,28 @@ function VenueDashboardContent() {
                             </div>
                         </div>
 
-                        {/* 4. Music on Request Promotion Banner */}
+                        {/* 4. Discovery Flow (Continued) */}
+                        <div className="space-y-8 pt-8 border-t border-white/5">
+                            {tracks.slice(pageIndex * 20, pageIndex * 20 + 20).length > 10 && (
+                                <div className="divide-y divide-white/5 bg-zinc-900/5 rounded-[2.5rem] overflow-hidden">
+                                    {tracks.slice(pageIndex * 20 + 10, pageIndex * 20 + 20).map((track) => (
+                                        <TrackRow key={track.id} {...track} lyrics={track.lyrics} allTracks={visibleTracks} onSimilar={handleFindSimilar} />
+                                    ))}
+                                </div>
+                            )}
+                            <div className="flex justify-end pt-4">
+                                <button
+                                    onClick={handleRefreshDiscovery}
+                                    disabled={discoveryLoading}
+                                    className="flex items-center gap-3 px-8 py-3 rounded-full bg-white/5 border border-white/10 text-white text-[12px] font-black uppercase tracking-widest hover:bg-white/10 transition-all active:scale-95 shadow-xl group"
+                                >
+                                    <RefreshCw size={14} className={`${discoveryLoading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
+                                    {t('sections.explore_more')}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* 5. Music on Request Promotion Banner */}
                         <div className="pt-8">
                             <div className="bg-[#D9E1EB] rounded-3xl md:rounded-[3rem] overflow-hidden flex flex-col md:flex-row items-stretch border border-white/5 group/banner">
                                 <div className="flex-1 p-8 md:p-16 flex flex-col justify-center space-y-4 md:space-y-6">
@@ -576,19 +702,12 @@ function VenueDashboardContent() {
                         <div className="space-y-8 pt-12 border-t border-white/5">
                             <div className="flex items-center justify-between">
                                 <h2 className="text-2xl font-black tracking-tight text-white uppercase italic">{t('sections.trending')}</h2>
-                                <button
-                                    onClick={() => performSearch(query, selectedVenues, selectedVibes, selectedGenres, bpmRange)}
-                                    className="text-[11px] font-black text-zinc-500 hover:text-white transition-colors uppercase tracking-[0.2em] flex items-center gap-2 group"
-                                >
-                                    {loading && <RefreshCw size={12} className="animate-spin" />}
-                                    {t('sections.explore_more')}
-                                </button>
                             </div>
 
                             <div className="divide-y divide-white/5 bg-zinc-900/5 rounded-[2.5rem] overflow-hidden min-h-[400px]">
-                                {tracks.length > 5 ? (
-                                    tracks.slice(5, 15).map((track) => (
-                                        <TrackRow key={track.id} {...track} lyrics={track.lyrics} allTracks={tracks} onSimilar={handleFindSimilar} />
+                                {trendingTracks.length > 0 ? (
+                                    trendingTracks.map((track) => (
+                                        <TrackRow key={track.id} {...track} lyrics={track.lyrics} allTracks={trendingTracks} onSimilar={handleFindSimilar} />
                                     ))
                                 ) : (
                                     <div className="py-20 text-center flex items-center justify-center text-zinc-700 font-black uppercase tracking-widest text-[10px]">

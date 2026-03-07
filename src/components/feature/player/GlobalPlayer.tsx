@@ -14,8 +14,12 @@ import {
     Settings2,
     X,
     Mic2,
-    ListMusic
+    ListMusic,
+    Heart,
+    ListPlus
 } from 'lucide-react';
+import AddToPlaylistPopover from '@/components/dashboard/AddToPlaylistPopover';
+import { isTrackLiked_Action, toggleLikeTrack_Action } from '@/app/actions/music';
 
 const formatTime = (time: number) => {
     if (!time || isNaN(time)) return '0:00';
@@ -41,8 +45,12 @@ export function GlobalPlayer() {
         currentTrack, isPlaying, togglePlay, duration, currentTime,
         seek, analyser, tuning, setTuning, isAutoTuning, setAutoTuning, tier, role, stop,
         isMuted, setMuted, volume, setVolume, isShuffle, setShuffle, isRepeat, setRepeat,
-        playNext, playPrevious, isHighFidelity, setHighFidelity
+        playNext, playPrevious, isHighFidelity, setHighFidelity,
+        userId, tenantId
     } = usePlayer();
+
+    const [isLiked, setIsLiked] = useState(false);
+    const [showPlaylistPopover, setShowPlaylistPopover] = useState(false);
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const animationRef = useRef<number>();
@@ -51,6 +59,19 @@ export function GlobalPlayer() {
     const [isMounted, setIsMounted] = useState(false);
     const [showLyrics, setShowLyrics] = useState(false);
     const [showSettings, setShowSettings] = useState(false);
+
+    useEffect(() => {
+        if (userId && currentTrack?.id) {
+            isTrackLiked_Action(currentTrack.id, userId).then(setIsLiked);
+        }
+    }, [userId, currentTrack?.id]);
+
+    const handleLike = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!userId || !currentTrack?.id) return;
+        const result = await toggleLikeTrack_Action(currentTrack.id, userId, tenantId || undefined);
+        setIsLiked(result.liked);
+    };
 
     useEffect(() => {
         setIsMounted(true);
@@ -261,6 +282,36 @@ export function GlobalPlayer() {
                                 onChange={(e) => setVolume(parseInt(e.target.value))}
                                 className="w-16 h-0.5 accent-indigo-500 cursor-pointer"
                             />
+                        </div>
+
+                        {/* Feature 4: Like & Playlist Integration */}
+                        <div className="flex items-center gap-2">
+                            <SimpleTooltip text={isLiked ? "Unlike" : "Like"}>
+                                <button
+                                    onClick={handleLike}
+                                    className={`p-2 transition-all hover:scale-110 ${isLiked ? 'text-pink-500' : 'text-zinc-500 hover:text-white'}`}
+                                >
+                                    <Heart size={16} fill={isLiked ? "currentColor" : "none"} />
+                                </button>
+                            </SimpleTooltip>
+
+                            <div className="relative">
+                                <SimpleTooltip text="Add to Playlist">
+                                    <button
+                                        onClick={() => setShowPlaylistPopover(!showPlaylistPopover)}
+                                        className={`p-2 transition-all hover:scale-110 ${showPlaylistPopover ? 'text-indigo-400' : 'text-zinc-500 hover:text-white'}`}
+                                    >
+                                        <ListPlus size={18} />
+                                    </button>
+                                </SimpleTooltip>
+                                {showPlaylistPopover && currentTrack && (
+                                    <AddToPlaylistPopover
+                                        trackId={currentTrack.id}
+                                        tenantId={tenantId}
+                                        onClose={() => setShowPlaylistPopover(false)}
+                                    />
+                                )}
+                            </div>
                         </div>
 
                         <button onClick={() => setShowSettings(!showSettings)} className={`p-1 transition-colors ${showSettings ? 'text-indigo-400' : 'hover:text-white'}`}>

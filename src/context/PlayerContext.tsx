@@ -56,6 +56,11 @@ interface PlayerContextType {
     setLoopRegion: (region: { start: number; end: number } | null) => void;
     isHighFidelity: boolean;
     setHighFidelity: (enabled: boolean) => void;
+    userId: string | null;
+    tenantId: string | null;
+    setTrackList: (list: Track[]) => void;
+    onQueueEnd: (() => void) | null;
+    setOnQueueEnd: (callback: (() => void) | null) => void;
 }
 
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
@@ -83,6 +88,11 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
     // Aura High-Fidelity DSP State
     const [isHighFidelity, setIsHighFidelity] = useState(false);
+
+    // Multi-tenant session state
+    const [userId, setUserId] = useState<string | null>(null);
+    const [tenantId, setTenantId] = useState<string | null>(null);
+    const [onQueueEnd, setOnQueueEnd] = useState<(() => void) | null>(null);
 
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const audioContextRef = useRef<AudioContext | null>(null);
@@ -132,7 +142,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
                 const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
                 if (AudioCtx && !audioContextRef.current && audioRef.current) {
                     const ctx = new AudioCtx();
-                    
+
                     // Create DSP Nodes
                     const analyzerNode = ctx.createAnalyser();
                     analyzerNode.fftSize = 256;
@@ -154,7 +164,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 
                     try {
                         const source = ctx.createMediaElementSource(audioRef.current);
-                        
+
                         // Chain: Source -> HighShelf -> Compressor -> Gain -> Analyzer -> Destination
                         source.connect(highShelf);
                         highShelf.connect(compressor);
@@ -250,10 +260,14 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             const supabase = createClient();
             const { data: { session } } = await supabase.auth.getSession();
             if (session?.user) {
-                const { data: profile } = await supabase.from('profiles').select('subscription_tier, role').eq('id', session.user.id).single();
+                setUserId(session.user.id);
+                const { data: profile } = await supabase.from('profiles').select('subscription_tier, role, tenant_id').eq('id', session.user.id).single();
                 if (profile) {
                     setTier(profile.subscription_tier as Tier);
                     setRole(profile.role);
+                    if (profile.tenant_id) {
+                        setTenantId(profile.tenant_id);
+                    }
                 }
 
                 // Log Heartbeat for Churn Prediction
@@ -356,20 +370,27 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const playNext = useCallback(() => {
         if (trackList.length === 0 || !currentTrack) return;
         let index = trackList.findIndex(t => t.id === currentTrack.id);
-        if (index === -1) index = 0;
 
-        let nextIndex = index + 1;
+        // If the current track is no longer in the list (e.g. queue was entirely replaced via pagination),
+        // we should conceptually start at the beginning of the new list (index 0).
+        let nextIndex = index === -1 ? 0 : index + 1;
+
         if (isShuffle) {
             nextIndex = Math.floor(Math.random() * trackList.length);
         } else if (nextIndex >= trackList.length) {
-            if (isRepeat) nextIndex = 0;
-            else {
+            if (onQueueEnd) {
                 setIsPlaying(false);
+                onQueueEnd();
                 return;
+            } else if (isRepeat) {
+                nextIndex = 0;
+            } else {
+                // Radio sensitivity: Business mode always loops back if no auto-discovery is set
+                nextIndex = 0;
             }
         }
         playTrack(trackList[nextIndex]);
-    }, [trackList, currentTrack, isShuffle, isRepeat]);
+    }, [trackList, currentTrack, isShuffle, isRepeat, onQueueEnd]);
 
     const playPrevious = () => {
         if (trackList.length === 0 || !currentTrack) return;
@@ -470,7 +491,9 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             isHighFidelity, setHighFidelity,
             playTrack, togglePlay, seek: (t) => { if (audioRef.current) audioRef.current.currentTime = t; },
             setTuning, setAutoTuning, setMuted, setVolume, setShuffle: setIsShuffle, setRepeat: setIsRepeat,
-            playNext, playPrevious, stop, setLoopRegion
+            playNext, playPrevious, stop, setLoopRegion,
+            userId, tenantId,
+            setTrackList, onQueueEnd, setOnQueueEnd
         }}>
             {children}
             {/* Hidden trigger for auto-play b/c of event listener closures */}

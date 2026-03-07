@@ -5,7 +5,8 @@ import {
     Zap,
     ArrowUpRight,
     Activity,
-    LayoutDashboard
+    LayoutDashboard,
+    Clock
 } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { VenueActionRow } from '@/components/dashboard/VenueActionRow';
@@ -78,6 +79,12 @@ export default async function EnterpriseDashboard() {
                 </div>
 
                 <div className="flex items-center gap-4">
+                    <Link
+                        href="/dashboard/enterprise/scheduling"
+                        className="px-6 py-3 bg-zinc-900 text-zinc-300 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-zinc-800 hover:text-white transition-all flex items-center gap-2 border border-white/10"
+                    >
+                        <Clock size={14} /> Smart Scheduling
+                    </Link>
                     <Link
                         href="/dashboard/enterprise/venues"
                         className="px-6 py-3 bg-white text-black rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-zinc-200 transition-all flex items-center gap-2"
