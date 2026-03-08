@@ -13,6 +13,7 @@ import { usePlayer } from '@/context/PlayerContext';
 import { createClient } from '@/lib/db/client';
 import { useTranslations } from 'next-intl';
 import { SimilarityModal } from '@/components/dashboard/SimilarityModal';
+import { VENUE_TAGS } from '@/constants/taxonomy';
 
 const PlaylistCard = ({ title, tracks, color, image, onClick }: { title: string, tracks: string, color: string, image?: string, onClick?: () => void }) => (
     <div className="group cursor-pointer" onClick={onClick}>
@@ -279,7 +280,7 @@ function VenueDashboardContent() {
         { title: "Golden Hour", tracks: formatCount(curationCounts["Golden Hour"]), vibe: "Dreamy", color: "bg-[#FF8C00]", image: "https://images.unsplash.com/photo-1470252649358-9c9e6c739946?q=80&w=800" },
         { title: "Techno Bunker", tracks: formatCount(curationCounts["Techno Bunker"]), vibe: "Dark", color: "bg-[#000000]", image: "https://images.unsplash.com/photo-1574433232643-49f0f6cc0d00?q=80&w=800" },
         { title: "Aura Classics", tracks: formatCount(curationCounts["Aura Classics"]), genre: "Legacy", color: "bg-[#DAA520]", image: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=800" },
-        { title: "Global Beats", tracks: formatCount(curationCounts["Global Beats"]), genre: "World", color: "bg-[#228B22]", image: "https://images.unsplash.com/photo-1526218626217-dc65a29bb444?q=80&w=800" },
+        { title: "Velvet & Fire Album", tracks: "10 tracks", query: "Velvet & Fire", color: "bg-[#8B0000]", image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=800" },
         { title: "Lobby", tracks: formatCount(curationCounts["Lobby"]), venue: "Hotel Lobby", color: "bg-[#AAAAAA]", image: "/images/lobby.png" }
     ];
 
@@ -397,8 +398,7 @@ function VenueDashboardContent() {
                                             }
                                         } else if (val.toLowerCase().startsWith('vn:') || val.toLowerCase().startsWith('venue:')) {
                                             const tag = val.split(':')[1]?.trim();
-                                            const allVenueTags = VENUE_SECTORS.flatMap(s => s.tags);
-                                            if (tag && allVenueTags.includes(tag)) {
+                                            if (tag && VENUE_TAGS.includes(tag)) {
                                                 setSelectedVenues(prev => [...new Set([...prev, tag])]);
                                                 setQuery('');
                                             }
@@ -419,7 +419,7 @@ function VenueDashboardContent() {
                                             {GENRE_TAGS.filter(g => g.toLowerCase().includes(query.toLowerCase())).slice(0, 3).map(g => (
                                                 <button key={g} onClick={() => { setSelectedGenres(prev => [...new Set([...prev, g])]); setQuery(''); }} className="px-3 py-1.5 rounded-lg bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 text-[11px] font-bold hover:bg-indigo-600 hover:text-white transition-all">{t('search.genre_prefix')}{g}</button>
                                             ))}
-                                            {VENUE_SECTORS.flatMap(s => s.tags).filter(venueTag => venueTag.toLowerCase().includes(query.toLowerCase())).slice(0, 3).map(venueTag => (
+                                            {VENUE_TAGS.filter(venueTag => venueTag.toLowerCase().includes(query.toLowerCase())).slice(0, 5).map(venueTag => (
                                                 <button key={venueTag} onClick={() => { setSelectedVenues(prev => [...new Set([...prev, venueTag])]); setQuery(''); }} className="px-3 py-1.5 rounded-lg bg-emerald-600/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-bold hover:bg-emerald-600 hover:text-white transition-all">{t('search.venue_prefix')}{venueTag}</button>
                                             ))}
                                         </div>
@@ -641,7 +641,11 @@ function VenueDashboardContent() {
                                             } else if (playlist.genre) {
                                                 setSelectedGenres([playlist.genre]);
                                                 setQuery('');
+                                            } else if (playlist.query) {
+                                                // Specific exact search string
+                                                setQuery(playlist.query);
                                             } else {
+                                                // Fallback behavior
                                                 setQuery(playlist.title === "Recommended tracks" ? "" : playlist.title);
                                             }
                                             window.scrollTo({ top: 0, behavior: 'smooth' });

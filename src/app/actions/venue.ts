@@ -69,7 +69,7 @@ export async function getVenueTracks_Action(options?: {
 
         // Apply Filters
         if (options?.bpmRange) {
-            q = q.gte('bpm', options.bpmRange[0]).lte('bpm', options.bpmRange[1]);
+            q = q.or(`and(bpm.gte.${options.bpmRange[0]},bpm.lte.${options.bpmRange[1]}),bpm.is.null,bpm.eq.0`);
         }
         if (options?.query) {
             q = q.or(`title.ilike.%${options.query}%,artist.ilike.%${options.query}%,genre.ilike.%${options.query}%`);
@@ -162,6 +162,8 @@ export async function getVenueTracks_Action(options?: {
         unheardTracks = uData || [];
         error = uErr; // We mainly care if the unheard chunk fails critically
 
+        console.log("VENUE DBG - Unheard Query:", { uDataLen: uData?.length, uErr, slotsNeeded });
+
         // Combine arrays
         const combined = [...popularTracks, ...unheardTracks];
 
@@ -182,6 +184,8 @@ export async function getVenueTracks_Action(options?: {
         const { data, error: qErr } = await buildBaseQuery()
             .order('created_at', { ascending: false })
             .limit(50);
+
+        console.log("VENUE DBG - Fallback Query:", { dataLen: data?.length, qErr });
 
         tracks = data || [];
         error = qErr;
@@ -281,6 +285,7 @@ export async function getVenueTracks_Action(options?: {
         };
     }));
 
+    console.log("VENUE DBG - Returning tracks:", tracksWithUrls.length);
     return tracksWithUrls;
 }
 

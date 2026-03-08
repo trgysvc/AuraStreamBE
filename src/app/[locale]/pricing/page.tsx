@@ -149,7 +149,11 @@ export default async function PricingPage() {
                                 </ul>
 
                                 <Link
-                                    href={plan.disabled ? "#" : (plan.name === t('plans.enterprise.name') ? `/${locale}/enterprise#contact-section` : `/${locale}/signup`)}
+                                    href={plan.disabled ? "#" : (
+                                        plan.name === t('plans.enterprise.name')
+                                            ? `/enterprise#contact-section`
+                                            : (plan.name === t('plans.business.name') ? `/checkout?plan=business_monthly` : `/signup`)
+                                    )}
                                     className={`w-full py-3 md:py-5 text-center rounded-xl md:rounded-2xl font-black text-[8px] md:text-[10px] uppercase tracking-[0.2em] md:tracking-[0.3em] transition-all ${plan.disabled
                                         ? 'bg-zinc-900 text-zinc-600 cursor-not-allowed'
                                         : (plan.highlight

@@ -4,7 +4,7 @@ import Stripe from 'stripe';
 import { createAdminClient } from '@/lib/db/admin-client';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2026-01-28.clover' as any,
+    apiVersion: '2025-02-24.acacia' as any, // Using latest valid Stripe API version type
 });
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -27,81 +27,120 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: msg }, { status: 400 });
     }
 
-    // Handle Subscription Events
-    if (event.type === 'customer.subscription.created' || event.type === 'customer.subscription.updated') {
-        const subscription = event.data.object as Stripe.Subscription;
-        const customerId = subscription.customer as string;
+    const supabase = createAdminClient();
 
-        const tier = (subscription.metadata.tier as 'free' | 'pro' | 'business' | 'enterprise') || 'pro';
-        const status = subscription.status as string;
+    // 1. Idempotency Check
+    const { data: existingEvent } = await supabase
+        .from('processed_webhook_ids')
+        .select('id')
+        .eq('id', event.id)
+        .single();
 
-        const supabase = createAdminClient();
-
-        // 1. Update Profile
-        await supabase
-            .from('profiles')
-            .update({
-                subscription_tier: tier,
-                stripe_customer_id: customerId
-            })
-            .eq('stripe_customer_id', customerId);
-
-        // 2. Update Tenant (Link via owner's profile)
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('tenant_id')
-            .eq('stripe_customer_id', customerId)
-            .single();
-
-        if (profile?.tenant_id) {
-            await supabase
-                .from('tenants')
-                .update({
-                    current_plan: tier,
-                    plan_status: status,
-                    subscription_id: subscription.id
-                })
-                .eq('id', profile.tenant_id);
-        }
-
-        console.log(`👤 User & Tenant subscription updated: ${customerId} -> ${tier} (${status})`);
+    if (existingEvent) {
+        console.log(`⚠️ Webhook event ${event.id} already processed. Skipping.`);
+        return NextResponse.json({ received: true, skipped: true });
     }
 
-    if (event.type === 'customer.subscription.deleted') {
-        const subscription = event.data.object as Stripe.Subscription;
-        const customerId = subscription.customer as string;
+    try {
+        switch (event.type) {
+            case 'invoice.payment_succeeded': {
+                const invoice = event.data.object as any;
+                if (invoice.subscription) {
+                    const subscriptionId = invoice.subscription as string;
+                    const customerId = invoice.customer as string;
 
-        const supabase = createAdminClient();
+                    // Fetch the subscription from Stripe to get the current period end
+                    const stripeSub = await stripe.subscriptions.retrieve(subscriptionId) as any;
 
-        // Update Profile
-        await supabase
-            .from('profiles')
-            .update({ subscription_tier: 'free' })
-            .eq('stripe_customer_id', customerId);
+                    await supabase
+                        .from('subscriptions')
+                        .update({
+                            status: 'active',
+                            current_period_end: new Date((stripeSub.current_period_end as number) * 1000).toISOString(),
+                            grace_period_end: null // Clear any dunning state
+                        })
+                        .eq('provider_sub_id', subscriptionId)
+                        .eq('provider', 'stripe');
 
-        // Update Tenant
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('tenant_id')
-            .eq('stripe_customer_id', customerId)
-            .single();
+                    console.log(`✅ Stripe payment succeeded for ${subscriptionId}`);
+                }
+                break;
+            }
 
-        if (profile?.tenant_id) {
-            await supabase
-                .from('tenants')
-                .update({
-                    current_plan: 'free',
-                    plan_status: 'canceled'
-                })
-                .eq('id', profile.tenant_id);
+            case 'invoice.payment_failed': {
+                const invoice = event.data.object as any;
+                if (invoice.subscription) {
+                    const subscriptionId = invoice.subscription as string;
+
+                    // Basic Dunning implementation (status grace_period if Stripe marks it past_due)
+                    const stripeSub = await stripe.subscriptions.retrieve(subscriptionId);
+
+                    const updateData: any = {};
+                    if (stripeSub.status === 'past_due' || stripeSub.status === 'unpaid') {
+                        updateData.status = 'grace_period';
+                        // Default to 48 hours for grace period if not handled strictly by Stripe
+                        updateData.grace_period_end = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
+                    } else if (stripeSub.status === 'canceled') {
+                        updateData.status = 'canceled';
+                    }
+
+                    if (Object.keys(updateData).length > 0) {
+                        await supabase
+                            .from('subscriptions')
+                            .update(updateData)
+                            .eq('provider_sub_id', subscriptionId)
+                            .eq('provider', 'stripe');
+
+                        console.log(`⚠️ Stripe payment failed for ${subscriptionId}. Status updated to ${updateData.status}`);
+                    }
+                }
+                break;
+            }
+
+            case 'customer.subscription.updated': {
+                const subscription = event.data.object as any;
+
+                // Keep cancel_at_period_end synced
+                await supabase
+                    .from('subscriptions')
+                    .update({
+                        status: subscription.status === 'trialing' ? 'trialing' : (subscription.status === 'active' ? 'active' : 'grace_period'),
+                        cancel_at_period_end: subscription.cancel_at_period_end,
+                        current_period_end: new Date((subscription.current_period_end as number) * 1000).toISOString()
+                    })
+                    .eq('provider_sub_id', subscription.id)
+                    .eq('provider', 'stripe');
+                break;
+            }
+
+            case 'customer.subscription.deleted': {
+                const subscription = event.data.object as Stripe.Subscription;
+
+                await supabase
+                    .from('subscriptions')
+                    .update({
+                        status: 'canceled',
+                        canceled_at: new Date().toISOString(),
+                        cancel_at_period_end: false
+                    })
+                    .eq('provider_sub_id', subscription.id)
+                    .eq('provider', 'stripe');
+
+                console.log(`📉 Stripe subscription cancelled: ${subscription.id}`);
+                break;
+            }
         }
 
-        console.log(`📉 User & Tenant subscription cancelled: ${customerId}`);
-    }
+        // 2. Mark event as processed
+        await supabase.from('processed_webhook_ids').insert({
+            id: event.id,
+            provider: 'stripe',
+            processed_at: new Date().toISOString()
+        });
 
-    // Legacy support for checkout sessions (initial purchase)
-    if (event.type === 'checkout.session.completed') {
-        // ... existing logic if needed for one-off trials or specific credits
+    } catch (err: any) {
+        console.error(`❌ Error processing webhook ${event.type}:`, err);
+        return NextResponse.json({ error: 'Webhook handler failed' }, { status: 500 });
     }
 
     return NextResponse.json({ received: true });
