@@ -268,7 +268,7 @@ function VenueDashboardContent() {
     const playlists = [
         { title: "Recommended tracks", tracks: "Aura AI", color: "bg-[#FF5533]", image: "https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=800" },
         { title: "Trending in Venues", tracks: "Popular", color: "bg-[#FF77AA]", image: "https://images.unsplash.com/photo-1514525253344-f856335d7d67?q=80&w=800" },
-        { title: "Can's Essentials", tracks: formatCount(curationCounts["Can's Essentials"], "playlist", "playlists"), color: "bg-[#AAAAAA]", image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=800" },
+        { title: "Can's Essentials", tracks: formatCount(curationCounts["Can's Essentials"]), query: "sayonaramuse", color: "bg-[#AAAAAA]", image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=800" },
         { title: "Creator's Picks", tracks: formatCount(curationCounts["Creator's Picks"], "playlist", "playlists"), color: "bg-[#4499FF]", image: "https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?q=80&w=800" },
         { title: "Liked Songs", tracks: formatCount(curationCounts["Liked Songs"]), color: "bg-pink-600", image: "https://images.unsplash.com/photo-1544690411-b752fa399f9c?q=80&w=800" },
         { title: "Championships", tracks: formatCount(curationCounts["Championships"]), vibe: "Epic", color: "bg-[#FFCC44]", image: "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=800" },
@@ -279,8 +279,8 @@ function VenueDashboardContent() {
         { title: "Late Night Jazz", tracks: formatCount(curationCounts["Late Night Jazz"]), genre: "Jazz", color: "bg-[#4B0082]", image: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=800" },
         { title: "Golden Hour", tracks: formatCount(curationCounts["Golden Hour"]), vibe: "Dreamy", color: "bg-[#FF8C00]", image: "https://images.unsplash.com/photo-1470252649358-9c9e6c739946?q=80&w=800" },
         { title: "Techno Bunker", tracks: formatCount(curationCounts["Techno Bunker"]), vibe: "Dark", color: "bg-[#000000]", image: "https://images.unsplash.com/photo-1574433232643-49f0f6cc0d00?q=80&w=800" },
-        { title: "Aura Classics", tracks: formatCount(curationCounts["Aura Classics"]), genre: "Legacy", color: "bg-[#DAA520]", image: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?q=80&w=800" },
-        { title: "Velvet & Fire Album", tracks: "10 tracks", query: "Velvet & Fire", color: "bg-[#8B0000]", image: "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?q=80&w=800" },
+        { title: "Showroom / Gallery", tracks: formatCount(curationCounts["Showroom / Gallery"]), venue: "Showroom / Gallery", color: "bg-[#DAA520]", image: "/images/sectors/exhibition.png" },
+        { title: "Velvet & Fire Album", tracks: formatCount(curationCounts["Velvet & Fire Album"], "track", "tracks"), query: "Velvet & Fire", color: "bg-[#8B0000]", image: "/images/curation/velvet-and-fire.png" },
         { title: "Lobby", tracks: formatCount(curationCounts["Lobby"]), venue: "Hotel Lobby", color: "bg-[#AAAAAA]", image: "/images/lobby.png" }
     ];
 
@@ -632,8 +632,12 @@ function VenueDashboardContent() {
                                             setSelectedGenres([]);
                                             setSelectedVenues([]);
 
-                                            if (playlist.venue) {
-                                                setSelectedVenues([playlist.venue]);
+                                            if (playlist.title === "Trending in Venues") {
+                                                setQuery('');
+                                                setTracks(trendingTracks);
+                                                setPageIndex(0);
+                                            } else if (playlist.venue) {
+                                                setSelectedVenues(Array.isArray(playlist.venue) ? playlist.venue : [playlist.venue]);
                                                 setQuery('');
                                             } else if (playlist.vibe) {
                                                 setSelectedVibes([playlist.vibe]);

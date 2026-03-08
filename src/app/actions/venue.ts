@@ -481,11 +481,28 @@ export async function getCurationCounts_Action(options?: {
             'Late Night Jazz': 'Jazz',
             'Golden Hour': 'Dreamy',
             'Techno Bunker': 'Dark',
-            'Aura Classics': 'Legacy',
+            'Showroom / Gallery': 'Venue_Showroom',
             'Global Beats': 'World',
             'Lobby': 'Hotel Lobby',
             'The Roastery': 'Coffee Shop'
         };
+
+        // Custom Artist / Query Counts
+        const customQueries = [
+            { title: "Can's Essentials", column: 'artist', match: 'sayonaramuse' },
+            { title: "Velvet & Fire Album", column: 'title', match: 'Velvet & Fire', isIlike: true }
+        ];
+
+        for (const cq of customQueries) {
+            let q = supabase.from('tracks').select('*', { count: 'exact', head: true }).eq('status', 'active');
+            if (cq.isIlike) {
+                q = q.ilike(cq.column, `%${cq.match}%`);
+            } else {
+                q = q.eq(cq.column, cq.match);
+            }
+            const { count } = await q;
+            counts[cq.title] = count || 0;
+        }
 
         for (const [title, tag] of Object.entries(categoryMapping)) {
             if (['Jazz', 'Legacy', 'World', 'Cinematic'].includes(tag)) {
@@ -496,13 +513,14 @@ export async function getCurationCounts_Action(options?: {
                     .eq('status', 'active')
                     .eq('genre', tag);
                 counts[title] = count || 0;
-            } else if (tag === 'Hotel Lobby' || tag === 'Coffee Shop') {
+            } else if (tag === 'Hotel Lobby' || tag === 'Coffee Shop' || tag === 'Venue_Showroom') {
                 // Venue-based
+                const overlapsTags = tag === 'Venue_Showroom' ? ['Showroom / Gallery'] : [tag];
                 const { count } = await supabase
                     .from('tracks')
                     .select('*', { count: 'exact', head: true })
                     .eq('status', 'active')
-                    .overlaps('venue_tags', [tag]);
+                    .overlaps('venue_tags', overlapsTags);
                 counts[title] = count || 0;
             } else {
                 // Vibe-based (already counted in vibetags, but we map the title)
@@ -511,7 +529,6 @@ export async function getCurationCounts_Action(options?: {
         }
 
         // Some manual/special tags
-        counts["Can's Essentials"] = 24; // Hardcoded static for now as requested or until we have playlist support
         counts["Creator's Picks"] = 117; // Static fallback
 
     } catch (err) {
