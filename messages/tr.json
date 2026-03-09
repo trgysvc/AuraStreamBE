@@ -1210,6 +1210,17 @@
             "title": "Talep Üzerine Müzik",
             "desc": "Özel olarak tasarlanmış seslerle mekanınızı bir üst seviyeye taşıyın. Yapay zekamız ve uzman küratörlerimiz markanız için çalışıyor.",
             "button": "Hemen Başla"
+        },
+        "track_actions": {
+            "like": "Beğen",
+            "unlike": "Beğeniyi Kaldır",
+            "add_to_playlist": "Çalma Listesine Ekle",
+            "find_similar": "Benzerini Bul",
+            "more_options": "Daha Fazla Seçenek",
+            "found_playlists": "Bulunan Çalma Listeleri",
+            "tracks_count": "{count} parça",
+            "filter_playlists": "Çalma listesi filtrele...",
+            "no_playlists": "Çalma listesi bulunamadı"
         }
     },
     "MusicRequest": {

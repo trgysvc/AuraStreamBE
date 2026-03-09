@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Plus, ListPlus, Check, Search, X } from 'lucide-react';
 import { getPlaylists_Action, addTrackToPlaylist_Action, Playlist } from '@/app/actions/playlist';
+import { useTranslations } from 'next-intl';
+
 
 interface AddToPlaylistPopoverProps {
     trackId: string;
@@ -11,7 +13,9 @@ interface AddToPlaylistPopoverProps {
 }
 
 export default function AddToPlaylistPopover({ trackId, tenantId, onClose }: AddToPlaylistPopoverProps) {
+    const t = useTranslations('VenueDashboard.track_actions');
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
+
     const [loading, setLoading] = useState(true);
     const [addingToId, setAddingToId] = useState<string | null>(null);
     const [successId, setSuccessId] = useState<string | null>(null);
@@ -49,7 +53,7 @@ export default function AddToPlaylistPopover({ trackId, tenantId, onClose }: Add
     return (
         <div className="absolute right-0 bottom-full mb-2 w-64 bg-[#1E1E22]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-[100] animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
             <div className="p-4 border-b border-white/5 flex items-center justify-between">
-                <h3 className="text-[11px] font-black uppercase tracking-widest text-white italic">Add to Playlist</h3>
+                <h3 className="text-[11px] font-black uppercase tracking-widest text-white italic">{t('add_to_playlist')}</h3>
                 <button onClick={onClose} className="text-zinc-500 hover:text-white transition-colors">
                     <X size={14} />
                 </button>
@@ -63,7 +67,7 @@ export default function AddToPlaylistPopover({ trackId, tenantId, onClose }: Add
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Filter playlists..."
+                        placeholder={t('filter_playlists')}
                         className="bg-transparent border-none outline-none text-[12px] text-white w-full placeholder-zinc-600 font-bold"
                     />
                 </div>
@@ -83,7 +87,7 @@ export default function AddToPlaylistPopover({ trackId, tenantId, onClose }: Add
                             >
                                 <div className="flex flex-col min-w-0">
                                     <span className="text-[12px] font-bold text-zinc-200 truncate group-hover:text-white">{playlist.name}</span>
-                                    <span className="text-[9px] text-zinc-500 font-medium">{playlist.item_count} tracks</span>
+                                    <span className="text-[9px] text-zinc-500 font-medium">{t('tracks_count', { count: playlist.item_count ?? 0 })}</span>
                                 </div>
                                 <div className="flex-shrink-0 ml-2">
                                     {successId === playlist.id ? (
@@ -98,7 +102,7 @@ export default function AddToPlaylistPopover({ trackId, tenantId, onClose }: Add
                         ))
                     ) : (
                         <div className="py-8 text-center text-[10px] text-zinc-600 font-black uppercase tracking-widest italic">
-                            No playlists found
+                            {t('no_playlists')}
                         </div>
                     )}
                 </div>

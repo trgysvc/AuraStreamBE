@@ -33,6 +33,13 @@ function HelpCenterContent() {
     const [activePage, setActivePage] = useState(initialPage);
     const [searchQuery, setSearchQuery] = useState('');
 
+    // Sync activePage when URL ?page= param changes (e.g. arriving from /about/ad Learn More links)
+    React.useEffect(() => {
+        const pageFromUrl = searchParams.get('page') || 'vision';
+        setActivePage(pageFromUrl);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [searchParams]);
+
     const HELP_SECTIONS = [
         {
             id: 'getting-started',

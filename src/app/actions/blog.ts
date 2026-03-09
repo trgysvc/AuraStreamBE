@@ -22,18 +22,11 @@ export async function getBlogPosts(onlyPublished = true, locale?: string) {
 
     let query = (supabase as any)
         .from('blog_posts')
-        .select(`
-            *,
-            blog_translations!left(title, excerpt, content, locale)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
     if (onlyPublished) {
         query = query.eq('is_published', true);
-    }
-
-    if (locale && locale !== 'en') {
-        query = query.eq('blog_translations.locale', locale);
     }
 
     const { data, error } = await query;
@@ -43,51 +36,71 @@ export async function getBlogPosts(onlyPublished = true, locale?: string) {
         return [];
     }
 
-    return (data as any[]).map(post => {
-        const translation = post.blog_translations?.[0];
-        if (translation) {
-            return {
-                ...post,
-                title: translation.title || post.title,
-                excerpt: translation.excerpt || post.excerpt,
-                content: translation.content || post.content
-            };
+    const posts = data as any[];
+
+    // If locale is not English, fetch translations separately and merge
+    if (locale && locale !== 'en' && posts.length > 0) {
+        const postIds = posts.map((p: any) => p.id);
+        const { data: translations } = await (supabase as any)
+            .from('blog_translations')
+            .select('blog_id, title, excerpt, content, locale')
+            .in('blog_id', postIds)
+            .eq('locale', locale);
+
+        if (translations && translations.length > 0) {
+            const translationMap: Record<string, any> = {};
+            for (const t of translations) {
+                translationMap[t.blog_id] = t;
+            }
+            return posts.map((post: any) => {
+                const tr = translationMap[post.id];
+                if (tr) {
+                    return {
+                        ...post,
+                        title: tr.title || post.title,
+                        excerpt: tr.excerpt || post.excerpt,
+                        content: tr.content || post.content,
+                    };
+                }
+                return post;
+            }) as BlogPost[];
         }
-        return post;
-    }) as BlogPost[];
+    }
+
+    return posts as BlogPost[];
 }
 
 export async function getBlogPostBySlug(slug: string, locale?: string) {
     const supabase = await createClient();
 
-    let query = (supabase as any)
+    const { data: post, error } = await (supabase as any)
         .from('blog_posts')
-        .select(`
-            *,
-            blog_translations!left(title, excerpt, content, locale)
-        `)
-        .eq('slug', slug);
-
-    if (locale && locale !== 'en') {
-        query = query.eq('blog_translations.locale', locale);
-    }
-
-    const { data, error } = await query.single();
+        .select('*')
+        .eq('slug', slug)
+        .single();
 
     if (error) {
         console.error(`Error fetching blog post with slug ${slug}:`, error);
         return null;
     }
 
-    const post = data as any;
-    const translation = post.blog_translations?.[0];
-    if (translation) {
-        return {
-            ...post,
-            title: translation.title || post.title,
-            excerpt: translation.excerpt || post.excerpt,
-            content: translation.content || post.content
-        } as BlogPost;
+    // If locale is not English, fetch translation separately
+    if (locale && locale !== 'en' && post) {
+        const { data: translation } = await (supabase as any)
+            .from('blog_translations')
+            .select('title, excerpt, content')
+            .eq('blog_id', post.id)
+            .eq('locale', locale)
+            .maybeSingle();
+
+        if (translation) {
+            return {
+                ...post,
+                title: translation.title || post.title,
+                excerpt: translation.excerpt || post.excerpt,
+                content: translation.content || post.content,
+            } as BlogPost;
+        }
     }
 
     return post as BlogPost;

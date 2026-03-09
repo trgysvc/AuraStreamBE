@@ -594,24 +594,18 @@ function VenueDashboardContent() {
                                             </div>
                                         )}
                                     </div>
-                                    <button
-                                        onClick={() => setShowFilters(!showFilters)}
-                                        className={`flex items-center gap-3 px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all border ${showFilters ? 'bg-white text-black border-white' : 'bg-white/5 text-zinc-400 border-white/10 hover:bg-white/10'}`}
-                                    >
-                                        <Sliders size={14} /> {t('filters.advanced')}
-                                    </button>
                                 </div>
 
                                 {/* Searched Playlists Display */}
                                 {searchedPlaylists.length > 0 && activeSubTab === 'search' && (
                                     <div className="space-y-6 pt-2 pb-8 mb-8 border-b border-white/5">
-                                        <h2 className="text-xl font-black tracking-tight text-zinc-400 uppercase italic">Found Playlists</h2>
+                                        <h2 className="text-xl font-black tracking-tight text-zinc-400 uppercase italic">{t('track_actions.found_playlists')}</h2>
                                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
                                             {searchedPlaylists.map((playlist: any) => (
                                                 <PlaylistCard
                                                     key={playlist.id}
                                                     title={playlist.name}
-                                                    tracks={`${playlist.item_count} tracks`}
+                                                    tracks={t('track_actions.tracks_count', { count: playlist.item_count })}
                                                     color="bg-zinc-800"
                                                     onClick={() => router.push(`/dashboard/playlists/${playlist.id}`)}
                                                 />

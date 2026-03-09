@@ -71,9 +71,9 @@ export default function CatalogAdPage() {
                             <button className="w-full md:w-auto px-10 md:px-12 py-5 bg-white text-black rounded-full font-black text-xs uppercase tracking-[0.3em] hover:bg-indigo-500 hover:text-white transition-all shadow-2xl hover:scale-105 active:scale-95">
                                 {t('hero.explore')}
                             </button>
-                            <button className="w-full md:w-auto px-10 md:px-12 py-5 bg-transparent text-white border-2 border-white/20 rounded-full font-black text-xs uppercase tracking-[0.3em] hover:bg-white/10 transition-all backdrop-blur-md">
+                            <Link href="/about/research" className="w-full md:w-auto px-10 md:px-12 py-5 bg-transparent text-white border-2 border-white/20 rounded-full font-black text-xs uppercase tracking-[0.3em] hover:bg-white/10 transition-all backdrop-blur-md text-center">
                                 {t('hero.partner')}
-                            </button>
+                            </Link>
                         </div>
                     </div>
 
@@ -90,6 +90,7 @@ export default function CatalogAdPage() {
                     image="https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=1500&auto=format&fit=crop"
                     icon={Repeat}
                     accentColor="text-indigo-500"
+                    link="/about/howitworks?page=frequency-eng"
                     learnMoreText={tCommon('learnMore')}
                     locale={locale}
                 />
@@ -103,6 +104,7 @@ export default function CatalogAdPage() {
                     reverse={true}
                     bgColor="bg-zinc-900"
                     accentColor="text-pink-500"
+                    link="/about/howitworks?page=karaoke-engine"
                     learnMoreText={tCommon('learnMore')}
                     locale={locale}
                 />
@@ -114,6 +116,7 @@ export default function CatalogAdPage() {
                     image="https://images.unsplash.com/photo-1438449805896-28a666819a20?q=80&w=1500&auto=format&fit=crop"
                     icon={CloudRain}
                     accentColor="text-cyan-400"
+                    link="/about/howitworks?page=weather-ai"
                     learnMoreText={tCommon('learnMore')}
                     locale={locale}
                 />
@@ -127,6 +130,7 @@ export default function CatalogAdPage() {
                     reverse={true}
                     bgColor="bg-indigo-950"
                     accentColor="text-indigo-400"
+                    link="/about/howitworks?page=smart-flow"
                     learnMoreText={tCommon('learnMore')}
                     locale={locale}
                 />
@@ -144,16 +148,19 @@ export default function CatalogAdPage() {
                                 icon={Shield}
                                 title={t('features.enterprise.title')}
                                 description={t('features.enterprise.desc')}
+                                link="/about/howitworks?page=enterprise-hq"
                             />
                             <AdvantageCard
                                 icon={Search}
                                 title={t('features.studio.title')}
                                 description={t('features.studio.desc')}
+                                link="/about/howitworks?page=playlist-editor"
                             />
                             <AdvantageCard
                                 icon={BarChart3}
                                 title={t('features.waveforms.title')}
                                 description={t('features.waveforms.desc')}
+                                link="/about/howitworks?page=interactive-waveforms"
                             />
                         </div>
                     </div>
@@ -167,6 +174,7 @@ export default function CatalogAdPage() {
                                 tag={t('intelligence.tag')}
                                 title={t('intelligence.title')}
                                 description={t('intelligence.desc')}
+                                link="/about/howitworks?page=strategic-intel"
                             />
                         </div>
                         <div className="space-y-6 md:space-y-10 order-1 lg:order-2 text-left">

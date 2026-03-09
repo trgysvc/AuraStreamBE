@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+
 import { Play, Download, Plus, Heart, MoreHorizontal, Wand2, ListPlus } from 'lucide-react';
 import { WaveformSeekbar } from '@/components/shared/WaveformSeekbar';
 import { usePlayer } from '@/context/PlayerContext';
@@ -32,6 +34,8 @@ interface TrackProps extends Track {
 
 export default function TrackRow({ id, title, artist, duration, bpm, tags, image, lyrics, audioSrc, onSimilar, metadata, allTracks, acoustic_matrix_url }: TrackProps) {
     const { playTrack, currentTrack, isPlaying: globalIsPlaying, currentTime, duration: totalDuration, userId, tenantId } = usePlayer();
+    const t = useTranslations('VenueDashboard.track_actions');
+
 
     // Multi-tenant state
     const [isLiked, setIsLiked] = useState<boolean>(false);
@@ -170,7 +174,7 @@ export default function TrackRow({ id, title, artist, duration, bpm, tags, image
                 <button
                     onClick={(e) => { e.stopPropagation(); onSimilar?.(id); }}
                     className="hidden lg:flex items-center gap-2 py-1.5 px-3 rounded-full border border-white/5 bg-white/5 text-zinc-400 hover:text-yellow-400 hover:border-yellow-500/30 transition-all cursor-pointer shadow-lg"
-                    title="Find similar tracks"
+                    title={t('find_similar')}
                 >
                     <Wand2 size={14} />
                     <span className="text-[9px] font-black uppercase tracking-[0.2em]">Similar</span>
@@ -178,7 +182,7 @@ export default function TrackRow({ id, title, artist, duration, bpm, tags, image
                 <button
                     onClick={handleLike}
                     className={`p-2 transition-all hover:scale-110 ${isLiked ? 'text-pink-500' : 'text-zinc-400 hover:text-white'}`}
-                    title={isLiked ? "Unlike" : "Like"}
+                    title={isLiked ? t('unlike') : t('like')}
                 >
                     <Heart size={18} fill={isLiked ? "currentColor" : "none"} strokeWidth={isLiked ? 2 : 2.5} />
                 </button>
@@ -187,7 +191,7 @@ export default function TrackRow({ id, title, artist, duration, bpm, tags, image
                     <button
                         onClick={(e) => { e.stopPropagation(); setShowPlaylistPopover(!showPlaylistPopover); }}
                         className={`p-2 transition-all hover:scale-110 ${showPlaylistPopover ? 'text-indigo-400' : 'text-zinc-400 hover:text-white'}`}
-                        title="Add to Playlist"
+                        title={t('add_to_playlist')}
                     >
                         <ListPlus size={18} />
                     </button>
@@ -200,7 +204,8 @@ export default function TrackRow({ id, title, artist, duration, bpm, tags, image
                     )}
                 </div>
 
-                <button className="p-2 text-zinc-400 hover:text-white transition-colors">
+                <button className="p-2 text-zinc-400 hover:text-white transition-colors" title={t('more_options')}>
+
                     <MoreHorizontal size={18} />
                 </button>
             </div>

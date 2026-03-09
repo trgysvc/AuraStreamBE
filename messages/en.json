@@ -1198,6 +1198,17 @@
             "title": "Music on Request",
             "desc": "Elevate your venue with exclusive, custom-tailored sounds. Our AI and expert curators work for your brand.",
             "button": "Get Started"
+        },
+        "track_actions": {
+            "like": "Like",
+            "unlike": "Unlike",
+            "add_to_playlist": "Add to Playlist",
+            "find_similar": "Find Similar",
+            "more_options": "More Options",
+            "found_playlists": "Found Playlists",
+            "tracks_count": "{count} tracks",
+            "filter_playlists": "Filter playlists...",
+            "no_playlists": "No playlists found"
         }
     },
     "MusicRequest": {
