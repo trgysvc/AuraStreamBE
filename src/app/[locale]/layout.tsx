@@ -6,6 +6,7 @@ import { PlayerProvider } from '@/context/PlayerContext';
 import { GlobalPlayer } from '@/components/feature/player/GlobalPlayer';
 import { LocationProvider } from '@/context/LocationContext';
 import { SmartFlowProvider } from '@/context/SmartFlowContext';
+import { AuthProvider } from '@/context/AuthProvider';
 import { notFound } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
@@ -96,14 +97,16 @@ export default async function RootLayout({
           messages={messages}
           timeZone="Europe/Istanbul"
         >
-          <LocationProvider>
-            <SmartFlowProvider venueId="default-venue">
-              <PlayerProvider>
-                {children}
-                <GlobalPlayer />
-              </PlayerProvider>
-            </SmartFlowProvider>
-          </LocationProvider>
+          <AuthProvider>
+            <LocationProvider>
+              <SmartFlowProvider venueId="default-venue">
+                <PlayerProvider>
+                  {children}
+                  <GlobalPlayer />
+                </PlayerProvider>
+              </SmartFlowProvider>
+            </LocationProvider>
+          </AuthProvider>
         </NextIntlClientProvider>
         <GoogleAnalytics gaId="G-VZNFSYLZ8Y" />
       </body>
