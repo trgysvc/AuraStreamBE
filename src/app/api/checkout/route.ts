@@ -33,19 +33,26 @@ export async function POST(req: Request) {
         }
 
         const tenantData = profile.tenants as any;
-        const tenantId = Array.isArray(tenantData) ? tenantData[0]?.id : tenantData?.id || profile.tenant_id;
+        const tenant = Array.isArray(tenantData) ? tenantData[0] : tenantData;
+        const tenantId = tenant?.id || profile.tenant_id;
 
         if (!tenantId) {
             return NextResponse.json({ error: 'User does not belong to a tenant' }, { status: 400 });
         }
 
-        // We pass the required user data to the router
+        // We pass the required user data to the router 
+        // using proper B2B corporate details if provided.
         const customerData = {
             id: user.id,
             email: user.email || '',
-            fullName: profile.full_name || 'AuraStream User',
-            billingCountry: billingCountry || (profile.billing_details as Record<string, any>)?.country || 'Unknown',
-            tenantId: tenantId
+            // If it's a corporate account, prefer the Company Title. Otherwise, human name.
+            fullName: tenant?.legal_name || profile.full_name || 'AuraStream User',
+            billingCountry: billingCountry || (profile.billing_details as Record<string, any>)?.country || 'TR',
+            tenantId: tenantId,
+            // Pass tax data downstream for the invoice object
+            taxId: tenant?.vkn || null,
+            taxOffice: tenant?.tax_office || null,
+            address: tenant?.billing_address || null
         };
 
         console.log("Routing subscription with:", customerData);

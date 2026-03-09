@@ -313,6 +313,55 @@ export default function AccountPage() {
                             </div>
                         </div>
                     </section>
+
+                    <section ref={billingRef} className="space-y-6 md:space-y-8 scroll-mt-32 pt-4">
+                        <h3 className="text-xl md:text-2xl font-black uppercase italic text-white tracking-tight">Current Plan & Subscription</h3>
+
+                        <div className="bg-zinc-900 border border-white/10 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-2xl">
+                            <div className="space-y-4">
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-2">Active Package</p>
+                                    <h4 className="text-2xl md:text-3xl font-black uppercase italic text-indigo-400">
+                                        {(tenant?.current_plan || profile?.subscription_tier || 'Free')
+                                            .replace('_', ' ')
+                                            .replace(/\b\w/g, (char: string) => char.toUpperCase())}
+                                    </h4>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <span className="flex items-center gap-1.5 text-xs font-bold text-green-400 bg-green-400/10 px-3 py-1 rounded-full uppercase tracking-widest">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                                        Active
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="pt-6 md:pt-0 md:pl-8 md:border-l border-white/10 flex flex-col gap-3 min-w-[200px]">
+                                {tenant?.current_plan !== 'free' && profile?.subscription_tier !== 'free' ? (
+                                    <button
+                                        onClick={async () => {
+                                            if (confirm('Are you sure you want to cancel your subscription? This action cannot be undone.')) {
+                                                const { cancelSubscription } = await import('@/app/actions/billing');
+                                                const res = await cancelSubscription();
+                                                if (res.success) {
+                                                    alert('Your subscription has been successfully canceled.');
+                                                    window.location.reload();
+                                                } else {
+                                                    alert('Failed to cancel: ' + res.error);
+                                                }
+                                            }
+                                        }}
+                                        className="w-full text-center px-6 py-3 border border-red-500/30 text-red-400 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-red-500/10 transition-all"
+                                    >
+                                        Cancel Subscription
+                                    </button>
+                                ) : (
+                                    <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest text-center">
+                                        No active premium plan
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </div>
         </div>
