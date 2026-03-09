@@ -99,7 +99,7 @@ export default async function RootLayout({
         >
           <AuthProvider>
             <LocationProvider>
-              <SmartFlowProvider venueId="default-venue">
+              <SmartFlowProvider>
                 <PlayerProvider>
                   {children}
                   <GlobalPlayer />

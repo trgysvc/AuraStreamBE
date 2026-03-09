@@ -1,9 +1,8 @@
 'use client';
 
-import { Link } from '@/i18n/navigation';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import Image from 'next/image';
 import { submitReferral } from '@/app/actions/referral';
-import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import {
     Search,
@@ -95,7 +94,7 @@ export default function DashboardHeader() {
             <header className="h-16 border-b border-white/5 bg-black flex items-center justify-between px-8 sticky top-0 z-[100]">
                 {/* Left: Logo & Nav */}
                 <div className="flex items-center gap-12">
-                    <Link href="/" className="flex items-center gap-2 group">
+                    <Link href="/dashboard" className="flex items-center gap-2 group">
                         <div className="relative h-8 w-8">
                             <Image
                                 src="/images/Logo.png"

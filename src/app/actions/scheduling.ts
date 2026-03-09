@@ -14,6 +14,8 @@ export interface VenueSchedule {
     target_energy: number;
     target_tuning: '440hz' | '432hz' | '528hz';
     is_active: boolean;
+    playlist_id?: string | null;
+    playlist_name?: string | null;
 }
 
 export async function getActiveScheduleRule_Action(venueId: string) {
@@ -47,7 +49,10 @@ export async function saveScheduleRule_Action(rule: Partial<VenueSchedule>) {
 
     const { data, error } = await supabase
         .from('venue_schedules')
-        .upsert(rule as any)
+        .upsert({
+            ...rule,
+            updated_at: new Date().toISOString()
+        } as any)
         .select()
         .single();
 
@@ -66,4 +71,15 @@ export async function getVenueSchedules_Action(venueId: string) {
 
     if (error) throw error;
     return data as any[] as VenueSchedule[];
+}
+export async function deleteScheduleRule_Action(id: string) {
+    const supabase = await createClient();
+
+    const { error } = await supabase
+        .from('venue_schedules')
+        .delete()
+        .eq('id', id);
+
+    if (error) throw error;
+    return true;
 }

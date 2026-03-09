@@ -16,6 +16,17 @@ export default async function PlaylistDetailPage({ params }: { params: Promise<{
 
     const { playlist, items } = await getPlaylistDetails_Action(id);
 
+    // Calculate total duration
+    const totalSeconds = items.reduce((acc, item) => acc + (item.track?.duration_sec || 0), 0);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+
+    let durationString = '';
+    if (hours > 0) {
+        durationString += `${hours}h `;
+    }
+    durationString += `${minutes}m`;
+
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             {/* Header */}
@@ -30,7 +41,14 @@ export default async function PlaylistDetailPage({ params }: { params: Promise<{
 
                 <div className="space-y-6 flex-1">
                     <div className="space-y-2">
-                        <p className="text-xs font-bold uppercase tracking-widest text-zinc-500">Playlist</p>
+                        <div className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-zinc-500">
+                            <p>Playlist</p>
+                            <span>•</span>
+                            <div className="flex items-center gap-1.5">
+                                <Clock size={12} className="text-zinc-400" />
+                                <span>{durationString}</span>
+                            </div>
+                        </div>
                         <h1 className="text-5xl md:text-7xl font-black italic uppercase tracking-tighter text-white leading-none">{playlist.name}</h1>
                         <p className="text-zinc-400 font-medium max-w-xl">{playlist.description}</p>
                     </div>

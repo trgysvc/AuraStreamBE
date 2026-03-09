@@ -44,51 +44,66 @@ const nextConfig = {
         ],
     },
     async headers() {
+        const isDev = process.env.NODE_ENV === 'development';
+
+        const securityHeaders = [
+            {
+                key: 'X-Frame-Options',
+                value: 'SAMEORIGIN',
+            },
+            {
+                key: 'X-Content-Type-Options',
+                value: 'nosniff',
+            },
+            {
+                key: 'Referrer-Policy',
+                value: 'strict-origin-when-cross-origin',
+            },
+            {
+                key: 'Permissions-Policy',
+                value: 'camera=(), microphone=(), geolocation=*, interest-cohort=()',
+            },
+            {
+                key: 'Cross-Origin-Resource-Policy',
+                value: 'cross-origin',
+            },
+            {
+                key: 'Cross-Origin-Embedder-Policy',
+                value: 'unsafe-none',
+            },
+            {
+                key: 'Cross-Origin-Opener-Policy',
+                value: 'same-origin-allow-popups',
+            },
+            {
+                key: 'X-DNS-Prefetch-Control',
+                value: 'on',
+            },
+        ];
+
+        // Only apply HSTS and CSP upgrade in production
+        if (!isDev) {
+            securityHeaders.push(
+                {
+                    key: 'Strict-Transport-Security',
+                    value: 'max-age=31536000; includeSubDomains; preload',
+                }
+            );
+        }
+
+        const cspValue = isDev
+            ? "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https: https://tally.so; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: images.unsplash.com aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com ifpbhptcnlndhwujprhn.supabase.co gemini.google.com https:; font-src 'self' data: https:; connect-src 'self' https: https://tally.so; media-src 'self' blob: data: aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com https:; object-src 'none'; base-uri 'self'; form-action 'self' https://tally.so; frame-ancestors 'self' https://sonaraura.com https://www.sonaraura.com; frame-src 'self' https://sonaraura.com https://www.sonaraura.com https://tally.so;"
+            : "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https: https://tally.so; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: images.unsplash.com aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com ifpbhptcnlndhwujprhn.supabase.co gemini.google.com https:; font-src 'self' data: https:; connect-src 'self' https: https://tally.so; media-src 'self' blob: data: aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com https:; object-src 'none'; base-uri 'self'; form-action 'self' https://tally.so; frame-ancestors 'self' https://sonaraura.com https://www.sonaraura.com; frame-src 'self' https://sonaraura.com https://www.sonaraura.com https://tally.so; upgrade-insecure-requests;";
+
+        securityHeaders.push({
+            key: 'Content-Security-Policy',
+            value: cspValue,
+        });
+
         return [
             {
                 source: '/(.*)',
-                headers: [
-                    {
-                        key: 'Content-Security-Policy',
-                        value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https: https://tally.so; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data: images.unsplash.com aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com ifpbhptcnlndhwujprhn.supabase.co gemini.google.com https:; font-src 'self' data: https:; connect-src 'self' https: https://tally.so; media-src 'self' blob: data: aurastream-raw-storage-v1.s3.us-east-1.amazonaws.com https:; object-src 'none'; base-uri 'self'; form-action 'self' https://tally.so; frame-ancestors 'self' https://sonaraura.com https://www.sonaraura.com; frame-src 'self' https://sonaraura.com https://www.sonaraura.com https://tally.so; upgrade-insecure-requests;",
-                    },
-                    {
-                        key: 'Strict-Transport-Security',
-                        value: 'max-age=31536000; includeSubDomains; preload',
-                    },
-                    {
-                        key: 'X-Frame-Options',
-                        value: 'SAMEORIGIN',
-                    },
-                    {
-                        key: 'X-Content-Type-Options',
-                        value: 'nosniff',
-                    },
-                    {
-                        key: 'Referrer-Policy',
-                        value: 'strict-origin-when-cross-origin',
-                    },
-                    {
-                        key: 'Permissions-Policy',
-                        value: 'camera=(), microphone=(), geolocation=*, interest-cohort=()',
-                    },
-                    {
-                        key: 'Cross-Origin-Resource-Policy',
-                        value: 'cross-origin',
-                    },
-                    {
-                        key: 'Cross-Origin-Embedder-Policy',
-                        value: 'unsafe-none',
-                    },
-                    {
-                        key: 'Cross-Origin-Opener-Policy',
-                        value: 'same-origin-allow-popups',
-                    },
-                    {
-                        key: 'X-DNS-Prefetch-Control',
-                        value: 'on',
-                    },
-                ],
+                headers: securityHeaders,
             },
         ];
     },

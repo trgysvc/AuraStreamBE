@@ -1,9 +1,8 @@
 'use client';
 
-import { Link } from '@/i18n/navigation';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
 import { Home, Music, Mic2, User, Settings, LogOut, ShieldCheck, Users } from 'lucide-react';
 import { createClient } from '@/lib/db/client';
 import { useTranslations } from 'next-intl';

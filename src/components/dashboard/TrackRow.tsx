@@ -31,13 +31,11 @@ interface TrackProps extends Track {
 }
 
 export default function TrackRow({ id, title, artist, duration, bpm, tags, image, lyrics, audioSrc, onSimilar, metadata, allTracks, acoustic_matrix_url }: TrackProps) {
-    const { playTrack, currentTrack, isPlaying: globalIsPlaying, currentTime, duration: totalDuration } = usePlayer();
+    const { playTrack, currentTrack, isPlaying: globalIsPlaying, currentTime, duration: totalDuration, userId, tenantId } = usePlayer();
 
     // Multi-tenant state
     const [isLiked, setIsLiked] = useState<boolean>(false);
     const [showPlaylistPopover, setShowPlaylistPopover] = useState(false);
-    const [userId, setUserId] = useState<string | null>(null);
-    const [tenantId, setTenantId] = useState<string | null>(null);
 
     const isCurrentTrack = currentTrack?.id === id;
     const isPlaying = isCurrentTrack && globalIsPlaying;
@@ -57,28 +55,6 @@ export default function TrackRow({ id, title, artist, duration, bpm, tags, image
 
     // Provide the correct currentTime state
     const currentTrackTime = isCurrentTrack ? currentTime : 0;
-
-    // Simplified multi-tenant session hook
-    useEffect(() => {
-        const fetchSession = async () => {
-            const supabase = createClient();
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session?.user) {
-                setUserId(session.user.id);
-                // Also fetch tenant_id from profile
-                const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('tenant_id')
-                    .eq('id', session.user.id)
-                    .single();
-
-                if (profile?.tenant_id) {
-                    setTenantId(profile.tenant_id);
-                }
-            }
-        };
-        fetchSession();
-    }, []);
 
     useEffect(() => {
         if (userId) {

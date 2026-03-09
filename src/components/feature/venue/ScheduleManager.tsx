@@ -1,7 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Clock, Calendar, Plus, Trash2, Zap, Settings2, X, Check } from 'lucide-react';
+import { Clock, Calendar, Plus, Trash2, Zap, Settings2, X, Check, ToggleLeft, ToggleRight } from 'lucide-react';
+import { useSmartFlow } from '@/context/SmartFlowContext';
+import { getPlaylists_Action } from '@/app/actions/playlist';
+import { usePlayer } from '@/context/PlayerContext';
+import { useEffect } from 'react';
+import { getVenueSchedules_Action, saveScheduleRule_Action, deleteScheduleRule_Action, VenueSchedule } from '@/app/actions/scheduling';
+
+const DAY_MAP = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 interface ScheduleRule {
     id: string;
@@ -11,6 +18,8 @@ interface ScheduleRule {
     days: string[];
     moods: string[];
     genres: string[];
+    playlist_id?: string | null;
+    playlist_name?: string | null;
 }
 
 const ALL_GENRES = ['Ambient', 'Chill', 'Cinematic', 'Electronic', 'Jazz', 'Lounge', 'Pop', 'Lo-Fi', 'Classical', 'Deep House'];
@@ -29,11 +38,11 @@ const SimpleTooltip = ({ children, text }: { children: React.ReactNode; text: st
 };
 
 export function ScheduleManager() {
-    const [rules, setRules] = useState<ScheduleRule[]>([
-        { id: '1', name: 'Morning Awakening', startTime: '08:00', endTime: '11:00', days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'], moods: ['Chill', 'Hopeful'], genres: ['Ambient', 'Lo-Fi'] },
-        { id: '2', name: 'Lunch Rush', startTime: '12:00', endTime: '14:00', days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], moods: ['Energetic', 'Happy'], genres: ['Pop', 'Electronic'] },
-        { id: '3', name: 'Evening Vibes', startTime: '18:00', endTime: '23:00', days: ['Fri', 'Sat'], moods: ['Dark', 'Cinematic'], genres: ['Jazz', 'Deep House'] },
-    ]);
+    const { isAutoMode, setIsAutoMode } = useSmartFlow();
+    const { tenantId } = usePlayer();
+    const [availablePlaylists, setAvailablePlaylists] = useState<any[]>([]);
+    const [rules, setRules] = useState<ScheduleRule[]>([]);
+    const [loading, setLoading] = useState(true);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingRule, setEditingRule] = useState<ScheduleRule | null>(null);
@@ -48,6 +57,40 @@ export function ScheduleManager() {
         genres: ['Ambient']
     });
 
+    useEffect(() => {
+        const fetchData = async () => {
+            if (tenantId) {
+                try {
+                    setLoading(true);
+                    const [playlists, schedules] = await Promise.all([
+                        getPlaylists_Action(tenantId),
+                        getVenueSchedules_Action(tenantId)
+                    ]);
+                    setAvailablePlaylists(playlists || []);
+
+                    // Map DB format to UI format
+                    const uiRules: ScheduleRule[] = (schedules || []).map(s => ({
+                        id: s.id,
+                        name: s.name,
+                        startTime: s.start_time.slice(0, 5),
+                        endTime: s.end_time.slice(0, 5),
+                        days: s.day_of_week.map(d => DAY_MAP[d]),
+                        moods: s.moods,
+                        genres: s.genres,
+                        playlist_id: s.playlist_id,
+                        playlist_name: s.playlist_name
+                    }));
+                    setRules(uiRules);
+                } catch (err) {
+                    console.error('Error fetching schedule data:', err);
+                } finally {
+                    setLoading(false);
+                }
+            }
+        };
+        fetchData();
+    }, [tenantId]);
+
     const openAddModal = () => {
         setEditingRule(null);
         setFormData({ name: '', startTime: '09:00', endTime: '17:00', days: ['Mon'], moods: ['Chill'], genres: ['Ambient'] });
@@ -60,34 +103,83 @@ export function ScheduleManager() {
         setIsModalOpen(true);
     };
 
-    const handleSave = () => {
-        if (editingRule) {
-            setRules(rules.map(r => r.id === editingRule.id ? { ...r, ...formData } as ScheduleRule : r));
-        } else {
-            const newRule = {
-                ...formData,
-                id: Math.random().toString(36).substr(2, 9),
-            } as ScheduleRule;
-            setRules([...rules, newRule]);
+    const handleSave = async () => {
+        if (!tenantId) return;
+
+        try {
+            // Map UI format to DB format
+            const dbRule: Partial<VenueSchedule> = {
+                id: editingRule?.id,
+                venue_id: tenantId,
+                name: formData.name || 'Untitled Rule',
+                start_time: formData.startTime + ':00',
+                end_time: formData.endTime + ':00',
+                day_of_week: (formData.days || []).map(day => DAY_MAP.indexOf(day)),
+                moods: formData.moods || [],
+                genres: formData.genres || [],
+                target_energy: 50,
+                target_tuning: '440hz',
+                is_active: true,
+                playlist_id: formData.playlist_id,
+                playlist_name: formData.playlist_name
+            };
+
+            const saved = await saveScheduleRule_Action(dbRule);
+
+            // Re-fetch all rules to keep UI in sync
+            const schedules = await getVenueSchedules_Action(tenantId);
+            const uiRules: ScheduleRule[] = schedules.map(s => ({
+                id: s.id,
+                name: s.name,
+                startTime: s.start_time.slice(0, 5),
+                endTime: s.end_time.slice(0, 5),
+                days: s.day_of_week.map(d => DAY_MAP[d]),
+                moods: s.moods,
+                genres: s.genres,
+                playlist_id: s.playlist_id,
+                playlist_name: s.playlist_name
+            }));
+            setRules(uiRules);
+            setIsModalOpen(false);
+        } catch (err) {
+            console.error('Error saving schedule rule:', err);
+            alert('Failed to save rule. Please try again.');
         }
-        setIsModalOpen(false);
     };
 
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: string) => {
+        if (!tenantId) return;
         if (confirm('Are you sure you want to delete this rule?')) {
-            setRules(rules.filter(r => r.id !== id));
+            try {
+                await deleteScheduleRule_Action(id);
+                setRules(rules.filter(r => r.id !== id));
+            } catch (err) {
+                console.error('Error deleting schedule rule:', err);
+                alert('Failed to delete rule.');
+            }
         }
     };
 
     return (
         <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700 relative">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                 <div>
-                    <h2 className="text-3xl font-black tracking-tight text-white italic uppercase">Smart Flow Management</h2>
-                    <p className="text-zinc-500 font-medium mt-1 text-[15px]">Aura automatically adjusts the frequency and energy based on these rules.</p>
+                    <div className="flex items-center gap-4 mb-2">
+                        <h2 className="text-3xl font-black tracking-tight text-white italic uppercase">Smart Flow Management</h2>
+                        <button
+                            onClick={() => setIsAutoMode(!isAutoMode)}
+                            className={`flex items-center gap-2 px-3 py-1 rounded-full border transition-all ${isAutoMode
+                                ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-400'
+                                : 'bg-zinc-800/50 border-white/5 text-zinc-500'}`}
+                        >
+                            {isAutoMode ? <ToggleRight size={20} className="text-indigo-500" /> : <ToggleLeft size={20} />}
+                            <span className="text-[10px] font-black uppercase tracking-widest">{isAutoMode ? 'Auto ON' : 'Auto OFF'}</span>
+                        </button>
+                    </div>
+                    <p className="text-zinc-500 font-medium text-[15px]">Aura automatically adjusts the frequency and energy based on these rules.</p>
                 </div>
                 <SimpleTooltip text="Create a new scheduling rule">
-                    <button 
+                    <button
                         onClick={openAddModal}
                         className="flex items-center gap-2 px-8 py-4 bg-white text-black rounded-full font-black text-xs uppercase tracking-[0.2em] hover:bg-zinc-200 transition-all shadow-[0_0_30px_rgba(255,255,255,0.1)]"
                     >
@@ -101,11 +193,11 @@ export function ScheduleManager() {
                 <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none">
                     <Zap size={240} strokeWidth={1} />
                 </div>
-                
+
                 <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-10 flex items-center gap-2">
                     <Clock size={14} /> 24h Activity Distribution
                 </h3>
-                
+
                 <div className="h-32 w-full bg-black/20 rounded-2xl relative flex items-end px-4 gap-1.5 border border-white/5 pb-8">
                     {Array.from({ length: 24 }).map((_, i) => {
                         const hourStr = i.toString().padStart(2, '0');
@@ -117,10 +209,9 @@ export function ScheduleManager() {
 
                         return (
                             <div key={i} className="flex-1 h-20 flex flex-col justify-end group cursor-help relative">
-                                <div 
-                                    className={`w-full rounded-t-sm transition-all duration-700 ease-out ${
-                                        isActive ? 'h-[70%] bg-indigo-500/40 group-hover:bg-indigo-500/60' : 'h-[15%] bg-white/5'
-                                    }`} 
+                                <div
+                                    className={`w-full rounded-t-sm transition-all duration-700 ease-out ${isActive ? 'h-[70%] bg-indigo-500/40 group-hover:bg-indigo-500/60' : 'h-[15%] bg-white/5'
+                                        }`}
                                 />
                                 <div className="absolute -bottom-6 left-0 right-0 text-center">
                                     <span className={`text-[9px] font-black transition-colors ${i % 3 === 0 ? 'text-zinc-500' : 'text-zinc-800'}`}>
@@ -143,7 +234,7 @@ export function ScheduleManager() {
                             </div>
                             <div className="flex gap-1">
                                 <SimpleTooltip text="Edit Rule Settings">
-                                    <button 
+                                    <button
                                         onClick={() => openEditModal(rule)}
                                         className="p-2.5 text-zinc-600 hover:text-white transition-colors hover:bg-white/5 rounded-lg"
                                     >
@@ -151,7 +242,7 @@ export function ScheduleManager() {
                                     </button>
                                 </SimpleTooltip>
                                 <SimpleTooltip text="Remove Rule">
-                                    <button 
+                                    <button
                                         onClick={() => handleDelete(rule.id)}
                                         className="p-2.5 text-zinc-600 hover:text-rose-500 transition-colors hover:bg-rose-500/10 rounded-lg"
                                     >
@@ -160,7 +251,7 @@ export function ScheduleManager() {
                                 </SimpleTooltip>
                             </div>
                         </div>
-                        
+
                         <div className="space-y-2 mb-8">
                             <h4 className="text-xl font-black text-white uppercase tracking-tight">{rule.name}</h4>
                             <div className="flex items-center gap-2 text-xs font-bold text-zinc-500 uppercase tracking-widest">
@@ -199,7 +290,7 @@ export function ScheduleManager() {
                 ))}
 
                 {/* Add New Rule Trigger Card */}
-                <button 
+                <button
                     onClick={openAddModal}
                     className="p-8 rounded-[2rem] bg-white/5 border border-dashed border-white/10 hover:bg-white/[0.07] transition-all flex flex-col items-center justify-center gap-4 text-zinc-600 hover:text-zinc-400 min-h-[300px]"
                 >
@@ -225,10 +316,10 @@ export function ScheduleManager() {
                             <div className="space-y-6">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 ml-1">Rule Name</label>
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         value={formData.name}
-                                        onChange={e => setFormData({...formData, name: e.target.value})}
+                                        onChange={e => setFormData({ ...formData, name: e.target.value })}
                                         className="w-full bg-black border border-white/5 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-indigo-500 transition-all font-bold placeholder:text-zinc-700"
                                         placeholder="e.g. Morning Coffee Vibes"
                                     />
@@ -237,19 +328,19 @@ export function ScheduleManager() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 ml-1">Start Time</label>
-                                        <input 
-                                            type="time" 
+                                        <input
+                                            type="time"
                                             value={formData.startTime}
-                                            onChange={e => setFormData({...formData, startTime: e.target.value})}
+                                            onChange={e => setFormData({ ...formData, startTime: e.target.value })}
                                             className="w-full bg-black border border-white/5 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-indigo-500 transition-all font-bold"
                                         />
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 ml-1">End Time</label>
-                                        <input 
-                                            type="time" 
+                                        <input
+                                            type="time"
                                             value={formData.endTime}
-                                            onChange={e => setFormData({...formData, endTime: e.target.value})}
+                                            onChange={e => setFormData({ ...formData, endTime: e.target.value })}
                                             className="w-full bg-black border border-white/5 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-indigo-500 transition-all font-bold"
                                         />
                                     </div>
@@ -259,11 +350,11 @@ export function ScheduleManager() {
                                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 ml-1">Music Styles (Genres)</label>
                                     <div className="flex flex-wrap gap-2">
                                         {ALL_GENRES.map(genre => (
-                                            <button 
+                                            <button
                                                 key={genre}
                                                 onClick={() => {
                                                     const current = formData.genres || [];
-                                                    setFormData({...formData, genres: current.includes(genre) ? current.filter(g => g !== genre) : [...current, genre]});
+                                                    setFormData({ ...formData, genres: current.includes(genre) ? current.filter(g => g !== genre) : [...current, genre] });
                                                 }}
                                                 className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all border ${formData.genres?.includes(genre) ? 'bg-indigo-600 text-white border-indigo-500 shadow-lg' : 'bg-black text-zinc-500 border-white/5 hover:border-white/10'}`}
                                             >
@@ -277,11 +368,11 @@ export function ScheduleManager() {
                                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 ml-1">Target Moods</label>
                                     <div className="flex flex-wrap gap-2">
                                         {ALL_MOODS.map(mood => (
-                                            <button 
+                                            <button
                                                 key={mood}
                                                 onClick={() => {
                                                     const current = formData.moods || [];
-                                                    setFormData({...formData, moods: current.includes(mood) ? current.filter(m => m !== mood) : [...current, mood]});
+                                                    setFormData({ ...formData, moods: current.includes(mood) ? current.filter(m => m !== mood) : [...current, mood] });
                                                 }}
                                                 className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all border ${formData.moods?.includes(mood) ? 'bg-pink-600 text-white border-pink-500 shadow-lg' : 'bg-black text-zinc-500 border-white/5 hover:border-white/10'}`}
                                             >
@@ -292,14 +383,43 @@ export function ScheduleManager() {
                                 </div>
 
                                 <div className="space-y-3">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 ml-1">Assigned Playlist (Optional)</label>
+                                    <div className="grid grid-cols-1 gap-2">
+                                        <select
+                                            value={formData.playlist_id || ''}
+                                            onChange={e => {
+                                                const pId = e.target.value;
+                                                const playlist = availablePlaylists.find(p => p.id === pId);
+                                                setFormData({
+                                                    ...formData,
+                                                    playlist_id: pId || null,
+                                                    playlist_name: playlist?.name || null
+                                                });
+                                            }}
+                                            className="w-full bg-black border border-white/5 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-indigo-500 transition-all font-bold appearance-none cursor-pointer"
+                                        >
+                                            <option value="">None (Use Moods/Genres)</option>
+                                            {availablePlaylists.map(playlist => (
+                                                <option key={playlist.id} value={playlist.id}>
+                                                    {playlist.name} ({playlist.item_count} tracks)
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-wider ml-1 italic">
+                                        If selected, Smart Flow will prioritize tracks from this playlist during this time slot.
+                                    </p>
+                                </div>
+
+                                <div className="space-y-3">
                                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 ml-1">Select Days</label>
                                     <div className="flex flex-wrap gap-2">
                                         {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => (
-                                            <button 
+                                            <button
                                                 key={day}
                                                 onClick={() => {
                                                     const current = formData.days || [];
-                                                    setFormData({...formData, days: current.includes(day) ? current.filter(d => d !== day) : [...current, day]});
+                                                    setFormData({ ...formData, days: current.includes(day) ? current.filter(d => d !== day) : [...current, day] });
                                                 }}
                                                 className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase transition-all border ${formData.days?.includes(day) ? 'bg-white text-black border-white' : 'bg-black text-zinc-500 border-white/5 hover:border-white/20'}`}
                                             >
@@ -310,7 +430,7 @@ export function ScheduleManager() {
                                 </div>
                             </div>
 
-                            <button 
+                            <button
                                 onClick={handleSave}
                                 className="w-full py-5 bg-white text-black rounded-full font-black text-xs uppercase tracking-[0.3em] hover:bg-indigo-500 hover:text-white transition-all shadow-xl flex items-center justify-center gap-2"
                             >

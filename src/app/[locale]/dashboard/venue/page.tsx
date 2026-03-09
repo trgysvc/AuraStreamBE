@@ -5,10 +5,10 @@ import { Link, useRouter } from '@/i18n/navigation';
 import { Search, ChevronDown, Sliders, Music, Sparkles as LucideSparkles, Play, Plus, Filter, ListMusic, Layers, Check, X, Wand2, Activity, MapPin, Wind, Zap, RefreshCw } from 'lucide-react';
 import TrackRow from '@/components/dashboard/TrackRow';
 import { getVenueTracks_Action, getCurationCounts_Action, getTrendingTracks_Action } from '@/app/actions/venue';
-import { searchPlaylists_Action } from '@/app/actions/playlist';
+import { searchPlaylists_Action, getPlaylistDetails_Action } from '@/app/actions/playlist';
 import { logSearchQuery_Action } from '@/app/actions/elite-analytics';
 import { ScheduleManager } from '@/components/feature/venue/ScheduleManager';
-import { SmartFlowProvider, useSmartFlow } from '@/context/SmartFlowContext';
+import { useSmartFlow } from '@/context/SmartFlowContext';
 import { usePlayer } from '@/context/PlayerContext';
 import { createClient } from '@/lib/db/client';
 import { useTranslations } from 'next-intl';
@@ -39,7 +39,7 @@ const PlaylistCard = ({ title, tracks, color, image, onClick }: { title: string,
 
 function VenueDashboardContent() {
     const t = useTranslations('VenueDashboard');
-    const { activeRule } = useSmartFlow();
+    const { activeRule, isAutoMode, refreshFlow } = useSmartFlow();
     const router = useRouter();
     const {
         playTrack,
@@ -114,16 +114,16 @@ function VenueDashboardContent() {
         setLoading(true);
         const startTime = Date.now();
         try {
-            let combinedMoods = activeRule?.moods || [];
+            let combinedMoods = (isAutoMode && activeRule?.moods) ? activeRule.moods : [];
             let currentGenres = [...genres];
 
-            if (activeRule) {
+            if (isAutoMode && activeRule) {
                 if (activeRule.genres) currentGenres = [...new Set([...currentGenres, ...activeRule.genres])];
             }
 
             const dataPromise = getVenueTracks_Action({
                 query: searchQuery === "Liked Songs" ? undefined : searchQuery,
-                bpmRange: activeRule ? undefined : bpm,
+                bpmRange: (isAutoMode && activeRule) ? undefined : bpm,
                 venues: venues.length > 0 ? venues : undefined,
                 vibes: vibes.length > 0 ? vibes : undefined,
                 genres: currentGenres.length > 0 ? currentGenres : undefined,
@@ -136,6 +136,31 @@ function VenueDashboardContent() {
             const playlistsPromise = (queryForPlaylists && userId)
                 ? searchPlaylists_Action(queryForPlaylists, userId)
                 : Promise.resolve([]);
+
+            if (isAutoMode && activeRule?.playlist_id && !searchQuery && venues.length === 0 && vibes.length === 0 && genres.length === 0) {
+                const { items } = await getPlaylistDetails_Action(activeRule.playlist_id);
+                setTracks(items.map((item: any) => {
+                    const t = item.track;
+                    const totalSeconds = t.duration_sec || 0;
+                    return {
+                        id: t.id,
+                        title: t.title,
+                        artist: t.artist,
+                        duration: `${Math.floor(totalSeconds / 60)}:${Math.round(totalSeconds % 60).toString().padStart(2, '0')}`,
+                        rawDurationMs: totalSeconds * 1000,
+                        bpm: t.bpm || 120,
+                        tags: t.metadata?.mood_tags || [t.genre || "Music"],
+                        image: t.cover_image_url,
+                        lyrics: t.lyrics,
+                        audioSrc: t.src,
+                        src: t.src,
+                        metadata: t.metadata
+                    };
+                }));
+                setSearchedPlaylists([]);
+                setLoading(false);
+                return;
+            }
 
             const [data, playlistsData] = await Promise.all([dataPromise, playlistsPromise]);
 
@@ -315,11 +340,11 @@ function VenueDashboardContent() {
     const GENRE_TAGS = ['Ambient', 'Cinematic', 'Electronic', 'Jazz', 'Lounge', 'Pop'];
 
     return (
-        <div className="flex flex-col gap-8 md:gap-12 pb-24 md:pb-20 max-w-[1600px] mx-auto">
-            {/* 1. Header & Navigation */}
-            <div className="space-y-6 md:space-y-10">
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="flex items-center gap-2 md:gap-3 w-full sm:w-auto">
+        <>
+            <div className="flex flex-col gap-8 md:gap-12 pb-24 md:pb-20 max-w-[1600px] mx-auto">
+                {/* 1. Header & Navigation */}
+                <div className="space-y-6 md:space-y-10">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                         {['search', 'assistant', 'flow'].map((tab) => (
                             <button
                                 key={tab}
@@ -453,304 +478,301 @@ function VenueDashboardContent() {
                         )}
                     </div>
                 )}
-            </div>
-
-            {/* Content Logic */}
-            {activeSubTab === 'flow' ? (
-                <ScheduleManager />
-            ) : (
-                <div className="flex flex-col lg:flex-row gap-8 md:gap-10 items-start">
-                    {/* LEFT SIDEBAR: ADVANCED TAXONOMY */}
-                    {showFilters && (
-                        <aside className="w-full lg:w-72 space-y-8 md:space-y-12 animate-in slide-in-from-left duration-700 lg:sticky lg:top-24 pb-20 p-6 md:p-8 bg-white/[0.02] backdrop-blur-3xl border border-white/5 rounded-[2.5rem] shadow-2xl">
-                            <div className="space-y-8">
-                                <div className="flex items-center gap-3 ml-1 mb-2">
-                                    <MapPin size={12} className="text-zinc-500" />
-                                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">{t('filters.segments')}</h3>
-                                </div>
-                                {VENUE_SECTORS.map(s => (
-                                    <div key={s.name} className="space-y-3">
-                                        <p className="text-[8px] font-bold text-zinc-600 uppercase ml-1 tracking-widest">{s.name}</p>
-                                        <div className="flex flex-wrap gap-2">
-                                            {s.tags.map(t => (
-                                                <button
-                                                    key={t}
-                                                    onClick={() => toggleTag(selectedVenues, setSelectedVenues, t)}
-                                                    className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all border ${selectedVenues.includes(t)
-                                                        ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.2)] scale-105'
-                                                        : 'bg-black/40 text-zinc-500 border-white/5 hover:border-white/10 hover:text-white hover:bg-white/5'}`}
-                                                >
-                                                    {t}
-                                                </button>
-                                            ))}
-                                        </div>
+                {/* Content Logic */}
+                {activeSubTab === 'flow' ? (
+                    <ScheduleManager />
+                ) : (
+                    <div className="flex flex-col lg:flex-row gap-8 md:gap-10 items-start">
+                        {/* LEFT SIDEBAR: ADVANCED TAXONOMY */}
+                        {showFilters && (
+                            <aside className="w-full lg:w-72 space-y-8 md:space-y-12 animate-in slide-in-from-left duration-700 lg:sticky lg:top-24 pb-20 p-6 md:p-8 bg-white/[0.02] backdrop-blur-3xl border border-white/5 rounded-[2.5rem] shadow-2xl">
+                                <div className="space-y-8">
+                                    <div className="flex items-center gap-3 ml-1 mb-2">
+                                        <MapPin size={12} className="text-zinc-500" />
+                                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">{t('filters.segments')}</h3>
                                     </div>
-                                ))}
-                            </div>
-
-                            <div className="space-y-6">
-                                <div className="flex items-center gap-3 ml-1 mb-2">
-                                    <Zap size={12} className="text-pink-500" />
-                                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">{t('filters.vibes')}</h3>
-                                </div>
-                                <div className="flex flex-wrap gap-2">
-                                    {VIBE_TAGS.map(v => (
-                                        <button
-                                            key={v}
-                                            onClick={() => toggleTag(selectedVibes, setSelectedVibes, v)}
-                                            className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all border ${selectedVibes.includes(v)
-                                                ? 'bg-pink-600 text-white border-pink-500 shadow-[0_0_20px_rgba(219,39,119,0.3)] scale-105'
-                                                : 'bg-black/40 text-zinc-500 border-white/5 hover:border-white/10 hover:text-white hover:bg-white/5'}`}
-                                        >
-                                            {v}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="space-y-6">
-                                <div className="flex items-center gap-3 ml-1 mb-2">
-                                    <Activity size={12} className="text-indigo-500" />
-                                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">{t('filters.genres')}</h3>
-                                </div>
-                                <div className="flex flex-wrap gap-2">
-                                    {GENRE_TAGS.map(g => (
-                                        <button
-                                            key={g}
-                                            onClick={() => toggleTag(selectedGenres, setSelectedGenres, g)}
-                                            className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all border ${selectedGenres.includes(g)
-                                                ? 'bg-indigo-600 text-white border-indigo-500 shadow-[0_0_20px_rgba(79,70,229,0.3)] scale-105'
-                                                : 'bg-black/40 text-zinc-500 border-white/5 hover:border-white/10 hover:text-white hover:bg-white/5'}`}
-                                        >
-                                            {g}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="p-8 rounded-[2rem] bg-indigo-500/[0.03] border border-white/5 space-y-6 shadow-inner">
-                                <div className="flex items-center justify-between ml-1">
-                                    <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600">{t('filters.tempo')}</h3>
-                                    <span className="text-[10px] font-black text-indigo-400">{bpmRange[1]}</span>
-                                </div>
-                                <div className="px-1">
-                                    <input
-                                        type="range"
-                                        min="60"
-                                        max="180"
-                                        value={bpmRange[1]}
-                                        onChange={(e) => setBpmRange([bpmRange[0], parseInt(e.target.value)])}
-                                        className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-white hover:accent-indigo-400 transition-all [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-[0_0_10px_rgba(255,255,255,0.5)]"
-                                    />
-                                </div>
-                                <button
-                                    onClick={() => { setSelectedVenues([]); setSelectedVibes([]); setSelectedGenres([]); setBpmRange([60, 180]); setQuery(''); }}
-                                    className="w-full py-4 rounded-2xl bg-white/5 text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em] border border-white/5 hover:bg-white/10 hover:text-white transition-all flex items-center justify-center gap-3"
-                                >
-                                    <RefreshCw size={12} />
-                                    {t('filters.reset')}
-                                </button>
-                            </div>
-                        </aside>
-                    )}
-
-                    <div className="flex-1 space-y-12">
-                        {/* 2. Track List Area (Top 5 Pieces) */}
-                        <div className="space-y-8">
-                            <div className="flex items-center justify-between border-b border-white/5 pb-6">
-                                <div>
-                                    <h2 className="text-2xl font-black tracking-tight text-white uppercase italic">
-                                        {query ? t('results.aura_results_for', { query }) : (selectedPlaylist ? selectedPlaylist : t('results.discovery_flow'))}
-                                    </h2>
-                                    {(activeRule || selectedVenues.length > 0 || selectedVibes.length > 0) && (
-                                        <div className="flex items-center gap-2 mt-2">
-                                            <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-pulse" />
-                                            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest italic">
-                                                {t('results.intelligence_layer')}
-                                            </p>
+                                    {VENUE_SECTORS.map(s => (
+                                        <div key={s.name} className="space-y-3">
+                                            <p className="text-[8px] font-bold text-zinc-600 uppercase ml-1 tracking-widest">{s.name}</p>
+                                            <div className="flex flex-wrap gap-2">
+                                                {s.tags.map(t => (
+                                                    <button
+                                                        key={t}
+                                                        onClick={() => toggleTag(selectedVenues, setSelectedVenues, t)}
+                                                        className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all border ${selectedVenues.includes(t)
+                                                            ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.2)] scale-105'
+                                                            : 'bg-black/40 text-zinc-500 border-white/5 hover:border-white/10 hover:text-white hover:bg-white/5'}`}
+                                                    >
+                                                        {t}
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
-                                    )}
+                                    ))}
                                 </div>
-                                <button
-                                    onClick={() => setShowFilters(!showFilters)}
-                                    disabled={true}
-                                    className={`flex items-center gap-3 px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all border opacity-20 cursor-not-allowed bg-zinc-900/50 text-zinc-500 border-white/5`}
-                                >
-                                    <Sliders size={14} /> {t('filters.advanced')}
-                                </button>
-                            </div>
 
-                            {/* Searched Playlists Display */}
-                            {searchedPlaylists.length > 0 && activeSubTab === 'search' && (
-                                <div className="space-y-6 pt-2 pb-8 mb-8 border-b border-white/5">
-                                    <h2 className="text-xl font-black tracking-tight text-zinc-400 uppercase italic">Found Playlists</h2>
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
-                                        {searchedPlaylists.map((playlist: any) => (
-                                            <PlaylistCard
-                                                key={playlist.id}
-                                                title={playlist.name}
-                                                tracks={`${playlist.item_count} tracks`}
-                                                color="bg-zinc-800"
-                                                onClick={() => router.push(`/dashboard/playlists/${playlist.id}`)}
-                                            />
+                                <div className="space-y-6">
+                                    <div className="flex items-center gap-3 ml-1 mb-2">
+                                        <Zap size={12} className="text-pink-500" />
+                                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">{t('filters.vibes')}</h3>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {VIBE_TAGS.map(v => (
+                                            <button
+                                                key={v}
+                                                onClick={() => toggleTag(selectedVibes, setSelectedVibes, v)}
+                                                className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all border ${selectedVibes.includes(v)
+                                                    ? 'bg-pink-600 text-white border-pink-500 shadow-[0_0_20px_rgba(219,39,119,0.3)] scale-105'
+                                                    : 'bg-black/40 text-zinc-500 border-white/5 hover:border-white/10 hover:text-white hover:bg-white/5'}`}
+                                            >
+                                                {v}
+                                            </button>
                                         ))}
                                     </div>
                                 </div>
-                            )}
 
-                            <div className="divide-y divide-white/5 bg-zinc-900/5 rounded-[2.5rem] overflow-hidden min-h-[400px]">
-                                {loading && tracks.length === 0 ? (
-                                    <div className="py-20 flex flex-col items-center justify-center space-y-6 opacity-30">
-                                        <div className="h-10 w-10 border-4 border-white/10 border-t-white rounded-full animate-spin" />
+                                <div className="space-y-6">
+                                    <div className="flex items-center gap-3 ml-1 mb-2">
+                                        <Activity size={12} className="text-indigo-500" />
+                                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">{t('filters.genres')}</h3>
                                     </div>
-                                ) : tracks.length > 0 ? (
-                                    tracks.slice(pageIndex * 20, pageIndex * 20 + 10).map((track) => (
-                                        <TrackRow key={track.id} {...track} lyrics={track.lyrics} allTracks={visibleTracks} onSimilar={handleFindSimilar} />
-                                    ))
-                                ) : (
-                                    <div className="py-20 text-center flex flex-col items-center space-y-4 opacity-40">
-                                        <LucideSparkles size={64} strokeWidth={1} />
-                                        <p className="text-xl font-bold uppercase italic tracking-tighter">{t('results.no_assets')}</p>
+                                    <div className="flex flex-wrap gap-2">
+                                        {GENRE_TAGS.map(g => (
+                                            <button
+                                                key={g}
+                                                onClick={() => toggleTag(selectedGenres, setSelectedGenres, g)}
+                                                className={`px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all border ${selectedGenres.includes(g)
+                                                    ? 'bg-indigo-600 text-white border-indigo-500 shadow-[0_0_20px_rgba(79,70,229,0.3)] scale-105'
+                                                    : 'bg-black/40 text-zinc-500 border-white/5 hover:border-white/10 hover:text-white hover:bg-white/5'}`}
+                                            >
+                                                {g}
+                                            </button>
+                                        ))}
                                     </div>
-                                )}
-                            </div>
-
-                        </div>
-
-                        {/* 3. Premium Curation Section (8 boxes) */}
-                        <div className="space-y-6 md:space-y-8 pt-8 border-t border-white/5">
-                            <h2 className="text-xl md:text-2xl font-black tracking-tight text-white uppercase italic">{t('sections.premium_curation')}</h2>
-                            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 md:gap-4">
-                                {playlists.map((playlist: any, i) => (
-                                    <PlaylistCard
-                                        key={i}
-                                        {...playlist}
-                                        onClick={() => {
-                                            setSelectedPlaylist(playlist.title);
-                                            // Reset all filters before applying new curation search
-                                            setSelectedVibes([]);
-                                            setSelectedGenres([]);
-                                            setSelectedVenues([]);
-
-                                            if (playlist.title === "Trending in Venues") {
-                                                setQuery('');
-                                                setTracks(trendingTracks);
-                                                setPageIndex(0);
-                                            } else if (playlist.venue) {
-                                                setSelectedVenues(Array.isArray(playlist.venue) ? playlist.venue : [playlist.venue]);
-                                                setQuery('');
-                                            } else if (playlist.vibe) {
-                                                setSelectedVibes([playlist.vibe]);
-                                                setQuery('');
-                                            } else if (playlist.genre) {
-                                                setSelectedGenres([playlist.genre]);
-                                                setQuery('');
-                                            } else if (playlist.query) {
-                                                // Specific exact search string
-                                                setQuery(playlist.query);
-                                            } else {
-                                                // Fallback behavior
-                                                setQuery(playlist.title === "Recommended tracks" ? "" : playlist.title);
-                                            }
-                                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                                        }}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* 4. Discovery Flow (Continued) */}
-                        <div className="space-y-8 pt-8 border-t border-white/5">
-                            {tracks.slice(pageIndex * 20, pageIndex * 20 + 20).length > 10 && (
-                                <div className="divide-y divide-white/5 bg-zinc-900/5 rounded-[2.5rem] overflow-hidden">
-                                    {tracks.slice(pageIndex * 20 + 10, pageIndex * 20 + 20).map((track) => (
-                                        <TrackRow key={track.id} {...track} lyrics={track.lyrics} allTracks={visibleTracks} onSimilar={handleFindSimilar} />
-                                    ))}
                                 </div>
-                            )}
-                            <div className="flex justify-end pt-4">
-                                <button
-                                    onClick={handleRefreshDiscovery}
-                                    disabled={discoveryLoading}
-                                    className="flex items-center gap-3 px-8 py-3 rounded-full bg-white/5 border border-white/10 text-white text-[12px] font-black uppercase tracking-widest hover:bg-white/10 transition-all active:scale-95 shadow-xl group"
-                                >
-                                    <RefreshCw size={14} className={`${discoveryLoading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
-                                    {t('sections.explore_more')}
-                                </button>
-                            </div>
-                        </div>
 
-                        {/* 5. Music on Request Promotion Banner */}
-                        <div className="pt-8">
-                            <div className="bg-[#D9E1EB] rounded-3xl md:rounded-[3rem] overflow-hidden flex flex-col md:flex-row items-stretch border border-white/5 group/banner">
-                                <div className="flex-1 p-8 md:p-16 flex flex-col justify-center space-y-4 md:space-y-6">
-                                    <h2 className="text-3xl md:text-5xl font-serif text-[#111111] font-black uppercase tracking-tighter italic leading-tight max-w-md">{t('promo.title')}</h2>
-                                    <p className="text-[13px] md:text-[15px] text-zinc-800 max-w-sm font-medium">{t('promo.desc')}</p>
+                                <div className="p-8 rounded-[2rem] bg-indigo-500/[0.03] border border-white/5 space-y-6 shadow-inner">
+                                    <div className="flex items-center justify-between ml-1">
+                                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600">{t('filters.tempo')}</h3>
+                                        <span className="text-[10px] font-black text-indigo-400">{bpmRange[1]}</span>
+                                    </div>
+                                    <div className="px-1">
+                                        <input
+                                            type="range"
+                                            min="60"
+                                            max="180"
+                                            value={bpmRange[1]}
+                                            onChange={(e) => setBpmRange([bpmRange[0], parseInt(e.target.value)])}
+                                            className="w-full h-1 bg-white/10 rounded-full appearance-none cursor-pointer accent-white hover:accent-indigo-400 transition-all [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-[0_0_10px_rgba(255,255,255,0.5)]"
+                                        />
+                                    </div>
+                                    <button
+                                        onClick={() => { setSelectedVenues([]); setSelectedVibes([]); setSelectedGenres([]); setBpmRange([60, 180]); setQuery(''); }}
+                                        className="w-full py-4 rounded-2xl bg-white/5 text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em] border border-white/5 hover:bg-white/10 hover:text-white transition-all flex items-center justify-center gap-3"
+                                    >
+                                        <RefreshCw size={12} />
+                                        {t('filters.reset')}
+                                    </button>
+                                </div>
+                            </aside>
+                        )}
+
+                        <div className="flex-1 space-y-12">
+                            {/* 2. Track List Area */}
+                            <div className="space-y-8">
+                                <div className="flex items-center justify-between border-b border-white/5 pb-6">
                                     <div>
-                                        <Link
-                                            href="/dashboard/request"
-                                            className="inline-block bg-black text-white px-8 py-3 md:px-10 md:py-4 font-bold text-xs md:text-[13px] hover:bg-zinc-900 transition-all active:scale-95 uppercase tracking-[0.2em] shadow-2xl"
-                                        >
-                                            {t('promo.button')}
-                                        </Link>
-                                    </div>
-                                </div>
-                                <div className="flex-1 relative min-h-[200px] md:min-h-[400px] overflow-hidden group/studio">
-                                    <div
-                                        className="absolute inset-0 bg-cover bg-[center_bottom_30%] transition-transform duration-[2000ms] group-hover/studio:scale-110"
-                                        style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=1600)' }}
-                                    />
-                                    <div className="absolute inset-0 bg-black/20 group-hover/studio:bg-black/10 transition-colors duration-700" />
-                                    <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[#D9E1EB]/30" />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* 5. Trending in Venues List */}
-                        <div className="space-y-8 pt-12 border-t border-white/5">
-                            <div className="flex items-center justify-between">
-                                <h2 className="text-2xl font-black tracking-tight text-white uppercase italic">{t('sections.trending')}</h2>
-                            </div>
-
-                            <div className="divide-y divide-white/5 bg-zinc-900/5 rounded-[2.5rem] overflow-hidden min-h-[400px]">
-                                {trendingTracks.length > 0 ? (
-                                    trendingTracks.map((track) => (
-                                        <TrackRow key={track.id} {...track} lyrics={track.lyrics} allTracks={trendingTracks} onSimilar={handleFindSimilar} />
-                                    ))
-                                ) : (
-                                    <div className="py-20 text-center flex items-center justify-center text-zinc-700 font-black uppercase tracking-widest text-[10px]">
-                                        {loading ? (
-                                            <RefreshCw className="animate-spin text-zinc-500" size={24} />
-                                        ) : (
-                                            t('results.discovering')
+                                        <h2 className="text-2xl font-black tracking-tight text-white uppercase italic">
+                                            {query ? t('results.aura_results_for', { query }) : (selectedPlaylist ? selectedPlaylist : t('results.discovery_flow'))}
+                                        </h2>
+                                        {(activeRule || selectedVenues.length > 0 || selectedVibes.length > 0) && (
+                                            <div className="flex items-center gap-2 mt-2">
+                                                <div className="h-1.5 w-1.5 rounded-full bg-indigo-500 animate-pulse" />
+                                                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest italic">
+                                                    {t('results.intelligence_layer')}
+                                                </p>
+                                            </div>
                                         )}
                                     </div>
-                                )}
-                            </div>
-                        </div>
+                                    <button
+                                        onClick={() => setShowFilters(!showFilters)}
+                                        className={`flex items-center gap-3 px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all border ${showFilters ? 'bg-white text-black border-white' : 'bg-white/5 text-zinc-400 border-white/10 hover:bg-white/10'}`}
+                                    >
+                                        <Sliders size={14} /> {t('filters.advanced')}
+                                    </button>
+                                </div>
 
-                        {/* 6. Premium Vibes Section (8 Boxes) */}
-                        <div className="space-y-6 md:space-y-8 pt-12 border-t border-white/5">
-                            <h2 className="text-xl md:text-2xl font-black tracking-tight text-white uppercase italic text-glow-indigo">{t('sections.premium_vibes')}</h2>
-                            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 md:gap-4">
-                                {vibesList.map((vibe, i) => (
-                                    <PlaylistCard
-                                        key={i}
-                                        title={vibe.title}
-                                        tracks={formatCount(curationCounts[vibe.title])}
-                                        color={vibe.color}
-                                        image={vibe.image}
-                                        onClick={() => {
-                                            setSelectedVibes([vibe.title]);
-                                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                                        }}
-                                    />
-                                ))}
+                                {/* Searched Playlists Display */}
+                                {searchedPlaylists.length > 0 && activeSubTab === 'search' && (
+                                    <div className="space-y-6 pt-2 pb-8 mb-8 border-b border-white/5">
+                                        <h2 className="text-xl font-black tracking-tight text-zinc-400 uppercase italic">Found Playlists</h2>
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
+                                            {searchedPlaylists.map((playlist: any) => (
+                                                <PlaylistCard
+                                                    key={playlist.id}
+                                                    title={playlist.name}
+                                                    tracks={`${playlist.item_count} tracks`}
+                                                    color="bg-zinc-800"
+                                                    onClick={() => router.push(`/dashboard/playlists/${playlist.id}`)}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="divide-y divide-white/5 bg-zinc-900/5 rounded-[2.5rem] overflow-hidden min-h-[400px]">
+                                    {loading && tracks.length === 0 ? (
+                                        <div className="py-20 flex flex-col items-center justify-center space-y-6 opacity-30">
+                                            <div className="h-10 w-10 border-4 border-white/10 border-t-white rounded-full animate-spin" />
+                                        </div>
+                                    ) : tracks.length > 0 ? (
+                                        tracks.slice(pageIndex * 20, pageIndex * 20 + 10).map((track) => (
+                                            <TrackRow key={track.id} {...track} lyrics={track.lyrics} allTracks={visibleTracks} onSimilar={handleFindSimilar} />
+                                        ))
+                                    ) : (
+                                        <div className="py-20 text-center flex flex-col items-center space-y-4 opacity-40">
+                                            <LucideSparkles size={64} strokeWidth={1} />
+                                            <p className="text-xl font-bold uppercase italic tracking-tighter">{t('results.no_assets')}</p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
+                )}
+
+                {/* 3. Premium Curation Section (8 boxes) */}
+                <div className="space-y-6 md:space-y-8 pt-8 border-t border-white/5">
+                    <h2 className="text-xl md:text-2xl font-black tracking-tight text-white uppercase italic">{t('sections.premium_curation')}</h2>
+                    <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 md:gap-4">
+                        {playlists.map((playlist: any, i) => (
+                            <PlaylistCard
+                                key={i}
+                                {...playlist}
+                                onClick={() => {
+                                    setSelectedPlaylist(playlist.title);
+                                    // Reset all filters before applying new curation search
+                                    setSelectedVibes([]);
+                                    setSelectedGenres([]);
+                                    setSelectedVenues([]);
+
+                                    if (playlist.title === "Trending in Venues") {
+                                        setQuery('');
+                                        setTracks(trendingTracks);
+                                        setPageIndex(0);
+                                    } else if (playlist.venue) {
+                                        setSelectedVenues(Array.isArray(playlist.venue) ? playlist.venue : [playlist.venue]);
+                                        setQuery('');
+                                    } else if (playlist.vibe) {
+                                        setSelectedVibes([playlist.vibe]);
+                                        setQuery('');
+                                    } else if (playlist.genre) {
+                                        setSelectedGenres([playlist.genre]);
+                                        setQuery('');
+                                    } else if (playlist.query) {
+                                        // Specific exact search string
+                                        setQuery(playlist.query);
+                                    } else {
+                                        // Fallback behavior
+                                        setQuery(playlist.title === "Recommended tracks" ? "" : playlist.title);
+                                    }
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
+                            />
+                        ))}
+                    </div>
                 </div>
-            )}
+
+                {/* 4. Discovery Flow (Continued) */}
+                <div className="space-y-8 pt-8 border-t border-white/5">
+                    {tracks.slice(pageIndex * 20, pageIndex * 20 + 20).length > 10 && (
+                        <div className="divide-y divide-white/5 bg-zinc-900/5 rounded-[2.5rem] overflow-hidden">
+                            {tracks.slice(pageIndex * 20 + 10, pageIndex * 20 + 20).map((track) => (
+                                <TrackRow key={track.id} {...track} lyrics={track.lyrics} allTracks={visibleTracks} onSimilar={handleFindSimilar} />
+                            ))}
+                        </div>
+                    )}
+                    <div className="flex justify-end pt-4">
+                        <button
+                            onClick={handleRefreshDiscovery}
+                            disabled={discoveryLoading}
+                            className="flex items-center gap-3 px-8 py-3 rounded-full bg-white/5 border border-white/10 text-white text-[12px] font-black uppercase tracking-widest hover:bg-white/10 transition-all active:scale-95 shadow-xl group"
+                        >
+                            <RefreshCw size={14} className={`${discoveryLoading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'}`} />
+                            {t('sections.explore_more')}
+                        </button>
+                    </div>
+                </div>
+
+                {/* 5. Music on Request Promotion Banner */}
+                <div className="pt-8">
+                    <div className="bg-[#D9E1EB] rounded-3xl md:rounded-[3rem] overflow-hidden flex flex-col md:flex-row items-stretch border border-white/5 group/banner">
+                        <div className="flex-1 p-8 md:p-16 flex flex-col justify-center space-y-4 md:space-y-6">
+                            <h2 className="text-3xl md:text-5xl font-serif text-[#111111] font-black uppercase tracking-tighter italic leading-tight max-w-md">{t('promo.title')}</h2>
+                            <p className="text-[13px] md:text-[15px] text-zinc-800 max-w-sm font-medium">{t('promo.desc')}</p>
+                            <div>
+                                <Link
+                                    href="/dashboard/request"
+                                    className="inline-block bg-black text-white px-8 py-3 md:px-10 md:py-4 font-bold text-xs md:text-[13px] hover:bg-zinc-900 transition-all active:scale-95 uppercase tracking-[0.2em] shadow-2xl"
+                                >
+                                    {t('promo.button')}
+                                </Link>
+                            </div>
+                        </div>
+                        <div className="flex-1 relative min-h-[200px] md:min-h-[400px] overflow-hidden group/studio">
+                            <div
+                                className="absolute inset-0 bg-cover bg-[center_bottom_30%] transition-transform duration-[2000ms] group-hover/studio:scale-110"
+                                style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=1600)' }}
+                            />
+                            <div className="absolute inset-0 bg-black/20 group-hover/studio:bg-black/10 transition-colors duration-700" />
+                            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[#D9E1EB]/30" />
+                        </div>
+                    </div>
+                </div>
+
+                {/* 5. Trending in Venues List */}
+                <div className="space-y-8 pt-12 border-t border-white/5">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-2xl font-black tracking-tight text-white uppercase italic">{t('sections.trending')}</h2>
+                    </div>
+
+                    <div className="divide-y divide-white/5 bg-zinc-900/5 rounded-[2.5rem] overflow-hidden min-h-[400px]">
+                        {trendingTracks.length > 0 ? (
+                            trendingTracks.map((track) => (
+                                <TrackRow key={track.id} {...track} lyrics={track.lyrics} allTracks={trendingTracks} onSimilar={handleFindSimilar} />
+                            ))
+                        ) : (
+                            <div className="py-20 text-center flex items-center justify-center text-zinc-700 font-black uppercase tracking-widest text-[10px]">
+                                {loading ? (
+                                    <RefreshCw className="animate-spin text-zinc-500" size={24} />
+                                ) : (
+                                    t('results.discovering')
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* 6. Premium Vibes Section (8 Boxes) */}
+                <div className="space-y-6 md:space-y-8 pt-12 border-t border-white/5">
+                    <h2 className="text-xl md:text-2xl font-black tracking-tight text-white uppercase italic text-glow-indigo">{t('sections.premium_vibes')}</h2>
+                    <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3 md:gap-4">
+                        {vibesList.map((vibe, i) => (
+                            <PlaylistCard
+                                key={i}
+                                title={vibe.title}
+                                tracks={formatCount(curationCounts[vibe.title])}
+                                color={vibe.color}
+                                image={vibe.image}
+                                onClick={() => {
+                                    setSelectedVibes([vibe.title]);
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </div>
 
             {/* Smart Similarity Engine Overlay */}
             <SimilarityModal
@@ -762,7 +784,7 @@ function VenueDashboardContent() {
                 referenceTrack={similarityReferenceTrack}
                 allTracks={tracks}
             />
-        </div>
+        </>
     );
 }
 

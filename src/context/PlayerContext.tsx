@@ -367,8 +367,51 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const playNext = useCallback(() => {
+    const playNext = useCallback(async () => {
         if (trackList.length === 0 || !currentTrack) return;
+
+        // --- AURA SMART FLOW INTEGRATION ---
+        // If Smart Flow (Auto-Pilot) is enabled, it takes over the transition logic
+        try {
+            // We dynamic import to avoid potential circular dependency issues at the top level
+            const { getActiveScheduleRule_Action } = await import('@/app/actions/scheduling');
+            if (userId) {
+                const activeRule = await getActiveScheduleRule_Action(userId);
+                const isAutoModeSaved = localStorage.getItem('aura_smart_flow_auto') === 'true';
+
+                if (isAutoModeSaved && activeRule) {
+                    console.log(`[Player] Smart Flow Active: Applying rule "${activeRule.name}"`);
+
+                    if (activeRule.playlist_id) {
+                        const { getPlaylistDetails_Action } = await import('@/app/actions/playlist');
+                        const { items } = await getPlaylistDetails_Action(activeRule.playlist_id);
+
+                        if (items && items.length > 0) {
+                            const randomItem = items[Math.floor(Math.random() * items.length)];
+                            const t = randomItem.track;
+                            const nextTrack: Track = {
+                                id: t.id,
+                                title: t.title,
+                                artist: t.artist,
+                                duration: t.duration_sec || 0,
+                                bpm: t.bpm || 120,
+                                src: t.src,
+                                image: t.cover_image_url,
+                                tags: t.metadata?.mood_tags || [],
+                                metadata: t.metadata
+                            };
+                            console.log(`[Player] Smart Flow: Transitioning to track from playlist "${activeRule.playlist_name}"`);
+                            playTrack(nextTrack, trackList);
+                            return;
+                        }
+                    }
+                }
+            }
+        } catch (err) {
+            console.warn("[Player] Smart Flow evaluation failed, falling back to manual queue:", err);
+        }
+
+        // --- DEFAULT QUEUE LOGIC ---
         let index = trackList.findIndex(t => t.id === currentTrack.id);
 
         // If the current track is no longer in the list (e.g. queue was entirely replaced via pagination),
@@ -390,7 +433,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
             }
         }
         playTrack(trackList[nextIndex]);
-    }, [trackList, currentTrack, isShuffle, isRepeat, onQueueEnd]);
+    }, [trackList, currentTrack, isShuffle, isRepeat, onQueueEnd, userId, playTrack]);
 
     const playPrevious = () => {
         if (trackList.length === 0 || !currentTrack) return;

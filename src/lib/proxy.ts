@@ -15,8 +15,9 @@ export async function middleware(request: NextRequest) {
     // ---------------------------------------------------------
     const host = request.headers.get('host');
     const isLocal = host?.includes('localhost') || host?.includes('127.0.0.1');
+    const isDev = process.env.NODE_ENV === 'development';
 
-    if (host && host.includes(':3000') && !isLocal) {
+    if (!isDev && !isLocal && host && host.includes(':3000')) {
         const url = request.nextUrl.clone();
         url.host = host.split(':')[0];
         url.port = '';
