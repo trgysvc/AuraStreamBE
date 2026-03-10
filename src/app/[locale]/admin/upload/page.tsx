@@ -13,6 +13,7 @@ interface UploadingFile {
     bpm: string;
     genre: string;
     lyrics: string;
+    tuning: '440hz' | '432hz' | '528hz';
     coverBlob?: Blob;
     coverUrl?: string; // Preview URL
     status: 'idle' | 'analyzing' | 'uploading' | 'processing' | 'success' | 'error' | 'duplicate';
@@ -45,6 +46,7 @@ export default function BulkUploadPage() {
                     bpm: '...',
                     genre: '...',
                     lyrics: '',
+                    tuning: '440hz',
                     status: 'analyzing',
                     progress: 0
                 }]);
@@ -92,6 +94,7 @@ export default function BulkUploadPage() {
                             artist: 'Sonaraura AI',
                             genre: 'Ambient',
                             bpm: '120',
+                            tuning: '440hz',
                             status: 'idle'
                         });
                     }
@@ -153,6 +156,7 @@ export default function BulkUploadPage() {
                 formData.set('bpm', fileObj.bpm);
                 formData.set('genre', fileObj.genre);
                 formData.set('lyrics', fileObj.lyrics);
+                formData.set('tuning', fileObj.tuning);
 
                 // Calculate Duration
                 const audio = new Audio(URL.createObjectURL(fileObj.file));
@@ -241,6 +245,19 @@ export default function BulkUploadPage() {
                                                 <p className="text-[7px] md:text-[9px] font-black uppercase text-zinc-600 tracking-widest italic leading-none">Specs</p>
                                                 <p className="text-xs md:text-sm font-black text-white leading-tight">{fileObj.bpm} <span className="text-[8px] text-zinc-600">BPM</span></p>
                                                 <p className="text-[10px] md:text-sm font-black text-zinc-400 uppercase italic truncate">{fileObj.genre}</p>
+                                            </div>
+                                            <div className="space-y-0.5">
+                                                <p className="text-[7px] md:text-[9px] font-black uppercase text-zinc-600 tracking-widest italic leading-none">Native Hz</p>
+                                                <select
+                                                    value={fileObj.tuning}
+                                                    onChange={(e) => updateFileData(fileObj.id, { tuning: e.target.value as any })}
+                                                    disabled={fileObj.status !== 'idle' && fileObj.status !== 'analyzing'}
+                                                    className="bg-transparent text-xs md:text-sm font-black text-indigo-400 uppercase cursor-pointer hover:text-white transition-colors outline-none border-none p-0"
+                                                >
+                                                    <option value="440hz" className="bg-[#1E1E22]">440Hz</option>
+                                                    <option value="432hz" className="bg-[#1E1E22]">432Hz</option>
+                                                    <option value="528hz" className="bg-[#1E1E22]">528Hz</option>
+                                                </select>
                                             </div>
                                             <div className="space-y-2 flex-1">
                                                 <p className="text-[7px] md:text-[9px] font-black uppercase text-zinc-600 tracking-widest italic leading-none">Health</p>

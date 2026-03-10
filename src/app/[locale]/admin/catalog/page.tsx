@@ -91,12 +91,12 @@ export default async function CatalogMgmtPage({
                     <table className="w-full text-left border-collapse min-w-[1000px] md:min-w-0">
                         <thead>
                             <tr className="border-b border-white/5 bg-white/[0.03] text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">
-                                <th className="p-5 md:p-8">Audio Asset</th>
-                                <th className="p-5 md:p-8">Duration</th>
-                                <th className="p-5 md:p-8">Technical Mapping</th>
-                                <th className="p-5 md:p-8">Vibe Profile</th>
-                                <th className="p-5 md:p-8">Engagement</th>
-                                <th className="p-5 md:p-8 text-right">Control</th>
+                                <th className="p-4 md:p-6 w-[25%]">Audio Asset</th>
+                                <th className="p-4 md:p-6 w-[10%]">Duration</th>
+                                <th className="p-4 md:p-6 w-[20%]">Technical Mapping</th>
+                                <th className="p-4 md:p-6 w-[20%]">Vibe Profile</th>
+                                <th className="p-4 md:p-6 w-[10%]">Engagement</th>
+                                <th className="p-4 md:p-6 text-right w-[15%]">Control</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/[0.03]">

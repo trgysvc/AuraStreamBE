@@ -37,7 +37,7 @@ async function processAllTracks() {
             id, 
             title, 
             status,
-            track_files (file_type, s3_key)
+            track_files (file_type, s3_key, tuning)
         `)
         .in('status', ['processing', 'active', 'pending_qc']);
 
@@ -78,7 +78,7 @@ async function processAllTracks() {
                     track_id: track.id,
                     file_type: 'stream_mp3',
                     s3_key: processedKey,
-                    tuning: '440hz'
+                    tuning: rawFile?.tuning || '440hz'
                 }, { onConflict: 'track_id,file_type,tuning' });
 
                 // Heal Track Status
@@ -192,7 +192,7 @@ async function processAllTracks() {
                 track_id: track.id,
                 file_type: 'stream_mp3', // Tag as streamable MP3 for the player
                 s3_key: processedKey,
-                tuning: '440hz'
+                tuning: rawFile?.tuning || '440hz'
             }, { onConflict: 'track_id,file_type,tuning' });
 
             // 7. Cleanup Original S3 File

@@ -198,7 +198,7 @@ export function CatalogTrackRow({ track }: { track: any }) {
     return (
         <tr className={`hover:bg-white/[0.02] transition-colors group ${loading && !showTagEditor && !showLyricsEditor ? 'opacity-50 pointer-events-none' : ''} relative`}>
             {/* Asset Primary Info */}
-            <td className="p-6">
+            <td className="p-4">
                 <div className="flex items-center gap-4">
                     <div className="h-12 w-12 bg-zinc-800 rounded-lg flex items-center justify-center relative overflow-hidden shadow-xl">
                         {track.cover_image_url ? (
@@ -223,7 +223,7 @@ export function CatalogTrackRow({ track }: { track: any }) {
             </td>
 
             {/* Duration */}
-            <td className="p-6">
+            <td className="p-4">
                 <div className="text-[11px] font-black text-white/70 font-mono">
                     {formatDuration(track.duration_sec)}
                 </div>
@@ -233,7 +233,7 @@ export function CatalogTrackRow({ track }: { track: any }) {
             </td>
 
             {/* Attributes (Technical) */}
-            <td className="p-6">
+            <td className="p-4">
                 <div className="flex flex-col gap-1.5">
                     <div className="flex flex-wrap gap-1 items-center max-w-[200px]">
                         <span className="text-[8px] font-black text-zinc-600 uppercase">Genre:</span>
@@ -272,7 +272,7 @@ export function CatalogTrackRow({ track }: { track: any }) {
             </td>
 
             {/* Vibe & Taxonomy Summary */}
-            <td className="p-6">
+            <td className="p-4">
                 <div className="flex flex-wrap gap-1 max-w-[240px] items-center">
                     {track.venue_tags?.slice(0, 3).map((tag: string) => (
                         <span key={tag} className="px-1.5 py-0.5 bg-green-500/10 text-green-400 rounded-[4px] text-[7px] font-black uppercase tracking-wider">{tag}</span>
@@ -297,7 +297,7 @@ export function CatalogTrackRow({ track }: { track: any }) {
             </td>
 
             {/* Popularity / Score */}
-            <td className="p-6">
+            <td className="p-4">
                 <div className="space-y-2">
                     <div className="flex justify-between items-center">
                         <span className="text-[8px] font-black text-zinc-600 uppercase">Aura Score</span>
@@ -313,7 +313,7 @@ export function CatalogTrackRow({ track }: { track: any }) {
             </td>
 
             {/* Quick Actions */}
-            <td className="p-6 text-right relative">
+            <td className="p-4 text-right relative">
                 <div className="flex items-center justify-end gap-1">
                     {isEditing ? (
                         <>
@@ -329,42 +329,49 @@ export function CatalogTrackRow({ track }: { track: any }) {
                             </SimpleTooltip>
                         </>
                     ) : (
-                        <div className="flex gap-2">
-                            <SimpleTooltip text="Aura AI Auto-Tag">
-                                <button
-                                    onClick={handleAutoTag}
-                                    disabled={loading}
-                                    className="p-2 text-indigo-400 hover:text-white transition-colors bg-indigo-500/10 rounded-lg"
-                                >
-                                    {loading ? <Loader2 size={16} className="animate-spin" /> : <Wand2 size={16} />}
-                                </button>
-                            </SimpleTooltip>
-                            <SimpleTooltip text="Edit Core Meta">
-                                <button onClick={() => setIsEditing(true)} className="p-2 text-zinc-400 hover:text-white transition-colors">
-                                    <Edit3 size={16} />
-                                </button>
-                            </SimpleTooltip>
-                            <SimpleTooltip text="Advanced Tagging (Venue, Vibe, Character)">
-                                <button
-                                    onClick={() => setShowTagEditor(true)}
-                                    className="p-2 text-indigo-400 hover:text-indigo-300 hover:bg-white/5 rounded-lg transition-all"
-                                >
-                                    <Settings2 size={16} />
-                                </button>
-                            </SimpleTooltip>
-                            <SimpleTooltip text="Manage Lyrics">
-                                <button
-                                    onClick={() => setShowLyricsEditor(!showLyricsEditor)}
-                                    className={`p-2 transition-colors ${showLyricsEditor ? 'text-pink-500 bg-white/5 rounded-lg' : 'text-zinc-400 hover:text-white'}`}
-                                >
-                                    <Music size={16} />
-                                </button>
-                            </SimpleTooltip>
-                            <SimpleTooltip text="Delete Asset">
-                                <button onClick={() => setShowDeleteConfirm(true)} className="p-2 text-zinc-400 hover:text-rose-500 transition-colors">
-                                    <Trash2 size={16} />
-                                </button>
-                            </SimpleTooltip>
+                        <div className="flex items-center justify-end gap-1 flex-nowrap shrink-0">
+                            <button
+                                onClick={handleAutoTag}
+                                disabled={loading}
+                                title="Aura AI Auto-Tag"
+                                className="flex items-center gap-1.5 px-2 py-1 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 hover:text-white transition-all rounded-lg border border-indigo-500/10 shrink-0"
+                            >
+                                {loading ? <Loader2 size={12} className="animate-spin" /> : <Wand2 size={12} />}
+                                <span className="text-[7px] font-black uppercase tracking-widest hidden 2xl:block">AI</span>
+                            </button>
+
+                            <button
+                                onClick={() => setIsEditing(true)}
+                                title="Edit Core Meta"
+                                className="p-1.5 text-zinc-500 hover:text-white transition-colors bg-white/5 rounded-lg border border-white/5 shrink-0"
+                            >
+                                <Edit3 size={12} />
+                            </button>
+
+                            <button
+                                onClick={() => setShowTagEditor(true)}
+                                title="Sonic Taxonomy"
+                                className="flex items-center gap-1.5 px-2 py-1 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 hover:text-white transition-all rounded-lg border border-indigo-500/10 shrink-0"
+                            >
+                                <Settings2 size={12} />
+                                <span className="text-[7px] font-black uppercase tracking-widest hidden 2xl:block">Tag</span>
+                            </button>
+
+                            <button
+                                onClick={() => setShowLyricsEditor(!showLyricsEditor)}
+                                title="Lyrics Editor"
+                                className={`p-1.5 transition-all border shrink-0 ${showLyricsEditor ? 'text-pink-500 bg-pink-500/10 border-pink-500/20 rounded-lg' : 'text-zinc-500 hover:text-white bg-white/5 border-white/5 rounded-lg'}`}
+                            >
+                                <Music size={12} />
+                            </button>
+
+                            <button
+                                onClick={() => setShowDeleteConfirm(true)}
+                                title="Delete Track"
+                                className="p-1.5 text-zinc-500 hover:text-rose-500 hover:bg-rose-500/10 transition-all bg-white/5 border border-white/5 rounded-lg shrink-0"
+                            >
+                                <Trash2 size={12} />
+                            </button>
                         </div>
                     )}
                 </div>

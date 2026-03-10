@@ -66,6 +66,7 @@ export async function createTrackRecord_Action(formData: FormData, s3Key: string
     const duration = parseInt(formData.get('duration') as string);
     const coverUrl = formData.get('cover_url') as string;
     const lyrics = formData.get('lyrics') as string;
+    const nativeTuning = (formData.get('tuning') as string) || '440hz';
 
     if (!title || !s3Key) {
         return { message: 'Missing required fields', error: 'Validation Error' };
@@ -104,6 +105,7 @@ export async function createTrackRecord_Action(formData: FormData, s3Key: string
         venue_tags: aiTags.venue_tags,
         cover_image_url: coverUrl,
         lyrics: lyrics || null,
+        primary_tuning: nativeTuning,
         status: 'processing',
         ai_metadata: {
             source: 'manual_upload',
@@ -121,7 +123,7 @@ export async function createTrackRecord_Action(formData: FormData, s3Key: string
         track_id: trackData.id,
         file_type: 'raw',
         s3_key: s3Key,
-        tuning: '440hz'
+        tuning: nativeTuning
     } as any);
 
     if (fileError) {
