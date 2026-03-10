@@ -53,7 +53,11 @@ export default async function PlaylistDetailPage({ params }: { params: Promise<{
                         <p className="text-zinc-400 font-medium max-w-xl">{playlist.description}</p>
                     </div>
 
-                    <PlaylistHeaderControls playlistId={id} />
+                    <PlaylistHeaderControls
+                        playlistId={id}
+                        initialName={playlist.name}
+                        initialDescription={playlist.description}
+                    />
                 </div>
             </div>
 

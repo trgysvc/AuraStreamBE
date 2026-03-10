@@ -291,19 +291,19 @@ function VenueDashboardContent() {
     };
 
     const playlists = [
-        { title: "Recommended tracks", tracks: "Aura AI", color: "bg-[#FF5533]", image: "https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=800" },
-        { title: "Trending in Venues", tracks: "Popular", color: "bg-[#FF77AA]", image: "https://images.unsplash.com/photo-1514525253344-f856335d7d67?q=80&w=800" },
+        { title: "Recommended tracks", tracks: "Aura AI", color: "bg-[#0A0A1A]", image: "/images/curation/recommended-tracks.webp" },
+        { title: "Trending in Venues", tracks: "Popular", color: "bg-[#0F1923]", image: "/images/curation/trending-venues.webp" },
         { title: "Can's Essentials", tracks: formatCount(curationCounts["Can's Essentials"]), query: "sayonaramuse", color: "bg-[#AAAAAA]", image: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=800" },
         { title: "Creator's Picks", tracks: formatCount(curationCounts["Creator's Picks"], "playlist", "playlists"), color: "bg-[#4499FF]", image: "https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?q=80&w=800" },
-        { title: "Liked Songs", tracks: formatCount(curationCounts["Liked Songs"]), color: "bg-pink-600", image: "https://images.unsplash.com/photo-1544690411-b752fa399f9c?q=80&w=800" },
+        { title: "Liked Songs", tracks: formatCount(curationCounts["Liked Songs"]), color: "bg-[#6B0030]", image: "/images/curation/liked-songs.webp" },
         { title: "Championships", tracks: formatCount(curationCounts["Championships"]), vibe: "Epic", color: "bg-[#FFCC44]", image: "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=800" },
         { title: "Sports & Action", tracks: formatCount(curationCounts["Sports & Action"], "playlist", "playlists"), vibe: "Workout", color: "bg-[#9966FF]", image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=800" },
         { title: "The Roastery", tracks: formatCount(curationCounts["The Roastery"]), venue: "Coffee Shop", color: "bg-[#4A2C2A]", image: "/images/the-roastery.png" },
         { title: "Morning Coffee", tracks: formatCount(curationCounts["Morning Coffee"]), vibe: "Relaxing", color: "bg-[#D2B48C]", image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=800" },
         { title: "Deep Focus", tracks: formatCount(curationCounts["Deep Focus"]), vibe: "Focus", color: "bg-[#2F4F4F]", image: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=800" },
         { title: "Late Night Jazz", tracks: formatCount(curationCounts["Late Night Jazz"]), genre: "Jazz", color: "bg-[#4B0082]", image: "https://images.unsplash.com/photo-1511192336575-5a79af67a629?q=80&w=800" },
-        { title: "Golden Hour", tracks: formatCount(curationCounts["Golden Hour"]), vibe: "Dreamy", color: "bg-[#FF8C00]", image: "https://images.unsplash.com/photo-1470252649358-9c9e6c739946?q=80&w=800" },
-        { title: "Techno Bunker", tracks: formatCount(curationCounts["Techno Bunker"]), vibe: "Dark", color: "bg-[#000000]", image: "https://images.unsplash.com/photo-1574433232643-49f0f6cc0d00?q=80&w=800" },
+        { title: "Golden Hour", tracks: formatCount(curationCounts["Golden Hour"]), vibe: "Dreamy", color: "bg-[#7A3B00]", image: "/images/curation/golden-hour.webp" },
+        { title: "L'Opera del Caffè", tracks: formatCount(curationCounts["L'Opera del Caffè"]), album: "L'Opera del Caffè", color: "bg-[#3B1F0A]", image: "/images/curation/lopera-del-caffe.webp" },
         { title: "Showroom / Gallery", tracks: formatCount(curationCounts["Showroom / Gallery"]), venue: "Showroom / Gallery", color: "bg-[#DAA520]", image: "/images/sectors/exhibition.png" },
         { title: "Velvet & Fire Album", tracks: formatCount(curationCounts["Velvet & Fire Album"], "track", "tracks"), query: "Velvet & Fire", color: "bg-[#8B0000]", image: "/images/curation/velvet-and-fire.png" },
         { title: "Lobby", tracks: formatCount(curationCounts["Lobby"]), venue: "Hotel Lobby", color: "bg-[#AAAAAA]", image: "/images/lobby.png" }
@@ -314,7 +314,7 @@ function VenueDashboardContent() {
         { title: 'Dreamy', image: 'https://images.unsplash.com/photo-1492724441997-5dc865305da7?q=80&w=800', color: 'bg-purple-500' },
         { title: 'Epic', image: 'https://images.unsplash.com/photo-1533750516457-a7f992034fec?q=80&w=800', color: 'bg-red-500' },
         { title: 'Focus', image: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&w=800', color: 'bg-teal-500' },
-        { title: 'Happy', image: 'https://images.unsplash.com/photo-1500835595351-263d8137b6a9?q=80&w=800', color: 'bg-yellow-500' },
+        { title: 'Happy', image: '/images/vibes/happy.webp', color: 'bg-yellow-500' },
         { title: 'Romantic', image: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800', color: 'bg-pink-500' },
         { title: 'Relaxing', image: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?q=80&w=800', color: 'bg-indigo-500' },
         { title: 'Suspense', image: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=800', color: 'bg-zinc-800' },
@@ -344,12 +344,12 @@ function VenueDashboardContent() {
             <div className="flex flex-col gap-8 md:gap-12 pb-24 md:pb-20 max-w-[1600px] mx-auto">
                 {/* 1. Header & Navigation */}
                 <div className="space-y-6 md:space-y-10">
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="flex flex-row items-center justify-start gap-2 md:gap-3">
                         {['search', 'assistant', 'flow'].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => { setActiveSubTab(tab as any); setSelectedPlaylist(null); }}
-                                className={`flex-1 sm:flex-initial px-4 md:px-8 py-2 md:py-2.5 rounded-full text-[10px] md:text-[13px] font-black uppercase tracking-widest transition-all shadow-lg border ${activeSubTab === tab
+                                className={`px-4 md:px-8 py-2 md:py-2.5 rounded-full text-[10px] md:text-[13px] font-black uppercase tracking-widest transition-all shadow-lg border ${activeSubTab === tab
                                     ? 'bg-white text-black border-white scale-105'
                                     : 'text-zinc-500 hover:text-white bg-white/5 border-transparent hover:bg-white/10'
                                     }`}
@@ -663,6 +663,8 @@ function VenueDashboardContent() {
                                     } else if (playlist.genre) {
                                         setSelectedGenres([playlist.genre]);
                                         setQuery('');
+                                    } else if (playlist.album) {
+                                        setQuery(playlist.album);
                                     } else if (playlist.query) {
                                         // Specific exact search string
                                         setQuery(playlist.query);

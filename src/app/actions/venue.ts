@@ -72,7 +72,7 @@ export async function getVenueTracks_Action(options?: {
             q = q.or(`and(bpm.gte.${options.bpmRange[0]},bpm.lte.${options.bpmRange[1]}),bpm.is.null,bpm.eq.0`);
         }
         if (options?.query) {
-            q = q.or(`title.ilike.%${options.query}%,artist.ilike.%${options.query}%,genre.ilike.%${options.query}%`);
+            q = q.or(`title.ilike.%${options.query}%,artist.ilike.%${options.query}%,genre.ilike.%${options.query}%,album.ilike.%${options.query}%`);
         }
         if (options?.venues && options.venues.length > 0) {
             q = q.overlaps('venue_tags', options.venues);
@@ -251,17 +251,6 @@ export async function getVenueTracks_Action(options?: {
             }
         }
 
-        if (track.title === 'A Veiled Spotlight') {
-            try {
-                const fs = require('fs');
-                const path = require('path');
-                const logPath = path.join(process.cwd(), 'debug-venue.log');
-                const logData = `[${new Date().toISOString()}] Track: ${track.title} (${track.id})\nFiles: ${JSON.stringify(files)}\nDefault Src: ${defaultSrc}\n\n`;
-                fs.appendFileSync(logPath, logData);
-            } catch (e) {
-                console.error('Failed to log to file', e);
-            }
-        }
 
         return {
             id: track.id,
@@ -316,17 +305,17 @@ export async function getTrendingTracks_Action(): Promise<VenueTrack[]> {
 
     const topIds = Object.entries(freq)
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 10)
+        .slice(0, 50)
         .map(e => e[0]);
 
-    // If we don't have enough data, just get the latest 10 tracks
+    // If we don't have enough data, just get the latest 50 tracks
     if (topIds.length < 5) {
         const { data: latestTracks } = await supabase
             .from('tracks')
             .select('id')
             .eq('status', 'active')
             .order('created_at', { ascending: false })
-            .limit(10);
+            .limit(50);
 
         topIds.push(...(latestTracks?.map(t => t.id) || []));
     }
@@ -358,7 +347,7 @@ export async function getTrendingTracks_Action(): Promise<VenueTrack[]> {
                 tuning
             )
         `)
-        .in('id', Array.from(new Set(topIds)).slice(0, 10))
+        .in('id', Array.from(new Set(topIds)).slice(0, 50))
         .eq('status', 'active');
 
     if (tracksError || !tracks) {
@@ -480,12 +469,24 @@ export async function getCurationCounts_Action(options?: {
             'Deep Focus': 'Focus',
             'Late Night Jazz': 'Jazz',
             'Golden Hour': 'Dreamy',
-            'Techno Bunker': 'Dark',
             'Showroom / Gallery': 'Venue_Showroom',
             'Global Beats': 'World',
             'Lobby': 'Hotel Lobby',
             'The Roastery': 'Coffee Shop'
         };
+
+        // Album-based counts
+        const albumQueries = [
+            { title: "L'Opera del Caffè", album: "L'Opera del Caffè" }
+        ];
+        for (const aq of albumQueries) {
+            const { count } = await supabase
+                .from('tracks')
+                .select('*', { count: 'exact', head: true })
+                .eq('status', 'active')
+                .eq('album', aq.album);
+            counts[aq.title] = count || 0;
+        }
 
         // Custom Artist / Query Counts
         const customQueries = [

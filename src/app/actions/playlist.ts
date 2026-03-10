@@ -113,23 +113,56 @@ export async function createPlaylist_Action(data: {
 export async function deletePlaylist_Action(playlistId: string) {
     const supabase = await createClient();
 
-    // 1. Delete associated tracks to prevent foreign key constraint violations
-    const { error: itemsError } = await supabase
-        .from('playlist_items')
-        .delete()
-        .eq('playlist_id', playlistId);
+    try {
+        // 1. Delete associated tracks to prevent foreign key constraint violations
+        const { error: itemsError } = await supabase
+            .from('playlist_items')
+            .delete()
+            .eq('playlist_id', playlistId);
 
-    if (itemsError) throw new Error(itemsError.message);
+        if (itemsError) {
+            console.error('Error deleting playlist items:', itemsError);
+            throw new Error(itemsError.message);
+        }
 
-    // 2. Delete the playlist itself
+        // 2. Delete the playlist itself
+        const { error } = await supabase
+            .from('playlists')
+            .delete()
+            .eq('id', playlistId);
+
+        if (error) {
+            console.error('Error deleting playlist:', error);
+            throw new Error(error.message);
+        }
+
+        revalidatePath('/dashboard/playlists');
+        revalidatePath(`/dashboard/playlists/${playlistId}`);
+        return { success: true };
+    } catch (e: any) {
+        console.error('Failed to delete playlist:', e);
+        throw e;
+    }
+}
+
+export async function updatePlaylist_Action(playlistId: string, data: { name?: string, description?: string }) {
+    const supabase = await createClient();
+
     const { error } = await supabase
         .from('playlists')
-        .delete()
+        .update({
+            name: data.name,
+            description: data.description
+        })
         .eq('id', playlistId);
 
-    if (error) throw new Error(error.message);
+    if (error) {
+        console.error('Error updating playlist:', error);
+        throw new Error(error.message);
+    }
 
     revalidatePath('/dashboard/playlists');
+    revalidatePath(`/dashboard/playlists/${playlistId}`);
     return { success: true };
 }
 export async function getPlaylistDetails_Action(playlistId: string) {
