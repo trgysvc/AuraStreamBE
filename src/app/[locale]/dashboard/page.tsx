@@ -36,6 +36,19 @@ async function getAuraHomeData() {
     const profile = profileRes.data as any; // Temporary cast to bypass complex relation types
     const tenant = Array.isArray(profile?.tenant) ? profile.tenant[0] : profile?.tenant;
 
+    // 1.5 Sign tenant logo if it exists and is an S3 URL
+    if (tenant?.logo_url && tenant.logo_url.includes('amazonaws.com')) {
+        try {
+            const urlParts = tenant.logo_url.split('.com/');
+            if (urlParts.length > 1) {
+                const s3Key = decodeURIComponent(urlParts[1]);
+                tenant.logo_url = await S3Service.getDownloadUrl(s3Key, process.env.AWS_S3_BUCKET_RAW!);
+            }
+        } catch (e) {
+            console.error("Failed to sign tenant logo URL", e);
+        }
+    }
+
     let trackRes: any;
     let isPersonalized = false;
 
@@ -213,6 +226,17 @@ export default async function AuraHomePage({ params }: { params: Promise<{ local
                 </div>
 
                 <div className="flex items-center gap-4">
+                    {tenant?.logo_url && (
+                        <div className="flex-1 md:flex-none px-4 md:px-6 py-2 md:py-3 bg-white/5 border border-white/10 rounded-xl md:rounded-2xl flex items-center justify-center gap-4 shadow-2xl backdrop-blur-xl border-indigo-500/20">
+                            <div className="h-8 w-auto md:h-10 flex items-center">
+                                <img
+                                    src={tenant.logo_url}
+                                    alt={tenant.display_name || "Enterprise Logo"}
+                                    className="h-full w-auto object-contain max-w-[120px] filter brightness-110"
+                                />
+                            </div>
+                        </div>
+                    )}
                     <div className="flex-1 md:flex-none px-4 md:px-6 py-2 md:py-3 bg-white/5 border border-white/10 rounded-xl md:rounded-2xl flex items-center justify-between md:justify-start gap-4 shadow-2xl backdrop-blur-xl">
                         <div className="flex flex-col items-start md:items-end">
                             <span className="text-[8px] md:text-[10px] font-black text-zinc-500 uppercase tracking-widest italic">{t('tuning.label')}</span>

@@ -90,8 +90,8 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <GoogleTagManager gtmId="GTM-TDKDDM4X" />
       <body className={`${inter.className} antialiased`} suppressHydrationWarning={true}>
+        <GoogleTagManager gtmId="GTM-TDKDDM4X" />
         <NextIntlClientProvider
           locale={locale}
           messages={messages}

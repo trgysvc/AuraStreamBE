@@ -734,7 +734,7 @@ function VenueDashboardContent() {
 
                     <div className="divide-y divide-white/5 bg-zinc-900/5 rounded-[2.5rem] overflow-hidden min-h-[400px]">
                         {trendingTracks.length > 0 ? (
-                            trendingTracks.map((track) => (
+                            trendingTracks.slice(0, 10).map((track) => (
                                 <TrackRow key={track.id} {...track} lyrics={track.lyrics} allTracks={trendingTracks} onSimilar={handleFindSimilar} />
                             ))
                         ) : (

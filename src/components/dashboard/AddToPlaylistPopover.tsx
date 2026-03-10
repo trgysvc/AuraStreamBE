@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Plus, ListPlus, Check, Search, X } from 'lucide-react';
 import { getPlaylists_Action, addTrackToPlaylist_Action, Playlist } from '@/app/actions/playlist';
 import { useTranslations } from 'next-intl';
-
 
 interface AddToPlaylistPopoverProps {
     trackId: string;
@@ -15,11 +14,12 @@ interface AddToPlaylistPopoverProps {
 export default function AddToPlaylistPopover({ trackId, tenantId, onClose }: AddToPlaylistPopoverProps) {
     const t = useTranslations('VenueDashboard.track_actions');
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
-
     const [loading, setLoading] = useState(true);
     const [addingToId, setAddingToId] = useState<string | null>(null);
     const [successId, setSuccessId] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const [position, setPosition] = useState<'top' | 'bottom'>('top');
+    const popoverRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (tenantId) {
@@ -28,7 +28,25 @@ export default function AddToPlaylistPopover({ trackId, tenantId, onClose }: Add
                 setLoading(false);
             });
         }
-    }, [tenantId]);
+
+        // Check vertical space to decide position
+        if (popoverRef.current) {
+            const rect = popoverRef.current.getBoundingClientRect();
+            // If the top of the popover (when rendered at top) would be < 20px from top of viewport
+            if (rect.top < 80) { // Using 80 to account for header/padding
+                setPosition('bottom');
+            }
+        }
+
+        const handleClickOutside = (event: MouseEvent) => {
+            if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
+                onClose();
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [tenantId, onClose]);
 
     const handleAdd = async (playlistId: string) => {
         setAddingToId(playlistId);
@@ -38,7 +56,7 @@ export default function AddToPlaylistPopover({ trackId, tenantId, onClose }: Add
             setTimeout(() => {
                 setSuccessId(null);
                 onClose();
-            }, 1500);
+            }, 1000);
         } catch (error) {
             console.error('Error adding to playlist:', error);
         } finally {
@@ -51,7 +69,11 @@ export default function AddToPlaylistPopover({ trackId, tenantId, onClose }: Add
     );
 
     return (
-        <div className="absolute right-0 bottom-full mb-2 w-64 bg-[#1E1E22]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-[100] animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
+        <div
+            ref={popoverRef}
+            onClick={(e) => e.stopPropagation()}
+            className={`absolute right-0 ${position === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'} w-64 bg-[#1E1E22]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-[100] animate-in fade-in zoom-in-95 duration-200 overflow-hidden`}
+        >
             <div className="p-4 border-b border-white/5 flex items-center justify-between">
                 <h3 className="text-[11px] font-black uppercase tracking-widest text-white italic">{t('add_to_playlist')}</h3>
                 <button onClick={onClose} className="text-zinc-500 hover:text-white transition-colors">

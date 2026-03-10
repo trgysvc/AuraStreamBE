@@ -187,7 +187,7 @@ export default function TrackRow({ id, title, artist, duration, bpm, tags, image
                     <Heart size={18} fill={isLiked ? "currentColor" : "none"} strokeWidth={isLiked ? 2 : 2.5} />
                 </button>
 
-                <div className="relative">
+                <div className="relative" onClick={(e) => e.stopPropagation()}>
                     <button
                         onClick={(e) => { e.stopPropagation(); setShowPlaylistPopover(!showPlaylistPopover); }}
                         className={`p-2 transition-all hover:scale-110 ${showPlaylistPopover ? 'text-indigo-400' : 'text-zinc-400 hover:text-white'}`}

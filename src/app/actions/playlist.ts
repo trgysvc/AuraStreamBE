@@ -52,38 +52,41 @@ export async function getPlaylists_Action(tenantId: string) {
 }
 
 export async function searchPlaylists_Action(query: string, userId: string) {
-    if (!query || !userId) return [];
+    try {
+        const supabase = await createClient();
 
-    const supabase = await createClient();
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('tenant_id')
+            .eq('id', userId)
+            .single();
 
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('tenant_id')
-        .eq('id', userId)
-        .single();
+        if (!profile?.tenant_id) return [];
 
-    if (!profile?.tenant_id) return [];
+        const { data, error } = await supabase
+            .from('playlists')
+            .select(`
+                *,
+                items:playlist_items(count)
+            `)
+            .eq('tenant_id', profile.tenant_id)
+            .or(`name.ilike.%${query}%,description.ilike.%${query}%`)
+            .order('created_at', { ascending: false })
+            .limit(12);
 
-    const { data, error } = await supabase
-        .from('playlists')
-        .select(`
-            *,
-            items:playlist_items(count)
-        `)
-        .eq('tenant_id', profile.tenant_id)
-        .or(`name.ilike.%${query}%,description.ilike.%${query}%`)
-        .order('created_at', { ascending: false })
-        .limit(12);
+        if (error) {
+            console.error('[playlist] Error searching playlists:', error);
+            return [];
+        }
 
-    if (error) {
-        console.error('Error searching playlists:', error);
+        return data.map((p: any) => ({
+            ...p,
+            item_count: p.items?.[0]?.count || 0
+        })) as Playlist[];
+    } catch (e) {
+        console.error('[playlist] Critical error in searchPlaylists_Action:', e);
         return [];
     }
-
-    return data.map((p: any) => ({
-        ...p,
-        item_count: p.items?.[0]?.count || 0
-    })) as Playlist[];
 }
 
 export async function createPlaylist_Action(data: {
@@ -169,96 +172,108 @@ export async function getPlaylistDetails_Action(playlistId: string) {
     if (!playlistId || playlistId === 'undefined') {
         throw new Error('Playlist ID is required');
     }
-    const supabase = await createClient();
 
-    // Fetch Playlist Info
-    const { data: playlist, error: playlistError } = await supabase
-        .from('playlists')
-        .select('*')
-        .eq('id', playlistId)
-        .single();
+    try {
+        const supabase = await createClient();
 
-    if (playlistError) throw new Error(playlistError.message);
+        // Fetch Playlist Info
+        const { data: playlist, error: playlistError } = await supabase
+            .from('playlists')
+            .select('*')
+            .eq('id', playlistId)
+            .single();
 
-    // Fetch Items with Track Data
-    const { data: items, error: itemsError } = await supabase
-        .from('playlist_items')
-        .select(`
-            *,
-            track:tracks(
-                id,
-                title,
-                artist,
-                duration_sec,
-                cover_image_url,
-                bpm,
-                genre,
-                lyrics,
-                metadata,
-                track_files (
-                    s3_key,
-                    file_type,
-                    tuning
+        if (playlistError) throw new Error(playlistError.message);
+
+        // Fetch Items with Track Data
+        const { data: items, error: itemsError } = await supabase
+            .from('playlist_items')
+            .select(`
+                *,
+                track:tracks(
+                    id,
+                    title,
+                    artist,
+                    duration_sec,
+                    cover_image_url,
+                    bpm,
+                    genre,
+                    lyrics,
+                    metadata,
+                    track_files (
+                        s3_key,
+                        file_type,
+                        tuning
+                    )
                 )
-            )
-        `)
-        .eq('playlist_id', playlistId)
-        .order('position', { ascending: true });
+            `)
+            .eq('playlist_id', playlistId)
+            .order('position', { ascending: true });
 
-    if (itemsError) throw new Error(itemsError.message);
+        if (itemsError) throw new Error(itemsError.message);
 
-    const processedItems = await Promise.all(items.map(async (item: any) => {
-        if (item.track) {
-            // 1. Sign Cover Image
-            if (item.track.cover_image_url && !item.track.cover_image_url.startsWith('http')) {
-                try {
-                    item.track.cover_image_url = await getSignedUrlWrapper(item.track.cover_image_url);
-                } catch (e) {
-                    console.error(`Failed to sign playlist track image ${item.track.id}:`, e);
-                }
-            }
-
-            // 2. Sign and Extract Audio Source
-            const files = (item.track.track_files as unknown as { file_type: string, s3_key: string, tuning: string }[]) || [];
-            const streamFiles = files.filter((f) => f.file_type === 'stream_aac' || f.file_type === 'stream_mp3');
-
-            let defaultSrc = '';
-            const availableTunings: Record<string, string> = {};
-
-            for (const file of streamFiles) {
-                try {
-                    const url = await getSignedUrlWrapper(file.s3_key);
-                    if (file.tuning) {
-                        availableTunings[file.tuning] = url;
-                        if (file.tuning === '440hz') defaultSrc = url;
-                    }
-                } catch (e) {
-                    console.error(`Failed to sign URL for file ${file.s3_key}`, e);
-                }
-            }
-
-            // Fallbacks if 440hz stream is missing
-            if (!defaultSrc) {
-                const anyStream = Object.values(availableTunings)[0];
-                if (anyStream) defaultSrc = anyStream;
-            }
-
-            if (!defaultSrc) {
-                const rawFile = files.find((f) => f.file_type === 'raw');
-                if (rawFile) {
+        const processedItems = await Promise.all(items.map(async (item: any) => {
+            if (item.track) {
+                // 1. Sign Cover Image
+                if (item.track.cover_image_url && !item.track.cover_image_url.startsWith('http')) {
                     try {
-                        defaultSrc = await getSignedUrlWrapper(rawFile.s3_key);
-                    } catch { }
+                        item.track.cover_image_url = await getSignedUrlWrapper(item.track.cover_image_url);
+                    } catch (e) {
+                        console.error(`[playlist] Failed to sign cover image ${item.track.id}:`, e);
+                    }
+                }
+
+                // 2. Sign and Extract Audio Source
+                const files = (item.track.track_files as unknown as { file_type: string, s3_key: string, tuning: string }[]) || [];
+                const streamFiles = files.filter((f) => f.file_type === 'stream_aac' || f.file_type === 'stream_mp3');
+
+                let defaultSrc = '';
+                const availableTunings: Record<string, string> = {};
+
+                for (const file of streamFiles) {
+                    try {
+                        const url = await getSignedUrlWrapper(file.s3_key);
+                        if (file.tuning) {
+                            availableTunings[file.tuning] = url;
+                            if (file.tuning === '440hz') defaultSrc = url;
+                        }
+                    } catch (e) {
+                        console.error(`[playlist] Failed to sign URL for file ${file.s3_key}`, e);
+                    }
+                }
+
+                if (!defaultSrc) {
+                    const anyStream = Object.values(availableTunings)[0];
+                    if (anyStream) defaultSrc = anyStream;
+                }
+
+                if (!defaultSrc) {
+                    const rawFile = files.find((f) => f.file_type === 'raw');
+                    if (rawFile) {
+                        try {
+                            defaultSrc = await getSignedUrlWrapper(rawFile.s3_key);
+                        } catch { }
+                    }
+                }
+
+                item.track.src = defaultSrc;
+
+                // Serialization safe metadata
+                if (item.track.metadata) {
+                    item.track.metadata = JSON.parse(JSON.stringify(item.track.metadata));
                 }
             }
+            return JSON.parse(JSON.stringify(item)); // Deep clone to be serializable
+        }));
 
-            // Assign the resolved audio URL to the expected src property
-            item.track.src = defaultSrc;
-        }
-        return item;
-    }));
-
-    return { playlist, items: processedItems };
+        return {
+            playlist: JSON.parse(JSON.stringify(playlist)),
+            items: processedItems
+        };
+    } catch (e: any) {
+        console.error('[playlist] Error in getPlaylistDetails_Action:', e);
+        throw e;
+    }
 }
 
 export async function addTrackToPlaylist_Action(playlistId: string, trackId: string) {
