@@ -90,8 +90,18 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
+      <GoogleTagManager gtmId="GTM-TDKDDM4X" />
       <body className={`${inter.className} antialiased`} suppressHydrationWarning={true}>
-        <GoogleTagManager gtmId="GTM-TDKDDM4X" />
+        {/* Google Tag Manager (noscript) */}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-TDKDDM4X"
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+          />
+        </noscript>
+
         <NextIntlClientProvider
           locale={locale}
           messages={messages}
