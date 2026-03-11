@@ -2,5 +2,14 @@
     "HomePage": {
         "title": "Untermalen Sie Ihre Inhalte mit Musik",
         "description": "Gemafreie Musik und Soundeffekte für jede Geschichte."
+    },
+    "HowItWorks": {
+        "content": {
+            "vision": {
+                "title": "Unsichtbare Architektur: Der Punkt, an dem Klang auf Raum trifft",
+                "p1": "Sonaraura betrachtet Musik nicht nur als 'Hintergrundgeräusch', sondern als lebendiges, atmendes Strukturmaterial des Raumes. Wir kombinieren zeitlose, anspruchsvolle Stille mit der Präzision moderner Technologie. Mit der Sorgfalt eines Klangarchitekten verwandeln wir jede Note in einen Lichtstrahl und jeden Rhythmus in den Puls des Raumes.",
+                "p2": "Unser Ziel ist es nicht nur, Musik zu spielen; es geht darum, die sensorische Identität von Marken zu besiegeln, indem wir die Kälte von Marmor, die Wärme von Kupfer und die Seele des Raumes in 'akustische Zeitmaschinen' verwandeln."
+            }
+        }
     }
 }

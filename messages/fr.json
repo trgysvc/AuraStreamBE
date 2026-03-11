@@ -2,5 +2,14 @@
     "HomePage": {
         "title": "Mettez votre contenu en musique",
         "description": "Musique libre de droits et effets sonores pour chaque histoire."
+    },
+    "HowItWorks": {
+        "content": {
+            "vision": {
+                "title": "Architecture Invisible : Le Point où le Son rencontre l'Espace",
+                "p1": "Sonaraura considère la musique non seulement comme un 'son d'arrière-plan', mais comme un matériau structurel vivant et respirant de l'espace. Nous combinons un silence sophistiqué et intemporel avec la précision de la technologie moderne. Avec la méticulosité d'un Architecte du Son, nous transformons chaque note en un faisceau de lumière et chaque rythme en le pouls de l'espace.",
+                "p2": "Notre objectif n'est pas seulement de diffuser de la musique ; il s'agit de sceller l'identité sensorielle des marques en transformant la froideur du marbre, la chaleur du cuivre et l'âme de l'espace en de véritables 'machines à remonter le temps acoustiques'."
+            }
+        }
     }
 }

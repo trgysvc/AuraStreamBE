@@ -454,6 +454,11 @@
             "desc": "Mimarlarımız fabrikanın bu bölümünü belgeliyor. Lütfen yakında tekrar kontrol edin."
         },
         "content": {
+            "vision": {
+                "title": "Görülmeyen Mimari: Sesin Mekanla Buluştuğu Nokta",
+                "p1": "Sonaraura, müziği sadece bir 'arka plan sesi' olarak değil, mekanın yaşayan, nefes alan bir yapı malzemesi olarak görür. Biz, zamanın ötesindeki sofistike sessizliği modern teknolojinin hassasiyetiyle birleştiriyoruz. Bir Ses Mimarı titizliğiyle; her notayı bir ışık huzmesine, her ritmi mekanın nabzına dönüştürüyoruz.",
+                "p2": "Amacımız sadece müzik çalmak değil; mermerin soğukluğunu, bakırın sıcaklığını ve mekanın ruhunu 'akustik birer zaman makinesine' dönüştürerek markaların duyusal kimliğini mühürlemektir."
+            },
             "how-it-works": {
                 "title": "Nasıl Çalışır?",
                 "p1": "Nasıl Çalışır? bölümüne hoş geldiniz. Sonaraura, bu yeteneği iş akışınıza sorunsuz bir şekilde entegre etmek için sıfırdan tasarlanmıştır.",
